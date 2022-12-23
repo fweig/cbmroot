@@ -12,8 +12,10 @@
 
 #include <string>
 
+#include "CaToolsLinkKey.h"
 #include "L1Undef.h"
 #include "L1Vector.h"
+
 
 enum class L1DetectorID;
 
@@ -41,9 +43,9 @@ namespace ca::tools
     MCPoint& operator=(MCPoint&&) = default;
 
 
-    /// Adds hit ID
-    /// \param  hitID  A hit index in the external hits array
-    void AddHitID(int hitID) { fHitIDs.push_back_no_warning(hitID); }
+    /// Adds index of hits from the container of hits of event/TS
+    /// \param  iH  A hit index in the external hits container of event/TS
+    void AddHitID(int iH) { fvHitIndexes.push_back_no_warning(iH); }
 
 
     // *********************
@@ -54,19 +56,28 @@ namespace ca::tools
     double GetCharge() const { return fCharge; }
 
     /// Gets detector ID
-    L1DetectorID GetDetectorID() const { return fDetectorID; }
+    L1DetectorID GetDetectorId() const { return fDetectorId; }
 
-    /// Gets event ID
-    int GetEventID() const { return fEventID; }
+    /// Gets MC event ID
+    int GetEventId() const { return fLinkKey.fEvent; }
 
-    /// Gets file ID
-    int GetFileID() const { return fFileID; }
+    /// Gets MC file ID
+    int GetFileId() const { return fLinkKey.fFile; }
+
+    /// Gets index of this point in internal CA container
+    int GetId() const { return fId; }
+
+    /// Gets container of matched hit indexes
+    const auto& GetHitIndexes() const { return fvHitIndexes; }
+
+    /// Gets link key
+    LinkKey GetLinkKey() const { return fLinkKey; }
 
     /// Gets mass of the particle [GeV/c2]
     double GetMass() const { return fMass; }
 
     /// Gets mother ID of the track
-    int GetMotherID() const { return fMotherID; }
+    int GetMotherId() const { return fMotherId; }
 
     /// Gets track momentum absolute value at reference z of station [GeV/c]
     double GetP() const { return std::sqrt(fMom[0] * fMom[0] + fMom[1] * fMom[1] + fMom[2] * fMom[2]); }
@@ -76,9 +87,6 @@ namespace ca::tools
 
     /// Gets track momentum absolute value at entrance to station [GeV/c]
     double GetPIn() const { return std::sqrt(fMomIn[0] * fMomIn[0] + fMomIn[1] * fMomIn[1] + fMomIn[2] * fMomIn[2]); }
-
-    /// Gets point ID
-    int GetPointID() const { return fPointID; }
 
     /// Gets track momentum absolute value at exit of station [GeV/c]
     double GetPOut() const
@@ -114,13 +122,13 @@ namespace ca::tools
     double GetPzOut() const { return fMomOut[2]; }
 
     /// Gets global ID of the active tracking station
-    int GetStationID() const { return fStationID; }
+    int GetStationId() const { return fStationId; }
 
     /// Gets time [ns]
     double GetTime() const { return fTime; }
 
-    /// Gets ID of track
-    int GetTrackID() const { return fTrackID; }
+    /// Gets ID of track from the internal CA MC track container (within event/TS)
+    int GetTrackId() const { return fTrackId; }
 
     /// Gets x coordinate at reference z of station [cm]
     double GetX() const { return fPos[0]; }
@@ -149,11 +157,6 @@ namespace ca::tools
     /// Gets z coordinate at exit of station [cm]
     double GetZOut() const { return fPosOut[2]; }
 
-
-    /// Gets Hit ID
-    int MapHitID(int iHitID) { return fHitIDs[iHitID]; }
-
-
     // *********************
     // **     Setters     **
     // *********************
@@ -162,19 +165,25 @@ namespace ca::tools
     void SetCharge(double charge) { fCharge = charge; }
 
     /// Sets detector ID
-    void SetDetectorID(L1DetectorID detID) { fDetectorID = detID; }
+    void SetDetectorId(L1DetectorID detId) { fDetectorId = detId; }
+
+    /// Sets index of MC event containing this point
+    void SetEventId(int eventId) { fLinkKey.fEvent = eventId; }
+
+    /// Sets index of this point in external data structures
+    void SetExternalId(int id) { fLinkKey.fIndex = id; }
+
+    /// Sets index of MC file containing this point
+    void SetFileId(int fileId) { fLinkKey.fFile = fileId; }
+
+    /// Sets index of this point in the CA internal structure
+    void SetId(int id) { fId = id; }
 
     /// Sets particle mass [GeV/c2]
     void SetMass(double mass) { fMass = mass; }
 
-    /// Sets mother ID
-    void SetMotherID(int motherID) { fMotherID = motherID; }
-
-    /// Sets link address
-    /// \param pointID  Index of
-    /// \param eventID
-    /// \param fileID
-    void SetLinkAddress(int pointID, int eventID, int fileID);
+    /// Sets index of mother track in the internal CA data structures
+    void SetMotherId(int motherId) { fMotherId = motherId; }
 
     /// Sets PDG code
     void SetPdgCode(int pdg) { fPdgCode = pdg; }
@@ -207,13 +216,13 @@ namespace ca::tools
     void SetPzOut(double pz) { fMomOut[2] = pz; }
 
     /// Sets global index of active station
-    void SetStationID(int stationID) { fStationID = stationID; }
+    void SetStationId(int stationId) { fStationId = stationId; }
 
     /// Sets time [ns]
     void SetTime(double time) { fTime = time; }
 
-    /// Sets track ID
-    void SetTrackID(int trackID) { fTrackID = trackID; }
+    /// Sets track ID in the CA internal track container (within event/TS)
+    void SetTrackId(int trackId) { fTrackId = trackId; }
 
     /// Sets x coordinate at reference z of station [cm]
     void SetX(double x) { fPos[0] = x; }
@@ -262,22 +271,21 @@ namespace ca::tools
     std::array<double, 3> fMomIn  = {undef::kD, undef::kD, undef::kD};  ///< Momentum at entrance to station [cm]
     std::array<double, 3> fMomOut = {undef::kD, undef::kD, undef::kD};  ///< Momentum at exit of station [cm]
 
+    double fMass   = undef::kD;  ///< Particle mass [GeV/c2]
+    double fCharge = undef::kD;  ///< Particle charge [e]
+    double fTime   = undef::kD;  ///< Point time [ns]
+
+    LinkKey fLinkKey = {undef::kI32, undef::kI32, undef::kI32};  ///< Link key of point
+
     int fPdgCode   = undef::kI32;  ///< Particle PDG code
-    double fMass   = undef::kD;    ///< Particle mass [GeV/c2]
-    double fCharge = undef::kD;    ///< Particle charge [e]
-    double fTime   = undef::kD;    ///< Point time [ns]
+    int fId        = undef::kI32;  ///< Index of MC point in the external MC point container
+    int fTrackId   = undef::kI32;  ///< Index of associated MC track in CA internal track container within TS/event
+    int fMotherId  = undef::kI32;  ///< Index of mother track in CA internal data structures (within event/TS)
+    int fStationId = undef::kI32;  ///< Global index of active tracking station
 
-    int fTrackID   = undef::kI32;  ///< Track ID
-    int fMotherID  = undef::kI32;  ///< Mother particle ID (NOTE: probably is redundant)
-    int fStationID = undef::kI32;  ///< Global index of active tracking station
+    L1DetectorID fDetectorId;  ///< Detector ID of MC point
 
-    L1DetectorID fDetectorID;  ///< Detector ID of MC point
-
-    int fPointID = undef::kI32;  ///< TODO
-    int fEventID = undef::kI32;
-    int fFileID  = undef::kI32;
-
-    L1Vector<int> fHitIDs {"ca::tools::MCPoint::fHitIDs"};
+    L1Vector<int> fvHitIndexes {"ca::tools::MCPoint::fvHitIndexes"};
   };
 }  // namespace ca::tools
 

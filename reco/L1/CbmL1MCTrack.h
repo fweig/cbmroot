@@ -53,14 +53,18 @@ public:
   void Init();
 
   void AddRecoTrack(CbmL1Track* rTr) { rTracks.push_back_no_warning(rTr); }
+  void AddRecoTrackIndex(int iT) { rTrackIndexes.push_back_no_warning(iT); }
   L1Vector<CbmL1Track*>& GetRecoTracks() { return rTracks; }
   int GetNClones() const { return rTracks.size() - 1; }
   bool IsReconstructed() const { return rTracks.size(); }
 
   void AddTouchTrack(CbmL1Track* tTr) { tTracks.push_back_no_warning(tTr); }
+  void AddTouchTrackIndex(int iT) { tTrackIndexes.push_back_no_warning(iT); }
   bool IsDisturbed() const { return tTracks.size(); }
 
   void SetIsReconstructable(bool v) { isReconstructable = v; }
+  const auto& GetRecoTrackIndexes() const { return rTrackIndexes; }
+  const auto& GetTouchTrackIndexes() const { return tTrackIndexes; }
 
   friend class CbmL1;
 
@@ -108,10 +112,14 @@ private:
   bool isAdditional      = false;  // is not reconstructable, but stil interesting
 
   // next members filled and used in Performance
-  L1Vector<CbmL1Track*> rTracks {"CbmL1MCTrack::rTracks"};  // array of assosiated recoTracks
+  L1Vector<CbmL1Track*> rTracks {"CbmL1MCTrack::rTracks"};  // array of associated recoTracks
   L1Vector<CbmL1Track*> tTracks {"CbmL1MCTrack::tTracks"};  // array of recoTracks
-                                                            // wich aren't assosiated with this mcTrack,
+                                                            // which aren't associated with this mcTrack,
                                                             // but use some hits from it.
+
+  // NOTE: SZh 14.12.2022: on the replacement from rTracks and tTracks
+  L1Vector<int> rTrackIndexes = {"CbmL1MCTrack::rTrackIndexes"};  // array of associated recoTrack indexes
+  L1Vector<int> tTrackIndexes = {"CbmL1MCTrack::tTrackIndexes"};  // .....
 };
 
 

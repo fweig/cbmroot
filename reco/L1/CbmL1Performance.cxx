@@ -72,6 +72,13 @@ void CbmL1::TrackMatch()
   map<int, CbmL1MCTrack*> pMCTrackMap;
   pMCTrackMap.clear();
 
+  // ***** DEBUG: Start
+  for (int iTrk = 0; iTrk < int(fvMCTracks.size()); ++iTrk) {
+    assert(iTrk == fvMCTracks[iTrk].ID);
+  }
+
+  // ***** DEBUG: End
+
   // fill pMCTrackMap
   for (vector<CbmL1MCTrack>::iterator i = fvMCTracks.begin(); i != fvMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
@@ -128,15 +135,17 @@ void CbmL1::TrackMatch()
       if (double(posIt->second) > max_percent * double(hitsum)) max_percent = double(posIt->second) / double(hitsum);
 
       // set relation to the mcTrack
-      if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) continue;
+      if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) { continue; }
       CbmL1MCTrack* pmtra = pMCTrackMap[posIt->first];
 
       if (double(posIt->second) >= CbmL1Constants::MinPurity * double(hitsum)) {  // found correspondent MCTrack
         pmtra->AddRecoTrack(prtra);
+        pmtra->AddRecoTrackIndex(iR);
         prtra->AddMCTrack(pmtra);
       }
       else {
         pmtra->AddTouchTrack(prtra);
+        pmtra->AddTouchTrackIndex(iR);
       }
     }  // for hitmap
     prtra->SetMaxPurity(max_percent);

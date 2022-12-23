@@ -11,6 +11,7 @@
 
 #include "CbmEvent.h"
 #include "CbmL1.h"  // for L1DetectorID
+#include "CbmL1Constants.h"
 #include "CbmL1Hit.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCDataObject.h"
@@ -154,6 +155,55 @@ void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
   fMCData.Clear();
   this->ReadMCTracks();
   this->ReadMCPoints();
+
+  // ------ Prepare tracks: set point indexes and redefine indexes from external to internal containers
+  for (auto& aTrk : fMCData.GetTrackContainer()) {
+    aTrk.SortPointIndexes(
+      [&](const int& iPl, const int& iPr) { return fMCData.GetPoint(iPl).GetZ() < fMCData.GetPoint(iPr).GetZ(); });
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1Hit>& vHits)
+{
+  // ----- Initialize stations arrangement and hit indexes
+  fMCData.InitTrackInfo(vHits);
+
+  // ----- Define reconstructable and additional flags
+  for (auto& aTrk : fMCData.GetTrackContainer()) {
+    bool isRec = true;  // is track reconstructable
+
+    // Cut on momentum
+    isRec &= aTrk.GetP() > CbmL1Constants::MinRecoMom;
+
+    // Cut on max number of points on station
+    isRec &= aTrk.GetMaxNofPointsOnStation() <= 4;
+
+    bool isAdd = isRec;  // is track additional
+
+    // Cut on number of stations
+    switch (fPerformanceMode) {
+      case 1: isRec &= aTrk.GetNofConsStationsWithHit() >= CbmL1Constants::MinNStations; break;
+      case 2: isRec &= aTrk.GetTotNofStationsWithHit() >= CbmL1Constants::MinNStations; break;
+      case 3: isRec &= aTrk.GetNofConsStationsWithPoint() >= CbmL1Constants::MinNStations; break;
+      default: LOG(fatal) << "CA MC Module: invalid performance mode " << fPerformanceMode;
+    }
+
+    if (aTrk.GetNofPoints() > 0) {
+      isAdd &= aTrk.GetNofConsStationsWithHit() == aTrk.GetTotNofStationsWithHit();
+      isAdd &= aTrk.GetNofConsStationsWithPoint() == aTrk.GetTotNofStationsWithHit();
+      isAdd &= aTrk.GetTotNofStationsWithHit() == aTrk.GetTotNofStationsWithPoint();
+      isAdd &= aTrk.GetNofConsStationsWithHit() >= 3;
+      isAdd &= fMCData.GetPoint(aTrk.GetPointIndexes()[0]).GetStationId() == 0;
+      isAdd &= !isRec;
+    }
+    else {
+      isAdd = false;
+    }
+    aTrk.SetFlagReconstructable(isRec);
+    aTrk.SetFlagAdditional(isAdd);
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -161,17 +211,22 @@ void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
 void CbmCaMCModule::Finish() { std::cout << "\033[1;32mFinishing performance\033[0m\n"; }
 
 
-// *****************************************
-// **     Hits and MC-points matching     **
-// *****************************************
+// **********************************
+// **     Reco and MC matching     **
+// **********************************
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchPointsWithHits(L1Vector<CbmL1Hit>& vHits)
+void CbmCaMCModule::MatchPointsWithHits(L1Vector<CbmL1Hit>& vInputExtHits)
 {
-  int nHits = vHits.size();
+  // FIXME: Cleaning up makes it safer, but probably is not needed after old code removal
+  for (auto& hit : vInputExtHits) {
+    hit.mcPointIds.clear();
+  }
+
+  int nHits = vInputExtHits.size();
   for (int iH = 0; iH < nHits; ++iH) {
-    auto& hit = vHits[iH];
+    auto& hit = vInputExtHits[iH];
     int iP    = fMCData.GetPointIndexOfHit(iH);
     if (iP > -1) {
       hit.mcPointIds.push_back_no_warning(iP);
@@ -245,7 +300,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHit) const
 
       if (link.GetWeight() > bestWeight) {
         bestWeight = link.GetWeight();
-        iPoint     = fMCData.FindGlobalPointIndex(CalcGlobMCPointIndex(iIndex, L1DetectorID::kSts), iEvent, iFile);
+        iPoint     = fMCData.FindInternalPointIndex(CalcGlobMCPointIndex(iIndex, L1DetectorID::kSts), iEvent, iFile);
         assert(iPoint != -1);
       }
     }
@@ -270,7 +325,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHit) const
         }
         int iFile  = hitMatchMuch->GetLink(iLink).GetFile();
         int iEvent = hitMatchMuch->GetLink(iLink).GetEntry();
-        iPoint     = fMCData.FindGlobalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kMuch), iEvent, iFile);
+        iPoint     = fMCData.FindInternalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kMuch), iEvent, iFile);
         assert(iPoint != -1);
       }
     }
@@ -296,7 +351,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
       int iFile  = hitMatch->GetLink(0).GetFile();
       int iEvent = hitMatch->GetLink(0).GetEntry();
 
-      iPoint = fMCData.FindGlobalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kTrd), iEvent, iFile);
+      iPoint = fMCData.FindInternalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kTrd), iEvent, iFile);
       assert(iPoint != -1);
     }
   }
@@ -318,12 +373,69 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
       if (iMc < 0) return iPoint;
 
       assert(iMc >= 0 && iMc < fpTofPoints->Size(iFile, iEvent));
-      int iPointPrelim = fMCData.FindGlobalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kTof), iEvent, iFile);
+      int iPointPrelim = fMCData.FindInternalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kTof), iEvent, iFile);
       if (iPointPrelim == -1) { continue; }
       iPoint = iPointPrelim;
     }
   }
   return iPoint;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmCaMCModule::MatchRecoAndMCTracks(L1Vector<CbmL1Track>& vRecoTracks, L1Vector<CbmL1Hit>& vInputExtHits)
+{
+  // NOTE: Potentially there is a case, when
+
+  for (int iTre = 0; iTre < int(vRecoTracks.size()); ++iTre) {
+    auto& trkRe = vRecoTracks[iTre];
+
+    // ----- Count number of hits from each MC track belonging to this reconstructed track
+    auto& mNofHitsVsMCTrkID = trkRe.hitMap;
+    mNofHitsVsMCTrkID.clear();
+    for (int iH : trkRe.Hits) {
+      for (int iP : vInputExtHits[iH].mcPointIds) {
+        assert(iP > -1);  // Should never be triggered
+        int iTmc = fMCData.GetPoint(iP).GetTrackId();
+        if (mNofHitsVsMCTrkID.find(iTmc) == mNofHitsVsMCTrkID.end()) { mNofHitsVsMCTrkID[iTmc] = 1; }
+        else {
+          mNofHitsVsMCTrkID[iTmc] += 1;
+        }
+
+      }  // loop over global point ids stored for hit: end
+    }    // loop over hit ids stored for a reconstructed track: end
+
+
+    // ----- Calculate track max purity
+    // NOTE: Maximal purity is a maximum fraction of hits from a single MC track. A reconstructed track can be matched
+    //       to several MC tracks, because it uses hits from different particle. Purity shows, how fully the true track
+    //       was reconstructed.
+    int nHitsTrkRe   = trkRe.Hits.size();  // number of hits in a given reconstructed track
+    double maxPurity = 0.;                 // [0, 1]
+    for (auto& item : mNofHitsVsMCTrkID) {
+      int iTmc       = item.first;
+      int nHitsTrkMc = item.second;
+
+      if (iTmc < 0) { continue; }
+
+      if (double(nHitsTrkMc) > double(nHitsTrkRe) * maxPurity) { maxPurity = double(nHitsTrkMc) / double(nHitsTrkRe); }
+
+      ca::tools::MCTrack& trkMc = fMCData.GetTrack(iTmc);
+
+      // Match reconstructed and MC tracks, if purity with this MC track passes the threshold
+      if (double(nHitsTrkMc) >= CbmL1Constants::MinPurity * double(nHitsTrkRe)) {
+        trkMc.AddRecoTrackIndex(iTre);
+        trkRe.AddMCTrackIndex(iTmc);
+      }
+      // If purity is low, but some hits of a given MC track are presented in the reconstructed track
+      else {
+        trkMc.AddTouchTrackIndex(iTre);
+      }
+
+      // Update max purity of the reconstructed track
+      trkRe.SetMaxPurity(maxPurity);
+    }  // loop over hit map: end
+  }    // loop over reconstructed tracks: end
 }
 
 
@@ -465,7 +577,7 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
         }
       }
 
-      int iTrack = fMCData.FindGlobalTrackIndex(pExtPoint->GetTrackID(), iEvent, iFile);
+      int iTrack = fMCData.FindInternalTrackIndex(pExtPoint->GetTrackID(), iEvent, iFile);
       assert(iTrack > -1);
       if (iStSelected != -1) {
         int iStActive            = fpParameters->GetStationIndexActive(iStSelected, L1DetectorID::kTof);
@@ -484,9 +596,11 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
         if (vTofPointToTrack[iStLocGeo][iTrk] < 0) { continue; }
         ca::tools::MCPoint aPoint;
         if (FillMCPoint<L1DetectorID::kTof>(vTofPointToTrack[iStLocGeo][iTrk], iEvent, iFile, aPoint)) {
-          aPoint.SetStationID(iStActive);
-          int iGlobP = this->CalcGlobMCPointIndex(vTofPointToTrack[iStLocGeo][iTrk], L1DetectorID::kTof);
-          fMCData.AddPoint(aPoint, iGlobP, iEvent, iFile);
+          aPoint.SetStationId(iStActive);
+          aPoint.SetExternalId(CalcGlobMCPointIndex(vTofPointToTrack[iStLocGeo][iTrk], L1DetectorID::kTof));
+          int iPInt = fMCData.GetNofPoints();  // assign an index of point in internal container
+          if (aPoint.GetTrackId() > -1) { fMCData.GetTrack(aPoint.GetTrackId()).AddPointIndex(iPInt); }
+          fMCData.AddPoint(aPoint);
           ++fvNofPointsUsed[int(L1DetectorID::kTof)];
         }
       }  // loop over tracks: end
@@ -550,31 +664,51 @@ void CbmCaMCModule::ReadMCTracks()
         LOG(warn) << "CbmCaMCModule: track with (iF, iE, iT) = " << iFile << ' ' << iEvent << ' ' << iTrkExt
                   << " not found";
       }
-      TVector3 vtx;
-      TLorentzVector mom4;
-      pExtMCTrk->GetStartVertex(vtx);
-      pExtMCTrk->Get4Momentum(mom4);
-      int pdg         = pExtMCTrk->GetPdgCode();
-      unsigned procID = pExtMCTrk->GetGeantProcessId();
-      int motherID    = pExtMCTrk->GetMotherId();
-      double charge   = 0.;  // in [e]
-      double mass     = 0.;  // in [GeV/c2]
+      // Create a CbmL1MCTrack
+      ca::tools::MCTrack aTrk;
 
-      // Initialize charge and mass from PDG
-      auto pPdgBase = TDatabasePDG::Instance()->GetParticle(pdg);
-      if (pPdgBase) {
-        charge = pPdgBase->Charge() / 3.;
-        mass   = pPdgBase->Mass();
+      aTrk.SetId(fMCData.GetNofTracks());  // assign current number of tracks read so far as an ID of a new track
+      aTrk.SetExternalId(iTrkExt);         // external index of track is its index from CbmMCTrack objects container
+      aTrk.SetEventId(iEvent);
+      aTrk.SetFileId(iFile);
+
+      aTrk.SetStartT(pExtMCTrk->GetStartT());
+      aTrk.SetStartX(pExtMCTrk->GetStartX());
+      aTrk.SetStartY(pExtMCTrk->GetStartY());
+      aTrk.SetStartZ(pExtMCTrk->GetStartZ());
+
+      aTrk.SetPx(pExtMCTrk->GetPx());
+      aTrk.SetPy(pExtMCTrk->GetPy());
+      aTrk.SetPz(pExtMCTrk->GetPz());
+
+      aTrk.SetFlagSignal(aTrk.IsPrimary() && (aTrk.GetStartZ() > (pEvtHeader->GetZ() + 1.e-10)));
+
+      // In CbmMCTrack mass is defined from ROOT PDG data base. If track is left from ion, and its pdg is not registered
+      // in the data base, its mass is calculated as A times proton mass.
+      aTrk.SetMass(pExtMCTrk->GetMass());
+
+      // The charge in CbmMCTrack is similarly to mass defined from ROOT PDG data base. The value of charge there is
+      // given in the units of 1/3e (absolute value of d-quark charge). In ca::tools::MCTrack we recalculate this
+      // value to the units of e.
+      aTrk.SetCharge(pExtMCTrk->GetCharge() / 3.);
+
+      // Set index of mother track. We assume, that mother track was recorded into the internal array before
+      int extMotherId = pExtMCTrk->GetMotherId();
+      if (extMotherId < 0) {
+        // This is a primary track, and it's mother ID equals -1 or -2. This value is taken also as internal mother ID
+        aTrk.SetMotherId(extMotherId);
+      }
+      else {
+        // This is a secondary track, mother ID should be recalculated for the internal array
+        int motherId = fMCData.FindInternalTrackIndex(extMotherId, iEvent, iFile);
+        assert(motherId > -1);
+        aTrk.SetMotherId(motherId);
       }
 
-      // Create a CbmL1MCTrack
-      int iTrkInt = fMCData.GetNofTracks();  // index of track in the MCData container
-      CbmL1MCTrack aTrk(mass, charge, vtx, mom4, iTrkInt, motherID, pdg, procID);
-      aTrk.time     = pExtMCTrk->GetStartT();
-      aTrk.iFile    = iFile;
-      aTrk.iEvent   = iEvent;
-      aTrk.isSignal = aTrk.IsPrimary() && (aTrk.z > pEvtHeader->GetZ() + 1.e-10);
-      fMCData.AddTrack(aTrk, iTrkExt, iEvent, iFile);
+      aTrk.SetProcessId(pExtMCTrk->GetGeantProcessId());
+      aTrk.SetPdgCode(pExtMCTrk->GetPdgCode());
+
+      fMCData.AddTrack(aTrk);
     }  // Loop over MC tracks: end
   }    // Loop over MC events: end
 }

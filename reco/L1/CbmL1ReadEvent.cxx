@@ -414,7 +414,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
             MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
 
-
             fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fNpointsMvd++;
@@ -608,6 +607,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
           }
       }
     }  //time_slice
+
 
     for (unsigned int iTr = 0; iTr < fvMCTracks.size(); iTr++) {
 
@@ -1269,12 +1269,14 @@ void CbmL1::Fill_vMCTracks()
       Int_t pdg              = MCTrack->GetPdgCode();
       unsigned int processID = MCTrack->GetGeantProcessId();
       Double_t q = 0, mass = 0.;
-      if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
-        q    = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
-        mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
-      }
+      //if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
+      //  q    = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
+      //  mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
+      //}
       // TODO: Add light nuclei (d, t, He3, He4): they are common in tracking but not accounted in TDatabasePDG (S.Zharko)
 
+      q    = MCTrack->GetCharge() / 3.;
+      mass = MCTrack->GetMass();
 
       Int_t iTrack = fvMCTracks.size();  //or iMCTrack?
       CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg, processID);
@@ -1452,6 +1454,8 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
     MC->q    = particlePDG->Charge() / 3.0;
     MC->mass = particlePDG->Mass();
   }
+
+
   // TODO: Add light nuclei (d, t, He3, He4): they are common in tracking but not accounted in TDatabasePDG (S.Zharko)
 
   return 0;
@@ -1463,6 +1467,16 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
 // TODO: Duplicated code (from CbmL1::ReadEvent)
 void CbmL1::HitMatch()
 {
+  // Clear contents
+  for (auto& hit : fvExternalHits) {
+    hit.mcPointIds.clear();
+  }
+
+  for (auto& point : fvMCPoints) {
+    point.hitIds.clear();
+  }
+
+  // Fill new contents
   const int NHits = fvExternalHits.size();
   for (int iH = 0; iH < NHits; iH++) {
     CbmL1HitDebugInfo& hit = fvHitDebugInfo[iH];

@@ -25,16 +25,16 @@ public:
 ///
 class CbmL1HitDebugInfo {  // TODO: SZh 21.09.2022: Replace instances of this class with L1Hit
 public:
-  int ExtIndex;
-  int iStation;
-  double x;
-  double y;
-  double time;
-  double dx;
-  double dy;
-  double dt;
-  double dxy;
-  int Det;
+  int ExtIndex;  ///< index of hit in the external branch
+  int iStation;  ///< index of station in active stations array
+  double x;      ///< x coordinate of position [cm]
+  double y;      ///< y coordinate of position [cm]
+  double time;   ///< hit time [ns]
+  double dx;     ///< x coordinate error [cm]
+  double dy;     ///< y coordinate error [cm]
+  double dt;     ///< time error [ns]
+  double dxy;    ///< covariance between x and y [cm2]
+  int Det;       ///< detector subsystem ID
   L1Vector<int> mcPointIds {"CbmL1HitDebugInfo::mcPointIds"};  ///< indices of CbmL1MCPoint in L1->fvMCPoints array
 };
 

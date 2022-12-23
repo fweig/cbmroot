@@ -9,6 +9,8 @@
 
 #include "CaToolsMCData.h"
 
+#include "CbmL1Hit.h"
+
 #include <iomanip>
 #include <sstream>
 #include <utility>  // for std::move
@@ -66,17 +68,17 @@ void MCData::Swap(MCData& other) noexcept
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void MCData::AddPoint(const MCPoint& point, int index, int event, int file)
+void MCData::AddPoint(const MCPoint& point)
 {
-  fmPointLinkMap[LinkKey(index, event, file)] = static_cast<int>(fvPoints.size());
+  fmPointLinkMap[point.GetLinkKey()] = point.GetId();
   fvPoints.push_back(point);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void MCData::AddTrack(const CbmL1MCTrack& track, int index, int event, int file)
+void MCData::AddTrack(const MCTrack& track)
 {
-  fmTrackLinkMap[LinkKey(index, event, file)] = static_cast<int>(fvTracks.size());
+  fmTrackLinkMap[track.GetLinkKey()] = track.GetId();
   fvTracks.push_back(track);
 }
 
@@ -89,6 +91,26 @@ void MCData::Clear()
   fvPointIndexOfHit.clear();
   fmPointLinkMap.clear();
   fmTrackLinkMap.clear();
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void MCData::InitTrackInfo(const L1Vector<CbmL1Hit>& vHits)
+{
+  for (auto& aTrk : fvTracks) {
+    // Assign hits to tracks
+    aTrk.ClearHitIndexes();
+    auto& vHitIds = aTrk.GetHitIndexes();
+    for (int iP : aTrk.GetPointIndexes()) {
+      const auto& point = fvPoints[iP];
+      for (int iH : point.GetHitIndexes()) {
+        if (std::find(vHitIds.begin(), vHitIds.end(), iH) == vHitIds.end()) { aTrk.AddHitIndex(iH); }
+      }
+    }
+    // Initialize arrangements of points and hits within stations
+    aTrk.InitPointsInfo(fvPoints);
+    aTrk.InitHitsInfo(vHits);
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -109,10 +131,13 @@ std::string MCData::ToString(int verbose) const
         << "px [GeV/c]" << ' ' << setw(10) << setfill(' ') << "py [GeV/c]" << ' ' << setw(10) << setfill(' ')
         << "pz [GeV/c]" << '\n';
     for (int i = 0; i < kNofTracksToPrint; ++i) {
-      msg << setw(10) << setfill(' ') << fvTracks[i].ID << ' ' << setw(10) << setfill(' ') << fvTracks[i].mother_ID
-          << ' ' << setw(10) << setfill(' ') << fvTracks[i].pdg << ' ' << setw(10) << setfill(' ') << fvTracks[i].z
-          << ' ' << setw(10) << setfill(' ') << fvTracks[i].px << ' ' << setw(10) << setfill(' ') << fvTracks[i].py
-          << ' ' << setw(10) << setfill(' ') << fvTracks[i].pz << '\n';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetId() << ' ';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetMotherId() << ' ';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetPdgCode() << ' ';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetStartZ() << ' ';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetPx() << ' ';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetPy() << ' ';
+      msg << setw(10) << setfill(' ') << fvTracks[i].GetPz() << '\n';
     }
   }
   return msg.str();

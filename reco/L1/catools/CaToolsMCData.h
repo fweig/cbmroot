@@ -10,13 +10,12 @@
 #ifndef CaToolsMCData_h
 #define CaToolsMCData_h 1
 
-#include "CbmL1MCTrack.h"
-
 #include <numeric>
 #include <string>
 
 #include "CaToolsLinkKey.h"
 #include "CaToolsMCPoint.h"
+#include "CaToolsMCTrack.h"
 #include "L1Constants.h"
 #include "L1Vector.h"
 
@@ -56,47 +55,45 @@ namespace ca::tools
     /// \param  iPoint  Index of MC point
     /// \param
 
-    /// Adds an MC point
+    /// Adds an MC point to points container and a corresponding link key to the point index map
     /// \param  point  MC point object
-    /// \param  index  Index of point in a link
-    /// \param  event  Event index of a link
-    /// \param  file   File index of a link
-    void AddPoint(const MCPoint& point, int index, int event, int file);
+    void AddPoint(const MCPoint& point);
 
-    /// Adds an MC track
+    /// Adds an MC track to tracks container and a corresponding link key to the link index map
     /// \param  track  MC track object
-    /// \param  index  Index of point in a link
-    /// \param  event  Event index of a link
-    /// \param  file   File index of a link
-    void AddTrack(const CbmL1MCTrack& track, int index, int event, int file);
+    void AddTrack(const MCTrack& track);
 
     /// Clears contents
     void Clear();
 
-    /// Finds an MC point global index by given local index, event and file of a link
-    /// \param  index  Local index of MC point
-    /// \param  event  Event of link
-    /// \param  file   File of link
-    int FindGlobalPointIndex(int index, int event, int file) const
+    /// Finds an index of MC point in internal point container
+    /// \param  index  Index of MC point in external point container
+    /// \param  event  Index of MC event
+    /// \param  file   Index of MC file
+    /// \return        Index of MC point in internal point container within event/TS
+    ///                If the point is not found the function returns -1
+    int FindInternalPointIndex(int index, int event, int file) const
     {
       auto it = fmPointLinkMap.find(LinkKey(index, event, file));
       return (it != fmPointLinkMap.cend()) ? it->second : -1;
     }
 
-    /// Finds an MC track global index by given local index, event and file of a link
-    /// \param  index  Local index of track
-    /// \param  event  Index of event
-    /// \param  file   Index of file
-    int FindGlobalTrackIndex(int index, int event, int file) const
+    /// Finds an index of MC track in internal track container
+    /// \param  index  Index of MC track in external track container
+    /// \param  event  Index of MC event
+    /// \param  file   Index of MC file
+    /// \return        Index of MC track in internal track container within event/TS
+    ///                If the track is not found, the function returns -1
+    int FindInternalTrackIndex(int index, int event, int file) const
     {
       auto it = fmTrackLinkMap.find(LinkKey(index, event, file));
       return (it != fmTrackLinkMap.cend()) ? it->second : -1;
     }
 
-    /// Gets number of tracks
+    /// Gets number of tracks in this event/TS
     int GetNofTracks() const { return fvTracks.size(); }
 
-    /// Gets number of points
+    /// Gets number of points in this event/TS
     int GetNofPoints() const { return fvPoints.size(); }
 
     /// Gets a reference to MC point by its index
@@ -114,11 +111,24 @@ namespace ca::tools
     /// \param  iHit  Index of hit
     auto GetPointIndexOfHit(int iHit) const { return fvPointIndexOfHit[iHit]; }
 
-    /// Gets a reference to MC track by its index
+    /// Gets a reference to MC track by its internal index
     const auto& GetTrack(int idx) const { return fvTracks[idx]; }
+
+    /// Gets a mutual reference to MC track by its internal index
+    auto& GetTrack(int idx) { return fvTracks[idx]; }
 
     /// Gets a reference to the vector of tracks
     const auto& GetTrackContainer() const { return fvTracks; }
+
+    /// Gets a mutual reference to the vector of tracks
+    auto& GetTrackContainer() { return fvTracks; }
+
+    /// \brief  Initialize information about points and hits association with MC track
+    /// \param  vHits  Vector of hit objects
+    /// Initialize tracks: defines indexes of hits and points related to the track, calculates max number of points and
+    /// hits on a station, number of consecutive stations containing a hit or point and number of stations and points
+    /// with hits.
+    void InitTrackInfo(const L1Vector<CbmL1Hit>& vHits);
 
     /// Registers index of point for a given index of hit
     /// \param  iHit    Index of hit
@@ -146,12 +156,12 @@ namespace ca::tools
     std::string ToString(int verbose = 1) const;
 
   private:
-    // **********************
-    // ** Member variables **
-    // **********************
+    // ******************************
+    // **     Member variables     **
+    // ******************************
 
-    L1Vector<MCPoint> fvPoints      = {"ca::tools::MCData::fvMCPoints"};  ///< Container of points
-    L1Vector<CbmL1MCTrack> fvTracks = {"ca::tools::MCData::fvMCTracks"};  ///< Container of tracks
+    L1Vector<MCPoint> fvPoints = {"ca::tools::MCData::fvPoints"};  ///< Container of points
+    L1Vector<MCTrack> fvTracks = {"ca::tools::MCData::fvTracks"};  ///< Container of tracks
 
     /// Correspondence of MC point index to the global hit index
     L1Vector<int> fvPointIndexOfHit = {"ca::tools::MCData::fvPointIndexOfHit"};

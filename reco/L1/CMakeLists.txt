@@ -71,7 +71,8 @@ set(SRCS
   L1Algo/utils/L1AlgoPulls.cxx
   catools/CaToolsMCData.cxx
   catools/CaToolsMCPoint.cxx
-  catools/CaToolsPerformance.cxx
+  catools/CaToolsMCTrack.cxx
+  catools/CaToolsQa.cxx
   catools/CaToolsDebugger.cxx
   catools/CaToolsWindowFinder.cxx
   catools/CaToolsWFExpression.cxx

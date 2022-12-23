@@ -29,9 +29,9 @@ namespace ca::tools
       return lhs.fFile == rhs.fFile && lhs.fEvent == rhs.fEvent && lhs.fIndex == rhs.fIndex;
     }
 
-    int fIndex = undef::kI32;
-    int fEvent = undef::kI32;
-    int fFile  = undef::kI32;
+    int fIndex = undef::kI32;  ///< Index of MC point/track in external data structures
+    int fEvent = undef::kI32;  ///< Index of MC event
+    int fFile  = undef::kI32;  ///< Index of MC file
   };
 }  // namespace ca::tools
 

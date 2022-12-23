@@ -1009,6 +1009,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
   if (fPerformance) {
     if (fVerbose > 1) { cout << "Performance..." << endl; }
     TrackMatch();
+    fpMCModule->MatchRecoAndMCTracks(fvRecoTracks, fvExternalHits);
     EfficienciesPerformance();
     HistoPerformance();
     TrackFitPerformance();

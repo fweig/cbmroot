@@ -17,16 +17,6 @@ using namespace ca::tools;
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void MCPoint::SetLinkAddress(int pointID, int eventID, int fileID)
-{
-  // TODO: SZh 21.11.2022: Test uniqueness of the pointID among different subsystems in link definition
-  fPointID = pointID;
-  fEventID = eventID;
-  fFileID  = fileID;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
 std::string MCPoint::ToString(int verbose, bool printHeader) const
 {
   if (verbose < 1) { return std::string(); }
@@ -49,6 +39,7 @@ std::string MCPoint::ToString(int verbose, bool printHeader) const
         msg << std::setw(14) << std::setfill(' ') << "zOut [cm]" << '|';
         msg << std::setw(14) << std::setfill(' ') << "p [GeV/c]" << '|';
         msg << std::setw(10) << std::setfill(' ') << "point ID" << ' ';
+        msg << std::setw(10) << std::setfill(' ') << "point ID (ext)" << ' ';
         msg << std::setw(10) << std::setfill(' ') << "event ID" << ' ';
         msg << std::setw(10) << std::setfill(' ') << "file ID" << ' ';
       }
@@ -56,9 +47,9 @@ std::string MCPoint::ToString(int verbose, bool printHeader) const
   }
   else {
     if (verbose > 0) {
-      msg << std::setw(10) << std::setfill(' ') << fTrackID << ' ';
-      msg << std::setw(10) << std::setfill(' ') << fMotherID << '|';
-      msg << std::setw(10) << std::setfill(' ') << fStationID << '|';
+      msg << std::setw(10) << std::setfill(' ') << fTrackId << ' ';
+      msg << std::setw(10) << std::setfill(' ') << fMotherId << '|';
+      msg << std::setw(10) << std::setfill(' ') << fStationId << '|';
       msg << std::setw(10) << std::setfill(' ') << fPdgCode << ' ';
       msg << std::setw(10) << std::setfill(' ') << fMass << ' ';
       msg << std::setw(10) << std::setfill(' ') << fCharge << '|';
@@ -70,9 +61,10 @@ std::string MCPoint::ToString(int verbose, bool printHeader) const
         msg << std::setw(14) << std::setfill(' ') << fPosIn[2] << ' ';
         msg << std::setw(14) << std::setfill(' ') << fPosOut[2] << '|';
         msg << std::setw(14) << std::setfill(' ') << this->GetP() << '|';
-        msg << std::setw(10) << std::setfill(' ') << fPointID << ' ';
-        msg << std::setw(10) << std::setfill(' ') << fEventID << ' ';
-        msg << std::setw(10) << std::setfill(' ') << fFileID << ' ';
+        msg << std::setw(10) << std::setfill(' ') << fId << ' ';
+        msg << std::setw(10) << std::setfill(' ') << fLinkKey.fIndex << ' ';
+        msg << std::setw(10) << std::setfill(' ') << fLinkKey.fEvent << ' ';
+        msg << std::setw(10) << std::setfill(' ') << fLinkKey.fFile << ' ';
       }
     }
   }
