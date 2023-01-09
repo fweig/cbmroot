@@ -1,6 +1,6 @@
-/* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2006-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Ivan Kisel,  Sergey Gorbunov, Denis Bertini [committer], Igor Kulakov, Maksym Zyzak */
+   Authors: Ivan Kisel,  Sergey Gorbunov, Denis Bertini [committer], Igor Kulakov, Maksym Zyzak, Sergei Zharko */
 
 /*
  *====================================================================
@@ -26,6 +26,8 @@
 #include "CbmL1MCTrack.h"
 #include "CbmL1TrackPar.h"
 
+#include "TMath.h"
+
 #include <map>
 #include <vector>
 using std::map;
@@ -37,8 +39,7 @@ class CbmL1Track : public CbmL1TrackPar {
 public:
   CbmL1Track() : Hits(), nStations(0), index(0), fTrackTime(0.), hitMap(), mcTracks(), maxPurity(-1) {}
 
-  int GetNOfHits() { return Hits.size(); }
-
+  /// Adds pointer to MC track (TODO: remove this and related methods)
   void AddMCTrack(CbmL1MCTrack* mcTr) { mcTracks.push_back(mcTr); }
 
   /// Adds an index of MC track index
@@ -51,17 +52,69 @@ public:
     fvMcTrackIndexes.clear();
   }
 
-  vector<CbmL1MCTrack*>& GetMCTracks() { return mcTracks; }
-  CbmL1MCTrack* GetMCTrack() { return mcTracks[0]; }
-  int GetNMCTracks() { return mcTracks.size(); }
-  bool IsGhost() { return (maxPurity < CbmL1Constants::MinPurity); }
+  /// Gets Chi-square of track fit model
+  double GetChiSq() const { return chi2; }
 
+  /// Gets a reference to hit indexes array
+  const vector<int>& GetHitIndexes() const { return Hits; }
+
+  bool IsGhost() const { return (maxPurity < CbmL1Constants::MinPurity); }
+
+  /// Gets NDF of track fit model
+  int GetNDF() const { return NDF; }
+
+  /// Gets number of MC tracks
+  // TODO: Remove this method
+  int GetNMCTracks() const { return mcTracks.size(); }
 
   /// Gets a reference to MC track indexes
   const auto& GetMCTrackIndexes() const { return fvMcTrackIndexes; }
 
   /// Gets max purity
-  double GetMaxPurity() { return maxPurity; }
+  double GetMaxPurity() const { return maxPurity; }
+
+  /// Gets container of pointers to MC tracks
+  // TODO: this function is to be replaced with GetMCTrackIndexes()
+  vector<CbmL1MCTrack*>& GetMCTracks() { return mcTracks; }
+
+  /// Gets pointer of the associated MC track
+  CbmL1MCTrack* GetMCTrack() { return mcTracks[0]; }
+
+  /// Gets number of hits of the track
+  int GetNofHits() const { return Hits.size(); }
+
+  /// Gets number of associated MC tracks
+  int GetNofMCTracks() const { return fvMcTrackIndexes.size(); }
+
+  /// Gets number of stations
+  int GetNofStations() const { return nStations; }
+
+  /// Gets absolute value of momentum divided by the charge (absolute value) of particle [GeV/ec]
+  double GetP() const { return fabs(T[4]) > 1.e-10 ? 1. / fabs(T[4]) : 1.e-10; }
+
+  /// Gets transverse momentum
+  double GetPt() const { return sqrt(GetP() * GetP() - GetPz() * GetPz()); }
+
+  /// Gets azimuthal angle of the track
+  double GetPhi() const { return TMath::ATan2(-GetTy(), -GetTx()); }
+
+  /// Gets probability of track fit model
+  double GetProb() const { return TMath::Prob(chi2, NDF); }
+
+  /// Gets x-component of momentum divided by the charge (absolute value) of particle [GeV/ec]
+  double GetPx() const { return GetPz() * GetTx(); }
+
+  /// Gets y-component of momentum divided by the charge (absolute value) of particle [GeV/ec]
+  double GetPy() const { return GetPz() * GetTy(); }
+
+  /// Gets z-component of momentum divided by the charge (absolute value) of particle [GeV/ec]
+  double GetPz() const { return std::sqrt(GetP() * GetP() / (GetTx() * GetTx() + GetTy() * GetTy() + 1)); }
+
+  /// Gets track slope along x-axis
+  double GetTx() const { return T[2]; }
+
+  /// Gets track slope along y-axis
+  double GetTy() const { return T[3]; }
 
   /// Sets max purity
   /// NOTE: max purity is calculated as a ratio of max number of hits left by an actual track and the
@@ -70,21 +123,26 @@ public:
 
 
   static bool compareChi2(const CbmL1Track& a, const CbmL1Track& b) { return (a.chi2 < b.chi2); }
+
   static bool comparePChi2(const CbmL1Track* a, const CbmL1Track* b) { return (a->chi2 < b->chi2); }
 
 
-  double Tpv[L1TrackPar::kNparTr], Cpv[L1TrackPar::kNparCov];
+  double Tpv[L1TrackPar::kNparTr];   ///< Track parameters at primary vertex
+  double Cpv[L1TrackPar::kNparCov];  ///< Track covariance matrix at primary vertex
 
+  double TLast[L1TrackPar::kNparTr];   ///< Track parameters in the end of the track
+  double CLast[L1TrackPar::kNparCov];  ///< Track covariance matrix at the end of the track
 
-  double TLast[L1TrackPar::kNparTr], CLast[L1TrackPar::kNparCov];
-  vector<int> Hits;
-  int nStations;
-  int index;
+  vector<int> Hits;  ///< Indexes of hits of this track
+  int nStations;     ///< Number of stations with hits of this track
+  int index;         ///< Index of this track (TODO: it seems to be not initialized)
 
-  double fTrackTime;
+  double fTrackTime;  ///< Time of the track [ns] ???
 
   map<int, int> hitMap;  // N hits (second) from each mcTrack (first is a MC track ID) belong to current recoTrack
   // FIXME: SZh 14.12.2022:  map => unordered_map
+
+
 private:
   // next members filled and used in Performance
   vector<CbmL1MCTrack*> mcTracks;  // array of assosiated recoTracks. Should be only one.
@@ -92,7 +150,7 @@ private:
   L1Vector<int> fvMcTrackIndexes = {"CbmL1Track::fvMcTrackIndexes"};  // global indexes of MC tracks
   // NOTE: mcTracks should be replaced with fvMcTrackIndexes
 
-  double maxPurity;                // maximum persent of hits, which belong to one mcTrack.
+  double maxPurity;  ///< Maximum persent of hits, which belong to one mcTrack.
 };
 
 #endif

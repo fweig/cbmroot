@@ -1153,7 +1153,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
   fIODataManager.ResetInputData();
   fIODataManager.ReserveNhits(nHits);
   fIODataManager.SetNhitKeys(NStrips);
-  if (fPerformance) { fpMCModule->GetMCData()->ReserveNofHits(nHits); }
+  //if (fPerformance) { fpMCModule->GetMCData()->ReserveNofHits(nHits); }
 
   // ----- Fill
   for (int iHit = 0; iHit < nHits; ++iHit) {
@@ -1196,10 +1196,10 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     fvHitDebugInfo.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);
-    fpMCModule->GetMCData()->RegisterPointIndexForHit(iHit, th.iMC);
+    //if (fPerformance) { fpMCModule->GetMCData()->RegisterPointIndexForHit(iHit, th.iMC); }
   }
-  if (fPerformance) { HitMatch(); }                                       /// OLD
-  if (fPerformance) { fpMCModule->MatchPointsWithHits(fvExternalHits); }  /// NEW
+  if (fPerformance) { HitMatch(); }  /// OLD
+  //if (fPerformance) { fpMCModule->MatchPointsWithHits(fvHitDebugInfo); }  /// NEW
 
   if (fVerbose >= 2) cout << "ReadEvent: mvd and sts are saved." << endl;
 
@@ -1468,7 +1468,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
 void CbmL1::HitMatch()
 {
   // Clear contents
-  for (auto& hit : fvExternalHits) {
+  for (auto& hit : fvHitDebugInfo) {
     hit.mcPointIds.clear();
   }
 
@@ -1477,7 +1477,7 @@ void CbmL1::HitMatch()
   }
 
   // Fill new contents
-  const int NHits = fvExternalHits.size();
+  const int NHits = fvHitDebugInfo.size();
   for (int iH = 0; iH < NHits; iH++) {
     CbmL1HitDebugInfo& hit = fvHitDebugInfo[iH];
     int iP                 = fvHitPointIndexes[iH];

@@ -128,7 +128,7 @@ namespace ca::tools
     /// Initialize tracks: defines indexes of hits and points related to the track, calculates max number of points and
     /// hits on a station, number of consecutive stations containing a hit or point and number of stations and points
     /// with hits.
-    void InitTrackInfo(const L1Vector<CbmL1Hit>& vHits);
+    void InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits);
 
     /// Registers index of point for a given index of hit
     /// \param  iHit    Index of hit
@@ -146,7 +146,7 @@ namespace ca::tools
     void ReserveNofPoints(int nPoints) { fvPoints.reserve(nPoints); }
 
     /// Reserves total number of used hits in the event
-    void ReserveNofHits(int nHits) { fvPointIndexOfHit.reset(nHits); }
+    void ReserveNofHits(int nHits) { fvPointIndexOfHit.reserve(nHits); }
 
     /// Prints an example of tracks and points
     /// \param verbose  Verbose level:

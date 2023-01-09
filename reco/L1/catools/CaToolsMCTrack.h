@@ -10,13 +10,16 @@
 #ifndef CaToolsMCTrack_h
 #define CaToolsMCTrack_h 1
 
+#include "TMath.h"
+
 #include <functional>
 
 #include "CaToolsLinkKey.h"
+#include "L1Constants.h"
 #include "L1Undef.h"
 #include "L1Vector.h"
 
-class CbmL1Hit;
+class CbmL1HitDebugInfo;
 
 namespace ca::tools
 {
@@ -142,7 +145,7 @@ namespace ca::tools
     int GetPdgCode() const { return fPdgCode; }
 
     /// Gets azimuthal angle [rad]
-    double GetPhi() const;
+    double GetPhi() const { return TMath::ATan2(-fMom[1], -fMom[0]); }
 
     /// Gets a reference to associated point indexes
     const auto& GetPointIndexes() const { return fvPointIndexes; }
@@ -189,6 +192,12 @@ namespace ca::tools
     /// Gets total number of stations with MC points
     int GetTotNofStationsWithPoint() const { return fTotNofStationsWithPoint; }
 
+    /// Gets track slope along x-axis
+    double GetTx() const { return fMom[0] / fMom[2]; }
+
+    /// Gets track slope along y-axis
+    double GetTy() const { return fMom[1] / fMom[2]; }
+
     /// Gets a reference to vector of reconstructed track indexes, not associated with this MC track but containing some
     /// hits, produced by this MC track
     const auto& GetTouchTrackIndexes() const { return fvTouchTrackIndexes; }
@@ -199,7 +208,7 @@ namespace ca::tools
     ///   #2) Maximal number of hits within one station
     ///   #3) Number of consecutive stations with a hit in MC track
     /// \param  vHits  Vector of hits for a given TS
-    void InitHitsInfo(const L1Vector<CbmL1Hit>& vHits);
+    void InitHitsInfo(const L1Vector<CbmL1HitDebugInfo>& vHits);
 
     /// \brief Initializes information about MC track points arrangement within stations
     /// Defines:
@@ -344,22 +353,5 @@ namespace ca::tools
   };
 
 }  // namespace ca::tools
-
-
-// ************************************
-// **     Inline implementations     **
-// ************************************
-
-inline double ca::tools::MCTrack::GetPhi() const
-{
-  // NOTE: Implementation was taken from ROOT TMath::Atan2
-  constexpr double kRootPi = 3.14159265358979323846;  // Value of Pi, used in ROOT TMath
-  if (fMom[0] != 0) { return std::atan2(-fMom[1], -fMom[0]); }
-  if (fMom[1] == 0) { return 0; }
-  if (fMom[1] < 0) { return kRootPi / 2; }
-  else {
-    return -kRootPi / 2;
-  }
-}
 
 #endif  // CaToolsMCTrack_h

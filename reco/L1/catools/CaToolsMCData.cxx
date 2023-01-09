@@ -95,7 +95,7 @@ void MCData::Clear()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void MCData::InitTrackInfo(const L1Vector<CbmL1Hit>& vHits)
+void MCData::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
 {
   for (auto& aTrk : fvTracks) {
     // Assign hits to tracks

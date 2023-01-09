@@ -265,14 +265,16 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
   {
     L1_assert(nEvents != 0);
     int NCounters = mc.GetNcounters();
-    std::vector<std::string> rowNames(20);
+    std::vector<std::string> rowNames(NCounters + 2);
     for (int iC = 0; iC < NCounters; ++iC) {
       rowNames[iC] = std::string(names[iC].Data());
     }
+    rowNames[NCounters]               = "Ghost prob.";
+    rowNames[NCounters + 1]           = "N ghosts";
     std::vector<std::string> colNames = {"Eff.",     "Killed", "Length",    "Fakes",    "Clones",
                                          "All Reco", "All MC", "MCl(hits)", "MCl(MCps)"};
 
-    CbmQaTable* aTable = new CbmQaTable(nameOfTable.c_str(), "Track Efficiency", 20, 9);
+    CbmQaTable* aTable = new CbmQaTable(nameOfTable.c_str(), "Track Efficiency", NCounters + 2, 9);
     aTable->SetNamesOfRows(rowNames);
     aTable->SetNamesOfCols(colNames);
     for (int iC = 0; iC < NCounters; iC++) {
@@ -286,6 +288,9 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
       aTable->SetCell(iC, 7, mc_length_hits.counters[iC] / double(mc.counters[iC]));
       aTable->SetCell(iC, 8, mc_length.counters[iC] / double(mc.counters[iC]));
     }
+    aTable->SetCell(NCounters, 0, ratio_ghosts);
+    aTable->SetCell(NCounters + 1, 0, ghosts);
+
     if (ifPrintTableToLog) {
       cout << *aTable;  // print a table to log
     }
@@ -293,8 +298,6 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     else {
       delete aTable;
     }
-
-    cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts << endl;
   };
 
   TL1TracksCatCounters<double> ratio_killed;
@@ -386,7 +389,7 @@ void CbmL1::EfficienciesPerformance()
     int mc_length = mtra.NMCStations();
     if (reco) {
       for (unsigned int irt = 0; irt < rTracks.size(); irt++) {
-        ratio_length += static_cast<double>(rTracks[irt]->GetNOfHits()) * rTracks[irt]->GetMaxPurity() / mc_length_hits;
+        ratio_length += static_cast<double>(rTracks[irt]->GetNofHits()) * rTracks[irt]->GetMaxPurity() / mc_length_hits;
         ratio_fakes += 1 - rTracks[irt]->GetMaxPurity();
       }
     }

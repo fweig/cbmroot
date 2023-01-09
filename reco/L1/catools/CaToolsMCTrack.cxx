@@ -29,7 +29,7 @@ void MCTrack::Clear()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void MCTrack::InitHitsInfo(const L1Vector<CbmL1Hit>& vHits)
+void MCTrack::InitHitsInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
 {
   // NOTE: vHits must be sorted over stations!
   fMaxNofHitsOnStation    = 0;

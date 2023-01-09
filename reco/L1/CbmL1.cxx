@@ -978,7 +978,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       t.Tpv[i]   = it->Tpv[i];
     }
 
-    for (int i = 0; i < L1TrackPar::kNparCov; i++) {
+    for (int i = 0; i < L1TrackPar::kNparCov; ++i) {
       t.C[i]     = it->CFirst[i];
       t.CLast[i] = it->CLast[i];
       t.Cpv[i]   = it->Cpv[i];
@@ -1009,7 +1009,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
   if (fPerformance) {
     if (fVerbose > 1) { cout << "Performance..." << endl; }
     TrackMatch();
-    fpMCModule->MatchRecoAndMCTracks(fvRecoTracks, fvExternalHits);
+    //fpMCModule->MatchRecoAndMCTracks(fvRecoTracks, fvHitDebugInfo);
+    //fpMCModule->ProcessEvent(event);
     EfficienciesPerformance();
     HistoPerformance();
     TrackFitPerformance();
@@ -1024,8 +1025,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
 // -----   Finish CbmStsFitPerformanceTask task   -----------------------------
 void CbmL1::Finish()
 {
+  //if (fPerformance) { fpMCModule->Finish(); }
+
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
+
 
   // Open output file and write histograms
   boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();

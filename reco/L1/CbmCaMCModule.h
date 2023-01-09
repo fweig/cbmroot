@@ -2,10 +2,10 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer] */
 
-/// \file   CbmCaMCModule.h
-/// \brief  CA Tracking performance interface for CBM (header)
-/// \since  23.09.2022
-/// \author S.Zharko <s.zharko@gsi.de>
+/// @file   CbmCaMCModule.h
+/// @brief  CA Tracking performance interface for CBM (header)
+/// @since  23.09.2022
+/// @author S.Zharko <s.zharko@gsi.de>
 
 #ifndef CbmCaMCModule_h
 #define CbmCaMCModule_h 1
@@ -41,173 +41,161 @@
 
 class CbmEvent;
 class CbmMCDataObject;
-class CbmL1Hit;
+class CbmL1HitDebugInfo;
 class CbmL1Track;
 
 enum class L1DetectorID;
 
-/// Class CbmCaPerformcance is an interface to communicate between
+/// Class CbmCaPerformance is an interface to communicate between
+///
 class CbmCaMCModule {
 public:
-  // *****************************************
-  // **     Constructors and destructor     **
-  // *****************************************
-
-  /// Constructor
-  /// \param verbosity Verbosity level
+  /// @brief Constructor
+  /// @param verbosity  Verbosity level
   CbmCaMCModule(int verb = 0, int perfMode = 3) : fVerbose(verb), fPerformanceMode(perfMode) {}
 
-  /// Destructor
+  /// @brief Destructor
   ~CbmCaMCModule() = default;
 
-  /// Copy constructor
+  /// @brief Copy constructor
   CbmCaMCModule(const CbmCaMCModule&) = delete;
 
-  /// Move constructor
+  /// @brief Move constructor
   CbmCaMCModule(CbmCaMCModule&&) = delete;
 
-  /// Copy assignment operator
+  /// @brief Copy assignment operator
   CbmCaMCModule& operator=(const CbmCaMCModule&) = delete;
 
-  /// Move assignment operator
+  /// @brief Move assignment operator
   CbmCaMCModule& operator=(CbmCaMCModule&&) = delete;
 
-
-  // *****************************************
-  // **     Action definition functions     **
-  // *****************************************
-
-  /// Defines performance action in the beginning of the run
-  /// \return Success flag
-  bool InitRun();
-
-  /// \brief Defines performance action in the beginning of each event or timeslice
-  /// \note This function should be called before hits initialization
-  /// \param  pEvent Pointer to a current CbmEvent
-  void InitEvent(CbmEvent* pEvent);
-
-  /// \brief Processes event
-  /// Fills histograms and tables, should be called after the tracking done
-  void ProcessEvent(CbmEvent* pEvent);
-
-  /// \brief Initialize information about arrangement of points and hits of MC tracks within stations and the status
-  ///        of track reconstructability
-  /// \param vHits  Vector of hit objects
-  /// Calculates max number of points and hits on a station, number of consecutive stations containing a hit or point
-  /// and number of stations and points with hits. Provides the determination of track reconstructablity status
-  void InitTrackInfo(const L1Vector<CbmL1Hit>& vHits);
-
-  /// Defines performance action in the end of the run
+  /// @brief Defines performance action in the end of the run
   void Finish();
 
-  /// Gets the first point index for a given detector subsystem
+  /// @brief Gets the first point index for a given detector subsystem
   int GetFirstPointIndex(L1DetectorID detID) const
   {
     return std::accumulate(fvNofPointsUsed.cbegin(), fvNofPointsUsed.cbegin() + int(detID), 0);
   }
 
-  /// Gets the first point index for a given detector subsystem
+  /// @brief Gets the first point index for a given detector subsystem
   int GetLastPointIndex(L1DetectorID detID) const
   {
     return std::accumulate(fvNofPointsUsed.cbegin(), fvNofPointsUsed.cbegin() + int(detID) + 1, 0) - 1;
   }
 
-  /// \brief Matches hit with MC point
-  /// \tparam  DetId Detector ID
-  /// \param   iHit  External index of hit
-  /// \return        MC-point index in fvMCPoints array
+  /// @brief Gets MC data object
+  /// @return  Constant reference to MC data object
+  const ca::tools::MCData& GetMCData() const { return fMCData; }
+
+  /// @brief Gets mutable pointer to MC data object
+  /// @return  Mutable reference to MC data object
+  ca::tools::MCData* GetMCData() { return &fMCData; }
+
+  /// @brief Defines performance action in the beginning of each event or time slice
+  /// @note This function should be called before hits initialization
+  /// @param  pEvent Pointer to a current CbmEvent
+  void InitEvent(CbmEvent* pEvent);
+
+  /// @brief Defines action on the module in the beginning of the run
+  /// @return Success flag
+  bool InitRun();
+
+  /// @brief  Initializes MC track
+  /// @param  vHits  Vector of hit objects
+  ///
+  /// Initializes information about arrangement of points and hits of MC tracks within stations and the status
+  /// of track reconstructability, calculates max number of points and hits on a station, number of consecutive
+  /// stations containing a hit or point and number of stations and points with hits. Provides the determination
+  /// of track reconstructability status.
+  void InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits);
+
+  /// @brief Processes event
+  ///
+  /// Fills histograms and tables, should be called after the tracking done
+  void ProcessEvent(CbmEvent* pEvent);
+
+  /// @brief Matches hit with MC point
+  /// @tparam  DetId Detector ID
+  /// @param   iHit  External index of hit
+  /// @return        MC-point index in fvMCPoints array
+  ///
   /// This method finds a match for a given hit or matches for hits clusters (in case of STS), finds the best
   /// link in the match and returns the corresponding global ID of the MC points
   template<L1DetectorID DetId>
   int MatchHitWithMc(int iHit) const;
 
-  /// Assigns MC point indexes to each hit and hit indexes to each MC point
-  /// \param  vInputExtHits  Vector of external input hits
-  void MatchPointsWithHits(L1Vector<CbmL1Hit>& vInputExtHits);
+  /// @brief Assigns MC point indexes to each hit and hit indexes to each MC point
+  /// @param  vInputExtHits  Vector of external input hits
+  void MatchPointsWithHits(L1Vector<CbmL1HitDebugInfo>& vInputExtHits);
 
-  /// \brief Matches reconstructed tracks with MC tracks
-  /// \param  vRecoTracks    Vector of reconstructed tracks
-  /// \param  vInputExtHits  Vector of external input hits
+  /// @brief Matches reconstructed tracks with MC tracks
+  /// @param  vRecoTracks    Vector of reconstructed tracks
+  /// @param  vInputExtHits  Vector of external input hits
+  ///
   /// In the procedure, the maps of associated MC track indexes to corresponding number of hits are filled out and the
   /// max purity is calculated for each reconstructed track in the TS/event. If the value of purity for a given MC track
   /// is larger then a threshold, the corresponding track index is saved to the reconstructed track object, in the same
   /// time the index of the reconstructed track object is saved to this MC track object. If purity for the MC track does
   /// not pass the threshold, its index will not be accounted as a matched track, and the index of reconstructed track
   /// will be added as an index of "touched" track.
-  void MatchRecoAndMCTracks(L1Vector<CbmL1Track>& vRecoTracks, L1Vector<CbmL1Hit>& vInputExtHits);
+  void MatchRecoAndMCTracks(L1Vector<CbmL1Track>& vRecoTracks, L1Vector<CbmL1HitDebugInfo>& vInputExtHits);
 
-
-  // ***********************
-  // **     Accessors     **
-  // ***********************
-
-  /// Gets reference to MC data object
-  const ca::tools::MCData& GetMCData() const { return fMCData; }
-
-  /// Gets mutable pointer to MC data object
-  ca::tools::MCData* GetMCData() { return &fMCData; }
-
-  /// Registers pointer to the tracking parameters object
-  void SetParameters(const L1Parameters* pParameters) { fpParameters = pParameters; }
-
-  /// Sets used detector subsystems
-  /// \note Should be called before this->Init()
-  /// \param  detID  Id of detector
-  /// \param  flag   Flag: true - detector is used
+  /// @brief Sets used detector subsystems
+  /// @param  detID  Id of detector
+  /// @param  flag   Flag: true - detector is used
+  /// @note Should be called before this->Init()
   void SetDetector(L1DetectorID detID, bool flag);
 
-  /// Sets legacy event mode:
-  /// \param flag: true - runs on events base, false - runs on time-slice base
+  /// @brief Sets pointer to the vector of hits from reference
+  void SetHitContainer(const L1Vector<CbmL1HitDebugInfo>& vHits) { fpvHits = &vHits; }
+
+  /// @brief Sets legacy event mode:
+  /// @param flag Flag:
+  ///              - true:  runs on events base,
+  ///              - false: runs on time-slice base
   void SetLegacyEventMode(bool flag) { fbLegacyEventMode = flag; }
 
-  /// Sets pointer to the vector of reconstructed tracks from reference
+  /// @brief Registers pointer to the tracking parameters object
+  void SetParameters(const L1Parameters* pParameters) { fpParameters = pParameters; }
+
+  /// @brief Sets pointer to the vector of reconstructed tracks from reference
   void SetRecoTrackContainer(const L1Vector<CbmL1Track>& vRecoTracks) { fpvRecoTracks = &vRecoTracks; }
 
-  /// Sets pointer to the vector of hits from reference
-  void SetHitContainer(const L1Vector<CbmL1Hit>& vHits) { fpvHits = &vHits; }
-
 private:
-  // ****************************************
-  // **     Local constant expressions     **
-  // ****************************************
-
-  static constexpr int kNdetectors = L1Constants::size::kMaxNdetectors;
-
-  // *******************************
-  // **     Utility functions     **
-  // *******************************
-
+  /// @brief Calculates global index of MC point
+  /// @param  iPointLocal  Local index of MC point
+  /// @param  detID        Detector ID
+  ///
   /// Calculates global index of MC point as a sum of a given local index and total provided number of points in previous
   /// detector subsystem
-  /// \param  iPointLocal   Local index of MC point
-  /// \param  detID         Detector ID
   int CalcGlobMCPointIndex(int iPointLocal, L1DetectorID detID) const
   {
     return iPointLocal + std::accumulate(fvNofPointsOrig.cbegin(), fvNofPointsOrig.cbegin() + int(detID), 0);
   }
 
-  /// Checks class initialization. Throws std::logic_error, if initialization is incomplete at initialization call
+  /// @brief Check class initialization
+  /// @note The function throws std::logic_error, if initialization is incomplete
   void CheckInit() const;
 
-  /// Reads MC tracks from external trees and saves them to MCDataObject
+  /// @brief Reads MC tracks from external trees and saves them to MCDataObject
   void ReadMCTracks();
 
-  /// Reads MC points from external trees and saves them to MCDataObject
+  /// @brief Reads MC points from external trees and saves them to MCDataObject
   void ReadMCPoints();
 
-  /// Reads MC points in particular detector
+  /// @brief Reads MC points in particular detector
   template<L1DetectorID DetID>
   void ReadMCPointsForDetector(CbmMCDataArray* pPoints);
 
-  /// Fills a single detector-specific MC point
-  /// \tparam     DetID      Detector subsystem ID
-  /// \param[in]  iExtId     Index of point in the external points container
-  /// \param[in]  iEvent     EventID of point in the external points container
-  /// \param[in]  iFile      FileID of point int the external points container
-  /// \param[out] intMCPoint Reference to the internal tracking MC point object (ca::tools::MCData)
-  /// \return                Success flag:
-  ///                        - #true:  Point is correct and is to be saved to the MCData object
-  ///                        - #false: Point is incorrect and will be ignored
+  /// @brief Fills a single detector-specific MC point
+  /// @tparam     DetID      Detector subsystem ID
+  /// @param[in]  iExtId     Index of point in the external points container
+  /// @param[in]  iEvent     EventID of point in the external points container
+  /// @param[in]  iFile      FileID of point int the external points container
+  /// @param[out] intMCPoint Reference to the internal tracking MC point object (ca::tools::MCData)
+  /// @return true   Point is correct and is to be saved to the MCData object
+  /// @return false  Point is incorrect and will be ignored
   template<L1DetectorID DetID>
   bool FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MCPoint& point);
 
@@ -248,8 +236,8 @@ private:
   CbmMCDataArray* fpTrdPoints  = nullptr;  ///< TRD MC-points input container
   CbmMCDataArray* fpTofPoints  = nullptr;  ///< TOF MC-points input container
 
-  std::array<int, kNdetectors> fvNofPointsOrig = {};  ///< Number of points by detector provided
-  std::array<int, kNdetectors> fvNofPointsUsed = {};  ///< Number of points used in performance
+  std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsOrig = {};  ///< Number of points by detector provided
+  std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsUsed = {};  ///< Number of points used in performance
 
   // ------ Matches
   TClonesArray* fpMvdHitMatches  = nullptr;  ///< Array of MVD hit matches
@@ -277,7 +265,7 @@ private:
   // ********************************************
 
   const L1Vector<CbmL1Track>* fpvRecoTracks = nullptr;  ///< Pointer to reconstructed track container
-  const L1Vector<CbmL1Hit>* fpvHits         = nullptr;  ///< Pointer to hits container
+  const L1Vector<CbmL1HitDebugInfo>* fpvHits = nullptr;  ///< Pointer to hits container
 };
 
 // **********************************************

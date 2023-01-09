@@ -30,11 +30,12 @@
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
+#include <boost/filesystem.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <fstream>    // TODO: SZh 07.12.2022: For debug, should be removed!
 #include <stdexcept>  // for std::logic_error
-
 
 // *********************************
 // ** Action definition functions **
@@ -121,6 +122,23 @@ try {
   LOG(info) << "\tTRD:  " << (fbUseTrd ? "ON" : "OFF");
   LOG(info) << "\tTOF:  " << (fbUseTof ? "ON" : "OFF");
 
+  // Init QA module
+  fpQaModule = std::make_unique<ca::tools::Qa>();
+  fpQaModule->SetParameters(fpParameters);
+  fpQaModule->SetMCData(&fMCData);
+  fpQaModule->SetRecoTrackContainer(fpvRecoTracks);
+  fpQaModule->SetHitContainer(fpvHits);
+
+  // Setup output names
+  // Names are defined using the name for main reconstruction output file, defined from the FairRunAna class
+  boost::filesystem::path sOutPath = FairRunAna::Instance()->GetUserOutputFileName().Data();
+  std::string sOutDir              = sOutPath.parent_path().string();
+  if (sOutDir.empty()) { sOutDir = "."; }
+  std::string sOutHistoQa = sOutDir + "/CaHistoQa." + sOutPath.filename().string();
+  fpQaModule->SetOutputFilename(sOutHistoQa.c_str());
+
+  fpQaModule->InitHistograms();
+
   return true;
 }
 catch (const std::logic_error& error) {
@@ -165,7 +183,11 @@ void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1Hit>& vHits)
+void CbmCaMCModule::ProcessEvent(CbmEvent*) { fpQaModule->FillHistograms(); }
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
 {
   // ----- Initialize stations arrangement and hit indexes
   fMCData.InitTrackInfo(vHits);
@@ -208,7 +230,11 @@ void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1Hit>& vHits)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::Finish() { std::cout << "\033[1;32mFinishing performance\033[0m\n"; }
+void CbmCaMCModule::Finish()
+{
+  std::cout << "\033[1;32mFinishing performance\033[0m\n";
+  fpQaModule->SaveHistograms();
+}
 
 
 // **********************************
@@ -217,7 +243,7 @@ void CbmCaMCModule::Finish() { std::cout << "\033[1;32mFinishing performance\033
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchPointsWithHits(L1Vector<CbmL1Hit>& vInputExtHits)
+void CbmCaMCModule::MatchPointsWithHits(L1Vector<CbmL1HitDebugInfo>& vInputExtHits)
 {
   // FIXME: Cleaning up makes it safer, but probably is not needed after old code removal
   for (auto& hit : vInputExtHits) {
@@ -383,7 +409,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchRecoAndMCTracks(L1Vector<CbmL1Track>& vRecoTracks, L1Vector<CbmL1Hit>& vInputExtHits)
+void CbmCaMCModule::MatchRecoAndMCTracks(L1Vector<CbmL1Track>& vRecoTracks, L1Vector<CbmL1HitDebugInfo>& vInputExtHits)
 {
   // NOTE: Potentially there is a case, when
 
@@ -550,8 +576,7 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
       if (!vbTofPointMatched[iP]) { continue; }  // iP was not matched
 
       auto* pExtPoint = L1_DYNAMIC_CAST<CbmTofPoint*>(pPoints->Get(iFile, iEvent, iP));
-      LOG_IF(fatal, !pExtPoint) << "NO POINT: TOF: file, event, index = " << iFile << ' ' << iEvent << ' ' << iP
-                                << '\n';
+      LOG_IF(fatal, !pExtPoint) << "NO POINT: TOF: file, event, index = " << iFile << ' ' << iEvent << ' ' << iP;
 
       if (pExtPoint->GetTrackID() < 0) { continue; }  // Point does not have a track
 

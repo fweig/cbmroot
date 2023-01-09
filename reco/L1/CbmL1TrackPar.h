@@ -16,10 +16,12 @@ public:
   double* GetCovMatrix() { return C; }
   double& GetRefChi2() { return chi2; }
   int& GetRefNDF() { return NDF; }
-  double GetMass() { return mass; }
-  bool IsElectron() { return is_electron; }
+  double GetMass() const { return mass; }
+  bool IsElectron() const { return is_electron; }
 
-  double T[L1TrackPar::kNparTr], C[L1TrackPar::kNparCov], chi2;
+  double T[L1TrackPar::kNparTr];
+  double C[L1TrackPar::kNparCov];
+  double chi2;
   int NDF;
   double mass;  // mass hypothesis
   bool is_electron;
