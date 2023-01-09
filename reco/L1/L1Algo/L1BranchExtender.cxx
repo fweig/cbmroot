@@ -253,9 +253,10 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
         if (!area.GetNext(ih)) { break; }
       }
 
-      ih += HitsUnusedStartIndex[ista];
-      const L1Hit& hit = (*vHitsUnused)[ih];
-      //TODO: bug, it should be hit.dt*hit.dt
+      L1HitIndex_t globalInd = HitsUnusedStartIndex[ista] + ih;
+
+      const L1Hit& hit = (*vHitsUnused)[globalInd];
+
       if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt2) * 5) continue;
 
       //if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
@@ -286,7 +287,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       if (d_x * d_x > dxm_est2) continue;
 
       r2_best   = d2;
-      iHit_best = ih;
+      iHit_best = globalInd;
     }
     if (iHit_best < 0) break;
 
