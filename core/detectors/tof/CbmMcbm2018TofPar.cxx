@@ -560,6 +560,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
             }
           }
         }
+          [[fallthrough]];
         case 7: {
           // clang-format off
           /*
