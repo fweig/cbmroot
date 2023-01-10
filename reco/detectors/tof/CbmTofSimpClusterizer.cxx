@@ -1560,7 +1560,7 @@ pair<Int_t, Int_t> CbmTofSimpClusterizer::BuildClusters(CbmEvent* event)
 
                       rotMatrix.LocalToMaster(hiterr_local, hiterr);
                       //                                    TVector3 hitPosErr( hiterr_local[0], hiterr_local[1], hiterr_local[2] );
-                      TVector3 hitPosErr(hiterr[0], hiterr[1], hiterr[2]);
+                      TVector3 hitPosErr(fabs(hiterr[0]), fabs(hiterr[1]), fabs(hiterr[2]));
 
                       // Int_t iDetId = vPtsRef[0]->GetDetectorID();// detID = pt->GetDetectorID() <= from TofPoint
                       // calc mean ch from dPosX=((Double_t)(-iNbCh/2 + iCh)+0.5)*fChannelInfo->GetSizex();
@@ -1785,7 +1785,7 @@ pair<Int_t, Int_t> CbmTofSimpClusterizer::BuildClusters(CbmEvent* event)
 
               rotMatrix.LocalToMaster(hiterr_local, hiterr);
               //                     TVector3 hitPosErr( hiterr_local[0], hiterr_local[1], hiterr_local[2] );
-              TVector3 hitPosErr(hiterr[0], hiterr[1], hiterr[2]);
+              TVector3 hitPosErr(fabs(hiterr[0]), fabs(hiterr[1]), fabs(hiterr[2]));
               /*
                      LOG(info)<< " Size X " << fTrafoCell->GetSizex()
                               ;
