@@ -311,7 +311,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
 inline void L1Algo::findDoubletsStep0(
   /// input
-  Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
+  Tindex n1, const L1Station& stal, L1HitPoint* vHits_l, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1,
+  L1HitIndex_t* hitsl_1,
   /// output
   Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
 #ifdef DOUB_PERFORMANCE
@@ -342,6 +343,8 @@ inline void L1Algo::findDoubletsStep0(
     // if make it bigger the found hits will be rejected later because of the chi2 cut.
     // Pick_m22 is not used, search for mean squared, 2nd version
 
+    unsigned int indFirstDoublet = hitsm_2.size();
+
     // -- collect possible doublets --
     const fscal iz         = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
     const fscal timeError2 = T1.C55[i1_4];
@@ -361,12 +364,16 @@ inline void L1Algo::findDoubletsStep0(
         if (!areaTime.GetNext(imh)) { break; }
       }
 
-      const L1HitPoint& hitm = vHits_m[imh];
+      L1HitPoint& hitm = vHits_m[imh];
+      if (hitm.IsSuppressed()) continue;
+
+      const L1HitPoint& hitl = vHits_l[hitsl_1[i1]];
 
       if (fParameters.DevIsMatchDoubletsViaMc()) {  // trd2d
         int indL = HitsUnusedStartIndex[iStaL] + hitsl_1[i1];
         int indM = HitsUnusedStartIndex[iStaM] + imh;
-        if (GetMcTrackIdForUnusedHit(indL) != GetMcTrackIdForUnusedHit(indM)) { continue; }
+        int iMC  = GetMcTrackIdForUnusedHit(indL);
+        if (iMC < 0 || iMC != GetMcTrackIdForUnusedHit(indM)) { continue; }
       }
 
       // check y-boundaries
@@ -430,6 +437,46 @@ inline void L1Algo::findDoubletsStep0(
 
       if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
         if (chi2[i1_4] > fDoubletChi2Cut) continue;
+      }
+
+      // check if there is a second hit on the same station
+      {
+        bool isOtherHit = 0;
+        fscal dz        = hitm.Z() - hitl.Z();
+        fscal tu        = (hitm.U() - hitl.U()) / dz;
+        fscal tv        = (hitm.V() - hitl.V()) / dz;
+        fscal tt        = (hitm.T() - hitl.T()) / dz;
+
+        for (unsigned int imh1 = indFirstDoublet; imh1 < hitsm_2.size(); imh1++) {
+          const L1HitPoint& hitm1 = vHits_m[hitsm_2[imh1]];
+
+          if ((stam.timeInfo) && (stal.timeInfo)) {
+            fscal dt = hitm.T() + tt * (hitm1.Z() - hitm.Z()) - hitm1.T();
+            if (dt * dt > 30. * (hitm.dT2() + hitm1.dT2())) { continue; }
+          }
+
+          fscal du = hitm.U() + tu * (hitm1.Z() - hitm.Z()) - hitm1.U();
+          if (du * du > 20. * (hitm.dU2() + hitm1.dU2())) { continue; }
+
+          fscal dv = hitm.V() + tv * (hitm1.Z() - hitm.Z()) - hitm1.V();
+          if (dv * dv > 30. * (hitm.dV2() + hitm1.dV2())) { continue; }
+
+          if (fParameters.DevIsSuppressOverlapHitsViaMc()) {
+            int indL  = HitsUnusedStartIndex[iStaL] + hitsl_1[i1];
+            int indM  = HitsUnusedStartIndex[iStaM] + imh;
+            int indM1 = HitsUnusedStartIndex[iStaM] + hitsm_2[imh1];
+            int iMC   = GetMcTrackIdForUnusedHit(indL);
+            if ((iMC != GetMcTrackIdForUnusedHit(indM)) || (iMC != GetMcTrackIdForUnusedHit(indM1))) { continue; }
+          }
+
+          isOtherHit = true;
+          break;
+        }
+
+        if (isOtherHit) {
+          hitm.SetIsSuppresed(1);
+          continue;
+        }
       }
 
       i1_2.push_back(i1);
@@ -616,11 +663,14 @@ inline void L1Algo::findTripletsStep0(  // input
         // while (area.GetNext(irh)) {
         //for (int irh = 0; irh < ( HitsUnusedStopIndex[iStaR] - HitsUnusedStartIndex[iStaR] ); irh++){
         const L1HitPoint& hitr = vHits_r[irh];
+        if (hitr.IsSuppressed()) continue;
 
         if (fParameters.DevIsMatchTripletsViaMc()) {
+          int indL = HitsUnusedStartIndex[iStaL] + hitsl_2[i2_4];
           int indM = HitsUnusedStartIndex[iStaM] + hitsm_2_tmp[i2_4];
           int indR = HitsUnusedStartIndex[iStaR] + irh;
-          if (GetMcTrackIdForUnusedHit(indM) != GetMcTrackIdForUnusedHit(indR)) { continue; }
+          int mcL  = GetMcTrackIdForUnusedHit(indL);
+          if (mcL < 0 || mcL != GetMcTrackIdForUnusedHit(indM) || mcL != GetMcTrackIdForUnusedHit(indR)) { continue; }
         }
 
         const fscal zr = hitr.Z();
@@ -726,6 +776,10 @@ inline void L1Algo::findTripletsStep0(  // input
         n3++;
         n3_V = n3 / fvec::size();
         n3_4 = n3 % fvec::size();
+
+        assert(n3 == (int) hitsl_3.size());
+        assert(n3 == (int) hitsm_3.size());
+        assert(n3 == (int) hitsr_3.size());
 
         if (0 == n3_4) {
           T_3.push_back(L1TrackPar_0);
@@ -1241,7 +1295,7 @@ inline void L1Algo::CreatePortionOfDoublets(
 #endif  // DOUB_PERFORMANCE
 
     findDoubletsStep0(  // input
-      singletPortionSize, stal, stam, vHits_m, T_1, hitsl_1,
+      singletPortionSize, stal, vHits_l, stam, vHits_m, T_1, hitsl_1,
       // output
       n_2, i1_2,
 #ifdef DOUB_PERFORMANCE
@@ -2215,6 +2269,19 @@ void L1Algo::CATrackFinder()
         }
       }
     }  // firstTripletLevel
+
+    // suppress strips of suppressed hits
+    for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
+      for (L1HitIndex_t ih = HitsUnusedStartIndex[ista]; ih < HitsUnusedStopIndex[ista]; ih++) {
+        const L1HitPoint& hp = (*vHitPointsUnused)[ih];
+        if (hp.IsSuppressed()) {
+          int hitId            = (*RealIHitP)[ih];
+          const L1Hit& hit     = fInputData.GetHit(hitId);
+          fvHitKeyFlags[hit.f] = 1;
+          fvHitKeyFlags[hit.b] = 1;
+        }
+      }
+    }
 
 #ifdef XXX
     c_timer.Stop();

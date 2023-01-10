@@ -209,6 +209,12 @@ public:
   /// Flag to match triplets using Mc information
   bool DevIsMatchTripletsViaMc() const { return fDevIsMatchTripletsViaMc; }
 
+  /// Flag to extend tracks using Mc information
+  bool DevIsExtendTracksViaMc() const { return fDevIsExtendTracksViaMc; }
+
+  /// Flag to match hits in overlaps using Mc information
+  bool DevIsSuppressOverlapHitsViaMc() const { return fDevIsSuppressOverlapHitsViaMc; }
+
 private:
   unsigned int fMaxDoubletsPerSinglet {150};  ///< Upper-bound cut on max number of doublets per one singlet
   unsigned int fMaxTripletPerDoublets {15};   ///< Upper-bound cut on max number of triplets per one doublet
@@ -267,10 +273,13 @@ private:
   // ** Flags for development **
   // ***************************
 
-  bool fDevIsIgnoreHitSearchAreas = false;  ///< Process all hits on the station ignoring hit search area
-  bool fDevIsUseOfOriginalField   = false;  ///< Force use of original field
-  bool fDevIsMatchDoubletsViaMc   = false;  ///< Flag to match doublets using MC information
-  bool fDevIsMatchTripletsViaMc   = false;  ///< Flag to match triplets using MC information
+  bool fDevIsIgnoreHitSearchAreas {false};      ///< Process all hits on the station ignoring hit search area
+  bool fDevIsUseOfOriginalField {false};        ///< Force use of original field
+  bool fDevIsMatchDoubletsViaMc {false};        ///< Flag to match doublets using MC information
+  bool fDevIsMatchTripletsViaMc {false};        ///< Flag to match triplets using Mc information
+  bool fDevIsExtendTracksViaMc {false};         ///< Flag to extend tracks using Mc information
+  bool fDevIsSuppressOverlapHitsViaMc {false};  ///<  Flag to match hits in overlaps using Mc information
+
   bool fDevIsParSearchWUsed       = false;  ///< Flag: when true, the parametrized search windows are used in track
                                             ///< finder; when false, the Kalman filter is used instead
 
@@ -306,6 +315,8 @@ private:
     ar& fDevIsUseOfOriginalField;
     ar& fDevIsMatchDoubletsViaMc;
     ar& fDevIsMatchTripletsViaMc;
+    ar& fDevIsExtendTracksViaMc;
+    ar& fDevIsSuppressOverlapHitsViaMc;
   }
 };
 

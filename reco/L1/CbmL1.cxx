@@ -239,6 +239,8 @@ InitStatus CbmL1::Init()
 
   //fInitManager.DevSetIsMatchDoubletsViaMc(true);
   //fInitManager.DevSetIsMatchTripletsViaMc(true);
+  //fInitManager.DevSetIsExtendTracksViaMc(true);
+  //fInitManager.DevSetIsSuppressOverlapHitsViaMc(true);
 
   CheckDetectorPresence();
 

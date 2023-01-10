@@ -19,13 +19,12 @@
 #include "L1Vector.h"
 
 //#include <string>
-#include <type_traits>
-
 #include <array>
 #include <bitset>
 #include <memory>  //unique_ptr
 #include <numeric>
 #include <set>
+#include <type_traits>
 
 class L1ConfigRW;
 class L1Algo;
@@ -266,6 +265,12 @@ public:
   /// Flag to match triplets using Mc information
   void DevSetIsMatchTripletsViaMc(bool value = true) { fParameters.fDevIsMatchTripletsViaMc = value; }
 
+  /// Flag to match triplets using Mc information
+  void DevSetIsExtendTracksViaMc(bool value = true) { fParameters.fDevIsExtendTracksViaMc = value; }
+
+  /// Flag to match triplets using Mc information
+  void DevSetIsSuppressOverlapHitsViaMc(bool value = true) { fParameters.fDevIsSuppressOverlapHitsViaMc = value; }
+
   /// Flag to use estimated hit search windows
   /// true:  estimated search windows will be used in track finder
   /// false: Kalman filter will be used in track finder
@@ -283,7 +288,6 @@ private:
   /// Checker for L1BaseStationInfo set initialization (sets EInitKey::kStationsInfo)
   /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   void CheckStationsInfoInit();
-
 
 
   // *****************

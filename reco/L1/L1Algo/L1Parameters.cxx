@@ -274,10 +274,13 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   }
 
   aStream << indent << kCLb << "DEV FLAGS:" << kCL << " (for debug only)\n";
-  aStream << indent << indentChar << "Hits search area is ignored: " << fDevIsIgnoreHitSearchAreas << '\n';
-  aStream << indent << indentChar << "Non-approx. field is used:   " << fDevIsMatchDoubletsViaMc << '\n';
-  aStream << indent << indentChar << "Doublets vs. MC matching:    " << fDevIsMatchDoubletsViaMc << '\n';
-  aStream << indent << indentChar << "Triplets vs. MC matching:    " << fDevIsMatchTripletsViaMc << '\n';
+  aStream << indent << indentChar << "Hits search area is ignored:     " << fDevIsIgnoreHitSearchAreas << '\n';
+  aStream << indent << indentChar << "Non-approx. field is used:       " << fDevIsMatchDoubletsViaMc << '\n';
+  aStream << indent << indentChar << "Doublets matching via MC:        " << fDevIsMatchDoubletsViaMc << '\n';
+  aStream << indent << indentChar << "Triplets matching via MC:        " << fDevIsMatchTripletsViaMc << '\n';
+  aStream << indent << indentChar << "Extend tracks with MC matching:  " << fDevIsExtendTracksViaMc << '\n';
+  aStream << indent << indentChar << "Overlap hits matching via MC:    " << fDevIsSuppressOverlapHitsViaMc << '\n';
+
   aStream << indent << indentChar << "Use hit search windows:      " << fDevIsParSearchWUsed << '\n';
 
   if (fDevIsParSearchWUsed) {

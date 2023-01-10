@@ -277,7 +277,7 @@ public:
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void findDoubletsStep0(  // input
-    Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1,
+    Tindex n1, const L1Station& stal, L1HitPoint* vHits_l, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1,
     L1HitIndex_t* hitsl_1,
     // output
     Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,

@@ -130,10 +130,12 @@ void L1InitManager::ClearSetupInfo()
   fInitController.SetFlag(EInitKey::kGhostSuppression, false);
   fInitController.SetFlag(EInitKey::kMomentumCutOff, false);
 
-  fParameters.fDevIsIgnoreHitSearchAreas = false;
-  fParameters.fDevIsUseOfOriginalField   = false;
-  fParameters.fDevIsMatchDoubletsViaMc   = false;
-  fParameters.fDevIsMatchTripletsViaMc   = false;
+  fParameters.fDevIsIgnoreHitSearchAreas     = false;
+  fParameters.fDevIsUseOfOriginalField       = false;
+  fParameters.fDevIsMatchDoubletsViaMc       = false;
+  fParameters.fDevIsMatchTripletsViaMc       = false;
+  fParameters.fDevIsExtendTracksViaMc        = false;
+  fParameters.fDevIsSuppressOverlapHitsViaMc = false;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------
