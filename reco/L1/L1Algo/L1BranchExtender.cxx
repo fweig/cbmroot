@@ -255,6 +255,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
       L1HitIndex_t globalInd = HitsUnusedStartIndex[ista] + ih;
 
+      const L1HitPoint& hitPoint = (*vHitPointsUnused)[globalInd];
+      if (hitPoint.IsSuppressed()) { continue; }
+
       const L1Hit& hit = (*vHitsUnused)[globalInd];
 
       if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt2) * 5) continue;

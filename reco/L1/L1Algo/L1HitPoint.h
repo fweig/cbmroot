@@ -29,6 +29,8 @@ struct L1HitPoint {
   fscal dV2() const { return dv2; }
   fscal dT2() const { return dt2; }
 
+  bool IsSuppressed() const { return fIsSuppressed; }
+
   void SetZ(fscal z_) { z = z_; }
   void SetU(fscal u_) { u = u_; }
   void SetV(fscal v_) { v = v_; }
@@ -44,10 +46,18 @@ struct L1HitPoint {
     du2 = du2_;
     dv2 = dv2_;
     dt2 = dt2_;
+
+    fIsSuppressed = 0;
   }
+
+  void SetIsSuppresed(bool val) { fIsSuppressed = val; }
 
 private:
   fscal z {0.}, u {0.}, v {0.}, t {0.}, du2 {0.}, dv2 {0.}, dt2 {0.};
+
+  // fIsSuppressed flag is used to suppress duplicated hits at the module overlaps
+  // TODO: collect those hits on the track instead of suppressing them
+  bool fIsSuppressed {0};  // is the hit suppressed by another hit
 };
 
 

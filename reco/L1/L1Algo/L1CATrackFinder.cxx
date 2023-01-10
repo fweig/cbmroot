@@ -319,12 +319,15 @@ inline void L1Algo::findDoubletsStep0(
 #endif  // DOUB_PERFORMANCE
   L1Vector<L1HitIndex_t>& hitsm_2)
 {
-  /// Find the doublets. Reformat data in the portion of doublets.
+  /// Find the doublets. Reformat data into portions of doublets.
+
+  assert(i1_2.size() == 0);
 
   int iStaL = &stal - fParameters.GetStations().begin();
   int iStaM = &stam - fParameters.GetStations().begin();
 
-  n2 = 0;                             // number of doublet
+  n2 = 0;  // number of doublets
+
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
   {
     unsigned int Ndoublets = 0;
@@ -694,7 +697,9 @@ inline void L1Algo::findTripletsStep0(  // input
           n3   = n3 - doubletNtriplets;
           n3_V = n3 / fvec::size();
           n3_4 = n3 % fvec::size();
-          //assert(0);
+          hitsl_3.reduce(n3);
+          hitsm_3.reduce(n3);
+          hitsr_3.reduce(n3);
           break;
         }
 
