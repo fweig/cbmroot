@@ -9,7 +9,6 @@
 #include "CbmTrackerInputQaTof.h"
 
 #include "CbmDefs.h"
-#include "CbmDigiManager.h"
 #include "CbmLink.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
@@ -98,8 +97,7 @@ void CbmTrackerInputQaTof::DeInit()
   fIsMcPresent       = false;
   fNtrackingStations = 0;
 
-  fTimeSlice   = nullptr;
-  fDigiManager = nullptr;
+  fTimeSlice = nullptr;
 
   fMcManager = nullptr;
   fMcTracks  = nullptr;
@@ -182,8 +180,6 @@ InitStatus CbmTrackerInputQaTof::ReInit()
   //   }
 
   FairRootManager* manager = FairRootManager::Instance();
-  fDigiManager             = CbmDigiManager::Instance();
-  fDigiManager->Init();
 
   fTimeSlice = dynamic_cast<CbmTimeSlice*>(manager->GetObject("TimeSlice."));
   if (!fTimeSlice) {
@@ -215,9 +211,6 @@ InitStatus CbmTrackerInputQaTof::ReInit()
     fMcTracks    = fMcManager->InitBranch("MCTrack");
     fMcPoints    = fMcManager->InitBranch("TofPoint");
     fHitMatches  = dynamic_cast<TClonesArray*>(manager->GetObject("TofHitMatch"));
-
-    fDigiManager = CbmDigiManager::Instance();
-    fDigiManager->Init();
 
     fHitDigiMatches = dynamic_cast<TClonesArray*>(manager->GetObject("TofDigiMatch"));
     fDigis          = dynamic_cast<TClonesArray*>(manager->GetObject("TofCalDigi"));
@@ -256,14 +249,11 @@ InitStatus CbmTrackerInputQaTof::ReInit()
     //       LOG(error) << "No Tof digis found";
     //       return kERROR;
     //     }
-
-    if (!fDigiManager->IsMatchPresent(ECbmModuleId::kTof)) {
-      LOG(error) << "No Tof digi matches found";
-      return kERROR;
-    }
   }
 
-  GeometryQa();
+  // init geometry setup and analyse it
+
+  auto retVal = GeometryQa();
 
   if (fNtrackingStations <= 0) {
     LOG(error) << "can not count Tof tracking stations";
@@ -355,8 +345,7 @@ InitStatus CbmTrackerInputQaTof::ReInit()
   fOutFolder.Add(&fCanvPointsPerHit);
   fOutFolder.Add(&fCanvHitsPerPoint);
 
-  // analyse the geometry setup
-  return GeometryQa();
+  return retVal;
 }
 
 
@@ -427,116 +416,113 @@ InitStatus CbmTrackerInputQaTof::GeometryQa()
 // -------------------------------------------------------------------------
 void CbmTrackerInputQaTof::ResolutionQa()
 {
-  if (!fDigiManager->IsMatchPresent(ECbmModuleId::kTof)) return;
 
-  if (!(fHitMatches && fHits)) return;
-
-  //  if (!fDigiManager) return;
+  if (!fHitMatches || !fHits || !fMcEventList) return;
 
   Int_t nHits       = fHits->GetEntriesFast();
   Int_t nHitMatches = fHitMatches->GetEntriesFast();
-  // Int_t nClusters = fClusters->GetEntriesFast();
-  //Int_t nDigis    = fDigiManager->GetNofDigis(ECbmModuleId::kTof);
-  //  Int_t nTofDigis       = fDigis->GetEntriesFast();
+
+  if (nHits != nHitMatches) {
+    LOG(fatal) << "CbmTrackerInputQaTof::ResolutionQa => N hits " << nHits << " not matching N matches " << nHitMatches;
+  }
 
   auto tofInterface = CbmTofTrackingInterface::Instance();
 
   fNtrackingStations = tofInterface->GetNtrackingStations();
 
-  GeometryQa();
-
   int nMcEvents = fMcEventList->GetNofEvents();
 
-  // Vector of integers parallel to mc points
-  std::vector<std::vector<int>> pointNhits;
-  pointNhits.resize(nMcEvents);
+  // TOF hit is usually created out of several MC points,
+  // but is linked to only one of those points.
+  // It should be taken into account.
+
+  // N TOF hits per MC point
+  std::vector<int> pointNhits[nMcEvents];
+
+  // choose only one MC point per plane per MC track
+  std::vector<int> selectedPoints[nMcEvents];
+
+  //LOG(info) << "CbmTrackerInputQaTof:: timeslice nHits " << nHits << " nHitMatches " << nHitMatches;
+  //LOG(info) << "CbmTrackerInputQaTof:: start processing " << nMcEvents << " events.. ";
+
   for (int iE = 0; iE < nMcEvents; iE++) {
     int fileId  = fMcEventList->GetFileIdByIndex(iE);
     int eventId = fMcEventList->GetEventIdByIndex(iE);
-    int nPoints = fMcPoints->Size(fileId, eventId);
-    pointNhits[iE].resize(nPoints, 0);
-  }
 
-  std::vector<int> TofSinglePoints[nMcEvents];  // choose only one MC point per plane per MC track
+    const int nMcTracks = fMcTracks->Size(fileId, eventId);
+    const int nMcPoints = fMcPoints->Size(fileId, eventId);
 
-  for (int iE = 0; iE < nMcEvents; iE++) {
+    //LOG(info) << "CbmTrackerInputQaTof:: process Mc event " << iE << " fileId " << fileId << " eventId " << eventId << " nMcTracks "
+    //          << nMcTracks << " nMcPoints " << nMcPoints;
 
-    int fileId  = fMcEventList->GetFileIdByIndex(iE);
-    int eventId = fMcEventList->GetEventIdByIndex(iE);
+    pointNhits[iE].resize(nMcPoints, 0);
+    selectedPoints[iE].clear();
+    selectedPoints[iE].reserve(nMcPoints);
 
-    int nMcTracks  = fMcTracks->Size(fileId, eventId);
-    int nHitPoints = fMcPoints->Size(fileId, eventId);
+    std::vector<char> selectedMcPointPerStation[fNtrackingStations];
 
-    std::vector<char> singleMcPointPerStation[fNtrackingStations];
+    for (Int_t iS = 0; iS < fNtrackingStations; iS++) {
+      selectedMcPointPerStation[iS].resize(nMcTracks, 0);
+    }
 
-    for (Int_t iS = 0; iS < fNtrackingStations; iS++)
-      singleMcPointPerStation[iS].resize(nMcTracks, 0);
+    // check which points of the current MC event are matched to hits,
+    // fill N hits per mc point
+    std::vector<char> isPointMatched(nMcPoints, 0);
+    for (Int_t iHit = 0; iHit < nHits; iHit++) {  // loop over hits in the time slice
 
-    std::vector<char> isTofPointMatched;
-    isTofPointMatched.resize(nHitPoints, 0);
-    // check whether point was matched
-    for (Int_t iHit = 0; iHit < nHits; iHit++) {
       CbmMatch* pHitMatch = static_cast<CbmMatch*>(fHitMatches->At(iHit));
+
       for (int iLink = 0; iLink < pHitMatch->GetNofLinks(); iLink++) {
-        Int_t iMC  = pHitMatch->GetLink(iLink).GetIndex();
         int iFile  = pHitMatch->GetLink(iLink).GetFile();
         int iEvent = pHitMatch->GetLink(iLink).GetEntry();
-        if ((eventId != iEvent) || (fileId != iFile)) continue;
-        isTofPointMatched[iMC] = 1;
+        int iMC    = pHitMatch->GetLink(iLink).GetIndex();
+        // check if the link belongs to the current Mc event iE
+        if ((fileId != iFile) || (eventId != iEvent)) continue;
+        assert(iMC >= 0 && iMC < nMcPoints);
+        isPointMatched[iMC] = 1;
+        pointNhits[iE][iMC]++;
       }
     }
-    // store matched points first
-    for (Int_t iMC = 0; iMC < fMcPoints->Size(fileId, eventId); iMC++) {
-      if (isTofPointMatched[iMC] == 0) continue;
 
-      CbmTofPoint* p = dynamic_cast<CbmTofPoint*>(fMcPoints->Get(fileId, eventId, iMC));
-
+    // select the matched points first
+    for (Int_t iMC = 0; iMC < nMcPoints; iMC++) {
+      if (isPointMatched[iMC] == 0) continue;
+      CbmTofPoint* p   = dynamic_cast<CbmTofPoint*>(fMcPoints->Get(fileId, eventId, iMC));
       int PointStation = GetStationIndex(p);
-
       if (PointStation < 0) continue;
-
-      if (!singleMcPointPerStation[PointStation][p->GetTrackID()]) TofSinglePoints[eventId].push_back(iMC);
-      singleMcPointPerStation[PointStation][p->GetTrackID()] = 1;
+      if (!selectedMcPointPerStation[PointStation][p->GetTrackID()]) { selectedPoints[iE].push_back(iMC); }
+      selectedMcPointPerStation[PointStation][p->GetTrackID()] = 1;
     }
 
-    // store unmatched points if quota not exceeded (one point per mc track per tof plane)
-    for (Int_t iMC = 0; iMC < fMcPoints->Size(fileId, eventId); iMC++) {
-
-      CbmTofPoint* p = dynamic_cast<CbmTofPoint*>(fMcPoints->Get(fileId, eventId, iMC));
-
+    // select the unmatched points if there is no corresponding matched point
+    for (Int_t iMC = 0; iMC < nMcPoints; iMC++) {
+      CbmTofPoint* p   = dynamic_cast<CbmTofPoint*>(fMcPoints->Get(fileId, eventId, iMC));
       int PointStation = GetStationIndex(p);
-
       if (PointStation < 0) continue;
-
-      if (!singleMcPointPerStation[PointStation][p->GetTrackID()]) TofSinglePoints[eventId].push_back(iMC);
-      singleMcPointPerStation[PointStation][p->GetTrackID()] = 1;
+      if (!selectedMcPointPerStation[PointStation][p->GetTrackID()]) selectedPoints[iE].push_back(iMC);
+      selectedMcPointPerStation[PointStation][p->GetTrackID()] = 1;
     }
   }
 
 
-  if (nHits != nHitMatches)
-    LOG(fatal) << "CbmTrackerInputQaTof::ResolutionQa => Nb hits in vector not matching nb matches in vector: " << nHits
-               << " VS " << nHitMatches;
-
+  // loop over hit in the time slice
   for (Int_t iHit = 0; iHit < nHits; iHit++) {
 
     CbmTofHit* hit = dynamic_cast<CbmTofHit*>(fHits->At(iHit));
-    if (!hit) {
-      LOG(error) << "Tof hit N " << iHit << " doesn't exist";
-      // return;
-    }
+    if (!hit) { LOG(fatal) << "Tof hit N " << iHit << " doesn't exist"; }
     const int address = hit->GetAddress();
 
-    if (0x00202806 == address || 0x00002806 == address) continue;  //should ignore these hits for some reason
+    //should ignore these hits for some reason
+    if (0x00202806 == address || 0x00002806 == address) continue;
 
     int StationIndex = tofInterface->GetTrackingStationIndex(hit);
 
     if (StationIndex < 0 || StationIndex >= fNtrackingStations) {
       LOG(fatal) << "Tof hit layer id " << StationIndex << " is out of range";
-      //   return;
     }
 
     CbmMatch* myHitMatch = dynamic_cast<CbmMatch*>(fHitMatches->At(iHit));
+    if (!myHitMatch) { LOG(fatal) << "Tof hit match N " << iHit << " doesn't exist"; }
 
     // take corresponding MC point
 
@@ -546,59 +532,29 @@ void CbmTrackerInputQaTof::ResolutionQa()
     if (bestLink.GetIndex() < 0) { continue; }
 
     CbmTofPoint* p = dynamic_cast<CbmTofPoint*>(fMcPoints->Get(bestLink));
-    //     if (p == nullptr) {
-    //       LOG(error) << /*ADD ALERT HERE;*/ "link points to a non-existing MC point";
-    //       // return;
-    //     }
-    //
-    //     if (p->GetDetectorID() != (int) hit->GetAddress()) {
-    //       LOG(error) << /*ADD ALERT HERE;*/ "mc point module address differs from the hit module address";
-    //       // return;
-    //     }
+    if (!p) { LOG(error) << "CbmTrackerInputQaTof:: link points to a non-existing MC point"; }
 
-    // how many MC points? fill N hits per mc point
+    if (p->GetDetectorID() != (int) hit->GetAddress()) {
+      LOG(error) << "CbmTrackerInputQaTof:: mc point module address differs from the hit module address";
+    }
+
+    // how many MC points?
     int nHitPoints = 0;
     for (int i = 0; i < myHitMatch->GetNofLinks(); i++) {
       const CbmLink& link = myHitMatch->GetLink(i);
       if (link.GetIndex() >= 0) {
-
-        int iE         = fMcEventList->GetEventIndex(link);
-        int indexPoint = link.GetIndex();
-
+        int iE            = fMcEventList->GetEventIndex(link);
+        int indexPoint    = link.GetIndex();
         bool mcPointValid = 0;
-
-        int nPointsEv = TofSinglePoints[iE].size();
+        int nPointsEv     = selectedPoints[iE].size();
         for (int ip = 0; ip < nPointsEv; ip++) {
-          if (TofSinglePoints[iE][ip] == indexPoint) mcPointValid = 1;
+          if (selectedPoints[iE][ip] == indexPoint) mcPointValid = 1;
         }
-
         if (!mcPointValid) continue;
-
         nHitPoints++;
-
-
-        if (iE < 0 || iE >= nMcEvents) {
-          LOG(error) << "link points to a non-existing MC event";
-          return;
-        }
-        if (link.GetIndex() >= (int) pointNhits[iE].size()) {
-          LOG(error) << "link points to a non-existing MC point";
-          return;
-        }
-        pointNhits[iE][link.GetIndex()]++;
       }
     }
     fhPointsPerHit[StationIndex].Fill(nHitPoints);
-
-    //     if (p == nullptr) {
-    //       LOG(error) << "link points to a non-existing MC point";
-    //       return;
-    //     }
-    //
-    //     if (p->GetDetectorID() != (int) hit->GetAddress()) {
-    //       LOG(error) << "mc point module address differs from the hit module address";
-    //       return;
-    //     }
 
     // check that the nominal station Z is not far from the active material
 
@@ -696,18 +652,17 @@ void CbmTrackerInputQaTof::ResolutionQa()
     fhPullY.Fill(dy / sy);
     fhPullT.Fill(dt / st);
 
-
-  }  // iHit                                                     // for (Int_t iHit = 0; iHit < nofHits; iHit++)
+  }  // iHit
 
   // fill efficiency: N hits per MC point
 
   for (int iE = 0; iE < nMcEvents; iE++) {
     int fileId    = fMcEventList->GetFileIdByIndex(iE);
     int eventId   = fMcEventList->GetEventIdByIndex(iE);
-    int nPointsEv = TofSinglePoints[eventId].size();
+    int nPointsEv = selectedPoints[iE].size();
     for (int ip = 0; ip < nPointsEv; ip++) {
 
-      int iPoint     = TofSinglePoints[eventId][ip];
+      int iPoint     = selectedPoints[iE][ip];
       CbmTofPoint* p = dynamic_cast<CbmTofPoint*>(fMcPoints->Get(fileId, eventId, iPoint));
       if (p == nullptr) {
         LOG(error) << "MC point doesn't exist";

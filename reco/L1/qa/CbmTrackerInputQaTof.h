@@ -23,7 +23,6 @@
 #include <TProfile.h>
 #include <TProfile2D.h>
 
-class CbmDigiManager;
 class CbmMCDataManager;
 class CbmMCEventList;
 class CbmMCDataArray;
@@ -95,8 +94,6 @@ private:
   CbmTimeSlice* fTimeSlice {nullptr};
   CbmTofParSetGeo* fTofGeoPar {nullptr};
   CbmTofDigiPar* fTofDigiPar {nullptr};
-
-  CbmDigiManager* fDigiManager {nullptr};
 
   /// MC data
   CbmMCEventList* fMcEventList {nullptr};  // list of MC events connected to the current time slice
