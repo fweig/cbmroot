@@ -479,8 +479,9 @@ void CbmTrackerInputQaTof::ResolutionQa()
       CbmMatch* pHitMatch = static_cast<CbmMatch*>(fHitMatches->At(iHit));
       for (int iLink = 0; iLink < pHitMatch->GetNofLinks(); iLink++) {
         Int_t iMC  = pHitMatch->GetLink(iLink).GetIndex();
+        int iFile  = pHitMatch->GetLink(iLink).GetFile();
         int iEvent = pHitMatch->GetLink(iLink).GetEntry();
-        if (eventId != iEvent) continue;
+        if ((eventId != iEvent) || (fileId != iFile)) continue;
         isTofPointMatched[iMC] = 1;
       }
     }

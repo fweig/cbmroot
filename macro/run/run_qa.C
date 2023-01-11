@@ -187,17 +187,9 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   }
   // ------------------------------------------------------------------------
 
-  // ----- TRD QA  ---------------------------------
+  // ----- TOF QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kTof)) {
-    // TODO: SZh 19.10.2022:
-    // After the proper TOF digi parameters initialization it is appeared,
-    // that CbmTrackerInputQaTof causes segmentation violation in
-    // CbmTrackerInputQaTof::ResolutionQa() for the event-based running
-    // (before the branch with the related code inside the task was never
-    // executed). Temporarily commented that task, till the bug would not be
-    // resolved.
-
-    //run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TRD
+    run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TOF
   }
   // ------------------------------------------------------------------------
 
