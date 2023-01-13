@@ -24,6 +24,7 @@ class TH1F;
 class TH2F;
 class TObject;
 class CbmMCDataArray;
+class CbmMCEventList;
 
 class CbmKFTrackQa : public FairTask {
 public:
@@ -55,6 +56,8 @@ private:
   int GetHistoIndex(int pdg);
 
   //names of input branches
+
+  TString fMcEventListBranchName;
   TString fStsTrackBranchName;
   TString fGlobalTrackBranchName;
   TString fRichBranchName;
@@ -70,6 +73,8 @@ private:
   TString fMuchTrackMatchBranchName;
 
   //input branches
+
+  CbmMCEventList* fMcEventList;
   TClonesArray* fStsTrackArray;
   TClonesArray* fGlobalTrackArray;
   TClonesArray* fRichRingArray;
