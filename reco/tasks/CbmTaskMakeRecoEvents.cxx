@@ -151,7 +151,7 @@ InitStatus CbmTaskMakeRecoEvents::Init()
 
     // --- T0 digis
     fT0Digis = new std::vector<CbmTzdDigi>;
-    frm->RegisterAny("T0Digi", fT0Digis, kFALSE);
+    frm->RegisterAny("TzdDigi", fT0Digis, kFALSE);
 
     // --- STS digis
     fStsDigis = new std::vector<CbmStsDigi>;
