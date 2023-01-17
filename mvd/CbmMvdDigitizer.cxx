@@ -154,13 +154,19 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
     LOG(debug) << fName << ": Send Input";
 
     // Get the sensor array from the Detector
+/*
     TObjArray* sensorArray=fDetector->GetSensorArray();
     CbmMvdSensor* sensor=0;
 
     Int_t nSensors= sensorArray->GetEntriesFast();
+*/
     Int_t nTargetPlugin=DetectPlugin(100);
 
     for (Int_t i=0; i< nPoints; i++) { //loop over all points
+      point=(CbmMvdPoint*) fInputPoints->At(i);
+      fDetector->SendInputToSensorPlugin(point->GetDetectorID(), nTargetPlugin, static_cast<TObject*>(point));
+
+/*
       for (Int_t k=0; k< nSensors; k++) { //lool over all sensors
         point=(CbmMvdPoint*) fInputPoints->At(i);
         sensor=(CbmMvdSensor*) sensorArray->At(k);
@@ -169,6 +175,7 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
                                                            break;
         }
       }
+*/
     }
 
 
