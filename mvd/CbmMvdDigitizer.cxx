@@ -124,10 +124,58 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
   BuildEvent();
   Int_t nPoints = fInputPoints->GetEntriesFast();
   Int_t nDigis  = 0;
+  CbmMvdPoint* point=0;
+
+  /*
+
+ CbmMvdPoint* point;
+  Int_t nEntries = input->GetEntriesFast();
+  Int_t nSensors = fSensorArray->GetEntriesFast();
+  CbmMvdSensor* sensor;
+  Bool_t send = kFALSE;
+  for (Int_t i = 0; i < nEntries; i++) {
+    point = (CbmMvdPoint*) input->At(i);
+    point->SetPointId(i);
+    for (Int_t k = 0; k < nSensors; k++) {
+      sensor = (CbmMvdSensor*) fSensorArray->At(k);
+
+      if (point->GetDetectorID() == sensor->GetDetectorID()) {
+        sensor->SendInputToPlugin(sensor->GetDigiPlugin(),(TObject*) point);
+        send = true;
+      }
+    }
+    if (!send) LOG(warn) << "Point not send to any sensor: " << point->GetDetectorID();
+  }
+}
+
+ */
   if (fInputPoints->GetEntriesFast() > 0) {
     LOG(debug) << "//----------------------------------------//";
     LOG(debug) << fName << ": Send Input";
-    fDetector->SendInput(fInputPoints);
+
+    // Get the sensor array from the Detector
+    TObjArray* sensorArray=fDetector->GetSensorArray();
+    CbmMvdSensor* sensor=0;
+
+    Int_t nSensors= sensorArray->GetEntriesFast();
+    Int_t nTargetPlugin=DetectPlugin(100);
+
+    for (Int_t i=0; i< nPoints; i++) { //loop over all points
+      for (Int_t k=0; k< nSensors; k++) { //lool over all sensors
+        point=(CbmMvdPoint*) fInputPoints->At(i);
+        sensor=(CbmMvdSensor*) sensorArray->At(k);
+
+        if (point->GetDetectorID() == sensor-> GetDetectorID()) {fDetector->SendInputToSensorPlugin(k, nTargetPlugin, (TObject*) point);
+                                                           break;
+        }
+      }
+    }
+
+
+
+
+    //fDetector->SendInput(fInputPoints);
+
     LOG(debug) << fName << ": Execute DigitizerPlugin Nr. " << fDigiPluginNr;
     fDetector->Exec(fDigiPluginNr);
     LOG(debug) << fName << ": End Chain";

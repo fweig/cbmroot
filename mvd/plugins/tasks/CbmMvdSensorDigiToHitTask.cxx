@@ -73,7 +73,7 @@ UInt_t shape = 0;
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask() : CbmMvdSensorDigiToHitTask(0, 0) {
-fPluginIDNumber= 500
+fPluginIDNumber= 500;
 }
 // -------------------------------------------------------------------------
 
@@ -108,7 +108,7 @@ CbmMvdSensorDigiToHitTask::CbmMvdSensorDigiToHitTask(Int_t /*iMode*/, Int_t iVer
   , fHitPosErrZ(0.0)
 
 {
-fPluginIDNumber= 500
+fPluginIDNumber= 500;
 }
 // -------------------------------------------------------------------------
 

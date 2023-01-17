@@ -113,7 +113,7 @@ CbmMvdSensorFindHitTask::CbmMvdSensorFindHitTask()
   , fDigisInCluster(-1)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 400
+fPluginIDNumber= 400;
 }
 // -------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ CbmMvdSensorFindHitTask::CbmMvdSensorFindHitTask(Int_t iMode)
   , fDigisInCluster(-1)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 400
+fPluginIDNumber= 400;
 }
 // -------------------------------------------------------------------------
 

@@ -112,7 +112,7 @@ CbmMvdSensorHitfinderTask::CbmMvdSensorHitfinderTask()
   , fDigisInCluster(0)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 300
+fPluginIDNumber= 300;
 }
 // -------------------------------------------------------------------------
 
@@ -169,7 +169,7 @@ CbmMvdSensorHitfinderTask::CbmMvdSensorHitfinderTask(Int_t iMode)
   , fDigisInCluster(0)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 300
+fPluginIDNumber= 300;
 }
 // -------------------------------------------------------------------------
 

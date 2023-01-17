@@ -57,9 +57,9 @@ using std::setw;
 using std::vector;
 
 //---------   Default constructor   ------------------------------------------
-CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask(){
-fPluginIDNumber= 1100
-}
+//CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask(){
+//fPluginIDNumber= 1100;
+//}
 
 // -----   Standard constructor   ------------------------------------------
 CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
@@ -171,7 +171,7 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
   fReadoutLast    = -1.;
   fReadoutCurrent = 0.;
 
-  fPluginIDNumber= 1100
+  fPluginIDNumber= 1100;
 }
 // -------------------------------------------------------------------------
 

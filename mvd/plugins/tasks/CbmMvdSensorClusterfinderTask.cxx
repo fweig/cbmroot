@@ -22,7 +22,7 @@ using std::vector;
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask() : CbmMvdSensorClusterfinderTask(0, 0) {
 
-fPluginIDNumber= 200
+fPluginIDNumber= 200;
 
 }
 // -------------------------------------------------------------------------
@@ -84,7 +84,7 @@ CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask(Int_t iMode, Int_t 
   , fBranchName("MvdHit")
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 200
+fPluginIDNumber= 200;
 }
 // -------------------------------------------------------------------------
 

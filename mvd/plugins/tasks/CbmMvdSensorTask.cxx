@@ -15,7 +15,7 @@
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorTask::CbmMvdSensorTask() : CbmMvdSensorPlugin(), fInputBuffer(NULL), fOutputBuffer(NULL), fSensor(NULL) {
-fPluginIDNumber= 0
+fPluginIDNumber= -1;
 }
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
@@ -25,7 +25,7 @@ CbmMvdSensorTask::CbmMvdSensorTask(const char* name)
   , fOutputBuffer(NULL)
   , fSensor(NULL)
 {
-fPluginIDNumber= 0
+fPluginIDNumber= -1;
 }
 // -------------------------------------------------------------------------
 
