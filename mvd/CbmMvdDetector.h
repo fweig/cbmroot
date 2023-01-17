@@ -59,7 +59,8 @@ public:
   /** Data interface */
   void SendInput(TClonesArray* input);
   void SendInputNeutral(TClonesArray* input);
-  void SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input);
+//  void SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input);
+  void SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input);
   void SendInputDigis(CbmDigiManager* digiMan);
   void SendInputDigis(TClonesArray* digis);
   void SendInputDigisToHits(TClonesArray* digis);
@@ -122,6 +123,7 @@ private:
   static CbmMvdSensorTyp fSensorTyp;
 
   TClonesArray* fSensorArray;
+  std::map<int, CbmMvdSensor*> fSensorMap;
   TClonesArray* fSensorIDArray;  //Array of Sensor ID
   UInt_t fPluginCount;
   TClonesArray* foutput;
@@ -152,7 +154,7 @@ private:
   CbmMvdDetector(const CbmMvdDetector&);
   CbmMvdDetector operator=(const CbmMvdDetector&);
 
-  ClassDef(CbmMvdDetector, 1);
+  ClassDef(CbmMvdDetector, 2);
 };
 
 #endif

@@ -633,8 +633,9 @@ void CbmMvdGeoHandler::FillStationMap()
       }
     }
   }
-  else
+  else {
     LOG(error) << "You tried to use an unsuported Geometry";
+  }
 }
 //--------------------------------------------------------------------------
 

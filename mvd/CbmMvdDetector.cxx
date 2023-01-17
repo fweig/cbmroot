@@ -26,6 +26,8 @@
 #include "plugins/tasks/CbmMvdSensorTask.h"
 #include "tools/CbmMvdGeoHandler.h"
 
+#include "CbmMvdDetectorId.h"
+
 /// includes from FairRoot
 #include <Logger.h>
 
@@ -65,6 +67,7 @@ CbmMvdDetector* CbmMvdDetector::Instance()
 CbmMvdDetector::CbmMvdDetector()
   : TNamed()
   , fSensorArray(nullptr)
+  , fSensorMap()
   , fSensorIDArray(nullptr)
   , fPluginCount(0)
   , foutput(nullptr)
@@ -95,6 +98,7 @@ CbmMvdDetector::CbmMvdDetector()
 CbmMvdDetector::CbmMvdDetector(const char* name)
   : TNamed()
   , fSensorArray(new TClonesArray("CbmMvdSensor", 10))
+  , fSensorMap()
   , fSensorIDArray(nullptr)
   , fPluginCount(0)
   , foutput(nullptr)
@@ -159,6 +163,13 @@ void CbmMvdDetector::AddSensor(TString clearName, TString fullName, TString node
   CbmMvdSensor* sensor = (CbmMvdSensor*) fSensorArray->At(nSensors);
   sensor->SetDataSheet(sensorData);
   sensor->SetStation(stationNr);
+
+  // calculate the detectorId from the running sensor number
+  CbmMvdDetectorId tmp;
+  int detectorId = tmp.DetectorId(sensorNr);
+
+  // Add sensor to SensorMap
+  fSensorMap[detectorId] = sensor;
 
   Float_t misalignment[3], randArray[3];
   //    TRandom3* rand = new TRandom3(0);
@@ -347,11 +358,19 @@ void CbmMvdDetector::SetProduceNoise()
   }
 }
 //-----------------------------------------------------------------------
+void CbmMvdDetector::SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input)
+{
+  fSensorMap[detectorid]->SendInputToPlugin(nPlugin,input);
+}
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+/*
 void CbmMvdDetector::SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input)
 {
   CbmMvdSensor* sensor=(CbmMvdSensor*)fSensorArray->At(nSensor);
   sensor->SendInputToPlugin(nPlugin,input);
 }
+*/
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInput(TClonesArray* input)
 {
