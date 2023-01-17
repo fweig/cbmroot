@@ -14,7 +14,9 @@
 
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorTask::CbmMvdSensorTask() : CbmMvdSensorPlugin(), fInputBuffer(NULL), fOutputBuffer(NULL), fSensor(NULL) {}
+CbmMvdSensorTask::CbmMvdSensorTask() : CbmMvdSensorPlugin(), fInputBuffer(NULL), fOutputBuffer(NULL), fSensor(NULL) {
+fPluginIDNumber= 0
+}
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
 CbmMvdSensorTask::CbmMvdSensorTask(const char* name)
@@ -23,6 +25,7 @@ CbmMvdSensorTask::CbmMvdSensorTask(const char* name)
   , fOutputBuffer(NULL)
   , fSensor(NULL)
 {
+fPluginIDNumber= 0
 }
 // -------------------------------------------------------------------------
 

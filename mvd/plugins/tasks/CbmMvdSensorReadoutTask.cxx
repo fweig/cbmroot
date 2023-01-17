@@ -27,6 +27,7 @@ CbmMvdSensorReadoutTask::CbmMvdSensorReadoutTask()
   , fSensorBanks()
 {
   //    fSensorBanks[maxBanks] = {0};
+    fPluginIDNumber= 600
 }
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
@@ -38,6 +39,7 @@ CbmMvdSensorReadoutTask::CbmMvdSensorReadoutTask(const char* name)
   , fSensorBanks()
 {
   //    fSensorBanks[maxBanks] = {0};
+    fPluginIDNumber= 600
 }
 // -------------------------------------------------------------------------
 
