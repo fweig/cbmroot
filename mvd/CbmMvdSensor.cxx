@@ -300,6 +300,8 @@ void CbmMvdSensor::SetProduceNoise()
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
+
+/*
 void CbmMvdSensor::SendInput(CbmMvdPoint* point)
 {
 
@@ -326,6 +328,7 @@ void CbmMvdSensor::SendInput(CbmMvdPoint* point)
     cout << endl << "ERROR!! undefind plugin!" << endl;
   }
 }
+*/
 // -------------------------------------------------------------------------
 
 void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)

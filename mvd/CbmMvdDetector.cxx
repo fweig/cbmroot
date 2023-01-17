@@ -374,16 +374,11 @@ void CbmMvdDetector::SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObje
 }
 */
 //-----------------------------------------------------------------------
+
+/*
 void CbmMvdDetector::SendInput(TClonesArray* input)
 {
-  /**
-   *
-   * Sending event to sensors,
-   * each sensor gets only his own points
-   *
-   *
-   *
-   * **/
+
 
   CbmMvdPoint* point;
   Int_t nEntries = input->GetEntriesFast();
@@ -404,6 +399,7 @@ void CbmMvdDetector::SendInput(TClonesArray* input)
     if (!send) LOG(warn) << "Point not send to any sensor: " << point->GetDetectorID();
   }
 }
+*/
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------

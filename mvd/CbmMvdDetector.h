@@ -57,7 +57,7 @@ public:
   virtual ~CbmMvdDetector();
 
   /** Data interface */
-  void SendInput(TClonesArray* input);
+  //void SendInput(TClonesArray* input);
   void SendInputNeutral(TClonesArray* input);
 //  void SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input);
   void SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input);
