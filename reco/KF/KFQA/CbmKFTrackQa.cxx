@@ -33,6 +33,7 @@
 #include "TH2F.h"
 #include "TMath.h"
 #include "TObject.h"
+#include "TProfile.h"
 
 //c++ and std headers
 #include "CbmGlobalTrack.h"
@@ -220,15 +221,17 @@ CbmKFTrackQa::CbmKFTrackQa(const char* name, Int_t iVerbose, TString outFileName
   gDirectory->mkdir("TOF");
   gDirectory->cd("TOF");
   {
-    TString histoName2D[2]         = {"M2P", "M2dEdX"};
-    TString xAxisName[NTofHisto2D] = {"p [GeV/c]", "dE/dx [keV/(cm)]"};
-    TString yAxisName[NTofHisto2D] = {"m^{2} [GeV^{2}/c^{4}]", "m^{2} [GeV^{2}/c^{4}]"};
-    float xMin[NTofHisto2D]        = {-15., 0.};
-    float xMax[NTofHisto2D]        = {15., 1000.};
-    Int_t xBins[NTofHisto2D]       = {3000, 1000};
-    float yMin[NTofHisto2D]        = {-2., -2.};
-    float yMax[NTofHisto2D]        = {14., 14.};
-    Int_t yBins[NTofHisto2D]       = {1600, 1600};
+    TString histoName2D[NTofHisto2D] = {"M2P", "M2dEdX"};
+    TString xAxisName[NTofHisto2D]   = {"p [GeV/c]", "dE/dx [keV/(cm)]"};
+    TString yAxisName[NTofHisto2D]   = {"m^{2} [GeV^{2}/c^{4}]", "m^{2} [GeV^{2}/c^{4}]"};
+    float xMin[NTofHisto2D]          = {-15., 0.};
+    float xMax[NTofHisto2D]          = {15., 1000.};
+    Int_t xBins[NTofHisto2D]         = {3000, 1000};
+    float yMin[NTofHisto2D]          = {-2., -2.};
+    float yMax[NTofHisto2D]          = {14., 14.};
+    Int_t yBins[NTofHisto2D]         = {1600, 1600};
+
+    TString profName[NTofProfiles] = {"MatchEff", "Mismatch", "No match"};
 
     TString subdirs[14] = {"AllTracks",     "e", "mu", "pi",  "K",  "p", "Fragments", "Mismatch", "GhostTrack",
                            "WrongTofPoint", "d", "t",  "He3", "He4"};
@@ -242,6 +245,11 @@ CbmKFTrackQa::CbmKFTrackQa(const char* name, Int_t iVerbose, TString outFileName
                                          yBins[iH], yMin[iH], yMax[iH]);
         hTofHisto2D[iDir][iH]->GetXaxis()->SetTitle(xAxisName[iH]);
         hTofHisto2D[iDir][iH]->GetYaxis()->SetTitle(yAxisName[iH]);
+      }
+
+      for (int iH = 0; iH < NTofProfiles; iH++) {
+        hTofProfiles[iDir][iH] = new TProfile(profName[iH].Data(), profName[iH].Data(), 100, 0., 15.);
+        hTofProfiles[iDir][iH]->GetXaxis()->SetTitle("p [GeV/c]");
       }
 
       gDirectory->cd("..");  //Tof
@@ -276,7 +284,7 @@ InitStatus CbmKFTrackQa::Init()
   }
 
   // Get mc event list
-  fMcEventList = static_cast<CbmMCEventList*>(ioman->GetObject("fMcEventListBranchName"));
+  fMcEventList = static_cast<CbmMCEventList*>(ioman->GetObject(fMcEventListBranchName));
   if (!fMcEventList) {
     Warning("CbmKFTrackQa::Init", "mc event list not found!");
     return kERROR;
@@ -433,13 +441,13 @@ void CbmKFTrackQa::Exec(Option_t* /*opt*/)
     if (trackMatch[iTr] > -1) pdg[iTr] = mcTracks[trackMatch[iTr]].PDG();
   }
 
-  CbmKFVertex kfVertex;
-
   CbmL1PFFitter fitter;
-  vector<float> vChiToPrimVtx;
   vector<CbmL1PFFitter::PFFieldRegion> vField;
   fitter.Fit(vRTracks, pdg);
-  fitter.GetChiToVertex(vRTracks, vField, vChiToPrimVtx, kfVertex, 3000000);
+
+  // CbmKFVertex kfVertex; ! the MC vertex is not at 0,0,0 any longer. !
+  // vector<float> vChiToPrimVtx;
+  // fitter.GetChiToVertex(vRTracks, vField, vChiToPrimVtx, kfVertex, 3000000);
 
   for (unsigned int iTr = 0; iTr < vRTracks.size(); iTr++) {
     if (trackMatch[iTr] < 0) continue;
@@ -520,8 +528,8 @@ void CbmKFTrackQa::Exec(Option_t* /*opt*/)
     for (Int_t igt = 0; igt < fGlobalTrackArray->GetEntriesFast(); igt++) {
       const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTrackArray->At(igt));
 
-      Int_t stsTrackIndex      = globalTrack->GetStsTrackIndex();  //for STS histos
-      CbmStsTrack* cbmStsTrack = (CbmStsTrack*) fStsTrackArray->At(stsTrackIndex);
+      Int_t stsTrackIndex            = globalTrack->GetStsTrackIndex();  //for STS histos
+      CbmStsTrack* cbmStsTrack       = (CbmStsTrack*) fStsTrackArray->At(stsTrackIndex);
       double stsHistoData[NStsHisto] = {
         (double) cbmStsTrack->GetNofHits(),                          //NHits
         cbmStsTrack->GetChiSq() / cbmStsTrack->GetNDF(),             //Chi2/NDF
@@ -703,59 +711,114 @@ void CbmKFTrackQa::Exec(Option_t* /*opt*/)
         }
       }
 
-      //Check Tof quality
-      if (fTofHitArray && fTofHitMatchArray) {
+
+      do {  // Check Tof quality.
+
+        // ( the use of "do{ .. } while(0);" let us exit the scope with the "break" operator.
+        //   it makes the code lighter. )
+
+        if (!fTofHitArray || !fTofHitMatchArray) { break; }
+
         Int_t tofIndex = globalTrack->GetTofHitIndex();  // for tof histo
         Int_t stsIndex = globalTrack->GetStsTrackIndex();
         //        std::cout << "tofIndex: " << tofIndex << " stsIndex: " << stsIndex << std::endl;
 
-        if (tofIndex > -1 && stsIndex > -1) {
-          CbmTofHit* tofHit          = (CbmTofHit*) fTofHitArray->At(tofIndex);
-          CbmMatch* tofHitMatch      = (CbmMatch*) fTofHitMatchArray->At(tofIndex);
-          CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(stsIndex);
-          CbmLink tofLink            = tofHitMatch->GetMatchedLink();
+        if (stsIndex < 0) { break; }
 
-          if (tofLink.GetFile() >= 0 && tofLink.GetEntry() >= 0) {  // the mc link is needed for the event time
+        // check Sts -> Tof matching efficiency
 
-            double eventTime = fMcEventList->GetEventTime(tofLink);
+        bool isReconstructible = 0;
 
-            Double_t l    = globalTrack->GetLength();
-            Double_t time = tofHit->GetTime() - eventTime;
-            Double_t q    = stsPar->GetQp() > 0 ? 1. : -1.;
-            // Double_t beta = l / time / 29.9792458;
-            //          std::cout << " l: " << l << " time: " << time << " beta: " << beta << std::endl;
-            Double_t m2 = p * p * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
-            //          std::cout << "p: " << p << " m2: " << m2 << std::endl;
-
-            hTofHisto2D[0][0]->Fill(p * q, m2);
-            hTofHisto2D[0][1]->Fill(eloss * 1e6, m2);
-
-            if (tofHit && tofHitMatch && stsMatch) {
-              CbmTofPoint* tofPoint = (CbmTofPoint*) fTofPoints->Get(tofLink);
-              Int_t tofMCTrackId    = tofPoint->GetTrackID();
-              //	    Double_t tofMCTime = tofPoint->GetTime();
-              //	    Double_t tofMCl = tofPoint->GetLength();
-              //          Double_t MCm2   = p * p * (1. / (( tofMCl/ tofMCTime / 29.9792458) * (tofMCl / tofMCTime / 29.9792458)) - 1.);
-              //          hTofHisto2D[0][0]->Fill(p * q, MCm2);
-              //          hTofHisto2D[0][1]->Fill(eloss * 1e6, MCm2);
-
-              //          std::cout << " mcl: " << tofMCl << " mc time: " << tofMCTime << " mc beta: " << tofMCl/tofMCTime/29.9792458 << std::endl;
-
-              int iHitCategory = -1;
-              if (stsTrackMCIndex < 0) iHitCategory = 8;  // ghost sts track + any tof hit
-              else if (tofMCTrackId < 0)
-                iHitCategory = 9;  // normal sts track + ghost tof hit
-              else if (stsTrackMCIndex != tofMCTrackId)
-                iHitCategory = 7;  // mismatched sts track and tof hit
-              else
-                iHitCategory = GetHistoIndex(pdg[stsTrackIndex]);
-
-              hTofHisto2D[iHitCategory][0]->Fill(p * q, m2);
-              hTofHisto2D[iHitCategory][1]->Fill(eloss * 1e6, m2);
-            }
+        for (Int_t ih = 0; ih < fTofHitMatchArray->GetEntriesFast(); ih++) {
+          CbmMatch* tofHitMatch = (CbmMatch*) fTofHitMatchArray->At(ih);
+          CbmTofPoint* tofPoint = (CbmTofPoint*) fTofPoints->Get(tofHitMatch->GetMatchedLink());
+          if (!tofPoint) continue;
+          Int_t tofMCTrackId = tofPoint->GetTrackID();
+          if (tofMCTrackId == stsTrackMCIndex) {
+            isReconstructible = 1;
+            break;
           }
         }
-      }
+
+        if (stsTrackMCIndex < 0) { isReconstructible = 0; }
+
+        if (isReconstructible) {
+          bool reconstructed = 0;
+          bool mismatched    = 0;
+          bool matched       = 0;
+          if (tofIndex >= 0) {
+            matched    = 1;
+            mismatched = 1;
+            //CbmTofHit* tofHit     = (CbmTofHit*) fTofHitArray->At(tofIndex);
+            CbmMatch* tofHitMatch = (CbmMatch*) fTofHitMatchArray->At(tofIndex);
+            CbmTofPoint* tofPoint = (CbmTofPoint*) fTofPoints->Get(tofHitMatch->GetMatchedLink());
+            Int_t tofMCTrackId    = tofPoint->GetTrackID();
+            if (tofMCTrackId == stsTrackMCIndex) {
+              reconstructed = 1;
+              mismatched    = 0;
+            }
+          }
+
+          int iTrackCategory = GetHistoIndex(pdg[stsTrackIndex]);
+
+          hTofProfiles[0][0]->Fill(p, reconstructed);
+          hTofProfiles[0][1]->Fill(p, mismatched);
+          hTofProfiles[0][2]->Fill(p, !matched);
+
+          hTofProfiles[iTrackCategory][0]->Fill(p, reconstructed);
+          hTofProfiles[iTrackCategory][1]->Fill(p, mismatched);
+          hTofProfiles[iTrackCategory][2]->Fill(p, !matched);
+        }
+
+        if (tofIndex < 0) { break; }
+
+        CbmTofHit* tofHit          = (CbmTofHit*) fTofHitArray->At(tofIndex);
+        CbmMatch* tofHitMatch      = (CbmMatch*) fTofHitMatchArray->At(tofIndex);
+        CbmTrackMatchNew* stsMatch = (CbmTrackMatchNew*) fStsTrackMatchArray->At(stsIndex);
+        CbmLink tofLink            = tofHitMatch->GetMatchedLink();
+
+        // a valid mc link is needed to get the event time
+
+        if (tofLink.GetFile() < 0 || tofLink.GetEntry() < 0) { break; }
+
+        double eventTime = fMcEventList->GetEventTime(tofLink);
+
+        Double_t l    = globalTrack->GetLength();
+        Double_t time = tofHit->GetTime() - eventTime;
+        Double_t q    = stsPar->GetQp() > 0 ? 1. : -1.;
+        // Double_t beta = l / time / 29.9792458;
+        //          std::cout << " l: " << l << " time: " << time << " beta: " << beta << std::endl;
+        Double_t m2 = p * p * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
+        //          std::cout << "p: " << p << " m2: " << m2 << std::endl;
+
+        hTofHisto2D[0][0]->Fill(p * q, m2);
+        hTofHisto2D[0][1]->Fill(eloss * 1e6, m2);
+
+        if (!tofHit || !tofHitMatch || !stsMatch) { break; }
+
+        CbmTofPoint* tofPoint = (CbmTofPoint*) fTofPoints->Get(tofLink);
+        Int_t tofMCTrackId    = tofPoint->GetTrackID();
+        //	    Double_t tofMCTime = tofPoint->GetTime();
+        //	    Double_t tofMCl = tofPoint->GetLength();
+        //          Double_t MCm2   = p * p * (1. / (( tofMCl/ tofMCTime / 29.9792458) * (tofMCl / tofMCTime / 29.9792458)) - 1.);
+        //          hTofHisto2D[0][0]->Fill(p * q, MCm2);
+        //          hTofHisto2D[0][1]->Fill(eloss * 1e6, MCm2);
+
+        //          std::cout << " mcl: " << tofMCl << " mc time: " << tofMCTime << " mc beta: " << tofMCl/tofMCTime/29.9792458 << std::endl;
+
+        int iHitCategory = -1;
+        if (stsTrackMCIndex < 0) iHitCategory = 8;  // ghost sts track + any tof hit
+        else if (tofMCTrackId < 0)
+          iHitCategory = 9;  // normal sts track + ghost tof hit
+        else if (stsTrackMCIndex != tofMCTrackId)
+          iHitCategory = 7;  // mismatched sts track and tof hit
+        else
+          iHitCategory = GetHistoIndex(pdg[stsTrackIndex]);
+
+        hTofHisto2D[iHitCategory][0]->Fill(p * q, m2);
+        hTofHisto2D[iHitCategory][1]->Fill(eloss * 1e6, m2);
+
+      } while (0);  // Tof quality
     }
   }
 }

@@ -22,6 +22,7 @@ class TFile;
 class TDirectory;
 class TH1F;
 class TH2F;
+class TProfile;
 class TObject;
 class CbmMCDataArray;
 class CbmMCEventList;
@@ -125,6 +126,10 @@ private:
     [14]
     [NTofHisto2D];  //All tracks, electrons, muons, pions, kaons, protons, fragments, mismatch, ghost hit, ghost tof hit, d, t, He3, He4
 
+  static const int NTofProfiles = 3;
+  TProfile* hTofProfiles
+    [14]
+    [NTofProfiles];  //All tracks, electrons, muons, pions, kaons, protons, fragments, mismatch, ghost hit, ghost tof hit, d, t, He3, He4
 
   ClassDef(CbmKFTrackQa, 1);
 };
