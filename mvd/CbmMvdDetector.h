@@ -73,10 +73,12 @@ public:
   TClonesArray* GetOutputCluster();  //khun
   TClonesArray* GetOutputArray(Int_t nPlugin);
   TClonesArray* GetSensorArray(){return fSensorArray;};
+  CbmMvdSensor* GetSensor(Int_t nSensor) {return (CbmMvdSensor*) fSensorArray->At(nSensor);}
   TClonesArray* GetSensorIDArray(){return fSensorIDArray;};
   // TClonesArray* GetClonesArray(Int_t dataLevel){ return 0;}
   Int_t GetSensorArraySize() { return (fSensorArray->GetEntriesFast()); }
-  UInt_t GetPluginArraySize() { return fPluginCount - 1; }
+  Int_t GetPluginArraySize() { return fPluginCount - 1; }
+  Int_t  DetectPlugin(Int_t pluginID);
 
 
   TClonesArray* GetCurrentEvent();

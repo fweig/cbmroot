@@ -93,6 +93,7 @@ public:
   Int_t GetDigiPlugin() const { return fDigiPlugin; };
   Int_t GetHitPlugin() const { return fHitPlugin; };
   Int_t GetClusterPlugin() const { return fClusterPlugin; }
+  TObjArray* GetPluginArray() {return fPluginArray;}
 
   void SetDigiPlugin(const Int_t& nPlugin) { fDigiPlugin = nPlugin; };
   void SetHitPlugin(const Int_t& nPlugin) { fHitPlugin = nPlugin; };

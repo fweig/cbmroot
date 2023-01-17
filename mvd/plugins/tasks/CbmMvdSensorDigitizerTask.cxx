@@ -155,7 +155,7 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
 {
   fRandGen.SetSeed(2736);
   fproduceNoise = kFALSE;
-  fPluginIDNumber= 00100;
+  fPluginIDNumber= 100;
 }
 // -------------------------------------------------------------------------
 
@@ -256,7 +256,7 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , h_LengthVsEloss(NULL)
   , h_ElossVsMomIn(NULL)
 
-{ fPluginIDNumber= 00100;
+{ fPluginIDNumber= 100;
   cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl;
 
   fRandGen.SetSeed(2736);
@@ -382,6 +382,13 @@ void CbmMvdSensorDigitizerTask::SetInputArray(TClonesArray* inputStream)
 }
 // -----------------------------------------------------------------------------
 void CbmMvdSensorDigitizerTask::SetInput(CbmMvdPoint* point)
+{
+
+  new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) point));
+}
+//-----------------------------------------------------------------------------
+
+void CbmMvdSensorDigitizerTask::SetInput(TObject* point)
 {
 
   new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) point));

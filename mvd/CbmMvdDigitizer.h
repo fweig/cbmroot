@@ -66,6 +66,7 @@ public:
   void ShowDebugHistograms() { fShowDebugHistos = kTRUE; }
 
   void SetProduceNoise() { fNoiseSensors = kTRUE; };
+  Int_t DetectPlugin(Int_t pluginID);
 
 
   /** @brief Clear data arrays **/
@@ -92,7 +93,7 @@ private:
 
   std::pair<Float_t, Int_t> fPerformanceDigi;
 
-  UInt_t fDigiPluginNr;
+  Int_t fDigiPluginNr;
 
   Double_t fFakeRate;  // Fake hit rate
   Int_t fNPileup;      // Number of pile-up background events

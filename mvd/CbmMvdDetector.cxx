@@ -265,6 +265,26 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin)
 
 //----------------------------------------------------------------------
 
+Int_t CbmMvdDetector::DetectPlugin(Int_t pluginID)
+{
+  // Detects the position of a plugin with a given Plugin-ID (set in the plugin implementation constructor) in the plugin-array of the sensors
+
+  Int_t nDigitizerPlugin=-1;
+
+  if (!fSensorArrayFilled) {cout << "-W - CbmMvdDetector::DetectPlugin: You tried to access sensor plugins while the detector is not initialized yet." << endl;  return -1;}
+  CbmMvdSensor* sensor=GetSensor(0);
+  TObjArray* pluginArray= sensor->GetPluginArray();
+
+  Int_t nPlugin=pluginArray->GetEntries();
+  for(Int_t i=0; i<nPlugin;i++) {
+    CbmMvdSensorPlugin* plugin= (CbmMvdSensorPlugin*) pluginArray->At(i);
+    // cout << "- I - CbmMvdDetector::DetectPlugin: PlugInID = " << plugin->GetPluginIDNumber() << " Position: "<< i << endl;
+    if (pluginID==plugin->GetPluginIDNumber()){return i;}
+  }
+
+
+ return -1;
+}
 
 //-----------------------------------------------------------------------
 void CbmMvdDetector::Init()
@@ -344,7 +364,6 @@ void CbmMvdDetector::SendInput(TClonesArray* input)
    *
    * **/
 
-
   CbmMvdPoint* point;
   Int_t nEntries = input->GetEntriesFast();
   Int_t nSensors = fSensorArray->GetEntriesFast();
@@ -357,7 +376,7 @@ void CbmMvdDetector::SendInput(TClonesArray* input)
       sensor = (CbmMvdSensor*) fSensorArray->At(k);
 
       if (point->GetDetectorID() == sensor->GetDetectorID()) {
-        sensor->SendInput(point);
+        sensor->SendInputToPlugin(sensor->GetDigiPlugin(),(TObject*) point);
         send = true;
       }
     }

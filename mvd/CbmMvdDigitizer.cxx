@@ -270,6 +270,7 @@ InitStatus CbmMvdDigitizer::Init()
       return kERROR;
     }
   }
+
   CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
 
   fDetector->AddPlugin(digiTask);
@@ -307,7 +308,8 @@ InitStatus CbmMvdDigitizer::ReInit() { return kSUCCESS; }
 
 // -----   Virtual method Finish   -----------------------------------------
 void CbmMvdDigitizer::Finish()
-{
+{ //Int_t i = DetectPlugin (100);
+  //cout << "CbmMvdDigitizer::Finish() Autodetect: " << i <<" Manual Detect " << fDigiPluginNr << endl;
   // cout<< endl << "finishing" << endl;
   fDetector->Finish();
   PrintParameters();
@@ -336,6 +338,24 @@ void CbmMvdDigitizer::ResetArrays()
 void CbmMvdDigitizer::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
+Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
+{ Int_t nDigitizerPlugin=-1;
+
+  CbmMvdDetector* detector= CbmMvdDetector::Instance();
+  return detector->DetectPlugin(pluginID);
+  /*CbmMvdSensor* sensor=detector->GetSensor(0);
+  TObjArray* pluginArray= sensor->GetPluginArray();
+
+  Int_t nPlugin=pluginArray->GetEntries();
+  for(Int_t i=0; i<nPlugin;i++) {
+    CbmMvdSensorPlugin* plugin= (CbmMvdSensorPlugin*) pluginArray->At(i);
+    cout << "CbmMvdDigitizer::DetectDigitizerPlugin: PlugInID = " << plugin->GetPluginIDNumber() << endl;
+    if (pluginID==plugin->GetPluginIDNumber()){return i;}
+  }
+
+
+ return -1;*/
+}
 
 // -----   Private method PrintParameters   --------------------------------
 void CbmMvdDigitizer::PrintParameters()

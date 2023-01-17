@@ -67,6 +67,7 @@ public:
   /** fill buffer **/
   void SetInputArray(TClonesArray* inputStream);
   void SetInput(CbmMvdPoint* point);
+  void SetInput(TObject*); //overwrite
 
   /** Execute **/
   void Exec();
