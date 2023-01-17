@@ -79,6 +79,8 @@ public:
   // TClonesArray* GetClonesArray(Int_t dataLevel){ return 0;}
   Int_t GetSensorArraySize() { return (fSensorArray->GetEntriesFast()); }
   Int_t GetPluginArraySize() { return fPluginCount - 1; }
+  UInt_t GetPluginCount() { return fPluginCount; }
+  void SetPluginCount(UInt_t count) { fPluginCount=count; }
   Int_t  DetectPlugin(Int_t pluginID);
 
 
@@ -99,6 +101,7 @@ public:
   void ShowDebugHistos();
   /** Data Processing */
 
+  std::map<int, CbmMvdSensor*>& GetSensorMap() { return fSensorMap;};
 
   void ExecChain();          //Processes the full execution chain
   void Exec(UInt_t nLevel);  //Processes Element nLevel of the chain
@@ -118,6 +121,8 @@ public:
   void SetProduceNoise();
 
   static void SetSensorTyp(CbmMvdSensorTyp typ) { fSensorTyp = typ; };
+
+  void SetSensorArrayFilled(Bool_t value = kTRUE) {fSensorArrayFilled=value;}
 
 private:
   static CbmMvdSensorTyp fSensorTyp;

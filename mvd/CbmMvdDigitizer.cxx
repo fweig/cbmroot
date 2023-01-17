@@ -326,10 +326,20 @@ InitStatus CbmMvdDigitizer::Init()
     }
   }
 
-  CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
 
-  fDetector->AddPlugin(digiTask);
+  // Add the digitizer plugin to all sensors
+  std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+
+  for (auto itr = sensorMap.begin();
+              itr != sensorMap.end(); itr++) {
+    CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
+    itr->second->AddPlugin(digiTask);
+    itr->second->SetDigiPlugin(plugincount);
+  }
+  fDetector->SetSensorArrayFilled(kTRUE);
+  fDetector->SetPluginCount(plugincount+1);
   fDigiPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
+
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
   fDetector->Init();
 

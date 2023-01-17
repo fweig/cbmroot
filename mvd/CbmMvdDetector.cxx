@@ -19,7 +19,7 @@
 #include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //khun
 #include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
+//#include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
 //#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
 #include "CbmDigiManager.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //khun
@@ -204,19 +204,21 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin)
   const TString hitname       = "CbmMvdSensorHitfinderTask";      //khun
   const TString digitohitname = "CbmMvdSensorDigiToHitTask";
 
-
   for (Int_t i = 0; i < nSensors; i++) {
 
 
     if (plugin->GetPluginType() == task) {
 
       if (plugin->ClassName() == digitizername) {
+        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigitizer class";
+/*
         CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
         sensor                              = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(digiTask);
         sensor->SetDigiPlugin(fPluginCount);
 
         //cout <<  "Adding Task CbmMvdSensorDigitizerTask at Sensor " << sensor->GetName() << endl;
+*/
       }
       else if (plugin->ClassName() == digitizerTBname) {
         CbmMvdSensorDigitizerTBTask* digiTask = new CbmMvdSensorDigitizerTBTask();
