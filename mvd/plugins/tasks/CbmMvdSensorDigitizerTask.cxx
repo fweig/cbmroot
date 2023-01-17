@@ -155,6 +155,7 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
 {
   fRandGen.SetSeed(2736);
   fproduceNoise = kFALSE;
+  fPluginIDNumber= 00100;
 }
 // -------------------------------------------------------------------------
 
@@ -254,7 +255,8 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , h_LengthVsAngle(NULL)
   , h_LengthVsEloss(NULL)
   , h_ElossVsMomIn(NULL)
-{
+
+{ fPluginIDNumber= 00100;
   cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl;
 
   fRandGen.SetSeed(2736);

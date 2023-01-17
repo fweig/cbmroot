@@ -44,7 +44,7 @@ set(SRCS
   CbmMvdDetector.cxx
   CbmMvdSensor.cxx
   CbmMvdDigiToHit.cxx
-  CbmMvdDigiToHitTB.cxx
+ # CbmMvdDigiToHitTB.cxx
   CbmMvdTrackingInterface.cxx
   
   #OLD
@@ -92,9 +92,9 @@ install(FILES tools/CbmMvdHelper.h
 install(FILES plugins/CbmMvdSensorPlugin.h
         DESTINATION include/mvd/plugins
        )
-install(FILES SensorDataSheets/CbmMvdMimosa26AHR.h
+install(FILES #SensorDataSheets/CbmMvdMimosa26AHR.h
               SensorDataSheets/CbmMvdSensorDataSheet.h
-              SensorDataSheets/CbmMvdMimosa34.h
+              #SensorDataSheets/CbmMvdMimosa34.h
               SensorDataSheets/CbmMvdMimosis.h
         DESTINATION include/mvd/SensorDataSheets
        )
@@ -107,7 +107,7 @@ install(FILES plugins/tasks/CbmMvdSensorClusterfinderTask.h
               plugins/tasks/CbmMvdSensorDigitizerTask.h
               plugins/tasks/CbmMvdSensorDigitizerTBTask.h
               plugins/tasks/CbmMvdSensorDigiToHitTask.h
-#              plugins/tasks/CbmMvdSensorFindHitTask.h
+              plugins/tasks/CbmMvdSensorFindHitTask.h
               plugins/tasks/CbmMvdSensorHitfinderTask.h
               plugins/tasks/CbmMvdSensorTask.h
         DESTINATION include/mvd/plugins/tasks

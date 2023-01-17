@@ -327,7 +327,11 @@ void CbmMvdDetector::SetProduceNoise()
   }
 }
 //-----------------------------------------------------------------------
-
+void CbmMvdDetector::SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input)
+{
+  CbmMvdSensor* sensor=(CbmMvdSensor*)fSensorArray->At(nSensor);
+  sensor->SendInputToPlugin(nPlugin,input);
+}
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInput(TClonesArray* input)
 {
@@ -362,6 +366,41 @@ void CbmMvdDetector::SendInput(TClonesArray* input)
 }
 //-----------------------------------------------------------------------
 
+//-----------------------------------------------------------------------
+void CbmMvdDetector::SendInputNeutral(TClonesArray* input)
+{
+  /**
+   *
+   * Sending event to sensors,
+   * each sensor gets only his own points
+   *
+   *
+   *
+   * **/
+/*
+
+  TObject* point;
+  Int_t nEntries = input->GetEntriesFast();
+  Int_t nSensors = fSensorArray->GetEntriesFast();
+  CbmMvdSensor* sensor;
+  Bool_t send = kFALSE;
+  for (Int_t i = 0; i < nEntries; i++) {
+    point = (CbmMvdPoint*) input->At(i);
+    point->SetPointId(i);
+    for (Int_t k = 0; k < nSensors; k++) {
+      sensor = (CbmMvdSensor*) fSensorArray->At(k);
+
+      if (point->GetDetectorID() == sensor->GetDetectorID()) {
+        sensor->SendInput(point);
+        send = true;
+      }
+    }
+    if (!send) LOG(warn) << "Point not send to any sensor: " << point->GetDetectorID();
+  }
+
+*/
+}
+//-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInputDigis(CbmDigiManager* digiMan)

@@ -79,6 +79,7 @@ public:
   void SendInputDigiToHit(CbmMvdDigi* digi);
   void SendInputCluster(CbmMvdCluster* cluster);
   void SetStation(Int_t StationNumber) { fStationNr = StationNumber; }
+  void SendInputToPlugin(Int_t nPlugin, TObject* input);
 
 
   /** Coordinate transformations **/

@@ -1,0 +1,14 @@
+Plugin Naming convention
+--------------------------------------
+fPluginIDNumber
+
+0????? = Task
+1????? = Buffer
+
+?0???  = Designed for event based simulation
+?1???  = Designed for TB simulation
+
+
+0?1??  = Digitizer-Type. Expects CbmMvdPoint as input. Provides CbmMvdDigi as output.
+0?2??  = Clusterfinder-Type. Expects CbmMvdDigi as input. Provides CbmMvdCluster as output.
+0?3??  = Hitfinder-Type. Expects CbmMvdCluster as input. Provides CbmMvdHit as output.

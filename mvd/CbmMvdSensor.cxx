@@ -10,9 +10,11 @@
 #include "CbmMvdSensor.h"
 
 //---Plugins
-#include "plugins/buffers/CbmMvdSensorFrameBuffer.h"
-#include "plugins/buffers/CbmMvdSensorTrackingBuffer.h"
+#include "CbmMvdSensorPlugin.h"
+#include "plugins/buffers/CbmMvdSensorFrameBuffer.h" // -> Not used
+#include "plugins/buffers/CbmMvdSensorTrackingBuffer.h" // -> Not used
 #include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //not needed khun
+
 #include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
@@ -325,6 +327,14 @@ void CbmMvdSensor::SendInput(CbmMvdPoint* point)
   }
 }
 // -------------------------------------------------------------------------
+
+void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)
+{
+  CbmMvdSensorPlugin* digitask;
+  digitask=(CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
+  digitask->SetInput(input);
+}
+
 
 
 // -------------------------------------------------------------------------

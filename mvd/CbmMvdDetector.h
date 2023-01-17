@@ -58,6 +58,8 @@ public:
 
   /** Data interface */
   void SendInput(TClonesArray* input);
+  void SendInputNeutral(TClonesArray* input);
+  void SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input);
   void SendInputDigis(CbmDigiManager* digiMan);
   void SendInputDigis(TClonesArray* digis);
   void SendInputDigisToHits(TClonesArray* digis);
@@ -70,6 +72,8 @@ public:
   TClonesArray* GetOutputDigiMatchs();
   TClonesArray* GetOutputCluster();  //khun
   TClonesArray* GetOutputArray(Int_t nPlugin);
+  TClonesArray* GetSensorArray(){return fSensorArray;};
+  TClonesArray* GetSensorIDArray(){return fSensorIDArray;};
   // TClonesArray* GetClonesArray(Int_t dataLevel){ return 0;}
   Int_t GetSensorArraySize() { return (fSensorArray->GetEntriesFast()); }
   UInt_t GetPluginArraySize() { return fPluginCount - 1; }

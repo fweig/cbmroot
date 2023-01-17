@@ -21,6 +21,7 @@
 
 class TClonesArray;
 class CbmMvdSensor;
+class TObject;
 
 enum MvdSensorPluginType
 {
@@ -39,6 +40,7 @@ public:
   virtual ~CbmMvdSensorPlugin();
 
   virtual MvdSensorPluginType GetPluginType() = 0;
+  virtual Int_t GetPluginIDNumber (){return fPluginIDNumber;}
   virtual void Init() { ; }
   virtual void Exec() { ; }
   virtual void ExecChain() { ; }
@@ -51,6 +53,7 @@ public:
 
   virtual void SetInputArray(TClonesArray*) { ; }
   virtual void SetInput(CbmMvdPoint*) { ; }
+  virtual void SetInput(TObject*) {;}
   virtual void SetOutputArray(TClonesArray*) { ; }
 
   virtual void SetNextPlugin(CbmMvdSensorPlugin* plugin) { fNextPlugin = plugin; }
@@ -74,6 +77,7 @@ protected:
   Bool_t initialized;
   Bool_t fShowDebugHistos;
   const char* fName;
+  Int_t fPluginIDNumber; //Identifier for the Plugin for debugging purposes. Hardcode in implementation please.
 
 private:
   CbmMvdSensorPlugin& operator=(const CbmMvdSensorPlugin&);

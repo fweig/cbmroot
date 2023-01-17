@@ -21,6 +21,7 @@ CbmMvdSensorPlugin::CbmMvdSensorPlugin()
   , initialized(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fName("CbmMvdSensorPlugin")
+  , fPluginIDNumber(-1)
 {
 }
 // -------------------------------------------------------------------------
@@ -33,6 +34,7 @@ CbmMvdSensorPlugin::CbmMvdSensorPlugin(const char* name)
   , initialized(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fName(name)
+  , fPluginIDNumber(-1)
 {
 }
 // -------------------------------------------------------------------------
