@@ -12,3 +12,7 @@ fPluginIDNumber
 0?1??  = Digitizer-Type. Expects CbmMvdPoint as input. Provides CbmMvdDigi as output.
 0?2??  = Clusterfinder-Type. Expects CbmMvdDigi as input. Provides CbmMvdCluster as output.
 0?3??  = Hitfinder-Type. Expects CbmMvdCluster as input. Provides CbmMvdHit as output.
+0?4??  = FindHit-Type
+0?5??  = DigiToHit-Type
+0?6??  = Readout-Type
+
