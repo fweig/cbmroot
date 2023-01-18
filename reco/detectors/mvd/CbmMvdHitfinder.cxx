@@ -208,7 +208,7 @@ InitStatus CbmMvdHitfinder::Init()
   fDetector = CbmMvdDetector::Instance();
 
 
-  // Add the digitizer plugin to all sensors
+  // Add the hit finder plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
   UInt_t plugincount=fDetector->GetPluginCount();
 
@@ -217,7 +217,7 @@ InitStatus CbmMvdHitfinder::Init()
     CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
 
     itr->second->AddPlugin(hitfinderTask);
-    itr->second->SetDigiPlugin(plugincount);
+    itr->second->SetHitPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
   fDetector->SetPluginCount(plugincount+1);

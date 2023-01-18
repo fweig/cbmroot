@@ -153,10 +153,23 @@ InitStatus CbmMvdHitfinderTB::Init()
 
   fDetector = CbmMvdDetector::Instance();
 
-  CbmMvdSensorHitfinderTask* HitfinderTask = new CbmMvdSensorHitfinderTask();
-  fDetector->AddPlugin(HitfinderTask);
 
+
+  // Add the hit finder plugin to all sensors
+  std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+  UInt_t plugincount=fDetector->GetPluginCount();
+
+  for (auto itr = sensorMap.begin();
+              itr != sensorMap.end(); itr++) {
+    CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
+
+    itr->second->AddPlugin(hitfinderTask);
+    itr->second->SetHitPlugin(plugincount);
+  }
+  fDetector->SetSensorArrayFilled(kTRUE);
+  fDetector->SetPluginCount(plugincount+1);
   fHitfinderPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
+
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
   fDetector->Init();
 

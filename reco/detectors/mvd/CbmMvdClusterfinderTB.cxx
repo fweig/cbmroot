@@ -145,13 +145,23 @@ InitStatus CbmMvdClusterfinderTB::Init()
     LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
-  CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
+  // Add the cluster finder plugin to all sensors
+  std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+  UInt_t plugincount=fDetector->GetPluginCount();
 
-  fDetector->AddPlugin(clusterTask);
+  for (auto itr = sensorMap.begin();
+              itr != sensorMap.end(); itr++) {
+    CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
+
+    itr->second->AddPlugin(clusterTask);
+    itr->second->SetClusterPlugin(plugincount);
+  }
+  fDetector->SetSensorArrayFilled(kTRUE);
+  fDetector->SetPluginCount(plugincount+1);
   fClusterPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
+
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
   fDetector->Init();
-
 
   // Screen output
   LOG(info) << GetName() << " initialised";
