@@ -134,12 +134,10 @@ public:
   /** Data control */
 
   void ClearInputArray() { ; }
-  //  void AddInputObject(TObject* dataObject);
 
   TClonesArray* GetOutputBuffer() const;
   TClonesArray* GetOutputArray(Int_t nPlugin) const;
   TClonesArray* GetMatchArray(Int_t nPlugin) const;
-  //TClonesArray* GetOutputMatch() const;
   Int_t GetOutputArrayLen(Int_t nPlugin) const;
 
 protected:
@@ -153,12 +151,6 @@ protected:
   Int_t fClusterPlugin;
   TString fVolName;   // Name of the volume attached to this sensor
   TString fNodeName;  // full name of the volume (including path) of the volume
-  /*TClonesArray* foutputDigis;
-  TClonesArray* foutputCluster;
-  TClonesArray* foutputDigiMatch;
-  TClonesArray* foutputBuffer;
-  TClonesArray* fcurrentPoints;
-  */
   Double_t fcurrentEventTime;
   Float_t epsilon[3];
 

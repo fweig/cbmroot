@@ -61,12 +61,12 @@ public:
   void SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input);
 
 
-  TClonesArray* GetOuput() { return 0; }
-  TClonesArray* GetOutputHits();
-  TClonesArray* GetOutputDigis();
-  TClonesArray* GetOutputDigiMatchs();
-  TClonesArray* GetOutputCluster();  //khun
-  TClonesArray* GetOutputArray(Int_t nPlugin);
+  //TClonesArray* GetOuput() { return 0; }
+  //TClonesArray* GetOutputHits();
+  //TClonesArray* GetOutputDigis();
+  //TClonesArray* GetOutputDigiMatchs();
+  //TClonesArray* GetOutputCluster();  //khun
+  //TClonesArray* GetOutputArray(Int_t nPlugin);
   void GetOutputArray(Int_t nPlugin,TClonesArray* outputArray);
   void GetMatchArray(Int_t nPlugin, TClonesArray* matchArray);
 
