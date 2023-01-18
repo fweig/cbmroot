@@ -86,7 +86,7 @@ set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   CbmBase
   CbmData
-  CbmMvd
+  CbmMvdBase
   CbmRecoBase
   FairRoot::Base
   ROOT::Core

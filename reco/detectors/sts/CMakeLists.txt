@@ -58,7 +58,7 @@ set(PRIVATE_DEPENDENCIES
   CbmBase
   CbmRecoBase
   CbmFlibFlesTools
-  CbmMvd
+  CbmMvdBase
   FairRoot::ParBase
   ROOT::Geom
   ROOT::Gpad

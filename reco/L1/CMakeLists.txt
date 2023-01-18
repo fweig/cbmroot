@@ -175,7 +175,7 @@ endif()
 
 set(PRIVATE_DEPENDENCIES
   CbmMuchBase
-  CbmMvd
+  CbmMvdBase
   CbmRecoSts
   CbmSimSteer
   CbmStsBase

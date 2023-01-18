@@ -96,7 +96,7 @@ set(PUBLIC_DEPENDENCIES
   )
 
 set(PRIVATE_DEPENDENCIES
-  CbmMvd
+  CbmMvdBase
   CbmSimBase
   KFParticleInterface
   Littrack

@@ -241,7 +241,7 @@ add_subdirectory (reco)
 add_subdirectory (analysis)
 
 ### Detector directories
-add_subdirectory (mvd)
+#add_subdirectory (mvd)
 
 ### Others
 Option(LARGE_TEST_STATISTIC "Run the test suite with large statistic (100 events)" OFF)

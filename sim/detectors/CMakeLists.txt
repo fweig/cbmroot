@@ -3,6 +3,7 @@
 
 add_subdirectory(bmon)
 add_subdirectory(much)
+add_subdirectory(mvd)
 add_subdirectory(psd)
 add_subdirectory(rich)
 add_subdirectory(sts)

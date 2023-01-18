@@ -22,7 +22,7 @@ set(PUBLIC_DEPENDENCIES
 
 set(PRIVATE_DEPENDENCIES
   CbmMuchSim
-  CbmMvd
+  CbmMvdSim
   CbmPsdSim
   CbmRichSim
   CbmSimSteer
