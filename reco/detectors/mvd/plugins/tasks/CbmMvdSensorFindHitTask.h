@@ -64,6 +64,12 @@ public:
   /** Intialisation **/
   void InitTask(CbmMvdSensor* mySensor);
 
+  virtual void SetInput(TObject* digi)
+  {
+    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdDigi(*((CbmMvdDigi*) digi));
+    inputSet = kTRUE;
+  }
+
   virtual void SetInputDigi(CbmMvdDigi* digi)
   {
     new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdDigi(*((CbmMvdDigi*) digi));

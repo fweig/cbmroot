@@ -84,7 +84,7 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 {
   // --- Start timer
  fTimer.Start();
-
+ cout << "CbmMvdClusterfinder::Exec : Starting Exec "  << endl;
  fCluster->Delete();
  if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd)) {
     if (fVerbose) cout << "//----------------------------------------//";
@@ -95,6 +95,8 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 
     Int_t nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
 
+    cout << "CbmMvdClusterfinder::Exec - nDigis= " << nDigis << endl;
+
     for (Int_t i = 0; i < nDigis; i++) {
       digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
       digi->SetRefId(i);
@@ -103,6 +105,7 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
     }
 
 
+    cout << "CbmMvdClusterfinder::Exec : Communicating with Plugin: " << nTargetPlugin << endl;
 
 
     //fDetector->SendInputDigis(fDigiMan);

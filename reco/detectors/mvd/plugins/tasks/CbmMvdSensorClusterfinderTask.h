@@ -68,6 +68,11 @@ public:
     inputSet = kTRUE;
   }
 
+  virtual void SetInput(TObject* digi)
+  {
+    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdDigi(*((CbmMvdDigi*) digi));
+    inputSet = kTRUE;
+  }
 
   /** Modifiers **/
   void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise)

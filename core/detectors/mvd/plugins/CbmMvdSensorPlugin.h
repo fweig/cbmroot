@@ -18,6 +18,8 @@
 #define CBMMVDSENSORPLUGIN_H 1
 
 #include "CbmMvdPoint.h"
+using std::cout;
+using std::endl;
 
 class TClonesArray;
 class CbmMvdSensor;
@@ -52,8 +54,8 @@ public:
   virtual TClonesArray* GetWriteArray() { return 0; }
 
   virtual void SetInputArray(TClonesArray*) { ; }
-  virtual void SetInput(CbmMvdPoint*) { ; }
-  virtual void SetInput(TObject*) {;}
+  //virtual void SetInput(CbmMvdPoint*) { ; }
+  virtual void SetInput(TObject*) {cout << "-E- CbmMvdSensorPlugin::SetInput - You are sending input to the base class instead to your plugin!" << endl;}
   virtual void SetOutputArray(TClonesArray*) { ; }
 
   virtual void SetNextPlugin(CbmMvdSensorPlugin* plugin) { fNextPlugin = plugin; }

@@ -94,7 +94,7 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
 
 
   fSensor = mysensor;
-  //cout << "-Start- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
+  cout << "-Start- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
   fInputBuffer  = new TClonesArray("CbmMvdDigi", 100);
   fOutputBuffer = new TClonesArray("CbmMvdCluster", 100);
 
@@ -188,6 +188,10 @@ void CbmMvdSensorClusterfinderTask::ExecChain() { Exec(); }
 // -----   Public method Exec   --------------
 void CbmMvdSensorClusterfinderTask::Exec()
 {
+
+  cout << "CbmMvdSensorClusterfinderTask::Exec - Running Sensor " << fSensor->GetName() << endl;
+  cout << "CbmMvdSensorClusterfinderTask::Exec - InputBufferSize " << fInputBuffer->GetEntriesFast() << endl;
+
   if (fInputBuffer->GetEntriesFast() > 0) {
     fOutputBuffer->Delete();
     inputSet                    = kFALSE;
@@ -206,6 +210,7 @@ void CbmMvdSensorClusterfinderTask::Exec()
     }
 
     Int_t nDigis = fInputBuffer->GetEntriesFast();
+    cout << " -I- CbmMvdClusterTrask::Exec(): Received following number of digis: " << nDigis << endl;
 
 
     nDigis             = fInputBuffer->GetEntriesFast();
