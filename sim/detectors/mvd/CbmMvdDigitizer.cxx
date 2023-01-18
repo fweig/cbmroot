@@ -316,6 +316,7 @@ InitStatus CbmMvdDigitizer::Init()
   for (auto itr = sensorMap.begin();
               itr != sensorMap.end(); itr++) {
     CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
+    if (fNoiseSensors) digiTask->SetProduceNoise();
     itr->second->AddPlugin(digiTask);
     itr->second->SetDigiPlugin(plugincount);
   }

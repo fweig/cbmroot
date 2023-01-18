@@ -11,18 +11,8 @@
 
 //---Plugins
 #include "CbmMvdSensorPlugin.h"
-#include "CbmMvdSensorTask.h"
 #include "CbmMvdSensorBuffer.h"
-//#include "plugins/buffers/CbmMvdSensorFrameBuffer.h" // -> Not used
-//#include "plugins/buffers/CbmMvdSensorTrackingBuffer.h" // -> Not used
-//#include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //not needed khun
-
-#include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
-//#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
-//#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
-#include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //not needed khun
-//---Plugins
+#include "plugins/tasks/CbmMvdSensorTask.h"
 
 /// includes from ROOT
 #include "TGeoManager.h"
@@ -282,33 +272,6 @@ void CbmMvdSensor::ShowDebugHistos()
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdSensor::SetProduceNoise()
-{
-  CbmMvdSensorPlugin* pluginFirst;
-  // CbmMvdSensorFrameBuffer* framebuffer;
-  CbmMvdSensorDigitizerTask* digitask;
-
-  pluginFirst = (CbmMvdSensorPlugin*) fPluginArray->At(0);
-  if (pluginFirst->GetPluginType() == buffer) { return; }
-  else if (pluginFirst->GetPluginType() == task) {
-    TString digitizername = "CbmMvdSensorDigitizerTask";
-
-    if (pluginFirst->ClassName() == digitizername) {
-      digitask = (CbmMvdSensorDigitizerTask*) fPluginArray->At(0);
-      digitask->SetProduceNoise();
-    }
-
-    else {
-      LOG(fatal) << "Invalid input typ";
-    }
-  }
-  else {
-    cout << endl << "ERROR!! undefind plugin!" << endl;
-  }
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
 
 void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)
 {
@@ -316,9 +279,6 @@ void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)
   digitask=(CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
   digitask->SetInput(input);
 }
-
-
-
 
 // -------------------------------------------------------------------------
 
@@ -448,20 +408,20 @@ TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
 
   if (nPlugin == fHitPlugin) GetOutputBuffer();
   else if (nPlugin == fDigiPlugin) {
-    CbmMvdSensorDigitizerTask* digiplugin = (CbmMvdSensorDigitizerTask*) fPluginArray->At(nPlugin);
-    Int_t ArrayLength                     = digiplugin->GetOutputArray()->GetEntriesFast() - 1;
+    CbmMvdSensorTask* plugin = static_cast<CbmMvdSensorTask*>(fPluginArray->At(nPlugin));
+    Int_t ArrayLength = plugin->GetOutputArray()->GetEntriesFast() - 1;
     if (ArrayLength >= 0) {
-      foutputDigis->AbsorbObjects(digiplugin->GetOutputArray());
-      foutputDigiMatch->AbsorbObjects(digiplugin->GetMatchArray());
+      foutputDigis->AbsorbObjects(plugin->GetOutputArray());
+      foutputDigiMatch->AbsorbObjects(plugin->GetMatchArray());
       //cout << endl << "got digis " << foutputDigis->GetEntriesFast() << " and matches " << foutputDigiMatch->GetEntriesFast() << endl;
     }
     return (foutputDigis);
   }
   else if (nPlugin == fClusterPlugin)  //khun not needed
   {
-    CbmMvdSensorClusterfinderTask* clusterplugin = (CbmMvdSensorClusterfinderTask*) fPluginArray->At(nPlugin);
-    Int_t ArrayLength                            = clusterplugin->GetOutputArray()->GetEntriesFast() - 1;
-    if (ArrayLength >= 0) foutputCluster->AbsorbObjects(clusterplugin->GetOutputArray(), 0, ArrayLength);
+    CbmMvdSensorTask* plugin = static_cast<CbmMvdSensorTask*>(fPluginArray->At(nPlugin));
+    Int_t ArrayLength                            = plugin->GetOutputArray()->GetEntriesFast() - 1;
+    if (ArrayLength >= 0) foutputCluster->AbsorbObjects(plugin->GetOutputArray(), 0, ArrayLength);
     return (foutputCluster);
   }
   else {

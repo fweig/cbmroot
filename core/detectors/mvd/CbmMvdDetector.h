@@ -115,8 +115,6 @@ public:
   CbmMvdSensor* GetSensor(UInt_t nSensor) { return (CbmMvdSensor*) fSensorArray->At(nSensor); };
   void PrintParameter() { fParameter->Print(); };
 
-  void SetProduceNoise();
-
   static void SetSensorTyp(CbmMvdSensorTyp typ) { fSensorTyp = typ; };
 
   void SetSensorArrayFilled(Bool_t value = kTRUE) {fSensorArrayFilled=value;}

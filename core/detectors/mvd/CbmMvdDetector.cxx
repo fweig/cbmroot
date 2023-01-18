@@ -312,17 +312,6 @@ void CbmMvdDetector::ShowDebugHistos()
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::SetProduceNoise()
-{
-  Int_t nSensors = fSensorArray->GetEntriesFast();
-  CbmMvdSensor* sensor;
-
-  for (Int_t j = 0; j < nSensors; j++) {
-    sensor = (CbmMvdSensor*) fSensorArray->At(j);
-    sensor->SetProduceNoise();
-  }
-}
-//-----------------------------------------------------------------------
 void CbmMvdDetector::SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input)
 {
   fSensorMap[detectorid]->SendInputToPlugin(nPlugin,input);

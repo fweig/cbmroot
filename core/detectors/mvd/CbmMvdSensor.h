@@ -142,9 +142,6 @@ public:
   //TClonesArray* GetOutputMatch() const;
   Int_t GetOutputArrayLen(Int_t nPlugin) const;
 
-  void SetProduceNoise();
-
-
 protected:
   Int_t fStationNr;   // Station identifier
   Int_t fSensorNr;    // Sensor identifier
