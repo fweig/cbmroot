@@ -100,20 +100,20 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
       digi->SetRefId(i);
 
       fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
-      }
+    }
 
 
 
 
-      //fDetector->SendInputDigis(fDigiMan);
-      if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
-      fDetector->Exec(fClusterPluginNr);
-      if (fVerbose) cout << "End Chain" << endl;
-      if (fVerbose) cout << "Start writing Cluster" << endl;
-      fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
-      if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
-      if (fVerbose) cout << "//----------------------------------------//" << endl;
-      LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
+    //fDetector->SendInputDigis(fDigiMan);
+    if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
+    fDetector->Exec(fClusterPluginNr);
+    if (fVerbose) cout << "End Chain" << endl;
+    if (fVerbose) cout << "Start writing Cluster" << endl;
+    fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
+    if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
+    if (fVerbose) cout << "//----------------------------------------//" << endl;
+    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
               << setprecision(6) << fTimer.RealTime() << " s";
   }
 

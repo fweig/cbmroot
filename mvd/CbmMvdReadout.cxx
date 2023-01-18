@@ -57,7 +57,17 @@ void CbmMvdReadout::Exec(Option_t* /*opt*/)
   if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd) > 0) {
     if (fVerbose) cout << "//----------------------------------------//";
     if (fVerbose) cout << endl << "Send Input" << endl;
-    fDetector->SendInputDigis(fDigiMan);
+    Int_t nTargetPlugin=fDetector->DetectPlugin(200);
+    CbmMvdDigi* digi=0;
+
+    Int_t nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
+
+    for (Int_t i = 0; i < nDigis; i++) {
+      digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
+      digi->SetRefId(i);
+
+      fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
+    }
     if (fVerbose) cout << "Execute ReadoutPlugin Nr. " << fPluginNr << endl;
     fDetector->Exec(fPluginNr);
     if (fVerbose) cout << "End Chain" << endl;

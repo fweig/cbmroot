@@ -368,7 +368,7 @@ void CbmMvdDigitizer::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
 Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
-{ Int_t nDigitizerPlugin=-1;
+{
 
   CbmMvdDetector* detector= CbmMvdDetector::Instance();
   return detector->DetectPlugin(pluginID);

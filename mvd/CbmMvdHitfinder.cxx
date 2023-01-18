@@ -105,7 +105,7 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
   fHits->Clear();
   fTimer.Start();
   Int_t nTargetPlugin= fDetector->DetectPlugin(300);
-  Int_t nDigis;
+  Int_t nDigis=0;
   CbmMvdDigi* digi=0;
   CbmMvdCluster* cluster=0;
 

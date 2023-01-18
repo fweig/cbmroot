@@ -57,15 +57,9 @@ public:
   virtual ~CbmMvdDetector();
 
   /** Data interface */
-  //void SendInput(TClonesArray* input);
-  void SendInputNeutral(TClonesArray* input);
-//  void SendInputToSensorPlugin(Int_t nSensor, Int_t nPlugin, TObject* input);
+
   void SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input);
-  void SendInputDigis(CbmDigiManager* digiMan);
-  void SendInputDigis(TClonesArray* digis);
-  void SendInputDigisToHits(TClonesArray* digis);
-  void SendInputCluster(TClonesArray* cluster);
-  // void SendClonesArray(TClonesArray* addedStructures, Int_t dataLevel=0){;}
+
 
   TClonesArray* GetOuput() { return 0; }
   TClonesArray* GetOutputHits();
