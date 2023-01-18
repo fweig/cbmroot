@@ -18,7 +18,7 @@
 
 #include <xpu/defines.h>  // for XPU_D
 
-#ifndef NO_ROOT
+#if !defined(NO_ROOT) && !XPU_IS_HIP_CUDA
 #include <Rtypes.h>  // for ClassDef
 #endif
 
@@ -211,7 +211,7 @@ private:
     return CbmStsAddress::UnpackDigiAddress(packedAddress);
   }
 
-#ifndef NO_ROOT
+#if !defined(NO_ROOT) && !XPU_IS_HIP_CUDA
   ClassDefNV(CbmStsDigi, 8);
 #endif
 };
