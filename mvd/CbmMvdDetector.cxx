@@ -10,23 +10,27 @@
 #include "CbmMvdDetector.h"
 
 /// includes from CbmRoot
+#include "CbmDigiManager.h"
+#include "CbmMvdDetectorId.h"
 #include "CbmMvdDigi.h"
 #include "CbmMvdSensor.h"
 #include "plugins/CbmMvdSensorPlugin.h"
-#include "plugins/buffers/CbmMvdSensorBuffer.h"
-#include "plugins/buffers/CbmMvdSensorFrameBuffer.h"
-#include "plugins/buffers/CbmMvdSensorTrackingBuffer.h"
-#include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //khun
-#include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
-//#include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
-//#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
-#include "CbmDigiManager.h"
-#include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //khun
 #include "plugins/tasks/CbmMvdSensorTask.h"
 #include "tools/CbmMvdGeoHandler.h"
 
-#include "CbmMvdDetectorId.h"
+
+// #include "plugins/buffers/CbmMvdSensorBuffer.h"
+// #include "plugins/buffers/CbmMvdSensorFrameBuffer.h"
+// #include "plugins/buffers/CbmMvdSensorTrackingBuffer.h"
+
+//   #include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //khun
+//   #include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
+//   #include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
+//   #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
+//   #include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+//   #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //khun
+
+
 
 /// includes from FairRoot
 #include <Logger.h>
@@ -35,6 +39,7 @@
 #include "TGeoBBox.h"
 #include "TGeoMatrix.h"
 #include "TGeoVolume.h"
+#include "TRandom.h"
 #include "TString.h"
 
 /// includes from c
@@ -195,12 +200,12 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin)
 
   CbmMvdSensor* sensor;
   Int_t nSensors                = fSensorArray->GetEntriesFast();
-  const TString digitizername   = "CbmMvdSensorDigitizerTask";
+  const TString digitizername   = "CbmMvdSensorDigitizerTask";    //done
   const TString digitizerTBname = "CbmMvdSensorDigitizerTBTask";
   //  const TString findername      = "CbmMvdSensorFindHitTask";
   //const TString framename = "CbmMvdSensorFrameBuffer";
   //const TString trackingname = "CbmMvdSensorTrackingBuffer";
-  const TString clustername   = "CbmMvdSensorClusterfinderTask";  //khun
+  const TString clustername   = "CbmMvdSensorClusterfinderTask";  //khun //done
   const TString hitname       = "CbmMvdSensorHitfinderTask";      //khun
   const TString digitohitname = "CbmMvdSensorDigiToHitTask";
 
@@ -211,54 +216,22 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin)
 
       if (plugin->ClassName() == digitizername) {
         LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigitizer class";
-/*
-        CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
-        sensor                              = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(digiTask);
-        sensor->SetDigiPlugin(fPluginCount);
-
-        //cout <<  "Adding Task CbmMvdSensorDigitizerTask at Sensor " << sensor->GetName() << endl;
-*/
       }
       else if (plugin->ClassName() == digitizerTBname) {
-        CbmMvdSensorDigitizerTBTask* digiTask = new CbmMvdSensorDigitizerTBTask();
-        sensor                                = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(digiTask);
-        sensor->SetDigiPlugin(fPluginCount);
-
-        //cout <<  "Adding Task CbmMvdSensorDigitizerTask at Sensor " << sensor->GetName() << endl;
-        /*      } else if (plugin->ClassName() == findername) {
-        CbmMvdSensorFindHitTask* findTask = new CbmMvdSensorFindHitTask();
-        sensor                            = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(findTask);
-        sensor->SetHitPlugin(fPluginCount);
-        // cout <<  "Adding Task CbmMvdSensorFindHitTask at Sensor " << sensor->GetName() << endl;
-*/
+        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigitizerTB class";
       }
 
       //Re-enable cluster and hit finder in addition to khun
       else if (plugin->ClassName() == clustername) {
-        CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
-        sensor                                     = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(clusterTask);
-        sensor->SetClusterPlugin(fPluginCount);
-        // cout <<  "Adding Task CbmMvdSensorClusterfinderTask at Sensor " << sensor->GetName() << endl;
+        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdClusterfinder class";
       }
       else if (plugin->ClassName() == hitname) {
-        CbmMvdSensorHitfinderTask* hitTask = new CbmMvdSensorHitfinderTask();
-        sensor                             = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(hitTask);
-        sensor->SetHitPlugin(fPluginCount);
-        // cout <<  "Adding Task CbmMvdSensorHitfinderTask at Sensor " << sensor->GetName() << endl;
+        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdHitfinder class";
       }
       //end: re-enable cluster and hit finder in addition to khun
 
       else if (plugin->ClassName() == digitohitname) {
-        CbmMvdSensorDigiToHitTask* digitohitTask = new CbmMvdSensorDigiToHitTask();
-        sensor                                   = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(digitohitTask);
-        sensor->SetHitPlugin(fPluginCount);
-        // cout <<  "Adding Task CbmMvdSensorClusterfinderTask at Sensor " << sensor->GetName() << endl;
+        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigiToHit class";
       }
       else {
         cout << endl << "task not included yet, adding standart task." << endl;

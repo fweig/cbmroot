@@ -14,7 +14,7 @@
 #include "CbmMvdDigi.h"
 #include "CbmMvdPileupManager.h"
 #include "CbmMvdPoint.h"
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
+//#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
 #include "tools/CbmMvdGeoHandler.h"
 

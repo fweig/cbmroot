@@ -203,19 +203,22 @@ InitStatus CbmMvdHitfinder::Init()
 
   fDetector = CbmMvdDetector::Instance();
 
-  //  if(!useClusterfinder)
-  //      {
-  //  	CbmMvdSensorFindHitTask* HitfinderTask = new CbmMvdSensorFindHitTask();
-  //      fDetector->AddPlugin(HitfinderTask);
-  //      }
-  //  else
-  //      {
-  CbmMvdSensorHitfinderTask* HitfinderTask = new CbmMvdSensorHitfinderTask();
-  fDetector->AddPlugin(HitfinderTask);
-  cout << endl << "running with external clusterfinder" << endl;
-  //       }
 
+  // Add the digitizer plugin to all sensors
+  std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+  UInt_t plugincount=fDetector->GetPluginCount();
+
+  for (auto itr = sensorMap.begin();
+              itr != sensorMap.end(); itr++) {
+    CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
+
+    itr->second->AddPlugin(hitfinderTask);
+    itr->second->SetDigiPlugin(plugincount);
+  }
+  fDetector->SetSensorArrayFilled(kTRUE);
+  fDetector->SetPluginCount(plugincount+1);
   fHitfinderPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
+
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
   fDetector->Init();
 

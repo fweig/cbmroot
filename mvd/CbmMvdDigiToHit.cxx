@@ -149,10 +149,21 @@ InitStatus CbmMvdDigiToHit::Init()
     LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
-  CbmMvdSensorDigiToHitTask* hitTask = new CbmMvdSensorDigiToHitTask();
+  // Add the digitizer plugin to all sensors
+  std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+  UInt_t plugincount=fDetector->GetPluginCount();
 
-  fDetector->AddPlugin(hitTask);
+  for (auto itr = sensorMap.begin();
+              itr != sensorMap.end(); itr++) {
+    CbmMvdSensorDigiToHitTask* hitTask = new CbmMvdSensorDigiToHitTask();
+
+    itr->second->AddPlugin(hitTask);
+    itr->second->SetDigiPlugin(plugincount);
+  }
+  fDetector->SetSensorArrayFilled(kTRUE);
+  fDetector->SetPluginCount(plugincount+1);
   fHitPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
+
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
   fDetector->Init();
 
