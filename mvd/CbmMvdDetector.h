@@ -67,6 +67,9 @@ public:
   TClonesArray* GetOutputDigiMatchs();
   TClonesArray* GetOutputCluster();  //khun
   TClonesArray* GetOutputArray(Int_t nPlugin);
+  void GetOutputArray(Int_t nPlugin,TClonesArray* outputArray);
+  void GetMatchArray(Int_t nPlugin, TClonesArray* matchArray);
+
   TClonesArray* GetSensorArray(){return fSensorArray;};
   CbmMvdSensor* GetSensor(Int_t nSensor) {return (CbmMvdSensor*) fSensorArray->At(nSensor);}
   TClonesArray* GetSensorIDArray(){return fSensorIDArray;};

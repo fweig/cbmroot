@@ -65,6 +65,10 @@ CbmMvdDigitizer::CbmMvdDigitizer()
   , fPileupManager(nullptr)
   , fDeltaManager(nullptr)
 {
+    fTmpDigi  = new TClonesArray("CbmMvdDigi", 1000);
+    fTmpMatch = new TClonesArray("CbmMatch", 1000);
+
+
 }
 // -------------------------------------------------------------------------
 
@@ -96,6 +100,9 @@ CbmMvdDigitizer::CbmMvdDigitizer(const char* name, Int_t iMode, Int_t /*iVerbose
   , fPileupManager(nullptr)
   , fDeltaManager(nullptr)
 {
+
+  fTmpDigi  = new TClonesArray("CbmMvdDigi", 1000);
+  fTmpMatch = new TClonesArray("CbmMatch", 1000);
 }
 // -------------------------------------------------------------------------
 
@@ -141,18 +148,30 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
 
     }
 
+    //cout << "CbmMvdDigitizer::Exec() - Send data completed" << endl;
 
 
 
-    //fDetector->SendInput(fInputPoints);
 
     LOG(debug) << fName << ": Execute DigitizerPlugin Nr. " << fDigiPluginNr;
     fDetector->Exec(fDigiPluginNr);
     LOG(debug) << fName << ": End Chain";
 
+
+    //cout << "CbmMvdDigitizer::Exec() - Exec data completed" << endl;
+
     // --- Send produced digis to DAQ
-    fTmpDigi  = fDetector->GetOutputDigis();
-    fTmpMatch = fDetector->GetOutputDigiMatchs();
+    //fTmpDigi  = fDetector->GetOutputDigis();
+    //fTmpMatch = fDetector->GetOutputDigiMatchs();
+
+    fDetector->GetOutputArray(nTargetPlugin, fTmpDigi);
+    //cout << "CbmMvdDigitizer::Exec() - GetOutputArray completed" << endl;
+
+    fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
+    //cout << "CbmMvdDigitizer::Exec() - GetMatchArray data completed" << endl;
+
+    //cout << "Length of Digi Array " << fTmpDigi->GetEntriesFast() << endl;
+    //cout << "Length of Digi Match Array " << fTmpMatch->GetEntriesFast() << endl;
 
     Int_t nEntries = fTmpDigi->GetEntriesFast();
     for (Int_t index = 0; index < nEntries; index++) {

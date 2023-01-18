@@ -485,8 +485,9 @@ TClonesArray* CbmMvdDetector::GetOutputDigiMatchs()
     sensor      = (CbmMvdSensor*) fSensorArray->At(i);
     fDigiPlugin = sensor->GetDigiPlugin();
     //    Int_t length = sensor->GetOutputArrayLen(fDigiPlugin);
-    foutputDigiMatchs->AbsorbObjects(sensor->GetOutputMatch());
+    foutputDigiMatchs->AbsorbObjects(sensor->GetMatchArray(fDigiPlugin));
   }
+  cout << " -W- CbmMvdDetector::GetOutputDigiMatchs - Use of methode depreciated" << endl;
   return (foutputDigiMatchs);
 }
 //-----------------------------------------------------------------------
@@ -530,12 +531,56 @@ TClonesArray* CbmMvdDetector::GetOutputArray(Int_t nPlugin)
     Int_t length = sensor->GetOutputArrayLen(nPlugin);
     if (length >= 0) {
       foutputDigis->AbsorbObjects(sensor->GetOutputArray(nPlugin), 0, length);
-      foutputDigiMatchs->AbsorbObjects(sensor->GetOutputMatch(), 0, length);
+      foutputDigiMatchs->AbsorbObjects(sensor->GetMatchArray(nPlugin), 0, length);
     }
   }
   return (foutputDigis);
 }
 //-----------------------------------------------------------------------
+
+void CbmMvdDetector::GetOutputArray(Int_t nPlugin, TClonesArray* outputArray){
+  Int_t nSensors = fSensorArray->GetEntriesFast();
+  CbmMvdSensor* sensor;
+  TClonesArray* tmpArray;
+
+
+  for (Int_t i = 0; i < nSensors; i++) {
+    sensor       = (CbmMvdSensor*) fSensorArray->At(i);
+    tmpArray=sensor->GetOutputArray(nPlugin);
+    Int_t length = tmpArray->GetEntriesFast();
+    //cout<< "CbmMvdDetector::GetOutputArray - Length = " << length << endl;
+    if (length >= 0) {
+      outputArray->AbsorbObjects(tmpArray);
+    }
+  }
+}
+//-----------------------------------------------------------------------
+void CbmMvdDetector::GetMatchArray(Int_t nPlugin, TClonesArray* matchArray){
+  Int_t nSensors = fSensorArray->GetEntriesFast();
+  CbmMvdSensor* sensor;
+  TClonesArray* tmpArray;
+
+
+  for (Int_t i = 0; i < nSensors; i++) {
+    sensor       = (CbmMvdSensor*) fSensorArray->At(i);
+    tmpArray=sensor->GetMatchArray(nPlugin);
+    Int_t length = tmpArray->GetEntriesFast();
+
+    if (length >= 0) {
+      matchArray->AbsorbObjects(tmpArray);
+    }
+  }
+
+  /*
+  CbmMvdSensor* sensor;
+  for (Int_t i = 0; i < nSensors; i++) {
+    sensor       = (CbmMvdSensor*) fSensorArray->At(i);
+    Int_t length = sensor->GetOutputArrayLen(nPlugin);
+    if (length >= 0) {
+      matchArray->AbsorbObjects(sensor->GetMatchArray(nPlugin), 0, length);
+    }
+  } */
+}
 
 //-----------------------------------------------------------------------
 void CbmMvdDetector::Finish()

@@ -148,8 +148,12 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
     fDetector->Exec(fHitfinderPluginNr);
     if (fVerbose) cout << "End Chain" << endl;
     if (fVerbose) cout << "Start writing Hits" << endl;
-    fHits->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
-    if (fVerbose) cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
+    fDetector->GetOutputArray(nTargetPlugin, fHits);
+
+    //fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
+    //fHits->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
+
+    cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
     if (fVerbose) cout << "Finished writing Hits" << endl;
     if (fVerbose) cout << "//----------------------------------------//" << endl << endl;
     LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHits->GetEntriesFast() << " hits in " << fixed

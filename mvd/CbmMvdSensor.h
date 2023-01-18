@@ -74,10 +74,6 @@ public:
   CbmMvdSensorDataSheet* GetDataSheet() { return fSensorData; }
   void SetDataSheet(CbmMvdSensorDataSheet* sheet) { fSensorData = sheet; }
   void SetMap(std::map<Int_t, Int_t> SensorMap) { fSensorMap = SensorMap; }  // Get Sensor Map to identify every Sensor
-  //void SendInput(CbmMvdPoint* point);
-  void SendInputDigi(CbmMvdDigi* digi);
-  void SendInputDigiToHit(CbmMvdDigi* digi);
-  void SendInputCluster(CbmMvdCluster* cluster);
   void SetStation(Int_t StationNumber) { fStationNr = StationNumber; }
   void SendInputToPlugin(Int_t nPlugin, TObject* input);
 
@@ -142,7 +138,8 @@ public:
 
   TClonesArray* GetOutputBuffer() const;
   TClonesArray* GetOutputArray(Int_t nPlugin) const;
-  TClonesArray* GetOutputMatch() const;
+  TClonesArray* GetMatchArray(Int_t nPlugin) const;
+  //TClonesArray* GetOutputMatch() const;
   Int_t GetOutputArrayLen(Int_t nPlugin) const;
 
   void SetProduceNoise();
@@ -159,11 +156,12 @@ protected:
   Int_t fClusterPlugin;
   TString fVolName;   // Name of the volume attached to this sensor
   TString fNodeName;  // full name of the volume (including path) of the volume
-  TClonesArray* foutputDigis;
+  /*TClonesArray* foutputDigis;
   TClonesArray* foutputCluster;
   TClonesArray* foutputDigiMatch;
   TClonesArray* foutputBuffer;
   TClonesArray* fcurrentPoints;
+  */
   Double_t fcurrentEventTime;
   Float_t epsilon[3];
 

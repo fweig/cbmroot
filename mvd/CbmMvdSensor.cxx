@@ -11,9 +11,11 @@
 
 //---Plugins
 #include "CbmMvdSensorPlugin.h"
-#include "plugins/buffers/CbmMvdSensorFrameBuffer.h" // -> Not used
-#include "plugins/buffers/CbmMvdSensorTrackingBuffer.h" // -> Not used
-#include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //not needed khun
+#include "CbmMvdSensorTask.h"
+#include "CbmMvdSensorBuffer.h"
+//#include "plugins/buffers/CbmMvdSensorFrameBuffer.h" // -> Not used
+//#include "plugins/buffers/CbmMvdSensorTrackingBuffer.h" // -> Not used
+//#include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //not needed khun
 
 #include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
 //#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
@@ -57,12 +59,15 @@ CbmMvdSensor::CbmMvdSensor()
   , fClusterPlugin(-1)
   , fVolName("")
   , fNodeName("")
+ /*
   , foutputDigis(NULL)
   , foutputCluster(NULL)
   ,  //not needed khun
   foutputDigiMatch(NULL)
   , foutputBuffer(NULL)
+
   , fcurrentPoints(NULL)
+  */
   , fcurrentEventTime(0.)
   , epsilon()
   , fShape(NULL)
@@ -103,12 +108,15 @@ CbmMvdSensor::CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, T
   , fClusterPlugin(-1)
   , fVolName(volName)
   , fNodeName(nodeName)
+ /*
   , foutputDigis(NULL)
   , foutputCluster(NULL)
   ,  //not needed khun
   foutputDigiMatch(NULL)
   , foutputBuffer(NULL)
+
   , fcurrentPoints(NULL)
+  */
   , fcurrentEventTime(0.)
   , epsilon()
   , fShape(NULL)
@@ -202,13 +210,14 @@ void CbmMvdSensor::Init()
 
   ReadSensorGeometry(fNodeName);
 
-
+/*
   if (!initialized) {
     foutputDigis     = new TClonesArray("CbmMvdDigi", 1000);
     foutputDigiMatch = new TClonesArray("CbmMatch", 1000);
     foutputBuffer    = new TClonesArray("CbmMvdHit", 1000);
     foutputCluster   = new TClonesArray("CbmMvdCluster", 1);  //not needed khun
   }
+  */
 
   Int_t nPlugin = fPluginArray->GetEntriesFast();
 
@@ -301,36 +310,6 @@ void CbmMvdSensor::SetProduceNoise()
 
 // -------------------------------------------------------------------------
 
-/*
-void CbmMvdSensor::SendInput(CbmMvdPoint* point)
-{
-
-  CbmMvdSensorPlugin* pluginFirst;
-
-  CbmMvdSensorTask* digitask;
-
-  pluginFirst = (CbmMvdSensorPlugin*) fPluginArray->At(0);
-
-  if (pluginFirst->GetPluginType() == task) {
-    TString digitizername   = "CbmMvdSensorDigitizerTask";
-    TString digitizerTBname = "CbmMvdSensorDigitizerTBTask";
-
-    if (pluginFirst->ClassName() == digitizername || pluginFirst->ClassName() == digitizerTBname) {
-      digitask = (CbmMvdSensorTask*) fPluginArray->At(0);
-      digitask->SetInput(point);
-    }
-
-    else {
-      LOG(fatal) << "Invalid input typ";
-    }
-  }
-  else {
-    cout << endl << "ERROR!! undefind plugin!" << endl;
-  }
-}
-*/
-// -------------------------------------------------------------------------
-
 void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)
 {
   CbmMvdSensorPlugin* digitask;
@@ -339,49 +318,6 @@ void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)
 }
 
 
-
-// -------------------------------------------------------------------------
-void CbmMvdSensor::SendInputDigi(CbmMvdDigi* digi)  //for old CF
-{
-  if (fHitPlugin != -1) {
-    CbmMvdSensorClusterfinderTask* clustertask = (CbmMvdSensorClusterfinderTask*) fPluginArray->At(fClusterPlugin);
-    clustertask->SetInputDigi(digi);
-  }
-  else {
-    cout << endl << "Somthing seems fishy here" << endl;
-  }
-}
-// -------------------------------------------------------------------------
-
-
-// -------------------------------------------------------------------------
-void CbmMvdSensor::SendInputDigiToHit(CbmMvdDigi* digi)  //for DigiToHit
-{
-  if (fHitPlugin != -1) {
-    CbmMvdSensorDigiToHitTask* digitohittask = (CbmMvdSensorDigiToHitTask*) fPluginArray->At(fHitPlugin);
-    digitohittask->SetInputDigi(digi);
-  }
-  else {
-    cout << endl << "Somthing seems fishy here" << endl;
-  }
-}
-// -------------------------------------------------------------------------
-
-
-//not needed khun/*
-// -------------------------------------------------------------------------
-void CbmMvdSensor::SendInputCluster(CbmMvdCluster* cluster)
-{
-  if (fHitPlugin != -1) {
-    CbmMvdSensorHitfinderTask* findertask = (CbmMvdSensorHitfinderTask*) fPluginArray->At(fHitPlugin);
-    findertask->SetInputCluster(cluster);
-  }
-  else {
-    cout << endl << "Somthing seems fishy in SendInputCluster" << endl;
-  }
-}
-// -------------------------------------------------------------------------
-//not needed khun */
 
 
 // -------------------------------------------------------------------------
@@ -399,11 +335,12 @@ void CbmMvdSensor::ExecChain()
     FairEventHeader* event = ana->GetEventHeader();
     fcurrentEventTime      = event->GetEventTime();
   }
+  /*
   foutputDigis->Clear("C");
   foutputDigiMatch->Clear("C");
   foutputCluster->Clear("C");  //not needed khun
   foutputBuffer->Clear("C");
-
+  */
 
   CbmMvdSensorPlugin* plugin;
   Int_t nPlugin = fPluginArray->GetEntriesFast();
@@ -425,10 +362,11 @@ void CbmMvdSensor::ExecChain()
 
 void CbmMvdSensor::Exec(UInt_t nPlugin)
 {
-  foutputDigis->Clear("C");
+  /*foutputDigis->Clear("C");
   foutputDigiMatch->Clear("C");
   foutputCluster->Clear("C");  //not needed khun
   foutputBuffer->Clear("C");
+  */
   UInt_t nPluginMax = fPluginArray->GetEntriesFast();
   if (nPlugin > nPluginMax) { Fatal(GetName(), " Error - Called non-existing plugin"); }
   CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
@@ -441,10 +379,12 @@ void CbmMvdSensor::ExecTo(UInt_t nPlugin)
   FairPrimaryGenerator* gen = run->GetPrimaryGenerator();
   FairMCEventHeader* event  = gen->GetEvent();
 
+  /*
   foutputDigis->Delete();
   foutputCluster->Delete();  //not needed khun
   foutputDigiMatch->Clear("C");
   foutputBuffer->Clear("C");
+  */
 
   fcurrentEventTime = event->GetT();
 
@@ -501,6 +441,8 @@ void CbmMvdSensor::ExecFrom(UInt_t nPlugin)
 }
 
 // -------------------------------------------------------------------------
+
+/*
 TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
 {
 
@@ -527,15 +469,59 @@ TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
   }
   return NULL;
 }
-// -------------------------------------------------------------------------
+*/
 
+TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
+{
+
+  CbmMvdSensorPlugin* plugin=(CbmMvdSensorPlugin*)fPluginArray->At(nPlugin);
+  return plugin->GetOutputArray();
+}
+
+/*
+  if (nPlugin == fHitPlugin) GetOutputBuffer();
+  else if (nPlugin == fDigiPlugin) {
+    CbmMvdSensorDigitizerTask* digiplugin = (CbmMvdSensorDigitizerTask*) fPluginArray->At(nPlugin);
+    Int_t ArrayLength                     = digiplugin->GetOutputArray()->GetEntriesFast() - 1;
+    if (ArrayLength >= 0) {
+      foutputDigis->AbsorbObjects(digiplugin->GetOutputArray());
+      foutputDigiMatch->AbsorbObjects(digiplugin->GetMatchArray());
+      //cout << endl << "got digis " << foutputDigis->GetEntriesFast() << " and matches " << foutputDigiMatch->GetEntriesFast() << endl;
+    }
+    return (foutputDigis);
+  }
+  else if (nPlugin == fClusterPlugin)  //khun not needed
+  {
+    CbmMvdSensorClusterfinderTask* clusterplugin = (CbmMvdSensorClusterfinderTask*) fPluginArray->At(nPlugin);
+    Int_t ArrayLength                            = clusterplugin->GetOutputArray()->GetEntriesFast() - 1;
+    if (ArrayLength >= 0) foutputCluster->AbsorbObjects(clusterplugin->GetOutputArray(), 0, ArrayLength);
+    return (foutputCluster);
+  }
+  else {
+    LOG(fatal) << "undefined plugin: " << nPlugin << " called";
+  }
+  return NULL;
+}
+*/
+
+// -------------------------------------------------------------------------
+TClonesArray* CbmMvdSensor::GetMatchArray(Int_t nPlugin) const
+{
+
+  CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*)fPluginArray-> At (nPlugin);
+  return plugin->GetMatchArray();
+}
 // -------------------------------------------------------------------------
 Int_t CbmMvdSensor::GetOutputArrayLen(Int_t nPlugin) const
 {
+  TClonesArray* tempArray= GetOutputArray(nPlugin);  // make sure that the arrays are filled
+  if (tempArray){return tempArray->GetEntriesFast()-1;}
+  else {
+    LOG(fatal) << "undefined plugin called";
+    return -1;
+  }
 
-  GetOutputArray(nPlugin);  // make sure that the arrays are filled
-
-  if (nPlugin == fDigiPlugin) { return (foutputDigis->GetEntriesFast() - 1); }
+  /*
   //not needed khun
   else if (nPlugin == fClusterPlugin)  // && (noCluster==kFALSE))
   {
@@ -548,14 +534,15 @@ Int_t CbmMvdSensor::GetOutputArrayLen(Int_t nPlugin) const
   else {
     LOG(fatal) << "undefined plugin called";
     return -1;
-  }
+  } */
 }
 // -------------------------------------------------------------------------
 
+/*
 // -------------------------------------------------------------------------
 TClonesArray* CbmMvdSensor::GetOutputMatch() const { return (foutputDigiMatch); }
 // -------------------------------------------------------------------------
-
+*/
 
 // -------------------------------------------------------------------------
 TClonesArray* CbmMvdSensor::GetOutputBuffer() const
@@ -563,8 +550,8 @@ TClonesArray* CbmMvdSensor::GetOutputBuffer() const
 
 
   CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(fPluginArray->GetLast());
-  foutputBuffer->AbsorbObjects(plugin->GetOutputArray());
-  return (foutputBuffer);
+  cout << "-W- CbmMvdSensor::GetOutputBuffer: Warning - Use of method depreciated." << endl;
+  return (plugin->GetOutputArray());
 }
 // -------------------------------------------------------------------------
 

@@ -107,10 +107,14 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 
     //fDetector->SendInputDigis(fDigiMan);
     if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
-    fDetector->Exec(fClusterPluginNr);
+    fDetector->Exec(nTargetPlugin);
     if (fVerbose) cout << "End Chain" << endl;
     if (fVerbose) cout << "Start writing Cluster" << endl;
-    fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
+
+    fDetector->GetOutputArray(nTargetPlugin, fCluster);
+    //fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
+    //fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
+
     if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
     if (fVerbose) cout << "//----------------------------------------//" << endl;
     LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
