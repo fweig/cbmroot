@@ -28,11 +28,11 @@ if(DOWNLOAD_EXTERNALS)
 
   download_project_if_needed(PROJECT gsl
     GIT_REPOSITORY    "https://github.com/microsoft/GSL.git"
-    GIT_TAG           "a3534567187d2edc428efd3f13466ff75fe5805c"
+    GIT_TAG           "a3534567187d2edc428efd3f13466ff75fe5805c" # v4.0.0
     SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/GSL
   )
-  set(GSL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/GSL/include PARENT_SCOPE)
-  install(DIRECTORY GSL/include/gsl TYPE INCLUDE)
+  set(GSL_INSTALL TRUE)
+  add_subdirectory(GSL)
 
   #find_package(Vc 1.4.1)
   if(NOT Vc_FOUND)
