@@ -329,6 +329,7 @@ InitStatus CbmMvdDigitizer::Init()
 
   // Add the digitizer plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+  UInt_t plugincount=fDetector->GetPluginCount();
 
   for (auto itr = sensorMap.begin();
               itr != sensorMap.end(); itr++) {
