@@ -83,21 +83,37 @@ CbmMvdClusterfinder::~CbmMvdClusterfinder()
 void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 {
   // --- Start timer
-  fTimer.Start();
+ fTimer.Start();
 
-  fCluster->Delete();
-  if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd)) {
+ fCluster->Delete();
+ if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd)) {
     if (fVerbose) cout << "//----------------------------------------//";
     if (fVerbose) cout << endl << "Send Input" << endl;
-    fDetector->SendInputDigis(fDigiMan);
-    if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
-    fDetector->Exec(fClusterPluginNr);
-    if (fVerbose) cout << "End Chain" << endl;
-    if (fVerbose) cout << "Start writing Cluster" << endl;
-    fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
-    if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
-    if (fVerbose) cout << "//----------------------------------------//" << endl;
-    LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
+
+    Int_t nTargetPlugin=fDetector->DetectPlugin(200);
+    CbmMvdDigi* digi=0;
+
+    Int_t nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
+
+    for (Int_t i = 0; i < nDigis; i++) {
+      digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
+      digi->SetRefId(i);
+
+      fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
+      }
+
+
+
+
+      //fDetector->SendInputDigis(fDigiMan);
+      if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
+      fDetector->Exec(fClusterPluginNr);
+      if (fVerbose) cout << "End Chain" << endl;
+      if (fVerbose) cout << "Start writing Cluster" << endl;
+      fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
+      if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
+      if (fVerbose) cout << "//----------------------------------------//" << endl;
+      LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
               << setprecision(6) << fTimer.RealTime() << " s";
   }
 

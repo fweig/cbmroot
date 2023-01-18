@@ -74,7 +74,7 @@ public:
   CbmMvdSensorDataSheet* GetDataSheet() { return fSensorData; }
   void SetDataSheet(CbmMvdSensorDataSheet* sheet) { fSensorData = sheet; }
   void SetMap(std::map<Int_t, Int_t> SensorMap) { fSensorMap = SensorMap; }  // Get Sensor Map to identify every Sensor
-  void SendInput(CbmMvdPoint* point);
+  //void SendInput(CbmMvdPoint* point);
   void SendInputDigi(CbmMvdDigi* digi);
   void SendInputDigiToHit(CbmMvdDigi* digi);
   void SendInputCluster(CbmMvdCluster* cluster);

@@ -39,7 +39,7 @@ public:
   void Exec(Option_t* opt);
   void UseClusterfinder(Bool_t clusterfinderFlag)
   {
-    useClusterfinder = clusterfinderFlag;
+    fUseClusterfinder = clusterfinderFlag;
   };  //* enable use of external clusterfinder
   void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
@@ -52,7 +52,7 @@ private:
   TClonesArray* fHits;
 
   UInt_t fHitfinderPluginNr;
-  Bool_t useClusterfinder;
+  Bool_t fUseClusterfinder;
   Bool_t fShowDebugHistos;
   TStopwatch fTimer;  ///< ROOT timer
   Int_t fmode;

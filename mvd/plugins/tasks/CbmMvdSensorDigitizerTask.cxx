@@ -998,11 +998,11 @@ void CbmMvdSensorDigitizerTask::InitTask(CbmMvdSensor* mySensor)
 
   // cout << "-I- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
 
-  fDigis     = new TClonesArray("CbmMvdDigi", 10000);
-  fDigiMatch = new TClonesArray("CbmMatch", 10000);
+  fDigis     = new TClonesArray("CbmMvdDigi", 100);
+  fDigiMatch = new TClonesArray("CbmMatch", 100);
 
-  fOutputBuffer = new TClonesArray("CbmMvdDigi", 10000);
-  fInputPoints  = new TClonesArray("CbmMvdPoint", 10000);
+  fOutputBuffer = new TClonesArray("CbmMvdDigi", 100);
+  fInputPoints  = new TClonesArray("CbmMvdPoint", 100);
 
   if (!fSensor) {
     Fatal(GetName(), "Fatal error: Init(CbmMvdSensor*) called without valid pointer, "

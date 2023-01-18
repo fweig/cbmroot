@@ -44,7 +44,7 @@ CbmMvdHitfinder::CbmMvdHitfinder()
   , fInputCluster(NULL)
   , fHits(NULL)
   , fHitfinderPluginNr(0)
-  , useClusterfinder(kFALSE)
+  , fUseClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
   , fmode(-1)
@@ -60,7 +60,7 @@ CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t iVerbose)
   , fInputCluster(NULL)
   , fHits(NULL)
   , fHitfinderPluginNr(0)
-  , useClusterfinder(kFALSE)
+  , fUseClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
   , fmode(-1)
@@ -76,7 +76,7 @@ CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t mode, Int_t iVerbose)
   , fInputCluster(NULL)
   , fHits(NULL)
   , fHitfinderPluginNr(0)
-  , useClusterfinder(kFALSE)
+  , fUseClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
   , fTimer()
   , fmode(mode)
@@ -104,12 +104,47 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
 
   fHits->Clear();
   fTimer.Start();
-  if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) {
+  Int_t nTargetPlugin= fDetector->DetectPlugin(300);
+  Int_t nDigis;
+  CbmMvdDigi* digi=0;
+  CbmMvdCluster* cluster=0;
+
+  if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) { //checks if data sources are available
     if (fVerbose) cout << endl << "//----------------------------------------//" << endl;
-    if (!useClusterfinder) fDetector->SendInputDigis(fDigiMan);
-    else
-      fDetector->SendInputCluster(fInputCluster);
+    if (!fUseClusterfinder) {
+      fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
+      for (Int_t i = 0; i < nDigis; i++) {
+        digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
+        digi->SetRefId(i);
+
+        fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
+      }
+    }
+
+
+      //fDetector->SendInputDigis(fDigiMan);
+
+
+
+    else // of if (!fUseClusterfinder)
+    {
+
+
+      Int_t nEntries = fInputCluster->GetEntriesFast();
+      for (Int_t i = 0; i < nEntries; i++) {
+        cluster = (CbmMvdCluster*) fInputCluster->At(i);
+        cluster->SetRefId(i);
+        fDetector->SendInputToSensorPlugin(cluster->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(cluster));
+
+      }
+    }
+
+        //fDetector->SendInputCluster(fInputCluster);
+
+
     if (fVerbose) cout << "Execute HitfinderPlugin Nr. " << fHitfinderPluginNr << endl;
+
+
     fDetector->Exec(fHitfinderPluginNr);
     if (fVerbose) cout << "End Chain" << endl;
     if (fVerbose) cout << "Start writing Hits" << endl;
@@ -143,7 +178,7 @@ InitStatus CbmMvdHitfinder::Init()
   }
 
   // **********  Get input arrays
-  if (!useClusterfinder) {
+  if (!fUseClusterfinder) {
     fDigiMan = CbmDigiManager::Instance();
     fDigiMan->Init();
     if (!fDigiMan->IsPresent(ECbmModuleId::kMvd)) {

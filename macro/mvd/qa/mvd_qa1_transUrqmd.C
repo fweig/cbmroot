@@ -163,7 +163,7 @@ void mvd_qa1_transUrqmd(const char* setup = "sis100_electron")
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
   // --- Get target parameters
-  TVector3 targetPos(0., 0., 0.);
+  TVector3 targetPos(0., 0., -44.);
   Double_t tDz = 0.;
   if (target) {
     targetPos = target->GetPosition();
