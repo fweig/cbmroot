@@ -231,7 +231,7 @@ CbmKFTrackQa::CbmKFTrackQa(const char* name, Int_t iVerbose, TString outFileName
     float yMax[NTofHisto2D]          = {14., 14.};
     Int_t yBins[NTofHisto2D]         = {1600, 1600};
 
-    TString profName[NTofProfiles] = {"MatchEff", "Mismatch", "No match"};
+    TString profName[NTofProfiles] = {"MatchEff", "Mismatch", "NoMatch"};
 
     TString subdirs[14] = {"AllTracks",     "e", "mu", "pi",  "K",  "p", "Fragments", "Mismatch", "GhostTrack",
                            "WrongTofPoint", "d", "t",  "He3", "He4"};

@@ -9,6 +9,7 @@
 #include "CbmKFParticleFinder.h"
 
 #include "CbmEvent.h"
+#include "CbmKF.h"
 #include "CbmKFParticleFinderPID.h"
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
@@ -125,6 +126,11 @@ InitStatus CbmKFParticleFinder::Init()
   }
 
   fCbmPrimVertex = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
+
+  auto& target = CbmKF::Instance()->vTargets[0];
+  const std::array<float, 3> targetXYZ {(float) target.x, (float) target.y, (float) target.z};
+  fTopoReconstructor->SetTarget(targetXYZ);
+
   return kSUCCESS;
 }
 
