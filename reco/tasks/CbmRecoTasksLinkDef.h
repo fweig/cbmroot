@@ -16,6 +16,7 @@
 #pragma link C++ class CbmSourceTs + ;
 #pragma link C++ class CbmTaskBuildEvents + ;
 #pragma link C++ class CbmTaskDigiEventQa + ;
+#pragma link C++ class CbmTaskEventsCloneInToOut + ;
 #pragma link C++ class CbmTaskMakeRecoEvents + ;
 #pragma link C++ class CbmTaskTriggerDigi + ;
 #pragma link C++ class CbmTaskUnpack + ;

@@ -61,8 +61,8 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
   TString cFileId = sRunId;
 
   //TString parFileIn  = sInpDir + "/unp_mcbm_params_" + sRunId;
-  TString parFileOut = sOutDir + "/reco_event_mcbm_test_params_" + sRunId;
-  TString outFile    = sOutDir + "/reco_event_mcbm_test" + sRunId;
+  TString parFileOut = sOutDir + "/reco_" + (bDigiEvtsInput ? "digievent" : "event") + "_mcbm_test_params_" + sRunId;
+  TString outFile    = sOutDir + "/reco_" + (bDigiEvtsInput ? "digievent" : "event") + "_mcbm_test" + sRunId;
 
   // Your folder with the Tof Calibration files;
   TString TofFileFolder = "";
@@ -260,7 +260,7 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
 
   // -----   DigiEvent compatibility task   ---------------------------------
   if (bDigiEvtsInput) {
-    // ---- This is required if the input is in DigiEvent format
+    // ---- This is required if the input is in DigiEvent format to create CbmEvents + vectors of Digis in memory
     auto makeEvents = std::make_unique<CbmTaskMakeRecoEvents>();
     run->AddTask(makeEvents.release());
     std::cout << "-I- : Added task MakeRecoEvents" << std::endl;
@@ -271,6 +271,10 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
                  << "\n Exiting";
       return kFALSE;
     }
+    // ---- This is required if the input is in CbmEvent format to create a copy in memory for update (e.g. with hits)
+    auto cloneEventsInToOut = std::make_unique<CbmTaskEventsCloneInToOut>();
+    run->AddTask(cloneEventsInToOut.release());
+    std::cout << "-I- : Added task EventsCloneInToOut" << std::endl;
   }
   // ------------------------------------------------------------------------
 
