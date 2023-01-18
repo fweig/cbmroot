@@ -15,9 +15,9 @@
 //#pragma link C++ class CbmMvdDigitizerTB+;
 #pragma link C++ class CbmMvdHitfinder + ;
 #pragma link C++ class CbmMvdClusterfinder + ;
-#pragma link C++ class CbmMvdDigiToHit + ;
-#pragma link C++ class CbmMvdClusterfinderTB + ;
-#pragma link C++ class CbmMvdDigiToHitTB + ;
+//#pragma link C++ class CbmMvdDigiToHit + ;
+//#pragma link C++ class CbmMvdClusterfinderTB + ;
+//#pragma link C++ class CbmMvdDigiToHitTB + ;
 #pragma link C++ class CbmMvdReadout + ;
 
 #pragma link C++ class CbmMvdPileupManager + ;
@@ -43,10 +43,10 @@
 #pragma link C++ class CbmMvdSensorHitfinderTask + ;  //OLD
 #pragma link C++ class CbmMvdSensorDigitizerTask + ;
 #pragma link C++ class CbmMvdSensorReadoutTask + ;
-#pragma link C++ class CbmMvdSensorDigitizerTBTask + ;
+//#pragma link C++ class CbmMvdSensorDigitizerTBTask + ;
 #pragma link C++ class CbmMvdSensorClusterfinderTask + ;  //OLD
 //KHUN
-#pragma link C++ class CbmMvdSensorDigiToHitTask + ;
+//#pragma link C++ class CbmMvdSensorDigiToHitTask + ;
 
 
 #pragma link C++ class CbmMvdGeoHandler + ;

@@ -16,7 +16,7 @@
 #include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"  //not needed khun
 
 #include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
+//#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
 //#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //not needed khun

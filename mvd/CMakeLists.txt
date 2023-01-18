@@ -13,8 +13,8 @@ set(INCLUDE_DIRECTORIES
 set(SRCS
   plugins/tasks/CbmMvdSensorTask.cxx
   plugins/tasks/CbmMvdSensorDigitizerTask.cxx
-  plugins/tasks/CbmMvdSensorDigitizerTBTask.cxx
-  plugins/tasks/CbmMvdSensorDigiToHitTask.cxx
+  #plugins/tasks/CbmMvdSensorDigitizerTBTask.cxx
+  #plugins/tasks/CbmMvdSensorDigiToHitTask.cxx
   #OLD
   plugins/tasks/CbmMvdSensorHitfinderTask.cxx
   plugins/tasks/CbmMvdSensorClusterfinderTask.cxx
@@ -43,13 +43,13 @@ set(SRCS
   CbmMvdStationPar.cxx
   CbmMvdDetector.cxx
   CbmMvdSensor.cxx
-  CbmMvdDigiToHit.cxx
- # CbmMvdDigiToHitTB.cxx
+# CbmMvdDigiToHit.cxx
+# CbmMvdDigiToHit.cxx
   CbmMvdTrackingInterface.cxx
   
   #OLD
   CbmMvdClusterfinder.cxx
-  CbmMvdClusterfinderTB.cxx
+  #CbmMvdClusterfinderTB.cxx
   ####
   CbmMvdReadout.cxx
   )
@@ -105,8 +105,8 @@ install(FILES plugins/buffers/CbmMvdSensorBuffer.h
        )
 install(FILES plugins/tasks/CbmMvdSensorClusterfinderTask.h
               plugins/tasks/CbmMvdSensorDigitizerTask.h
-              plugins/tasks/CbmMvdSensorDigitizerTBTask.h
-              plugins/tasks/CbmMvdSensorDigiToHitTask.h
+              #plugins/tasks/CbmMvdSensorDigitizerTBTask.h
+              #plugins/tasks/CbmMvdSensorDigiToHitTask.h
               plugins/tasks/CbmMvdSensorFindHitTask.h
               plugins/tasks/CbmMvdSensorHitfinderTask.h
               plugins/tasks/CbmMvdSensorTask.h
