@@ -21,13 +21,16 @@
 #ifndef CBMMVDPILEUPMANAGER_H
 #define CBMMVDPILEUPMANAGER_H 1
 
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t
+#include <TObjArray.h>   // for TObjArray
+#include <TObject.h>     // for TObject
+#include <TString.h>     // for TString
 
-#include "TObjArray.h"
-#include "TObject.h"
-#include "TString.h"
-
+class TBuffer;
+class TClass;
 class TClonesArray;
-
+class TMemberInspector;
 
 class CbmMvdPileupManager : public TObject {
 

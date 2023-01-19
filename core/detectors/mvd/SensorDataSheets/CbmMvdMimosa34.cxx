@@ -9,14 +9,11 @@
 
 #include "CbmMvdMimosa34.h"
 
-#include "TMath.h"
+#include <RtypesCore.h>  // for kTRUE
+#include <TString.h>     // for TString
+#include <TMath.h>       // for Power
 
-#include <iostream>
-
-
-using std::cout;
-using std::endl;
-
+#include <iostream>      // for cout, endl
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdMimosa34::CbmMvdMimosa34()

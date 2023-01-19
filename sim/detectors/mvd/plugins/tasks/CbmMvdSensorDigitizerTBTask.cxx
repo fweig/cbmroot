@@ -235,14 +235,6 @@ void CbmMvdSensorDigitizerTBTask::SetInputArray(TClonesArray* inputStream)
 }
 // -----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-void CbmMvdSensorDigitizerTBTask::SetInput(CbmMvdPoint* point)
-{
-
-  new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) point));
-}
-// -----------------------------------------------------------------------------
-
 // -------------- public method ExecChain   ------------------------------------
 void CbmMvdSensorDigitizerTBTask::ExecChain() { Exec(); }
 // -----------------------------------------------------------------------------
@@ -715,7 +707,7 @@ void CbmMvdSensorDigitizerTBTask::InitTask(CbmMvdSensor* mySensor)
 
   ReadSensorInformation();
 
-  fPreviousPlugin = NULL;
+  fPreviousPlugin = nullptr;
   initialized     = kTRUE;
 }
 // -------------------------------------------------------------------------

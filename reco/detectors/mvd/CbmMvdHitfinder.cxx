@@ -5,29 +5,27 @@
 // -------------------------------------------------------------------------
 // -----                    CbmMvdHitfinder source file                -----
 // -------------------------------------------------------------------------
-
-// Includes from MVD
 #include "CbmMvdHitfinder.h"
 
-#include "CbmMvdPoint.h"
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-// #include "plugins/tasks/CbmMvdSensorFindHitTask.h" //digi to hit
-#include "CbmDigiManager.h"
-#include "plugins/tasks/CbmMvdSensorHitfinderTask.h" // cluster to hit
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmDefs.h"                               // for ECbmModuleId
+#include "CbmDigiManager.h"                        // for CbmDigiManager
+#include "CbmMvdCluster.h"                         // for CbmMvdCluster
+#include "CbmMvdDetector.h"                        // for CbmMvdDetector
+#include "CbmMvdDigi.h"                            // for CbmMvdDigi
+#include "CbmMvdSensor.h"                          // for CbmMvdSensor
+#include "CbmMvdSensorFindHitTask.h"               // for CbmMvdSensorFindHi...
+#include "CbmMvdSensorHitfinderTask.h"             // for CbmMvdSensorHitfin...
 
+#include <FairTask.h>                              // for InitStatus, FairTask
+#include <FairRootManager.h>                       // for FairRootManager
+#include <Logger.h>                                // for Logger, LOG
 
-// Includes from FAIR
-#include "FairModule.h"
-#include "FairRootManager.h"
+#include <TClonesArray.h>                          // for TClonesArray
 
-// Includes from ROOT
-#include "TClonesArray.h"
-
-
-// Includes from C++
-#include <iomanip>
-#include <iostream>
+#include <iomanip>                                 // for setprecision, setw
+#include <iostream>                                // for operator<<, endl
+#include <map>                                     // for allocator, __map_i...
+#include <utility>                                 // for pair
 
 using std::cout;
 using std::endl;
@@ -39,10 +37,10 @@ using std::setw;
 // -----   Default constructor   ------------------------------------------
 CbmMvdHitfinder::CbmMvdHitfinder()
   : FairTask("MVDHitfinder")
-  , fDetector(NULL)
+  , fDetector(nullptr)
   , fDigiMan(nullptr)
-  , fInputCluster(NULL)
-  , fHits(NULL)
+  , fInputCluster(nullptr)
+  , fHits(nullptr)
   , fHitfinderPluginNr(0)
   , fUseClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
@@ -55,10 +53,10 @@ CbmMvdHitfinder::CbmMvdHitfinder()
 // -----   Standard constructor   ------------------------------------------
 CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t iVerbose)
   : FairTask(name, iVerbose)
-  , fDetector(NULL)
+  , fDetector(nullptr)
   , fDigiMan(nullptr)
-  , fInputCluster(NULL)
-  , fHits(NULL)
+  , fInputCluster(nullptr)
+  , fHits(nullptr)
   , fHitfinderPluginNr(0)
   , fUseClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
@@ -71,10 +69,10 @@ CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t iVerbose)
 // -----   Standard constructor   ------------------------------------------
 CbmMvdHitfinder::CbmMvdHitfinder(const char* name, Int_t mode, Int_t iVerbose)
   : FairTask(name, iVerbose)
-  , fDetector(NULL)
+  , fDetector(nullptr)
   , fDigiMan(nullptr)
-  , fInputCluster(NULL)
-  , fHits(NULL)
+  , fInputCluster(nullptr)
+  , fHits(nullptr)
   , fHitfinderPluginNr(0)
   , fUseClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)

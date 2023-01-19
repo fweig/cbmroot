@@ -9,14 +9,9 @@
 
 #include "CbmMvdMimosa26AHR.h"
 
-#include "TMath.h"
-
-#include <iostream>
-
-
-using std::cout;
-using std::endl;
-
+#include <RtypesCore.h>  // for kTRUE
+#include <TString.h>     // for TString
+#include <TMath.h>       // for Power
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdMimosa26AHR::CbmMvdMimosa26AHR()

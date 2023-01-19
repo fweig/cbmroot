@@ -6,29 +6,23 @@
 // -----                  CbmMvdReadoutSimple source file              -----
 // -----                  Created 17/10/16 by P. Sitzmann              -----
 // -------------------------------------------------------------------------
-
 #include "CbmMvdReadoutSimple.h"
 
-#include "CbmMCTrack.h"
-#include "CbmMvdDetector.h"
-#include "CbmMvdPoint.h"
-#include "CbmMvdSensor.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdPoint.h"      // for CbmMvdPoint
 
+#include <FairRootManager.h>  // for FairRootManager
+#include <Logger.h>           // for Logger, LOG
 
-//-- Include from Fair --//
-#include <FairRootManager.h>
-#include <FairTrackParam.h>
-#include <Logger.h>
+#include <TAxis.h>            // for TAxis
+#include <TCanvas.h>          // for TCanvas
+#include <TClonesArray.h>     // for TClonesArray
+#include <TF1.h>              // for TF1
+#include <TFile.h>            // for TFile
+#include <TH1.h>              // for TH1F, TH1I
+#include <TH2.h>              // for TH2F, TH2I
+#include <TString.h>          // for Form
 
-
-//-- Include from Root --//
-#include <TCanvas.h>
-#include <TF1.h>
-#include <TFile.h>
-#include <TMath.h>
-
-#include <iostream>
+#include <iostream>           // for operator<<, basic_ostream, endl, cout
 
 using std::cout;
 using std::endl;

@@ -8,35 +8,33 @@
  * \brief addapted from TrdGeoHandler by Florian Uhlig <f.uhlig@gsi.de>
  */
 
+
 #include "CbmMvdGeoHandler.h"
 
-#include "CbmMvdDetector.h"
-#include "CbmMvdStationPar.h"
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "SensorDataSheets/CbmMvdMimosa34.h"
-#include "SensorDataSheets/CbmMvdMimosis.h"
+#include "CbmMvdDetector.h"     // for CbmMvdDetector
+#include "CbmMvdHelper.h"       // for CbmMvdSensorTyp
+#include "CbmMvdMimosa26AHR.h"  // for CbmMvdMimosa26AHR
+#include "CbmMvdMimosis.h"      // for CbmMvdMimosis
+#include "CbmMvdStationPar.h"   // for CbmMvdStationPar
 
-#include <Logger.h>
+#include <Logger.h>             // for LOG, Logger
 
-#include "TGeoBBox.h"
-#include "TGeoManager.h"
-#include "TGeoMatrix.h"
-#include "TGeoNode.h"
-#include "TGeoVolume.h"
-#include "TString.h"
-#include "TVirtualMC.h"
+#include <TGeoBBox.h>           // for TGeoBBox
+#include <TGeoManager.h>        // for TGeoManager, gGeoManager
+#include <TGeoMaterial.h>       // for TGeoMaterial
+#include <TGeoNode.h>           // for TGeoNode
+#include <TGeoVolume.h>         // for TGeoVolume
+#include <TObjArray.h>          // for TObjArray
+#include <TString.h>            // for TString, operator+, Form, operator<<
 
-#include <cstdlib>
-
-using std::atoi;
-
+#include <cmath>                // for fabs
 
 //--------------------------------------------------------------------------
 CbmMvdGeoHandler::CbmMvdGeoHandler()
   : TObject()
   , fSensorTyp(CbmMvdSensorTyp::MIMOSA26)
-  , fDetector(NULL)
-  , fStationPar(NULL)
+  , fDetector(nullptr)
+  , fStationPar(nullptr)
   , fStationMap()
   , fIsSimulation(kFALSE)
   , fGeoPathHash()

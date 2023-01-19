@@ -13,8 +13,8 @@
 #include "CbmEvent.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
-#include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdSensorClusterfinderTask.h"
+#include "CbmMvdGeoHandler.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -47,11 +47,11 @@ CbmMvdClusterfinderTB::CbmMvdClusterfinderTB(const char* name, Int_t iMode, Int_
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
-  , fDetector(NULL)
-  , fEvents(NULL)
+  , fDetector(nullptr)
+  , fEvents(nullptr)
   , fDigiMan(nullptr)
-  , fEventDigis(NULL)
-  , fCluster(NULL)
+  , fEventDigis(nullptr)
+  , fCluster(nullptr)
   , fClusterPluginNr(0)
   , fBranchName("MvdDigi")
   , fTimer()

@@ -8,6 +8,8 @@
 #include "CbmMvdCluster.h"
 #include "CbmMvdDigi.h"
 #include "CbmMvdHit.h"
+#include "CbmMvdSensor.h"
+#include "CbmMvdSensorTask.h"
 
 #include "TArrayS.h"
 #include "TCanvas.h"
@@ -26,10 +28,7 @@
 #include <numeric>
 #include <utility>
 #include <vector>
-//#include <Vc/Vc>
 
-#include "CbmMvdSensor.h"
-#include "CbmMvdSensorTask.h"
 
 class TClonesArray;
 class TRandom3;

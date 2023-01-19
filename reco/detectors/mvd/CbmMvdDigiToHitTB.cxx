@@ -12,8 +12,8 @@
 #include "CbmEvent.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
-#include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdSensorDigiToHitTask.h"
+#include "CbmMvdGeoHandler.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -46,11 +46,11 @@ CbmMvdDigiToHitTB::CbmMvdDigiToHitTB(const char* name, Int_t iMode, Int_t iVerbo
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
-  , fDetector(NULL)
-  , fEvents(NULL)
-  , fInputDigis(NULL)
-  , fEventDigis(NULL)
-  , fCluster(NULL)
+  , fDetector(nullptr)
+  , fEvents(nullptr)
+  , fInputDigis(nullptr)
+  , fEventDigis(nullptr)
+  , fCluster(nullptr)
   , fClusterPluginNr(0)
   , fBranchName("MvdDigi")
   , fTimer()

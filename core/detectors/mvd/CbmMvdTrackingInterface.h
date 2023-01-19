@@ -12,19 +12,23 @@
 #ifndef CbmMvdTrackingInterface_h
 #define CbmMvdTrackingInterface_h 1
 
-#include "CbmMvdDetector.h"
-#include "CbmMvdDetectorId.h"
-#include "CbmMvdHit.h"
-#include "CbmMvdStationPar.h"
-#include "CbmPixelHit.h"
-#include "CbmTrackingDetectorInterfaceBase.h"
+#include "CbmMvdDetectorId.h"                  // for CbmMvdDetectorId
+#include "CbmMvdHit.h"                         // for CbmMvdHit
+#include "CbmMvdStationPar.h"                  // for CbmMvdStationPar
+#include "CbmPixelHit.h"                       // for CbmPixelHit
+#include "CbmTrackingDetectorInterfaceBase.h"  // for CbmTrackingDetectorInt...
 
-#include "FairTask.h"
+#include <FairTask.h>                          // for InitStatus, FairTask
 
-#include "TMath.h"
+#include <Rtypes.h>                            // for ClassDef
+#include <TMath.h>                             // for Pi
 
-#include <iostream>
-#include <vector>
+#include <algorithm>                           // for min, max
+#include <string>                              // for string
+
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 /// Class CbmMvdTrackingInterface is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.

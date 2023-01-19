@@ -9,15 +9,11 @@
 
 #include "CbmMvdStationPar.h"
 
-#include <Logger.h>
+#include <Logger.h>  // for Logger, LOG
 
-#include <iostream>
-#include <limits>
-
-#include <math.h>
-
-using std::cout;
-using std::endl;
+#include <assert.h>  // for assert
+#include <cmath>    // for fabs, isnan
+#include <limits>    // for numeric_limits
 
 
 // -----   Default constructor   -------------------------------------------

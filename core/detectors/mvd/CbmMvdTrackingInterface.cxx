@@ -11,8 +11,8 @@
 
 #include "CbmMvdTrackingInterface.h"
 
-#include "FairDetector.h"
-#include "FairRunAna.h"
+#include "CbmMvdDetector.h"
+
 #include <Logger.h>
 
 ClassImp(CbmMvdTrackingInterface)

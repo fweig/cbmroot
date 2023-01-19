@@ -8,21 +8,23 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdPileupManager.h"
 
-#include <Logger.h>
+#include <Logger.h>        // for Logger, LOG
 
-#include "TClonesArray.h"
-#include "TFile.h"
-#include "TObjArray.h"
-#include "TTree.h"
+#include <TClonesArray.h>  // for TClonesArray
+#include <TDirectory.h>    // for TDirectoryAtomicAdapter, gDirectory, TDire...
+#include <TFile.h>         // for TFile, gFile
+#include <TMathBase.h>     // for Min
+#include <TObjArray.h>     // for TObjArray
+#include <TTree.h>         // for TTree
 
-#include <iostream>
+#include <iostream>        // for operator<<, endl, basic_ostream, char_traits
+#include <memory>          // for allocator
 
 using std::cout;
 using std::endl;
 
-
 // -----   Default constructor   -------------------------------------------
-CbmMvdPileupManager::CbmMvdPileupManager() : TObject(), fBuffer(NULL) {}
+CbmMvdPileupManager::CbmMvdPileupManager() : TObject(), fBuffer(nullptr) {}
 // -------------------------------------------------------------------------
 
 
@@ -53,15 +55,15 @@ TClonesArray* CbmMvdPileupManager::GetEvent(Int_t iEvent)
 
   if (iEvent > fBuffer->GetEntriesFast()) {
     cout << "-W- CbmMvdPileupManager::GetEvent: Event " << iEvent << " not present in buffer! " << endl;
-    cout << "                                   Returning NULL pointer! " << endl;
-    return NULL;
+    cout << "                                   Returning nullptr pointer! " << endl;
+    return nullptr;
   }
 
   TClonesArray* pArray = (TClonesArray*) fBuffer->At(iEvent);
 
   if (!pArray) {
-    cout << "-W CbmMvdPileupManager::GetEvent: Returning NULL pointer!" << endl;
-    return NULL;
+    cout << "-W CbmMvdPileupManager::GetEvent: Returning nullptr pointer!" << endl;
+    return nullptr;
   }
 
   return pArray;
@@ -77,7 +79,7 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName, TString branchName, Int_
 
   fBuffer->Delete();
 
-  TClonesArray* pointArray = NULL;
+  TClonesArray* pointArray = nullptr;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;

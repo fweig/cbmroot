@@ -8,15 +8,11 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdSensorPlugin.h"
 
-#include "TClonesArray.h"
-#include "TObjArray.h"
-
-
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorPlugin::CbmMvdSensorPlugin()
   : TObject()
-  , fNextPlugin(NULL)
-  , fPreviousPlugin(NULL)
+  , fNextPlugin(nullptr)
+  , fPreviousPlugin(nullptr)
   , bFlag(false)
   , initialized(kFALSE)
   , fShowDebugHistos(kFALSE)
@@ -28,8 +24,8 @@ CbmMvdSensorPlugin::CbmMvdSensorPlugin()
 // -----   constructor   -------------------------------------------
 CbmMvdSensorPlugin::CbmMvdSensorPlugin(const char* name)
   : TObject()
-  , fNextPlugin(NULL)
-  , fPreviousPlugin(NULL)
+  , fNextPlugin(nullptr)
+  , fPreviousPlugin(nullptr)
   , bFlag(false)
   , initialized(kFALSE)
   , fShowDebugHistos(kFALSE)

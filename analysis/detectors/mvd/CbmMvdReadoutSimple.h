@@ -18,13 +18,20 @@
 #ifndef CBMMVDREADOUTSIMPLE_H
 #define CBMMVDREADOUTSIMPLE_H 1
 
-#include "FairTask.h"
+#include <FairTask.h>    // for FairTask, InitStatus
 
-#include "TH1F.h"
-#include "TH2F.h"
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, kTRUE
 
+class TBuffer;
+class TClass;
 class TClonesArray;
 class TFile;
+class TH1F;
+class TH1I;
+class TH2F;
+class TH2I;
+class TMemberInspector;
 
 class CbmMvdReadoutSimple : public FairTask {
 public:

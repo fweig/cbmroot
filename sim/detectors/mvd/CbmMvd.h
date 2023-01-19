@@ -18,27 +18,25 @@
 #ifndef CBMMVD_H
 #define CBMMVD_H 1
 
+#include <FairDetector.h>    // for FairDetector
 
-//#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
+#include <Rtypes.h>          // for ClassDef
+#include <RtypesCore.h>      // for Int_t, Bool_t, Double32_t, Double_t, Opt...
+#include <TLorentzVector.h>  // for TLorentzVector
+#include <TVector3.h>        // for TVector3
 
-#include "FairDetector.h"
+#include <string>            // for string
+#include <map>               // for map
 
-#include "TLorentzVector.h"
-#include "TVector3.h"
-
-#include <map>
-
-
-class TClonesArray;
-class TList;
-class FairVolume;
-class CbmMvdPoint;
 class CbmMvdGeoHandler;
-class CbmMvdDetector;
-
-
-using std::map;
-
+class CbmMvdPoint;
+class FairVolume;
+class TBuffer;
+class TClass;
+class TClonesArray;
+class TGeoMatrix;
+class TList;
+class TMemberInspector;
 
 class CbmMvd : public FairDetector {
 
@@ -123,12 +121,12 @@ public:
 
   virtual void ConstructAsciiGeometry();
 
-  virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
+  virtual void ConstructRootGeometry(TGeoMatrix* shift = nullptr);
 
   virtual Bool_t IsSensitive(const std::string& name);
   virtual Bool_t CheckIfSensitive(std::string name);
 
-  virtual map<Int_t, Int_t> GetMap() { return fStationMap; };
+  virtual std::map<Int_t, Int_t> GetMap() { return fStationMap; };
 
 private:
   /** Track information to be stored until the track leaves the
@@ -146,7 +144,7 @@ private:
   TClonesArray* fCollection;      //!  The hit collection
   Bool_t kGeoSaved;               //!
   TList* fGeoPar;                 //!  List of geometry parameters
-  map<Int_t, Int_t> fStationMap;  //! Map from MC volume ID to station number
+  std::map<Int_t, Int_t> fStationMap;  //! Map from MC volume ID to station number
 
   CbmMvdGeoHandler* fmvdHandler;
 

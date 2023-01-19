@@ -11,34 +11,29 @@
 #ifndef CBMMVDSENSORHITFINDERTASK_H
 #define CBMMVDSENSORHITFINDERTASK_H 1
 
-#include "CbmMvdCluster.h"
-#include "CbmMvdDigi.h"
-#include "CbmMvdPoint.h"
-#include "CbmMvdSensor.h"
-#include "CbmMvdSensorTask.h"
+#include "CbmMvdCluster.h"     // for CbmMvdCluster
+#include "CbmMvdSensorTask.h"  // for CbmMvdSensorTask
 
-#include "FairTask.h"
+#include <FairTask.h>          // for InitStatus
 
-#include "TArrayS.h"
-#include "TCanvas.h"
-#include "TH1.h"
-#include "TH1F.h"
-#include "TH2.h"
-#include "TMath.h"
-#include "TObjArray.h"
-#include "TRandom3.h"
-#include "TRefArray.h"
-#include "TStopwatch.h"
-#include "TString.h"
+#include <Rtypes.h>            // for ClassDef
+#include <RtypesCore.h>        // for Int_t, Double_t, Bool_t, Float_t, kTRUE
+#include <TClonesArray.h>      // for TClonesArray
+#include <TString.h>           // for TString
 
-#include <list>
-#include <map>
-#include <utility>
-#include <vector>
+#include <map>                 // for map
+#include <utility>           // for pair
 
-class TClonesArray;
-class TRandom3;
-class CbmMvdPileupManager;
+class CbmMvdSensor;
+class TBuffer;
+class TCanvas;
+class TClass;
+class TH1F;
+class TH2F;
+class TMemberInspector;
+class TObjArray;
+class TObject;
+class TVector3;
 
 class CbmMvdSensorHitfinderTask : public CbmMvdSensorTask {
 

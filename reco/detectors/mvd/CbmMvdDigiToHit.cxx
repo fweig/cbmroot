@@ -11,9 +11,8 @@
 
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdSensorDigiToHitTask.h"
+#include "CbmMvdGeoHandler.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -49,9 +48,9 @@ CbmMvdDigiToHit::CbmMvdDigiToHit()
   : FairTask("CbmMvdDigiToHit")
   , fMode(0)
   , fShowDebugHistos(kFALSE)
-  , fDetector(NULL)
-  , fInputDigis(NULL)
-  , fHit(NULL)
+  , fDetector(nullptr)
+  , fInputDigis(nullptr)
+  , fHit(nullptr)
   , fHitPluginNr()
   , fBranchName("")
   , fTimer()
@@ -64,9 +63,9 @@ CbmMvdDigiToHit::CbmMvdDigiToHit(const char* name, Int_t iMode, Int_t iVerbose)
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
-  , fDetector(NULL)
-  , fInputDigis(NULL)
-  , fHit(NULL)
+  , fDetector(nullptr)
+  , fInputDigis(nullptr)
+  , fHit(nullptr)
   , fHitPluginNr(0)
   , fBranchName("MvdDigi")
   , fTimer()

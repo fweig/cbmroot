@@ -9,32 +9,28 @@
 
 #include "CbmMvdSensor.h"
 
-//---Plugins
 #include "CbmMvdSensorPlugin.h"
 #include "CbmMvdSensorBuffer.h"
-#include "plugins/tasks/CbmMvdSensorTask.h"
+#include "CbmMvdSensorTask.h"
 
-/// includes from ROOT
-#include "TGeoManager.h"
-#include "TGeoMatrix.h"
-#include "TGeoVolume.h"
-
-/// includes from FairRoot
-#include "FairEventHeader.h"
-#include "FairMCEventHeader.h"
-#include "FairPrimaryGenerator.h"
-#include "FairRunAna.h"
-#include "FairRunSim.h"
+#include <FairEventHeader.h>
+#include <FairMCEventHeader.h>
+#include <FairPrimaryGenerator.h>
+#include <FairRunAna.h>
+#include <FairRunSim.h>
 #include <Logger.h>
+
+#include <TClonesArray.h>
+#include <TGeoManager.h>
+#include <TGeoMatrix.h>
+#include <TGeoVolume.h>
+
 
 /// includes from C
 #include <iostream>
-#include <vector>
 
 using std::cout;
 using std::endl;
-using std::map;
-using std::vector;
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensor::CbmMvdSensor()
@@ -50,20 +46,20 @@ CbmMvdSensor::CbmMvdSensor()
   , fVolName("")
   , fNodeName("")
  /*
-  , foutputDigis(NULL)
-  , foutputCluster(NULL)
+  , foutputDigis(nullptr)
+  , foutputCluster(nullptr)
   ,  //not needed khun
-  foutputDigiMatch(NULL)
-  , foutputBuffer(NULL)
+  foutputDigiMatch(nullptr)
+  , foutputBuffer(nullptr)
 
-  , fcurrentPoints(NULL)
+  , fcurrentPoints(nullptr)
   */
   , fcurrentEventTime(0.)
   , epsilon()
-  , fShape(NULL)
-  , fMCMatrix(NULL)
-  , fRecoMatrix(NULL)
-  , fAlignmentCorr(NULL)
+  , fShape(nullptr)
+  , fMCMatrix(nullptr)
+  , fRecoMatrix(nullptr)
+  , fAlignmentCorr(nullptr)
   , fTempCoordinate()
   , fSensorPosition()
   , fSensorData(new CbmMvdSensorDataSheet())
@@ -99,20 +95,20 @@ CbmMvdSensor::CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, T
   , fVolName(volName)
   , fNodeName(nodeName)
  /*
-  , foutputDigis(NULL)
-  , foutputCluster(NULL)
+  , foutputDigis(nullptr)
+  , foutputCluster(nullptr)
   ,  //not needed khun
-  foutputDigiMatch(NULL)
-  , foutputBuffer(NULL)
+  foutputDigiMatch(nullptr)
+  , foutputBuffer(nullptr)
 
-  , fcurrentPoints(NULL)
+  , fcurrentPoints(nullptr)
   */
   , fcurrentEventTime(0.)
   , epsilon()
-  , fShape(NULL)
-  , fMCMatrix(NULL)
-  , fRecoMatrix(NULL)
-  , fAlignmentCorr(NULL)
+  , fShape(nullptr)
+  , fMCMatrix(nullptr)
+  , fRecoMatrix(nullptr)
+  , fAlignmentCorr(nullptr)
   , fTempCoordinate()
   , fSensorPosition()
   , fSensorData(dataSheet)
@@ -242,7 +238,7 @@ void CbmMvdSensor::Init()
 
   if (nPlugin == 0) {
     LOG(debug) << "No Plugins on this Sensor ";
-    pluginFirst = NULL;
+    pluginFirst = nullptr;
   }
   initialized = kTRUE;
 }

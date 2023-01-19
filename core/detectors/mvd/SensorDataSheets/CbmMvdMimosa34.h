@@ -18,8 +18,13 @@
 #ifndef CBMMVDMIMOSA34_H
 #define CBMMVDMIMOSA34_H 1
 
+#include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
 
-#include "CbmMvdSensorDataSheet.h"
+#include <Rtypes.h>                 // for ClassDef
+
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 
 class CbmMvdMimosa34 : public CbmMvdSensorDataSheet {

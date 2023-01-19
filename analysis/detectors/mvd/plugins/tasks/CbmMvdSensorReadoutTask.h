@@ -17,16 +17,17 @@
 #ifndef CBMMVDSENSORREADOUTTASK_H
 #define CBMMVDSENSORREADOUTTASK_H 1
 
-#include "CbmMvdDigi.h"
-#include "CbmMvdSensorTask.h"
+#include "CbmMvdSensorTask.h"  // for CbmMvdSensorTask
 
-#include "TObject.h"
+#include <Rtypes.h>            // for ClassDef
+#include <RtypesCore.h>        // for Int_t
 
-#include <iostream>
-
-
-class TClonesArray;
+class CbmMvdDigi;
 class CbmMvdSensor;
+class TBuffer;
+class TClass;
+class TClonesArray;
+class TMemberInspector;
 
 class CbmMvdSensorReadoutTask : public CbmMvdSensorTask {
 

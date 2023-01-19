@@ -9,11 +9,9 @@
 #include "CbmMvdSensorBuffer.h"
 
 #include "TClonesArray.h"
-#include "TObjArray.h"
-
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorBuffer::CbmMvdSensorBuffer() : CbmMvdSensorPlugin(), fBuffer(NULL), fCurrentEvent(NULL), fSensor(NULL) {}
+CbmMvdSensorBuffer::CbmMvdSensorBuffer() : CbmMvdSensorPlugin(), fBuffer(nullptr), fCurrentEvent(nullptr), fSensor(nullptr) {}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -24,7 +22,7 @@ CbmMvdSensorBuffer::~CbmMvdSensorBuffer()
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorBuffer::Clear(Option_t* opt)
+void CbmMvdSensorBuffer::Clear(Option_t* /*opt*/)
 {
   if (fBuffer) { fBuffer->Clear(); }
   if (fCurrentEvent) { fCurrentEvent->Clear(); }

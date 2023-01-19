@@ -5,33 +5,31 @@
 // -------------------------------------------------------------------------
 // -----                    CbmMvdDigitizer source file                -----
 // -------------------------------------------------------------------------
-
-// Includes from MVD
 #include "CbmMvdDigitizer.h"
 
-#include "CbmMatch.h"
-#include "CbmMvdDetector.h"
-#include "CbmMvdDigi.h"
-#include "CbmMvdPileupManager.h"
-#include "CbmMvdPoint.h"
-//#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMatch.h"                   // for CbmMatch
+#include "CbmMvdDetector.h"             // for CbmMvdDetector
+#include "CbmMvdDigi.h"                 // for CbmMvdDigi
+#include "CbmMvdPileupManager.h"        // for CbmMvdPileupManager
+#include "CbmMvdPoint.h"                // for CbmMvdPoint
+#include "CbmMvdSensor.h"               // for CbmMvdSensor
+#include "CbmMvdSensorDigitizerTask.h"  // for CbmMvdSensorDigitizerTask
 
-// Includes from FAIR
-#include "FairModule.h"
-#include "FairRootManager.h"
-#include <Logger.h>
+#include <FairRootManager.h>            // for FairRootManager
+#include <Logger.h>                     // for Logger, LOG
 
-// Includes from ROOT
-#include "TClonesArray.h"
-#include "TStopwatch.h"
+#include <TClonesArray.h>               // for TClonesArray
+#include <TObject.h>                    // for TObject
+#include <TRandom.h>                    // for TRandom
+#include <TRandom3.h>                   // for gRandom
+#include <TStopwatch.h>                 // for TStopwatch
 
-// Includes from C++
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-#include <vector>
+#include <cassert>                      // for assert
+#include <iomanip>                      // for setprecision, setw, __iom_t5
+#include <iostream>                     // for operator<<, basic_ostream, endl
+#include <map>                          // for __map_iterator, map, operator!=
+#include <string>                       // for allocator, char_traits
+#include <vector>                       // for vector
 
 using std::cout;
 using std::endl;
@@ -128,7 +126,9 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
   fTimer.Start();
   GetEventInfo();  // event number and time
 
+  // Add points from BG and Delta files to the array if needed
   BuildEvent();
+
   Int_t nPoints = fInputPoints->GetEntriesFast();
   Int_t nDigis  = 0;
   CbmMvdPoint* point=0;
@@ -143,24 +143,17 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
 
     Int_t nTargetPlugin=DetectPlugin(100);
 
-    for (Int_t i=0; i< nPoints; i++) { //loop over all points
+    // Distribute the points from the input array to the sensors
+    for (Int_t i=0; i< nPoints; i++) {
       point=(CbmMvdPoint*) fInputPoints->At(i);
       fDetector->SendInputToSensorPlugin(point->GetDetectorID(), nTargetPlugin, static_cast<TObject*>(point));
-
-
     }
 
-    //cout << "CbmMvdDigitizer::Exec() - Send data completed" << endl;
-
-
-
-
+    // Execute the plugged digitizer plugin for all sensors
     LOG(debug) << fName << ": Execute DigitizerPlugin Nr. " << fDigiPluginNr;
     fDetector->Exec(fDigiPluginNr);
     LOG(debug) << fName << ": End Chain";
 
-
-    //cout << "CbmMvdDigitizer::Exec() - Exec data completed" << endl;
 
     // --- Send produced digis to DAQ
     //fTmpDigi  = fDetector->GetOutputDigis();
@@ -182,12 +175,16 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
       CbmMvdDigi* digi1 = new CbmMvdDigi(*digi);
       assert(digi1);
       fDigiVect.push_back(digi1);
+//      // Create new digi in the output digi outputfrom the one in the internal TClonesArray
+//      fDigiVect.emplace_back(new CbmMvdDigi(*(static_cast<CbmMvdDigi*>(fTmpDigi->At(index)))));
 
       //     CbmMatch match{*(dynamic_cast<CbmMatch*>(fTmpMatch->At(index)))};
       //     CbmMatch* match1 = new CbmMatch(match);
       CbmMatch* match  = dynamic_cast<CbmMatch*>(fTmpMatch->At(index));
       CbmMatch* match1 = new CbmMatch(*match);
       fMatchVect.push_back(match1);
+//      // Create new match in the output match vector from the one in the internal TClonesArray
+//      fMatchVect.emplace_back(new CbmMatch(*(static_cast<CbmMatch*>(fTmpMatch->At(index)))));
 
       //digi1->SetMatch(match1);
       SendData(digi1->GetTime(), digi1, match1);
@@ -248,7 +245,7 @@ InitStatus CbmMvdDigitizer::Init()
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(fatal) <<  "No FairRootManager!";
     return kFATAL;
   }
 
@@ -272,41 +269,32 @@ InitStatus CbmMvdDigitizer::Init()
   // **********  Create pileup manager if necessary
   if (fNPileup >= 1 && !(fPileupManager) && fMode == 0) {
     if (fBgFileName == "") {
-      cout << "-E- " << GetName() << "::Init: Pileup events needed, but no "
-           << " background file name given! " << endl;
+      LOG(error) << "Pileup events needed, but no background file name given! ";
       return kERROR;
     }
     fPileupManager = new CbmMvdPileupManager(fBgFileName, fInputBranchName, fBgBufferSize);
     if (fPileupManager->GetNEvents() < 2 * fNPileup) {
-      cout << "-E- " << GetName()
-           << ": The size of your BG-File is insufficient to perform the "
-              "requested pileup"
-           << endl;
-      cout << "    You need at least events > 2* fNPileup." << endl;
-      cout << "    Detected: fPileUp = " << fNPileup << ", events in file " << fPileupManager->GetNEvents() << endl;
-      Fatal(GetName(), "The size of your BG-File is insufficient");
-      return kERROR;
+      LOG(error) << "The size of your BG-File is insufficient to perform the requested pileup";
+      LOG(error) << " You need at least events > 2* fNPileup but there are only"
+                 << fNPileup << ", events in file " << fPileupManager->GetNEvents();
+      LOG(fatal) << "The size of your BG-File is insufficient";
+      return kFATAL;
     }
   }
 
   // **********   Create delta electron manager if required
   if (fNDeltaElect >= 1 && !(fDeltaManager) && fMode == 0) {
     if (fDeltaFileName == "") {
-      cout << "-E- " << GetName() << "::Init: Pileup events needed, but no "
-           << " background file name given! " << endl;
+      LOG(error) << "Delta events needed, but no delta elector file name given! ";
       return kERROR;
     }
     fDeltaManager = new CbmMvdPileupManager(fDeltaFileName, fInputBranchName, fDeltaBufferSize);
     if (fDeltaManager->GetNEvents() < 2 * fNDeltaElect) {
-      cout << "-E- " << GetName()
-           << ": The size of your Delta-File is insufficient to perform the "
-              "requested pileup"
-           << endl;
-      cout << "    You need at least events > 2* fNDeltaElect." << endl;
-      cout << "    Detected: fNDeltaElect = " << fNDeltaElect << ", events in file " << fDeltaManager->GetNEvents()
-           << endl;
-      Fatal(GetName(), "The size of your Delta-File is insufficient");
-      return kERROR;
+      LOG(error) << "The size of your Delta-File is insufficient to perform the requested pileup";
+      LOG(error) << " You need at least events > 2* fNDeltaElect but there are only"
+                 << fNDeltaElect << ", events in file " << fDeltaManager->GetNEvents();
+      LOG(fatal) << "The size of your Delta-File is insufficient";
+      return kFATAL;
     }
   }
 
@@ -328,8 +316,6 @@ InitStatus CbmMvdDigitizer::Init()
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
   fDetector->Init();
-
-  if (fNoiseSensors) fDetector->SetProduceNoise();
 
   // --- Read list of inactive channels
   if (!fInactiveChannelFileName.IsNull()) {
@@ -394,7 +380,9 @@ Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
 
   CbmMvdDetector* detector= CbmMvdDetector::Instance();
   return detector->DetectPlugin(pluginID);
-  /*CbmMvdSensor* sensor=detector->GetSensor(0);
+
+  /*
+  CbmMvdSensor* sensor=detector->GetSensor(0);
   TObjArray* pluginArray= sensor->GetPluginArray();
 
   Int_t nPlugin=pluginArray->GetEntries();
@@ -405,7 +393,8 @@ Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
   }
 
 
- return -1;*/
+ return -1;
+ */
 }
 
 // -----   Private method PrintParameters   --------------------------------

@@ -6,31 +6,25 @@
 // -----                        CbmMvd source file                     -----
 // -----                  Created 26/07/04  by V. Friese               -----
 // -------------------------------------------------------------------------
-
 #include "CbmMvd.h"
 
-#include "CbmMvdPoint.h"
-#include "CbmStack.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include <Logger.h>            // for Logger, LOG
 
-#include "FairRootManager.h"
-#include "FairRun.h"
-#include "FairRuntimeDb.h"
-#include "FairVolume.h"
+#include "CbmDefs.h"           // for ToIntegralType, ECbmModuleId
+#include "CbmMvdGeoHandler.h"  // for CbmMvdGeoHandler
+#include "CbmMvdPoint.h"       // for CbmMvdPoint
+#include "CbmStack.h"          // for CbmStack
 
-#include "TClonesArray.h"
-#include "TGeoManager.h"
-#include "TList.h"
-#include "TObjArray.h"
-#include "TParticle.h"
-#include "TString.h"
-#include "TVirtualMC.h"
-#include "TVirtualMCStack.h"
+#include <FairRootManager.h>   // for FairRootManager
+#include <FairVolume.h>        // for FairVolume
 
-#include <iostream>
-using std::cout;
-using std::endl;
+#include <TClonesArray.h>      // for TClonesArray
+#include <TList.h>             // for TList
+#include <TString.h>           // for TString, operator<<
+#include <TVirtualMC.h>        // for TVirtualMC, gMC
+#include <TVirtualMCStack.h>   // for TVirtualMCStack
 
+#include <string>              // for allocator
 
 // -----   Default constructor   -------------------------------------------
 CbmMvd::CbmMvd()
@@ -177,7 +171,7 @@ TClonesArray* CbmMvd::GetCollection(Int_t iColl) const
 {
   if (iColl == 0) return fCollection;
   else
-    return NULL;
+    return nullptr;
 }
 // -------------------------------------------------------------------------
 
@@ -207,7 +201,7 @@ void CbmMvd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset)
   Int_t nEntries = cl1->GetEntriesFast();
   LOG(info) << "CbmMvd: " << nEntries << " entries to add.";
   TClonesArray& clref   = *cl2;
-  CbmMvdPoint* oldpoint = NULL;
+  CbmMvdPoint* oldpoint = nullptr;
   for (Int_t i = 0; i < nEntries; i++) {
     oldpoint    = (CbmMvdPoint*) cl1->At(i);
     Int_t index = oldpoint->GetTrackID() + offset;

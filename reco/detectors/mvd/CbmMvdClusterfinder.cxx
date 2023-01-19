@@ -5,32 +5,26 @@
 // -------------------------------------------------------------------------
 // -----                    CbmMvdClusterfinder source file                -----
 // -------------------------------------------------------------------------
-
-// Includes from MVD
 #include "CbmMvdClusterfinder.h"
 
-#include "CbmDigiManager.h"
-#include "CbmMvdDetector.h"
-#include "CbmMvdPoint.h"
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "plugins/tasks/CbmMvdSensorClusterfinderTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmDefs.h"                               // for ECbmModuleId
+#include "CbmDigiManager.h"                        // for CbmDigiManager
+#include "CbmMvdDetector.h"                        // for CbmMvdDetector
+#include "CbmMvdDigi.h"                            // for CbmMvdDigi
+#include "CbmMvdSensor.h"                          // for CbmMvdSensor
+#include "CbmMvdSensorClusterfinderTask.h"         // for CbmMvdSensorCluste...
 
-// Includes from FAIR
-#include "FairModule.h"
-#include "FairRootManager.h"
+#include <FairRootManager.h>                       // for FairRootManager
+#include <FairTask.h>                              // for InitStatus, FairTask
+#include <Logger.h>                                // for Logger, LOG
 
+#include <TClonesArray.h>                          // for TClonesArray
 
-// Includes from ROOT
-#include "TClonesArray.h"
-#include "TGeoManager.h"
-#include "TMath.h"
-#include "TString.h"
+#include <iomanip>                                 // for setprecision, setw
+#include <iostream>                                // for operator<<, endl
+#include <map>                                     // for allocator, __map_i...
+#include <utility>                                 // for pair
 
-
-// Includes from C++
-#include <iomanip>
-#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -43,9 +37,9 @@ CbmMvdClusterfinder::CbmMvdClusterfinder()
   : FairTask("MVDClusterfinder")
   , fMode(0)
   , fShowDebugHistos(kFALSE)
-  , fDetector(NULL)
+  , fDetector(nullptr)
   , fDigiMan(nullptr)
-  , fCluster(NULL)
+  , fCluster(nullptr)
   , fClusterPluginNr()
   , fBranchName("")
   , fTimer()
@@ -58,9 +52,9 @@ CbmMvdClusterfinder::CbmMvdClusterfinder(const char* name, Int_t iMode, Int_t iV
   : FairTask(name, iVerbose)
   , fMode(iMode)
   , fShowDebugHistos(kFALSE)
-  , fDetector(NULL)
+  , fDetector(nullptr)
   , fDigiMan(nullptr)
-  , fCluster(NULL)
+  , fCluster(nullptr)
   , fClusterPluginNr(0)
   , fBranchName("MvdDigi")
   , fTimer()

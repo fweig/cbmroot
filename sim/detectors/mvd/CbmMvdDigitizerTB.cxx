@@ -11,8 +11,9 @@
 
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdSensorDigitizerTBTask.h"
+#include "CbmMvdGeoHandler.h"
+#include "CbmDaqBuffer.h"
 
 #include "FairModule.h"
 #include "FairRootManager.h"
@@ -22,8 +23,6 @@
 #include "TClonesArray.h"
 #include "TStopwatch.h"
 
-// Includes from C++
-#include "../base/CbmDaqBuffer.h"
 
 #include <iomanip>
 #include <iostream>
@@ -43,11 +42,11 @@ CbmMvdDigitizerTB::CbmMvdDigitizerTB(const char* name, Int_t iMode, Int_t iVerbo
   , eventNumber(0)
   , fShowDebugHistos(kFALSE)
   , fNoiseSensors(kFALSE)
-  , fDetector(NULL)
-  , fInputPoints(NULL)
-  , fTracks(NULL)
-  , fDigis(NULL)
-  , fDigiMatch(NULL)
+  , fDetector(nullptr)
+  , fInputPoints(nullptr)
+  , fTracks(nullptr)
+  , fDigis(nullptr)
+  , fDigiMatch(nullptr)
   , fPerformanceDigi()
   , fDigiPluginNr(0)
   , fFakeRate(-1.)

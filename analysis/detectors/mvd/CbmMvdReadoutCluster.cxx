@@ -9,22 +9,19 @@
 
 #include "CbmMvdReadoutCluster.h"
 
-#include "CbmMvdCluster.h"
+#include "CbmMvdCluster.h"    // for CbmMvdCluster
 
-//-- Include from Fair --//
-#include <FairRootManager.h>
-#include <Logger.h>
+#include <FairRootManager.h>  // for FairRootManager
+#include <Logger.h>           // for LOG, Logger
 
-//-- Include from Root --//
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TF1.h"
-#include "TMath.h"
-#include <TFile.h>
+#include <TClonesArray.h>     // for TClonesArray
+#include <TFile.h>            // for TFile
+#include <TH1.h>              // for TH1F
+#include <TString.h>          // for Form
 
-#include <iostream>
-#include <map>
-#include <utility>
+#include <iostream>           // for cout, endl
+#include <map>                // for allocator, map, operator!=, __map_iterator
+#include <utility>            // for pair
 
 using std::cout;
 using std::endl;

@@ -1,6 +1,6 @@
-/* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Philipp Sitzmann, Volker Friese [committer] */
+   Authors: Florian Uhlig [committer] */
 
 #ifdef __CINT__
 

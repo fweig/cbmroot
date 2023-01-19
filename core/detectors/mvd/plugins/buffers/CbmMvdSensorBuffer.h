@@ -20,16 +20,16 @@
 #ifndef CBMMVDSENSORBUFFER_H
 #define CBMMVDSENSORBUFFER_H 1
 
+#include "CbmMvdSensorPlugin.h"  // for MvdSensorPluginType, CbmMvdSensorPlugin
 
-#include "plugins/CbmMvdSensorPlugin.h"
+#include <Rtypes.h>              // for ClassDef
+#include <RtypesCore.h>          // for Double_t, Option_t
 
-#include "TObject.h"
-
-#include <iostream>
-
-
-class TClonesArray;
 class CbmMvdSensor;
+class TBuffer;
+class TClass;
+class TClonesArray;
+class TMemberInspector;
 
 class CbmMvdSensorBuffer : public CbmMvdSensorPlugin {
 

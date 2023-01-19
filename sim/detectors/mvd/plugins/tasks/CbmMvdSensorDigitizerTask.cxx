@@ -18,43 +18,46 @@
  * ____________________________________________________________________________________________
  * --------------------------------------------------------------------------------------------
  **/
-
-
 #include "CbmMvdSensorDigitizerTask.h"
 
-#include "CbmMvdPileupManager.h"
-#include "CbmMvdPoint.h"
+#include "CbmMatch.h"               // for CbmMatch
+#include "CbmMvdDigi.h"             // for CbmMvdDigi
+#include "CbmMvdPileupManager.h"    // for CbmMvdPileupManager
+#include "CbmMvdPixelCharge.h"      // for CbmMvdPixelCharge
+#include "CbmMvdPoint.h"            // for CbmMvdPoint
+#include "CbmMvdSensor.h"           // for CbmMvdSensor
+#include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
+#include "CbmMvdSensorPlugin.h"     // for CbmMvdSensorPlugin
 
-#include "FairRuntimeDb.h"
+#include <FairEventHeader.h>        // for FairEventHeader
+#include <FairRunAna.h>             // for FairRunAna
+#include <FairRootManager.h>        // for FairRootManager
+#include <FairRunSim.h>             // for FairRunSim
+#include <Logger.h>                 // for LOG, Logger
 
-#include "TClonesArray.h"
-#include "TObjArray.h"
+#include <TCanvas.h>                // for TCanvas
+#include <TClonesArray.h>           // for TClonesArray
+#include <TH1.h>                    // for TH1F
+#include <TH2.h>                    // for TH2F
+#include <TMath.h>                  // for Pi, ATan
+#include <TMathBase.h>              // for Abs, Max
+#include <TRandom.h>                // for TRandom
+#include <TRefArray.h>              // for TRefArray
+#include <TVector3.h>               // for TVector3, operator*, operator+
 
-// Includes from FairRoot
-#include "FairEventHeader.h"
-#include "FairMCEventHeader.h"
-#include "FairRunAna.h"
-#include "FairRunSim.h"
-#include <Logger.h>
+#include <cmath>                    // for sqrt
+#include <iomanip>                  // for operator<<, setprecision, setw
+#include <iostream>                 // for operator<<, basic_ostream, endl
+#include <map>                      // for map, operator==, __map_iterator
+#include <vector>                   // for allocator, vector
 
-
-// Includes from C++
-#include <iomanip>
-#include <iostream>
-#include <map>
-#include <vector>
 
 using std::cout;
 using std::endl;
-using std::fixed;
 using std::ios_base;
-using std::left;
-using std::map;
 using std::pair;
-using std::right;
 using std::setprecision;
 using std::setw;
-using std::vector;
 
 
 // -----   Default constructor   ------------------------------------------
@@ -77,16 +80,16 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , fCurrentParticleMass(0.)
   , fCurrentParticleMomentum(0.)
   , fCurrentParticlePdg(0)
-  , fRandomGeneratorTestHisto(NULL)
-  , fPosXY(NULL)
-  , fpZ(NULL)
-  , fPosXinIOut(NULL)
-  , fAngle(NULL)
-  , fSegResolutionHistoX(NULL)
-  , fSegResolutionHistoY(NULL)
-  , fSegResolutionHistoZ(NULL)
-  , fTotalChargeHisto(NULL)
-  , fTotalSegmentChargeHisto(NULL)
+  , fRandomGeneratorTestHisto(nullptr)
+  , fPosXY(nullptr)
+  , fpZ(nullptr)
+  , fPosXinIOut(nullptr)
+  , fAngle(nullptr)
+  , fSegResolutionHistoX(nullptr)
+  , fSegResolutionHistoY(nullptr)
+  , fSegResolutionHistoZ(nullptr)
+  , fTotalChargeHisto(nullptr)
+  , fTotalSegmentChargeHisto(nullptr)
   , fLorentzY0(-6.1)
   , fLorentzXc(0.)
   , fLorentzW(1.03)
@@ -101,8 +104,8 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , fPar1(0.34)
   , fPar2(-1.2)
   , fCompression(1.)
-  , fResolutionHistoX(NULL)
-  , fResolutionHistoY(NULL)
+  , fResolutionHistoX(nullptr)
+  , fResolutionHistoY(nullptr)
   , fNumberOfSegments(0)
   , fCurrentLayer(0)
   , fEvent(0)
@@ -110,14 +113,14 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , fNPixelsX(0)
   , fNPixelsY(0)
   , fPixelCharge(new TClonesArray("CbmMvdPixelCharge"))
-  , fDigis(NULL)
-  , fDigiMatch(NULL)
+  , fDigis(nullptr)
+  , fDigiMatch(nullptr)
   , fproduceNoise(kFALSE)
   , fPixelChargeShort()
-  , fPixelScanAccelerator(NULL)
+  , fPixelScanAccelerator(nullptr)
   , fChargeMap()
   , fChargeMapIt()
-  , fsensorDataSheet(NULL)
+  , fsensorDataSheet(nullptr)
   , fMode(0)
   , fSigmaX(0.0005)
   , fSigmaY(0.0005)
@@ -132,12 +135,12 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , fBranchName("")
   , fBgFileName("")
   , fDeltaFileName("")
-  , fInputPoints(NULL)
+  , fInputPoints(nullptr)
   , fPoints(new TRefArray())
   , fRandGen()
   , fTimer()
-  , fPileupManager(NULL)
-  , fDeltaManager(NULL)
+  , fPileupManager(nullptr)
+  , fDeltaManager(nullptr)
   , fNEvents(0)
   , fNPoints(0.)
   , fNReal(0.)
@@ -147,11 +150,11 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , fNMerged(0.)
   , fTime(0.)
   , fSignalPoints()
-  , h_trackLength(NULL)
-  , h_numSegments(NULL)
-  , h_LengthVsAngle(NULL)
-  , h_LengthVsEloss(NULL)
-  , h_ElossVsMomIn(NULL)
+  , h_trackLength(nullptr)
+  , h_numSegments(nullptr)
+  , h_LengthVsAngle(nullptr)
+  , h_LengthVsEloss(nullptr)
+  , h_ElossVsMomIn(nullptr)
 {
   fRandGen.SetSeed(2736);
   fproduceNoise = kFALSE;
@@ -180,16 +183,16 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , fCurrentParticleMass(0.)
   , fCurrentParticleMomentum(0.)
   , fCurrentParticlePdg(0)
-  , fRandomGeneratorTestHisto(NULL)
-  , fPosXY(NULL)
-  , fpZ(NULL)
-  , fPosXinIOut(NULL)
-  , fAngle(NULL)
-  , fSegResolutionHistoX(NULL)
-  , fSegResolutionHistoY(NULL)
-  , fSegResolutionHistoZ(NULL)
-  , fTotalChargeHisto(NULL)
-  , fTotalSegmentChargeHisto(NULL)
+  , fRandomGeneratorTestHisto(nullptr)
+  , fPosXY(nullptr)
+  , fpZ(nullptr)
+  , fPosXinIOut(nullptr)
+  , fAngle(nullptr)
+  , fSegResolutionHistoX(nullptr)
+  , fSegResolutionHistoY(nullptr)
+  , fSegResolutionHistoZ(nullptr)
+  , fTotalChargeHisto(nullptr)
+  , fTotalSegmentChargeHisto(nullptr)
   , fLorentzY0(-6.1)
   , fLorentzXc(0.)
   , fLorentzW(1.03)
@@ -204,8 +207,8 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , fPar1(0.34)
   , fPar2(-1.2)
   , fCompression(1.)
-  , fResolutionHistoX(NULL)
-  , fResolutionHistoY(NULL)
+  , fResolutionHistoX(nullptr)
+  , fResolutionHistoY(nullptr)
   , fNumberOfSegments(0)
   , fCurrentLayer(0)
   , fEvent(0)
@@ -213,14 +216,14 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , fNPixelsX(0)
   , fNPixelsY(0)
   , fPixelCharge(new TClonesArray("CbmMvdPixelCharge", 100000))
-  , fDigis(NULL)
-  , fDigiMatch(NULL)
+  , fDigis(nullptr)
+  , fDigiMatch(nullptr)
   , fproduceNoise(kFALSE)
   , fPixelChargeShort()
-  , fPixelScanAccelerator(NULL)
+  , fPixelScanAccelerator(nullptr)
   , fChargeMap()
   , fChargeMapIt()
-  , fsensorDataSheet(NULL)
+  , fsensorDataSheet(nullptr)
   , fMode(iMode)
   , fSigmaX(0.0005)
   , fSigmaY(0.0005)
@@ -235,12 +238,12 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , fBranchName("MvdPoint")
   , fBgFileName("")
   , fDeltaFileName("")
-  , fInputPoints(NULL)
+  , fInputPoints(nullptr)
   , fPoints(new TRefArray())
   , fRandGen()
   , fTimer()
-  , fPileupManager(NULL)
-  , fDeltaManager(NULL)
+  , fPileupManager(nullptr)
+  , fDeltaManager(nullptr)
   , fNEvents(0)
   , fNPoints(0.)
   , fNReal(0.)
@@ -250,11 +253,11 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , fNMerged(0.)
   , fTime(0.)
   , fSignalPoints()
-  , h_trackLength(NULL)
-  , h_numSegments(NULL)
-  , h_LengthVsAngle(NULL)
-  , h_LengthVsEloss(NULL)
-  , h_ElossVsMomIn(NULL)
+  , h_trackLength(nullptr)
+  , h_numSegments(nullptr)
+  , h_LengthVsAngle(nullptr)
+  , h_LengthVsEloss(nullptr)
+  , h_ElossVsMomIn(nullptr)
 
 { fPluginIDNumber= 100;
   if(gDebug>0){cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl;}
@@ -380,12 +383,6 @@ void CbmMvdSensorDigitizerTask::SetInputArray(TClonesArray* inputStream)
     i++;
   }
 }
-// -----------------------------------------------------------------------------
-void CbmMvdSensorDigitizerTask::SetInput(CbmMvdPoint* point)
-{
-
-  new ((*fInputPoints)[fInputPoints->GetEntriesFast()]) CbmMvdPoint(*((CbmMvdPoint*) point));
-}
 //-----------------------------------------------------------------------------
 
 void CbmMvdSensorDigitizerTask::SetInput(TObject* point)
@@ -423,13 +420,11 @@ void CbmMvdSensorDigitizerTask::Exec()
       CbmMvdPoint* point = (CbmMvdPoint*) fInputPoints->At(iPoint);
 
       if (!point) {
-        cout << "-W-" << GetName() << ":: Exec:" << endl;
-        cout << "    -received bad MC-Point. Ignored." << endl;
+        LOG(warning) << "    -received bad MC-Point. Ignored.";
         continue;
       }
       if (point->GetStationNr() != fSensor->GetSensorNr()) {
-        cout << "-W-" << GetName() << ":: Exec:" << endl;
-        cout << "    -received bad MC-Point which doesn't belong here. Ignored." << endl;
+        LOG(warning) << "    -received bad MC-Point which doesn't belong here. Ignored.";
         continue;
       }
       fcurrentFrameNumber = point->GetFrame();
@@ -1034,7 +1029,7 @@ void CbmMvdSensorDigitizerTask::InitTask(CbmMvdSensor* mySensor)
   PrintParameters();
   cout << "---------------------------------------------" << endl;**/
 
-  fPreviousPlugin = NULL;
+  fPreviousPlugin = nullptr;
   initialized     = kTRUE;
 }
 // -------------------------------------------------------------------------

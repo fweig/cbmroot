@@ -20,9 +20,13 @@
 #ifndef CBMMVDMIMOSA26AHR_H
 #define CBMMVDMIMOSA26AHR_H 1
 
+#include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
 
-#include "CbmMvdSensorDataSheet.h"
+#include <Rtypes.h>                 // for ClassDef
 
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 class CbmMvdMimosa26AHR : public CbmMvdSensorDataSheet {
 

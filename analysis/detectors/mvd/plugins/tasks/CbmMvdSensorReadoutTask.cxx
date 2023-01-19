@@ -6,14 +6,14 @@
 // -----                  CbmMvdSensorReadoutTask source file          -----
 // -----                  Created 15.05.2017 by P. Sitzmann            -----
 // -------------------------------------------------------------------------
-
 #include "CbmMvdSensorReadoutTask.h"
 
-#include "TClonesArray.h"
-#include "TH1I.h"
-#include "TObjArray.h"
+#include "CbmMvdDigi.h"    // for CbmMvdDigi
 
-#include <iostream>
+#include <TClonesArray.h>  // for TClonesArray
+#include <TH1.h>           // for TH1I
+
+#include <iostream>        // for operator<<, basic_ostream, endl, cout, ost...
 
 using std::cout;
 using std::endl;

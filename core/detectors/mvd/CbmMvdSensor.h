@@ -19,25 +19,24 @@
 #ifndef CBMMVDSENSOR_H
 #define CBMMVDSENSOR_H 1
 
-#include "CbmMvdCluster.h"
-#include "CbmMvdDetectorId.h"
-#include "SensorDataSheets/CbmMvdSensorDataSheet.h"
-#include "plugins/CbmMvdSensorPlugin.h"
+#include "CbmMvdDetectorId.h"       // for CbmMvdDetectorId
+#include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
+#include "CbmMvdSensorPlugin.h"     // for CbmMvdSensorPlugin
 
-#include "TClonesArray.h"
-#include "TGeoBBox.h"
-#include "TNamed.h"
-#include "TObjArray.h"
-#include "TString.h"
+#include <Rtypes.h>                 // for ClassDef
+#include <RtypesCore.h>             // for Int_t, Double_t, Float_t, UInt_t
+#include <TGeoBBox.h>               // for TGeoBBox
+#include <TNamed.h>                 // for TNamed
+#include <TObjArray.h>              // for TObjArray
+#include <TString.h>                // for TString
+#include <map>                      // for map
 
-#include <map>
-
-// data classes
-class CbmMvdPoint;
-class CbmMvdDigi;
+class TBuffer;
+class TClass;
+class TClonesArray;
 class TGeoHMatrix;
-class TGeoHMatrix;
-
+class TMemberInspector;
+class TObject;
 
 class CbmMvdSensor : public TNamed, CbmMvdDetectorId {
 

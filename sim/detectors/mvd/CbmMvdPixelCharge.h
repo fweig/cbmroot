@@ -11,8 +11,13 @@
 #ifndef CBMMVDPIXELCHARGE_H
 #define CBMMVDPIXELCHARGE_H 1
 
-#include "TMath.h"
-#include "TObject.h"
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Float_t, Int_t, Short_t, Bool_t, Option_t
+#include <TObject.h>     // for TObject
+
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 
 class CbmMvdPixelCharge : public TObject {

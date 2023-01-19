@@ -7,45 +7,25 @@
 // -----                      Created 11/09/13  by P.Sitzmann                              -----
 // -----      				 						   -----
 // ---------------------------------------------------------------------------------------------
-// Includes from MVD
 #include "CbmMvdSensorHitfinderTask.h"
 
-#include "CbmMvdCluster.h"
-#include "CbmMvdHit.h"
-#include "CbmMvdPileupManager.h"
-#include "CbmMvdPoint.h"
+#include "CbmMvdCluster.h"  // for CbmMvdCluster
+#include "CbmMvdHit.h"      // for CbmMvdHit
+#include "CbmMvdSensor.h"   // for CbmMvdSensor
 
-// Includes from base
-#include "CbmMCTrack.h"
+#include <TClonesArray.h>   // for TClonesArray
+#include <TGeoMatrix.h>     // for TGeoHMatrix
+#include <TMath.h>          // for Power
+#include <TMathBase.h>      // for Abs
+#include <TObjArray.h>      // for TObjArray
+#include <TRandom.h>        // for TRandom
+#include <TRandom3.h>       // for gRandom
+#include <TVector3.h>       // for TVector3
 
-#include "FairGeoNode.h"
-#include "FairRootManager.h"
-#include "FairRunAna.h"
-#include "FairRuntimeDb.h"
-#include <Logger.h>
-
-// Includes from ROOT
-#include "TArrayD.h"
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TF1.h"
-#include "TGeoManager.h"
-#include "TGeoTube.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TMath.h"
-#include "TObjArray.h"
-#include "TRandom3.h"
-#include "TRefArray.h"
-#include "TString.h"
-#include "TVector3.h"
-#include <TMatrixD.h>
-
-// Includes from C++
-#include <iomanip>
-#include <iostream>
-#include <map>
-#include <vector>
+#include <iomanip>          // for setprecision, setw
+#include <iostream>         // for operator<<, basic_ostream, char_traits, endl
+#include <map>              // for map, __map_iterator, operator!=, operator==
+#include <vector>           // for vector
 
 using std::cout;
 using std::endl;
@@ -69,27 +49,27 @@ CbmMvdSensorHitfinderTask::CbmMvdSensorHitfinderTask()
   , fAdcSteps(-1)
   , fAdcStepSize(-1.)
   , fClusters(new TClonesArray("CbmMvdCluster", 10000))
-  , fPixelChargeHistos(NULL)
-  , fTotalChargeInNpixelsArray(NULL)
-  , fResolutionHistoX(NULL)
-  , fResolutionHistoY(NULL)
-  , fResolutionHistoCleanX(NULL)
-  , fResolutionHistoCleanY(NULL)
-  , fResolutionHistoMergedX(NULL)
-  , fResolutionHistoMergedY(NULL)
-  , fBadHitHisto(NULL)
-  , fGausArray(NULL)
+  , fPixelChargeHistos(nullptr)
+  , fTotalChargeInNpixelsArray(nullptr)
+  , fResolutionHistoX(nullptr)
+  , fResolutionHistoY(nullptr)
+  , fResolutionHistoCleanX(nullptr)
+  , fResolutionHistoCleanY(nullptr)
+  , fResolutionHistoMergedX(nullptr)
+  , fResolutionHistoMergedY(nullptr)
+  , fBadHitHisto(nullptr)
+  , fGausArray(nullptr)
   , fGausArrayIt(-1)
   , fGausArrayLimit(5000)
   , fDigiMap()
   , fDigiMapIt()
-  , h(NULL)
-  , h3(NULL)
-  , h1(NULL)
-  , h2(NULL)
-  , Qseed(NULL)
-  , fFullClusterHisto(NULL)
-  , c1(NULL)
+  , h(nullptr)
+  , h3(nullptr)
+  , h1(nullptr)
+  , h2(nullptr)
+  , Qseed(nullptr)
+  , fFullClusterHisto(nullptr)
+  , c1(nullptr)
   , fNEvent(0)
   , fMode(0)
   , fCounter(0)
@@ -126,27 +106,27 @@ CbmMvdSensorHitfinderTask::CbmMvdSensorHitfinderTask(Int_t iMode)
   , fAdcSteps(-1)
   , fAdcStepSize(-1.)
   , fClusters(new TClonesArray("CbmMvdCluster", 10000))
-  , fPixelChargeHistos(NULL)
-  , fTotalChargeInNpixelsArray(NULL)
-  , fResolutionHistoX(NULL)
-  , fResolutionHistoY(NULL)
-  , fResolutionHistoCleanX(NULL)
-  , fResolutionHistoCleanY(NULL)
-  , fResolutionHistoMergedX(NULL)
-  , fResolutionHistoMergedY(NULL)
-  , fBadHitHisto(NULL)
-  , fGausArray(NULL)
+  , fPixelChargeHistos(nullptr)
+  , fTotalChargeInNpixelsArray(nullptr)
+  , fResolutionHistoX(nullptr)
+  , fResolutionHistoY(nullptr)
+  , fResolutionHistoCleanX(nullptr)
+  , fResolutionHistoCleanY(nullptr)
+  , fResolutionHistoMergedX(nullptr)
+  , fResolutionHistoMergedY(nullptr)
+  , fBadHitHisto(nullptr)
+  , fGausArray(nullptr)
   , fGausArrayIt(-1)
   , fGausArrayLimit(5000)
   , fDigiMap()
   , fDigiMapIt()
-  , h(NULL)
-  , h3(NULL)
-  , h1(NULL)
-  , h2(NULL)
-  , Qseed(NULL)
-  , fFullClusterHisto(NULL)
-  , c1(NULL)
+  , h(nullptr)
+  , h3(nullptr)
+  , h1(nullptr)
+  , h2(nullptr)
+  , Qseed(nullptr)
+  , fFullClusterHisto(nullptr)
+  , c1(nullptr)
   , fNEvent(0)
   , fMode(iMode)
   , fCounter(0)

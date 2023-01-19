@@ -20,16 +20,20 @@
 #ifndef CBMMVDSENSORFRAMEBUFFER_H
 #define CBMMVDSENSORFRAMEBUFFER_H 1
 
-#include "CbmMvdHit.h"
-#include "CbmMvdSensor.h"
-#include "CbmMvdSensorBuffer.h"
+#include "CbmMvdSensorBuffer.h"  // for CbmMvdSensorBuffer
 
-#include "TObject.h"
+#include <Logger.h>              // for LOG
 
-#include <iostream>
+#include <Rtypes.h>              // for ClassDef
+#include <RtypesCore.h>          // for Double_t, Int_t, Bool_t
 
-class TClonesArray;
-class CbmMvdSensorDataSheet;
+class CbmMvdPoint;
+class CbmMvdSensor;
+class CbmMvdSensorDataSheet;  // lines 32-32
+class TBuffer;
+class TClass;
+class TClonesArray;  // lines 31-31
+class TMemberInspector;
 
 class CbmMvdSensorFrameBuffer : public CbmMvdSensorBuffer {
 
@@ -63,7 +67,7 @@ public:
   virtual void InitBuffer(CbmMvdSensor* mySensor);
   virtual void BuildTimeSlice(Double_t /*tStart*/, Double_t /*tStop*/)
   {
-    std::cout << "Do not use " << GetName() << "::BuildTimeSlice()" << std::endl;
+    LOG(fatal) << "Do not use " << GetName() << "::BuildTimeSlice()";
   };
 
   /**BuildMimosaFrame: Provides a TClonesArray containing all points related to a frame.

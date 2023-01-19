@@ -6,44 +6,40 @@
 // -----              CbmMvdQa  source file                            -----
 // -----              Created 12/01/15  by P. Sitzmann                 -----
 // ------------------------------------------------------------------------
-
-//-- Include from Cbm --//
 #include "CbmMvdQa.h"
 
-#include "CbmGlobalTrack.h"
-#include "CbmLink.h"
-#include "CbmMCTrack.h"
-#include "CbmMatch.h"
-#include "CbmMvdDetector.h"
-#include "CbmMvdDigi.h"
-#include "CbmMvdHit.h"
-#include "CbmMvdPoint.h"
-#include "CbmMvdSensor.h"
-#include "CbmMvdStationPar.h"
-#include "CbmStsTrack.h"
-#include "CbmTrackMatchNew.h"
-#include "CbmVertex.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmGlobalTrack.h"    // for CbmGlobalTrack
+#include "CbmLink.h"           // for CbmLink
+#include "CbmMCTrack.h"        // for CbmMCTrack
+#include "CbmMatch.h"          // for CbmMatch
+#include "CbmMvdCluster.h"     // for CbmMvdCluster
+#include "CbmMvdDetector.h"    // for CbmMvdDetector
+#include "CbmMvdDigi.h"        // for CbmMvdDigi
+#include "CbmMvdHit.h"         // for CbmMvdHit
+#include "CbmMvdPoint.h"       // for CbmMvdPoint
+#include "CbmMvdSensor.h"      // for CbmMvdSensor
+#include "CbmMvdStationPar.h"  // for CbmMvdStationPar
+#include "CbmStsTrack.h"       // for CbmStsTrack
+#include "CbmTrackMatchNew.h"  // for CbmTrackMatchNew
+#include "CbmTrackParam.h"     // for CbmTrackParam
+#include "CbmVertex.h"         // for CbmVertex
 
+#include <FairRootManager.h>   // for FairRootManager
+#include <FairTask.h>          // for InitStatus, FairTask
+#include <FairTrackParam.h>    // for FairTrackParam
+#include <Logger.h>            // for Logger, LOG
 
-//-- Include from Fair --//
-#include <FairRootManager.h>
-#include <FairTrackParam.h>
-#include <Logger.h>
+#include <TAxis.h>             // for TAxis
+#include <TCanvas.h>           // for TCanvas
+#include <TClonesArray.h>      // for TClonesArray
+#include <TFile.h>             // for TFile
+#include <TH1.h>               // for TH1F
+#include <TH2.h>               // for TH2F
+#include <TObject.h>           // for TObject
+#include <TStyle.h>            // for TStyle, gStyle
 
-
-//-- Include from Root --//
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TMath.h"
-#include "TStyle.h"
-#include <TFile.h>
-
-//-- Include from C++ --//
-#include <iostream>
-
+#include <cmath>               // for sqrt, fabs
+#include <iostream>            // for operator<<, basic_ostream, char_traits
 
 using std::cout;
 using std::endl;
@@ -866,7 +862,7 @@ Bool_t CbmMvdQa::HasHitFirstTrue(Int_t MCtrackID, CbmStsTrack* stsTrack)
   Int_t nrOfMvdHits        = stsTrack->GetNofMvdHits();
   Int_t nrOfLinks          = 0;
   Int_t mcTrackId          = 0;
-  const CbmMvdPoint* point = NULL;
+  const CbmMvdPoint* point = nullptr;
   for (Int_t iHit = 0; iHit < nrOfMvdHits; iHit++) {
     CbmMatch* mvdMatch = (CbmMatch*) fMvdHitMatchArray->At(stsTrack->GetMvdHitIndex(iHit));
     if (mvdMatch) { nrOfLinks = mvdMatch->GetNofLinks(); }
@@ -876,7 +872,7 @@ Bool_t CbmMvdQa::HasHitFirstTrue(Int_t MCtrackID, CbmStsTrack* stsTrack)
     for (Int_t iLink = 0; iLink < nrOfLinks; iLink++) {
       Int_t pointIndex = mvdMatch->GetLink(iLink).GetIndex();
       if (pointIndex < fMcPoints->GetEntriesFast()) point = (CbmMvdPoint*) fMcPoints->At(pointIndex);
-      if (NULL == point) {
+      if (nullptr == point) {
         continue;  //delta or background event
       }
       else
@@ -894,7 +890,7 @@ void CbmMvdQa::GetFirstMCPos(CbmStsTrack* stsTrack, Float_t* pos)
 {
   Int_t nrOfMvdHits        = stsTrack->GetNofMvdHits();
   Int_t nrOfLinks          = 0;
-  const CbmMvdPoint* point = NULL;
+  const CbmMvdPoint* point = nullptr;
   for (Int_t iHit = 0; iHit < nrOfMvdHits; iHit++) {
     CbmMatch* mvdMatch = (CbmMatch*) fMvdHitMatchArray->At(stsTrack->GetMvdHitIndex(iHit));
     if (mvdMatch) { nrOfLinks = mvdMatch->GetNofLinks(); }
@@ -904,7 +900,7 @@ void CbmMvdQa::GetFirstMCPos(CbmStsTrack* stsTrack, Float_t* pos)
     for (Int_t iLink = 0; iLink < nrOfLinks; iLink++) {
       Int_t pointIndex = mvdMatch->GetLink(iLink).GetIndex();
       if (pointIndex < fMcPoints->GetEntriesFast()) point = (CbmMvdPoint*) fMcPoints->At(pointIndex);
-      if (NULL == point) {
+      if (nullptr == point) {
         continue;  //delta or background event
       }
       else if (point->GetZOut() < fFirstMvdPos + 1) {
@@ -929,7 +925,7 @@ void CbmMvdQa::SetMatches(Int_t MCtrackID, CbmStsTrack* stsTrack)
   Bool_t hasTrack;
   Int_t nrOfLinks          = 0;
   fMvdRecoRatio            = 0.;
-  const CbmMvdPoint* point = NULL;
+  const CbmMvdPoint* point = nullptr;
   for (Int_t iHit = 0; iHit < nrOfMvdHits; iHit++) {
     hasTrack           = kFALSE;
     CbmMatch* mvdMatch = (CbmMatch*) fMvdHitMatchArray->At(stsTrack->GetMvdHitIndex(iHit));
@@ -943,7 +939,7 @@ void CbmMvdQa::SetMatches(Int_t MCtrackID, CbmStsTrack* stsTrack)
     for (Int_t iLink = 0; iLink < nrOfLinks; iLink++) {
       Int_t pointIndex = mvdMatch->GetLink(iLink).GetIndex();
       if (pointIndex < fMcPoints->GetEntriesFast()) point = (CbmMvdPoint*) fMcPoints->At(pointIndex);
-      if (NULL == point) {
+      if (nullptr == point) {
         continue;  //delta or background event
       }
       else

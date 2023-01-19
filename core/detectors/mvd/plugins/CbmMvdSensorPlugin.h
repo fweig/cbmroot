@@ -17,13 +17,16 @@
 #ifndef CBMMVDSENSORPLUGIN_H
 #define CBMMVDSENSORPLUGIN_H 1
 
-#include "CbmMvdPoint.h"
-using std::cout;
-using std::endl;
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Bool_t, Int_t, kTRUE
+#include <TObject.h>     // for TObject
 
-class TClonesArray;
-class CbmMvdSensor;
-class TObject;
+#include <Logger.h>      // for LOG
+
+class TBuffer;
+class TClass;
+class TClonesArray;  // lines 24-24
+class TMemberInspector;
 
 enum MvdSensorPluginType
 {
@@ -54,8 +57,7 @@ public:
   virtual TClonesArray* GetWriteArray() { return 0; }
 
   virtual void SetInputArray(TClonesArray*) { ; }
-  //virtual void SetInput(CbmMvdPoint*) { ; }
-  virtual void SetInput(TObject*) {cout << "-E- CbmMvdSensorPlugin::SetInput - You are sending input to the base class instead to your plugin!" << endl;}
+  virtual void SetInput(TObject*) {LOG(error) << "You are sending input to the base class instead to your plugin!";}
   virtual void SetOutputArray(TClonesArray*) { ; }
 
   virtual void SetNextPlugin(CbmMvdSensorPlugin* plugin) { fNextPlugin = plugin; }

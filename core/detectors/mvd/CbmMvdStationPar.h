@@ -19,10 +19,15 @@
 #ifndef CBMMVDSTATIONPAR_H
 #define CBMMVDSTATIONPAR_H 1
 
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Option_t
+#include <TNamed.h>      // for TNamed
 
-#include "TNamed.h"
+#include <vector>        // for vector
 
-#include <map>
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 class CbmMvdStationPar : public TNamed {
 

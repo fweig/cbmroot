@@ -19,9 +19,14 @@
 #ifndef CBMMVDSENSORDATASHEET_H
 #define CBMMVDSENSORDATASHEET_H 1
 
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Float_t, Bool_t, Option_t
+#include <TString.h>     // for TString
+#include <TNamed.h>      // for TNamed
 
-#include "TNamed.h"
-
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 class CbmMvdSensorDataSheet : public TNamed {
 

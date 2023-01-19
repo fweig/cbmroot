@@ -11,13 +11,18 @@
 #ifndef CBMMVDHITFINDER_H
 #define CBMMVDHITFINDER_H 1
 
-#include "FairTask.h"
+#include "FairTask.h"    // for InitStatus, FairTask
 
-#include "TStopwatch.h"
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, UInt_t, kTRUE
+#include <TStopwatch.h>  // for TStopwatch
 
-class CbmMvdDetector;
 class CbmDigiManager;
+class CbmMvdDetector;
+class TBuffer;
+class TClass;
 class TClonesArray;
+class TMemberInspector;
 
 class CbmMvdHitfinder : public FairTask {
 

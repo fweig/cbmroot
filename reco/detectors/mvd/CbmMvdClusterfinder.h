@@ -11,15 +11,19 @@
 #ifndef CBMMVDCLUSTERFINDER_H
 #define CBMMVDCLUSTERFINDER_H 1
 
+#include "FairTask.h"    // for InitStatus, FairTask
 
-#include "FairTask.h"
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, UInt_t, kTRUE
+#include <TString.h>     // for TString
+#include <TStopwatch.h>  // for TStopwatch
 
-#include "TStopwatch.h"
-
-class CbmMvdDetector;
-class TClonesArray;
-class TString;
 class CbmDigiManager;
+class CbmMvdDetector;
+class TBuffer;
+class TClass;
+class TClonesArray;
+class TMemberInspector;
 
 
 class CbmMvdClusterfinder : public FairTask {

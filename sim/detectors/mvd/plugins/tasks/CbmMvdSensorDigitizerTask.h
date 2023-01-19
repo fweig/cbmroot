@@ -17,39 +17,34 @@
 #ifndef CBMMVDSENSORDIGITIZERTASK_H
 #define CBMMVDSENSORDIGITIZERTASK_H 1
 
+#include "CbmMvdSensorTask.h"  // for CbmMvdSensorTask
 
-#include "CbmMvdSensor.h"
+#include <FairTask.h>          // for InitStatus
 
-#include "FairTask.h"
-//#include "omp.h"
-#include "CbmMatch.h"
-#include "CbmMvdDigi.h"
-#include "CbmMvdPileupManager.h"
-#include "CbmMvdPixelCharge.h"
-#include "CbmMvdPoint.h"
-#include "CbmMvdSensorTask.h"
+#include <Rtypes.h>            // for ClassDef
+#include <RtypesCore.h>        // for Double_t, Int_t, Float_t, Bool_t, kTRUE
+#include <TRandom3.h>          // for TRandom3
+#include <TStopwatch.h>        // for TStopwatch
+#include <TString.h>           // for TString
 
-#include "FairTask.h"
+#include <map>                 // for map
+#include <utility>             // for pair
+#include <vector>              // for vector
 
-#include "TCanvas.h"
-#include "TH1.h"
-#include "TH1F.h"
-#include "TH2.h"
-#include "TH2F.h"
-#include "TMath.h"
-#include "TObjArray.h"
-#include "TRandom3.h"
-#include "TRefArray.h"
-#include "TStopwatch.h"
-#include "TString.h"
-
-#include <list>
-#include <map>
-#include <utility>
-#include <vector>
-
+class CbmMvdPileupManager;
+class CbmMvdPixelCharge;
+class CbmMvdPoint;
+class CbmMvdSensor;
+class CbmMvdSensorDataSheet;
+class TBuffer;
+class TClass;
 class TClonesArray;
-
+class TH1F;
+class TH2F;
+class TMemberInspector;
+class TObjArray;
+class TObject;
+class TRefArray;
 
 class CbmMvdSensorDigitizerTask : public CbmMvdSensorTask {
 
@@ -66,7 +61,6 @@ public:
 
   /** fill buffer **/
   void SetInputArray(TClonesArray* inputStream);
-  void SetInput(CbmMvdPoint* point);
   void SetInput(TObject*); //overwrite
 
   /** Execute **/

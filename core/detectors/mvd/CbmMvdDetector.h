@@ -20,25 +20,25 @@
 #ifndef CBMMVDDETECTOR_H
 #define CBMMVDDETECTOR_H 1
 
+#include "CbmMvdStationPar.h"  // for CbmMvdStationPar
 
-/// includes from c
-//#include <vector>
+#include <Rtypes.h>            // for ClassDef
+#include <RtypesCore.h>        // for Int_t, UInt_t, Bool_t, Float_t, Double_t
+#include <TClonesArray.h>      // for TClonesArray
+#include <TNamed.h>            // for TNamed
+#include <TString.h>           // for TString
 
-/// includes from ROOT
-#include "TClonesArray.h"
-#include "TNamed.h"
+#include <map>                 // for map
 
-/// includes from CbmRoot
-#include "CbmMvdStationPar.h"
-//#include "CbmMvdDigi.h"
-#include "tools/CbmMvdHelper.h"
-
-class CbmMvdPoint;
+class CbmMvdSensor;
 class CbmMvdSensorDataSheet;
 class CbmMvdSensorPlugin;
-class CbmMvdSensor;
+class TBuffer;
+class TClass;
+class TMemberInspector;
+class TObject;
 
-class CbmDigiManager;
+enum class CbmMvdSensorTyp;
 
 class CbmMvdDetector : public TNamed {
 
@@ -52,79 +52,59 @@ public:
    */
   static CbmMvdDetector* Instance();
 
-
   /** Destructor **/
   virtual ~CbmMvdDetector();
 
   /** Data interface */
-
   void SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input);
 
-
-  //TClonesArray* GetOuput() { return 0; }
-  //TClonesArray* GetOutputHits();
-  //TClonesArray* GetOutputDigis();
-  //TClonesArray* GetOutputDigiMatchs();
-  //TClonesArray* GetOutputCluster();  //khun
-  //TClonesArray* GetOutputArray(Int_t nPlugin);
   void GetOutputArray(Int_t nPlugin,TClonesArray* outputArray);
   void GetMatchArray(Int_t nPlugin, TClonesArray* matchArray);
 
-  TClonesArray* GetSensorArray(){return fSensorArray;};
+  std::map<int, CbmMvdSensor*>& GetSensorMap() { return fSensorMap;};
   CbmMvdSensor* GetSensor(Int_t nSensor) {return (CbmMvdSensor*) fSensorArray->At(nSensor);}
-  TClonesArray* GetSensorIDArray(){return fSensorIDArray;};
-  // TClonesArray* GetClonesArray(Int_t dataLevel){ return 0;}
   Int_t GetSensorArraySize() { return (fSensorArray->GetEntriesFast()); }
+
   Int_t GetPluginArraySize() { return fPluginCount - 1; }
   UInt_t GetPluginCount() { return fPluginCount; }
   void SetPluginCount(UInt_t count) { fPluginCount=count; }
   Int_t  DetectPlugin(Int_t pluginID);
 
-
-  TClonesArray* GetCurrentEvent();
   /** Initialisation */
-
   void AddSensor(TString clearName, TString fullName, TString nodeName, CbmMvdSensorDataSheet* sensorData,
                  Int_t sensorNr, Int_t volumeId, Double_t sensorStartTime, Int_t stationNr);
-  void AddPlugin(CbmMvdSensorPlugin* plugin);
-  void BuildDebugHistograms() { ; };
+  static void SetSensorTyp(CbmMvdSensorTyp typ) { fSensorTyp = typ; };
+  void SetSensorArrayFilled(Bool_t value = kTRUE) {fSensorArrayFilled=value;}
   void Init();
+
   void SetMisalignment(Float_t misalignment[3])
   {
     for (Int_t i = 0; i < 3; i++)
       fepsilon[i] = misalignment[i];
   };
-  void SetParameterFile(CbmMvdStationPar* parameter) { fParameter = parameter; };
+
+  void BuildDebugHistograms() { ; };
   void ShowDebugHistos();
+
   /** Data Processing */
-
-  std::map<int, CbmMvdSensor*>& GetSensorMap() { return fSensorMap;};
-
   void ExecChain();          //Processes the full execution chain
   void Exec(UInt_t nLevel);  //Processes Element nLevel of the chain
-  // void ExecTo(UInt_t nLevel){;}; // Processes Elements to a given Level of Plugins
   void ExecFrom(UInt_t nLevel);  //Preocesses Elements from a given level till the end
 
   /** Finish */
-
   void Finish();
-  // void StoreDebugHistograms(TString fileName){;}
 
-  /** Accessors */
+  /** Parameters */
+  void SetParameterFile(CbmMvdStationPar* parameter) { fParameter = parameter; };
   CbmMvdStationPar* GetParameterFile() { return fParameter; };
-  CbmMvdSensor* GetSensor(UInt_t nSensor) { return (CbmMvdSensor*) fSensorArray->At(nSensor); };
   void PrintParameter() { fParameter->Print(); };
 
-  static void SetSensorTyp(CbmMvdSensorTyp typ) { fSensorTyp = typ; };
-
-  void SetSensorArrayFilled(Bool_t value = kTRUE) {fSensorArrayFilled=value;}
 
 private:
   static CbmMvdSensorTyp fSensorTyp;
 
   TClonesArray* fSensorArray;
   std::map<int, CbmMvdSensor*> fSensorMap;
-  TClonesArray* fSensorIDArray;  //Array of Sensor ID
   UInt_t fPluginCount;
   TClonesArray* foutput;
   TClonesArray* foutputHits;
@@ -154,7 +134,7 @@ private:
   CbmMvdDetector(const CbmMvdDetector&);
   CbmMvdDetector operator=(const CbmMvdDetector&);
 
-  ClassDef(CbmMvdDetector, 2);
+  ClassDef(CbmMvdDetector, 3);
 };
 
 #endif

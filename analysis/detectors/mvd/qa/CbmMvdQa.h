@@ -19,21 +19,21 @@
 #ifndef CBMMVDQA_H
 #define CBMMVDQA_H 1
 
-#include "FairTask.h"
+#include "FairTask.h"    // for FairTask, InitStatus
 
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, kTRUE, Float_t, Option_t
 
+class CbmMvdDetector;
+class CbmStsTrack;
+class CbmVertex;
+class TBuffer;
+class TClass;
 class TClonesArray;
 class TFile;
 class TH1F;
 class TH2F;
-
-class FairTrackParam;
-
-class CbmMvdDetector;
-//class CbmLitTrackParam;
-class CbmVertex;
-class CbmStsTrack;
-
+class TMemberInspector;
 
 class CbmMvdQa : public FairTask {
 public:

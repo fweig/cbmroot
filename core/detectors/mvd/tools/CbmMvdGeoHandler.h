@@ -13,18 +13,23 @@
 #ifndef CbmMvdGeoHandler_H_
 #define CbmMvdGeoHandler_H_ 1
 
-#include <map>
-using std::map;
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, kFALSE, UInt_t
+#include <TObject.h>     // for TObject
+#include <TString.h>     // for TString
 
-#include "CbmMvdDetector.h"
-#include "CbmMvdStationPar.h"
-#include "tools/CbmMvdHelper.h"
-
-#include "TObject.h"
-
+class CbmMvdDetector;
+class CbmMvdStationPar;
+class TBuffer;
+class TClass;
 class TGeoBBox;
-class TGeoVolume;
 class TGeoHMatrix;
+class TGeoVolume;
+class TMemberInspector;
+
+enum class CbmMvdSensorTyp;
+
+#include <map>           // for map
 
 enum CbmMvdGeoTyp
 {
@@ -71,7 +76,7 @@ public:
   Double_t GetZ(const TString& path);
   Int_t GetStation(const TString& path);
   void Fill();
-  map<Int_t, Int_t> GetMap() { return fStationMap; };
+  std::map<Int_t, Int_t> GetMap() { return fStationMap; };
   void PrintGeoParameter();
   Int_t GetIDfromPath(TString path);
 
@@ -92,7 +97,7 @@ private:
   CbmMvdDetector* fDetector;
   CbmMvdStationPar* fStationPar;
 
-  map<Int_t, Int_t> fStationMap;
+  std::map<Int_t, Int_t> fStationMap;
 
   Bool_t fIsSimulation;  //!
 

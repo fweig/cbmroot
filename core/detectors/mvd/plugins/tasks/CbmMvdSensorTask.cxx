@@ -10,20 +10,18 @@
 #include "CbmMvdSensorTask.h"
 
 #include "TClonesArray.h"
-#include "TObjArray.h"
-
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorTask::CbmMvdSensorTask() : CbmMvdSensorPlugin(), fInputBuffer(NULL), fOutputBuffer(NULL), fSensor(NULL) {
+CbmMvdSensorTask::CbmMvdSensorTask() : CbmMvdSensorPlugin(), fInputBuffer(nullptr), fOutputBuffer(nullptr), fSensor(nullptr) {
 fPluginIDNumber= -1;
 }
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
 CbmMvdSensorTask::CbmMvdSensorTask(const char* name)
   : CbmMvdSensorPlugin(name)
-  , fInputBuffer(NULL)
-  , fOutputBuffer(NULL)
-  , fSensor(NULL)
+  , fInputBuffer(nullptr)
+  , fOutputBuffer(nullptr)
+  , fSensor(nullptr)
 {
 fPluginIDNumber= -1;
 }

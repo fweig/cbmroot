@@ -19,6 +19,7 @@
 
 #include "TArrayS.h"
 #include "TCanvas.h"
+#include <TClonesArray.h>
 #include "TH1.h"
 #include "TH1F.h"
 #include "TH2.h"

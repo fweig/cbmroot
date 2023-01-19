@@ -9,34 +9,22 @@
 
 #include "CbmMvdDetector.h"
 
-/// includes from CbmRoot
-#include "CbmDigiManager.h"
-#include "CbmMvdDetectorId.h"
-#include "CbmMvdDigi.h"
-#include "CbmMvdSensor.h"
-#include "plugins/CbmMvdSensorPlugin.h"
-#include "plugins/tasks/CbmMvdSensorTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdDetectorId.h"    // for CbmMvdDetectorId
+#include "CbmMvdGeoHandler.h"    // for CbmMvdGeoHandler
+#include "CbmMvdHelper.h"        // for CbmMvdSensorTyp
+#include "CbmMvdSensor.h"        // for CbmMvdSensor
+#include "CbmMvdSensorPlugin.h"  // for CbmMvdSensorPlugin, MvdSensorPluginType
+#include "CbmMvdSensorTask.h"    // for CbmMvdSensorTask
 
+#include <Logger.h>              // for LOG, Logger
 
+#include <Rtypes.h>              // for TGenericClassInfo
 
-
-
-/// includes from FairRoot
-#include <Logger.h>
-
-/// includes from Root
-#include "TGeoBBox.h"
-#include "TGeoMatrix.h"
-#include "TGeoVolume.h"
-#include "TRandom.h"
-#include "TString.h"
-
-/// includes from c
-#include <iostream>
-
-using std::cout;
-using std::endl;
+#include <TClonesArray.h>        // for TClonesArray
+#include <TNamed.h>              // for TNamed
+#include <TObjArray.h>           // for TObjArray
+#include <TRandom.h>             // for TRandom, gRandom
+#include <TString.h>             // for TString, operator==, operator<<
 
 //_____________________________________________________________________________
 CbmMvdDetector* CbmMvdDetector::fInstance = 0;
@@ -63,7 +51,6 @@ CbmMvdDetector::CbmMvdDetector()
   : TNamed()
   , fSensorArray(nullptr)
   , fSensorMap()
-  , fSensorIDArray(nullptr)
   , fPluginCount(0)
   , foutput(nullptr)
   , foutputHits(nullptr)
@@ -94,7 +81,6 @@ CbmMvdDetector::CbmMvdDetector(const char* name)
   : TNamed()
   , fSensorArray(new TClonesArray("CbmMvdSensor", 10))
   , fSensorMap()
-  , fSensorIDArray(nullptr)
   , fPluginCount(0)
   , foutput(nullptr)
   , foutputHits(nullptr)
@@ -178,83 +164,20 @@ void CbmMvdDetector::AddSensor(TString clearName, TString fullName, TString node
 
 // ----------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------
-void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin)
-{
-  /**
- * if there is a new buffer or task typ you have to insert it here
- * or you can't use it.
- */
-  fSensorArrayFilled = kTRUE;
-
-  CbmMvdSensor* sensor;
-  Int_t nSensors                = fSensorArray->GetEntriesFast();
-  const TString digitizername   = "CbmMvdSensorDigitizerTask";    //done
-  const TString digitizerTBname = "CbmMvdSensorDigitizerTBTask";
-  //  const TString findername      = "CbmMvdSensorFindHitTask";
-  //const TString framename = "CbmMvdSensorFrameBuffer";
-  //const TString trackingname = "CbmMvdSensorTrackingBuffer";
-  const TString clustername   = "CbmMvdSensorClusterfinderTask";  //khun //done
-  const TString hitname       = "CbmMvdSensorHitfinderTask";      //khun
-  const TString digitohitname = "CbmMvdSensorDigiToHitTask";
-
-  for (Int_t i = 0; i < nSensors; i++) {
-
-
-    if (plugin->GetPluginType() == task) {
-
-      if (plugin->ClassName() == digitizername) {
-        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigitizer class";
-      }
-      else if (plugin->ClassName() == digitizerTBname) {
-        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigitizerTB class";
-      }
-
-      //Re-enable cluster and hit finder in addition to khun
-      else if (plugin->ClassName() == clustername) {
-        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdClusterfinder class";
-      }
-      else if (plugin->ClassName() == hitname) {
-        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdHitfinder class";
-      }
-      //end: re-enable cluster and hit finder in addition to khun
-
-      else if (plugin->ClassName() == digitohitname) {
-        LOG(fatal) << "Should never come here. Tasks are now added in CbmMvdDigiToHit class";
-      }
-      else {
-        cout << endl << "task not included yet, adding standart task." << endl;
-        CbmMvdSensorTask* task = new CbmMvdSensorTask();
-        sensor                 = (CbmMvdSensor*) fSensorArray->At(i);
-        sensor->AddPlugin(task);
-      }
-      //data parallelizm requires that each sensor get its own task object
-    }
-
-    else {
-      cout << "Invalide" << endl;
-    }
-  };
-  fPluginCount++;
-};
-
-//----------------------------------------------------------------------
-
 Int_t CbmMvdDetector::DetectPlugin(Int_t pluginID)
 {
   // Detects the position of a plugin with a given Plugin-ID (set in the plugin implementation constructor) in the plugin-array of the sensors
 
 
 
-  if (!fSensorArrayFilled) {cout << "-W - CbmMvdDetector::DetectPlugin: You tried to access sensor plugins while the detector is not initialized yet." << endl;  return -1;}
+  if (!fSensorArrayFilled) {LOG(warning) << "CbmMvdDetector::DetectPlugin: You tried to access sensor plugins while the detector is not initialized yet.";  return -1;}
   CbmMvdSensor* sensor=GetSensor(0);
   TObjArray* pluginArray= sensor->GetPluginArray();
 
   Int_t nPlugin=pluginArray->GetEntries();
   for(Int_t i=0; i<nPlugin;i++) {
     CbmMvdSensorPlugin* plugin= (CbmMvdSensorPlugin*) pluginArray->At(i);
-    // cout << "- I - CbmMvdDetector::DetectPlugin: PlugInID = " << plugin->GetPluginIDNumber() << " Position: "<< i << endl;
+    // LOG(info) <<"CbmMvdDetector::DetectPlugin: PlugInID = " << plugin->GetPluginIDNumber() << " Position: "<< i;
     if (pluginID==plugin->GetPluginIDNumber()){return i;}
   }
 
@@ -338,9 +261,9 @@ void CbmMvdDetector::ExecChain()
   CbmMvdSensor* sensor;
   for (Int_t i = 0; i < nSensors; i++) {
     sensor = (CbmMvdSensor*) fSensorArray->At(i);
-    //cout << "I------ Send Chain to " << sensor->GetName() << endl;
+    //LOG(info) << "Send Chain to " << sensor->GetName() << endl;
     sensor->ExecChain();
-    //cout << "I------ finished Chain at "<< sensor->GetName() <<endl<< endl;
+    //LOG(info) << "finished Chain at "<< sensor->GetName() <<endl<< endl;
   };
 }
 
@@ -398,25 +321,6 @@ void CbmMvdDetector::ExecFrom(UInt_t nLevel)
 }
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-TClonesArray* CbmMvdDetector::GetCurrentEvent()
-{
-
-  /**
-   * Method used for debugging, Plugins have to hold there output until next call
-   */
-  Int_t nSensors = fSensorArray->GetEntriesFast();
-  CbmMvdSensor* sensor;
-  for (Int_t i = 0; i < nSensors; i++) {
-    sensor = (CbmMvdSensor*) fSensorArray->At(i);
-    // foutput = sensor->GetOutputArray(0);
-    fcurrentEvent->AbsorbObjects(sensor->GetOutputArray(0));
-  }
-
-  return (fcurrentEvent);
-}
-//-----------------------------------------------------------------------
-
 void CbmMvdDetector::GetOutputArray(Int_t nPlugin, TClonesArray* outputArray){
   Int_t nSensors = fSensorArray->GetEntriesFast();
   CbmMvdSensor* sensor;
@@ -427,7 +331,7 @@ void CbmMvdDetector::GetOutputArray(Int_t nPlugin, TClonesArray* outputArray){
     sensor       = (CbmMvdSensor*) fSensorArray->At(i);
     tmpArray=sensor->GetOutputArray(nPlugin);
     Int_t length = tmpArray->GetEntriesFast();
-    //cout<< "CbmMvdDetector::GetOutputArray - Length = " << length << endl;
+    //LOG(info)<< "CbmMvdDetector::GetOutputArray - Length = " << length;
     if (length >= 0) {
       outputArray->AbsorbObjects(tmpArray);
     }

@@ -10,10 +10,9 @@
 #include "CbmMvdHitfinderTB.h"
 
 #include "CbmMvdPoint.h"
-#include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
-#include "plugins/tasks/CbmMvdSensorHitfinderTask.h"
-#include "tools/CbmMvdGeoHandler.h"
+#include "CbmMvdSensorFindHitTask.h"
+#include "CbmMvdSensorHitfinderTask.h"
+#include "CbmMvdGeoHandler.h"
 
 
 // Includes from FAIR
@@ -38,10 +37,10 @@ using std::setw;
 // -----   Default constructor   ------------------------------------------
 CbmMvdHitfinderTB::CbmMvdHitfinderTB()
   : FairTask("MVDHitfinder")
-  , fDetector(NULL)
-  , fInputDigis(NULL)
-  , fInputCluster(NULL)
-  , fHits(NULL)
+  , fDetector(nullptr)
+  , fInputDigis(nullptr)
+  , fInputCluster(nullptr)
+  , fHits(nullptr)
   , fHitfinderPluginNr(0)
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
@@ -54,10 +53,10 @@ CbmMvdHitfinderTB::CbmMvdHitfinderTB()
 // -----   Standard constructor   ------------------------------------------
 CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name, Int_t iVerbose)
   : FairTask(name, iVerbose)
-  , fDetector(NULL)
-  , fInputDigis(NULL)
-  , fInputCluster(NULL)
-  , fHits(NULL)
+  , fDetector(nullptr)
+  , fInputDigis(nullptr)
+  , fInputCluster(nullptr)
+  , fHits(nullptr)
   , fHitfinderPluginNr(0)
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)
@@ -70,10 +69,10 @@ CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name, Int_t iVerbose)
 // -----   Standard constructor   ------------------------------------------
 CbmMvdHitfinderTB::CbmMvdHitfinderTB(const char* name, Int_t mode, Int_t iVerbose)
   : FairTask(name, iVerbose)
-  , fDetector(NULL)
-  , fInputDigis(NULL)
-  , fInputCluster(NULL)
-  , fHits(NULL)
+  , fDetector(nullptr)
+  , fInputDigis(nullptr)
+  , fInputCluster(nullptr)
+  , fHits(nullptr)
   , fHitfinderPluginNr(0)
   , useClusterfinder(kFALSE)
   , fShowDebugHistos(kFALSE)

@@ -11,11 +11,16 @@
 #ifndef CBMMVDREADOUT_H
 #define CBMMVDREADOUT_H 1
 
-#include "FairTask.h"
+#include <FairTask.h>    // for InitStatus, FairTask
 
-class CbmMvdDetector;
-class TClonesArray;
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, kTRUE
+
 class CbmDigiManager;
+class CbmMvdDetector;
+class TBuffer;
+class TClass;
+class TMemberInspector;
 
 class CbmMvdReadout : public FairTask {
 

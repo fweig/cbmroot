@@ -17,17 +17,16 @@
 #ifndef CBMMVDSENSORTASK_H
 #define CBMMVDSENSORTASK_H 1
 
-#include "plugins/CbmMvdSensorPlugin.h"
+#include "CbmMvdSensorPlugin.h"  // for MvdSensorPluginType, CbmMvdSensorPlugin
 
-#include "TObject.h"
+#include <Rtypes.h>              // for ClassDef
 
-#include <iostream>
-
-
-class TClonesArray;
-class CbmMvdSensor;
-class CbmMvdPoint;
 class CbmMvdDigi;
+class CbmMvdSensor;
+class TBuffer;
+class TClass;
+class TClonesArray; 
+class TMemberInspector;
 
 class CbmMvdSensorTask : public CbmMvdSensorPlugin {
 
@@ -41,7 +40,6 @@ public:
 
 
   virtual void SendInputBuffer(TClonesArray* inputBuffer) { fInputBuffer = inputBuffer; };
-  virtual void SetInput(CbmMvdPoint*) { ; };
   virtual void SetInputDigi(CbmMvdDigi*) { ; };
   virtual void CallBufferForInputData() { ; };  //See comment in ExecChain() in .cxx
   virtual TClonesArray* GetOutputArray() { return fOutputBuffer; };

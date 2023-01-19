@@ -5,27 +5,19 @@
 // -------------------------------------------------------------------------
 // -----                    CbmMvdClusterfinder source file                -----
 // -------------------------------------------------------------------------
-
-// Includes from MVD
 #include "CbmMvdReadout.h"
 
-#include "CbmMvdDetector.h"
-#include "CbmMvdSensorReadoutTask.h"
+#include "CbmDefs.h"                               // for ECbmModuleId
+#include "CbmDigiManager.h"                        // for CbmDigiManager
+#include "CbmMvdDetector.h"                        // for CbmMvdDetector
+#include "CbmMvdDigi.h"                            // for CbmMvdDigi
+#include "CbmMvdSensor.h"                          // for CbmMvdSensor
+#include "CbmMvdSensorReadoutTask.h"               // for CbmMvdSensorReadoudoutTask
 
-// Includes from FAIR
-#include "FairModule.h"
-#include "FairRootManager.h"
+#include <FairRootManager.h>                       // for FairRootManager
+#include <Logger.h>                                // for LOG
 
-// Includes from ROOT
-#include "CbmDigiManager.h"
-
-#include "TClonesArray.h"
-
-
-// Includes from C++
-#include <iomanip>
-#include <iostream>
-
+#include <iostream>                                // for operator<<, endl
 
 using std::cout;
 using std::endl;
@@ -109,9 +101,23 @@ InitStatus CbmMvdReadout::Init()
     LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
   }
 
-  CbmMvdSensorReadoutTask* readerTask = new CbmMvdSensorReadoutTask();
+  // Add the readout plugin to all sensors
+  std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
+  UInt_t plugincount=fDetector->GetPluginCount();
 
-  fDetector->AddPlugin(readerTask);
+  for (auto itr = sensorMap.begin();
+              itr != sensorMap.end(); itr++) {
+    CbmMvdSensorReadoutTask* readerTask = new CbmMvdSensorReadoutTask();
+
+    itr->second->AddPlugin(readerTask);
+    // Don't know why type of plugin it is
+    // Decide to use Cluster Plugin since it works on CbmMvdDigis as the
+    // normal cluster plugin does
+    itr->second->SetClusterPlugin(plugincount);
+  }
+  fDetector->SetSensorArrayFilled(kTRUE);
+  fDetector->SetPluginCount(plugincount+1);
+
   fPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
   fDetector->Init();
 
