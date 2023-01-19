@@ -41,9 +41,10 @@ public:
   {
     fUseClusterfinder = clusterfinderFlag;
   };  //* enable use of external clusterfinder
-  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
+    void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 protected:
+  Int_t fMyPluginID;
 private:
   CbmMvdDetector* fDetector;
   CbmDigiManager* fDigiMan;  //!

@@ -210,10 +210,7 @@ void CbmMvdSensorClusterfinderTask::Exec()
     }
 
     Int_t nDigis = fInputBuffer->GetEntriesFast();
-    cout << " -I- CbmMvdClusterTrask::Exec(): Received following number of digis: " << nDigis << endl;
-
-
-    nDigis             = fInputBuffer->GetEntriesFast();
+    //cout << " -I- CbmMvdClusterTrask::Exec(): Received following number of digis: " << nDigis << endl;
     TArrayS* pixelUsed = new TArrayS(nDigis);
 
     for (iDigi = 0; iDigi < nDigis; iDigi++) {

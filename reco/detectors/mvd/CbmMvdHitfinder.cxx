@@ -11,7 +11,7 @@
 
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-//#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
 #include "CbmDigiManager.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"
 #include "tools/CbmMvdGeoHandler.h"
@@ -104,7 +104,7 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
 
   fHits->Clear();
   fTimer.Start();
-  Int_t nTargetPlugin= fDetector->DetectPlugin(300);
+  Int_t nTargetPlugin= fDetector->DetectPlugin(fMyPluginID);
   Int_t nDigis=0;
   CbmMvdDigi* digi=0;
   CbmMvdCluster* cluster=0;
@@ -212,13 +212,25 @@ InitStatus CbmMvdHitfinder::Init()
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
   UInt_t plugincount=fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
-    CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
+  if (!fUseClusterfinder) {
+    for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
+      CbmMvdSensorFindHitTask* hitfinderTask = new CbmMvdSensorFindHitTask();
 
-    itr->second->AddPlugin(hitfinderTask);
-    itr->second->SetHitPlugin(plugincount);
+      itr->second->AddPlugin(hitfinderTask);
+      itr->second->SetHitPlugin(plugincount);
+      fMyPluginID=400;
+    }
   }
+  else {
+    for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
+      CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
+
+      itr->second->AddPlugin(hitfinderTask);
+      itr->second->SetHitPlugin(plugincount);
+      fMyPluginID=300;
+    }
+  }
+
   fDetector->SetSensorArrayFilled(kTRUE);
   fDetector->SetPluginCount(plugincount+1);
   fHitfinderPluginNr = (UInt_t)(fDetector->GetPluginArraySize());

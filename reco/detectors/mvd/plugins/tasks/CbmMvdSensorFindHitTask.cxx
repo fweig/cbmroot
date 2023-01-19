@@ -204,9 +204,9 @@ void CbmMvdSensorFindHitTask::InitTask(CbmMvdSensor* mysensor)
 
   fSensor = mysensor;
   //cout << "-Start- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
-  fInputBuffer  = new TClonesArray("CbmMvdDigi", 10000);
-  fOutputBuffer = new TClonesArray("CbmMvdHit", 10000);
-  fHits         = new TClonesArray("CbmMvdHit", 10000);
+  fInputBuffer  = new TClonesArray("CbmMvdDigi", 100);
+  fOutputBuffer = new TClonesArray("CbmMvdHit", 100);
+  fHits         = new TClonesArray("CbmMvdHit", 100);
 
 
   //Add charge collection histograms

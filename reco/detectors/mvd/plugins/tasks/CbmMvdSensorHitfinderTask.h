@@ -71,6 +71,12 @@ public:
     inputSet = kTRUE;
   };
 
+  void SetInput(TObject* cluster)
+  {
+    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdCluster(*((CbmMvdCluster*) cluster));
+    inputSet = kTRUE;
+  };
+
   /** Accessors **/
   //Double_t GetSigmaX()        const { return fSigmaX;     };
 
