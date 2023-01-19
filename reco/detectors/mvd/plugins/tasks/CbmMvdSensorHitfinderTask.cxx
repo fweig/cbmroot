@@ -200,7 +200,7 @@ void CbmMvdSensorHitfinderTask::InitTask(CbmMvdSensor* mysensor)
 
 
   fSensor = mysensor;
-  //cout << "-Start- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
+  if (gDebug>0){cout << "-Start- CbmMvdSensorHitfinderTask: Initialisation of sensor " << fSensor->GetName() << endl;}
   fInputBuffer  = new TClonesArray("CbmMvdCluster", 100);
   fOutputBuffer = new TClonesArray("CbmMvdHit", 100);
 

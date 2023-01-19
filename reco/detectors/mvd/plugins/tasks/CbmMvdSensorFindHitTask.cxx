@@ -245,7 +245,7 @@ void CbmMvdSensorFindHitTask::ExecChain() { Exec(); }
 
 // -----   Virtual public method Exec   --------------
 void CbmMvdSensorFindHitTask::Exec()
-{
+{ cout << "Ich lebe auch" << endl;
 
   // if(!inputSet)
   //  {

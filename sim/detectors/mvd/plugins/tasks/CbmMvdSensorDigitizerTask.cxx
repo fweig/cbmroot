@@ -257,7 +257,7 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , h_ElossVsMomIn(NULL)
 
 { fPluginIDNumber= 100;
-  cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl;
+  if(gDebug>0){cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl;}
 
   fRandGen.SetSeed(2736);
   fEvent       = 0;

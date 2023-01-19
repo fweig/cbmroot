@@ -8,6 +8,7 @@ set(SRCS
   #plugins/tasks/CbmMvdSensorDigiToHitTask.cxx
   plugins/tasks/CbmMvdSensorHitfinderTask.cxx
   plugins/tasks/CbmMvdSensorClusterfinderTask.cxx
+  #plugins/tasks/CbmMvdSensorFindHitTask.cxx
   
   CbmMvdHitfinder.cxx  #OLD
 # CbmMvdDigiToHit.cxx

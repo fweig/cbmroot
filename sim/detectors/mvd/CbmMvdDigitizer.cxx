@@ -132,6 +132,8 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
   Int_t nPoints = fInputPoints->GetEntriesFast();
   Int_t nDigis  = 0;
   CbmMvdPoint* point=0;
+  fTmpDigi->Clear();
+  fTmpMatch->Clear();
 
 
   if (fInputPoints->GetEntriesFast() > 0) {

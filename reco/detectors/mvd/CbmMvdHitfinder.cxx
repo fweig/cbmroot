@@ -11,9 +11,9 @@
 
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+// #include "plugins/tasks/CbmMvdSensorFindHitTask.h" //digi to hit
 #include "CbmDigiManager.h"
-#include "plugins/tasks/CbmMvdSensorHitfinderTask.h"
+#include "plugins/tasks/CbmMvdSensorHitfinderTask.h" // cluster to hit
 #include "tools/CbmMvdGeoHandler.h"
 
 
@@ -105,21 +105,24 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
   fHits->Clear();
   fTimer.Start();
   Int_t nTargetPlugin= fDetector->DetectPlugin(fMyPluginID);
-  Int_t nDigis=0;
-  CbmMvdDigi* digi=0;
+  //Int_t nDigis=0;
+  //CbmMvdDigi* digi=0;
   CbmMvdCluster* cluster=0;
 
   if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) { //checks if data sources are available
     if (fVerbose) cout << endl << "//----------------------------------------//" << endl;
     if (!fUseClusterfinder) {
+      /*
       fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
       for (Int_t i = 0; i < nDigis; i++) {
         digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
         digi->SetRefId(i);
 
         fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
+        */
+      Fatal("CbmMvdHitFinder - Mode without cluster finder is currently not supported ", "CbmMvdHitFinder - Mode without cluster finder is currently not supported ");
       }
-    }
+
 
 
       //fDetector->SendInputDigis(fDigiMan);
@@ -153,7 +156,7 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
     //fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
     //fHits->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
 
-    cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
+    //cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
     if (fVerbose) cout << "Finished writing Hits" << endl;
     if (fVerbose) cout << "//----------------------------------------//" << endl << endl;
     LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHits->GetEntriesFast() << " hits in " << fixed
@@ -183,6 +186,7 @@ InitStatus CbmMvdHitfinder::Init()
 
   // **********  Get input arrays
   if (!fUseClusterfinder) {
+    Fatal("CbmMvdHitFinder - Mode without cluster finder is currently not supported ", "CbmMvdHitFinder - Mode without cluster finder is currently not supported ");
     fDigiMan = CbmDigiManager::Instance();
     fDigiMan->Init();
     if (!fDigiMan->IsPresent(ECbmModuleId::kMvd)) {
@@ -212,16 +216,19 @@ InitStatus CbmMvdHitfinder::Init()
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
   UInt_t plugincount=fDetector->GetPluginCount();
 
+    /*
   if (!fUseClusterfinder) {
+
     for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
       CbmMvdSensorFindHitTask* hitfinderTask = new CbmMvdSensorFindHitTask();
 
       itr->second->AddPlugin(hitfinderTask);
       itr->second->SetHitPlugin(plugincount);
       fMyPluginID=400;
+
     }
-  }
-  else {
+
+  else {*/
     for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
       CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
 
@@ -229,7 +236,7 @@ InitStatus CbmMvdHitfinder::Init()
       itr->second->SetHitPlugin(plugincount);
       fMyPluginID=300;
     }
-  }
+  //}
 
   fDetector->SetSensorArrayFilled(kTRUE);
   fDetector->SetPluginCount(plugincount+1);

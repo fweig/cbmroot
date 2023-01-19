@@ -94,7 +94,7 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
 
 
   fSensor = mysensor;
-  cout << "-Start- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
+  if(gDebug>0){cout << "-Start- CbmMvdSensorClusterfinderTask : Initialisation of sensor " << fSensor->GetName() << endl;}
   fInputBuffer  = new TClonesArray("CbmMvdDigi", 100);
   fOutputBuffer = new TClonesArray("CbmMvdCluster", 100);
 
@@ -188,10 +188,10 @@ void CbmMvdSensorClusterfinderTask::ExecChain() { Exec(); }
 // -----   Public method Exec   --------------
 void CbmMvdSensorClusterfinderTask::Exec()
 {
-
+  if(gDebug>0){
   cout << "CbmMvdSensorClusterfinderTask::Exec - Running Sensor " << fSensor->GetName() << endl;
   cout << "CbmMvdSensorClusterfinderTask::Exec - InputBufferSize " << fInputBuffer->GetEntriesFast() << endl;
-
+  }
   if (fInputBuffer->GetEntriesFast() > 0) {
     fOutputBuffer->Delete();
     inputSet                    = kFALSE;
@@ -236,6 +236,8 @@ void CbmMvdSensorClusterfinderTask::Exec()
 
     if (gDebug > 0) { cout << "\n-I- " << GetName() << ": VolumeId " << fSensor->GetVolumeId() << endl; }
 
+    //cout<<"CbmMvdSensorClusterfinderTask: Working with " << nDigis << " digis" << endl;
+
     for (iDigi = 0; iDigi < nDigis; iDigi++) {
 
       if (gDebug > 0 && iDigi % 10000 == 0) { cout << "-I- " << GetName() << " Digi:" << iDigi << endl; };
@@ -256,7 +258,7 @@ void CbmMvdSensorClusterfinderTask::Exec()
 
       if (gDebug > 0) {
         cout << "-I- "
-             << "CbmMvdSensorFindHitTask: Checking for seed pixels..." << endl;
+             << "CbmMvdSensorClusterfinderTask: Checking for seed pixels..." << endl;
       }
 
       if ((GetAdcCharge(digi->GetCharge()) >= fSeedThreshold) && (pixelUsed->At(iDigi) == kFALSE)) {
@@ -267,7 +269,7 @@ void CbmMvdSensorClusterfinderTask::Exec()
 
         pair<Int_t, Int_t> a(digi->GetPixelX(), digi->GetPixelY());
         fDigiMapIt = fDigiMap.find(a);
-        fDigiMap.erase(fDigiMapIt);
+        if(fDigiMapIt!= fDigiMap.end()) {fDigiMap.erase(fDigiMapIt);};
 
         for (ULong64_t iCluster = 0; iCluster < clusterArray->size(); iCluster++) {
 
@@ -320,6 +322,7 @@ void CbmMvdSensorClusterfinderTask::Exec()
   }
   else {  //cout << endl << "No input found." << endl;
   }
+  fInputBuffer->Clear();
 }
 // -------------------------------------------------------------------------
 
