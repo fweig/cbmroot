@@ -31,7 +31,7 @@ public:
 
   Bool_t TestXY(Int_t channelNrX, Int_t channelNrY);
 
-  void DigestCharge(Float_t pointX, Float_t pointY, Int_t PointId, Int_t trackId); // TODO: add time here
+  void DigestCharge(Float_t pointX, Float_t pointY, Double_t time, Int_t PointId, Int_t trackId); // TODO: add time here
   void AddCharge(Float_t charge) { fTrackCharge = fTrackCharge + charge; };
 
 

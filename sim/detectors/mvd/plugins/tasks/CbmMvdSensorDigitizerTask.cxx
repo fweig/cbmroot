@@ -948,7 +948,7 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
     CbmMvdPixelCharge* pixelCharge = fPixelChargeShort.at(f);
     if (pixelCharge) {
       pixelCharge->DigestCharge(((float) (point->GetX() + point->GetXOut()) / 2),
-                                ((float) (point->GetY() + point->GetYOut()) / 2), point->GetPointId(),
+                                ((float) (point->GetY() + point->GetYOut()) / 2), fEventTime + point->GetTime(),point->GetPointId(),
                                 point->GetTrackID());
     }
     else {
@@ -1001,13 +1001,13 @@ void CbmMvdSensorDigitizerTask::ProduceNoise()
     if (fChargeMapIt == fChargeMap.end()) {
       pixel = new ((*fPixelCharge)[fPixelCharge->GetEntriesFast()])
         CbmMvdPixelCharge(1000, xPix, yPix, 0, -4, Current[0], Current[1]); // TODO: Add time
-      pixel->DigestCharge(Current[0], Current[1], 0, -4);
+      pixel->DigestCharge(Current[0], Current[1],fEventTime, 0, -4);
       fChargeMap[thispoint] = pixel;
     }
     else {
       pixel = fChargeMapIt->second;
       pixel->AddCharge(1000); // TODO: Add time
-      pixel->DigestCharge(Current[0], Current[1], 0, -4);
+      pixel->DigestCharge(Current[0], Current[1], fEventTime, 0, -4);
     }
   }
 }

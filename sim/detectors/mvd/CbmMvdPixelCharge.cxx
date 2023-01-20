@@ -51,7 +51,7 @@ CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge, Int_t channelNrX, Int_t cha
 // all segments of a track). Checks if a new track contributed charge to the pixel
 // Checks if the new track is dominant
 
-void CbmMvdPixelCharge::DigestCharge(Float_t pointX, Float_t pointY, Int_t pointId, Int_t trackId)
+void CbmMvdPixelCharge::DigestCharge(Float_t pointX, Float_t pointY, Double_t time, Int_t pointId, Int_t trackId)
 {
   Float_t chargeContr = fTrackCharge;
 
@@ -67,6 +67,7 @@ void CbmMvdPixelCharge::DigestCharge(Float_t pointX, Float_t pointY, Int_t point
     fPointWeight.push_back(chargeContr);
     fPointX.push_back(pointX);
     fPointY.push_back(pointY);
+    fTime.push_back(time);
 
 //  fTime.push_back(time);
 //  fLink.push_back(); // TODO: pass link 
