@@ -93,7 +93,7 @@ void CbmMvdStationPar::SetParameterMax(std::vector<Double_t>& parArray, Int_t iS
   if ((iStation < 0) || (iStation >= fStationCount)) { LOG(error) << "Station number out of Range "; }
   else {
     Double_t& v = parArray[iStation];
-    if (isnan(v) || (v < value)) { v = value; }
+    if (std::isnan(v) || (v < value)) { v = value; }
   }
 }
 // -------------------------------------------------------------------------
@@ -106,7 +106,7 @@ void CbmMvdStationPar::SetParameterMin(std::vector<Double_t>& parArray, Int_t iS
   if ((iStation < 0) || (iStation >= fStationCount)) { LOG(error) << "Station number out of Range "; }
   else {
     Double_t& v = parArray[iStation];
-    if (isnan(v) || (v > value)) { v = value; }
+    if (std::isnan(v) || (v > value)) { v = value; }
   }
 }
 // -------------------------------------------------------------------------

@@ -32,6 +32,7 @@ CbmMvdMimosis::CbmMvdMimosis()
   fEpiTh           = 18e-4;   // Thickness of the epitaxial layer
 
   fChargeThreshold = 1.;
+  fAnalogThreshold =150; //Threshold in electrons
 
   /** Description of the sensor for the digitizer //mesaured by melisa for Mimosa26AHR**/
   fNoise       = 13;

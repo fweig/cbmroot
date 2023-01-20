@@ -75,6 +75,8 @@ public:
   void ProduceIonisationPoints(CbmMvdPoint* point);
   void ProducePixelCharge(CbmMvdPoint* point);
   void ProduceNoise();
+  Bool_t  GetSignalAboveThreshold (CbmMvdPixelCharge* myPixel, Double_t readoutTime);
+  Int_t   GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime);
 
   void SetProduceNoise() { fproduceNoise = kTRUE; };
 
@@ -93,8 +95,13 @@ public:
 public:
   // ----------   Protected data members  ------------------------------------
 
-  Int_t fcurrentFrameNumber;
+  // Information about event and sensor status
+  Int_t         fcurrentFrameNumber;
+  Int_t         fEventNr;
+  Int_t         fInputNr;
+  Double_t      fEventTime;
 
+  // Information about sensor
   Double_t fEpiTh;
   Double_t fSegmentLength;
 

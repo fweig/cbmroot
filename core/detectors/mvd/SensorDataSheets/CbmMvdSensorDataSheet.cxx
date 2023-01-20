@@ -50,6 +50,11 @@ CbmMvdSensorDataSheet::CbmMvdSensorDataSheet()
   , fPixelsPerBank(0)
   , fAdcStepSize(fAdcDynamic / fAdcSteps)
   , fValidData(kFALSE)
+  , fSignalRiseTime(nan("NotSet"))
+  , fSignalFallTime(nan("NotSet"))
+  , fAnalogThreshold(-1)
+
+
 {
 }
 

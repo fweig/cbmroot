@@ -58,6 +58,10 @@ protected:
   Double_t fEpiTh;            // Thickness of the epitaxial layer
 
   Double_t fChargeThreshold;
+  Double_t fSignalRiseTime;
+  Double_t fSignalFallTime;
+
+
 
   /** Description of the sensor for the digitizer **/
   Double_t fNoise;        // Noise of the sensor
@@ -68,17 +72,24 @@ protected:
   Double_t fLorentzPar1;  // Lorentz for digitizer
   Double_t fLorentzPar2;  // Lorentz for digitizer
 
-  /** ADC description **/
+  /** ADC description, relevant for sensors with analog readout (not present in the CbmMvd) **/
 
   Int_t fAdcDynamic;
   Int_t fAdcOffset;
   Int_t fAdcBits;
   Int_t fAdcSteps;
+  Float_t fAdcStepSize;
+
+  /** Sensor substructure, relevant for MIMOSA-26 (Prototype of the CbmMvd) **/
   Int_t fStatesPerBank;
   Int_t fStatesPerLine;
   Int_t fStatesPerFrame;
   Int_t fPixelsPerBank;
-  Float_t fAdcStepSize;
+
+  /** Threshold of the in-pixel discriminator. Relevant for MIMOSIS **/
+  Int_t fAnalogThreshold;
+
+
 
   /** Self-organizsation **/
 
@@ -89,15 +100,19 @@ public:
   virtual TString* GetSensorName() { return &fMimosaName; };
   virtual Double_t GetPixelPitchX() { return fPixelPitchX; };
   virtual Double_t GetPixelPitchY() { return fPixelPitchY; };
-  virtual Int_t GetNPixelsX() { return fNPixelsX; };
-  virtual Int_t GetNPixelsY() { return fNPixelsY; };
-  virtual Int_t GetNPixels() { return fNPixels; };
-  virtual Int_t GetPixelSignX() { return fPixelSignX; };
-  virtual Int_t GetPixelSignY() { return fPixelSignY; };
-  virtual Int_t GetShutterSign() { return fShutterSign; };
+  virtual Int_t    GetNPixelsX() { return fNPixelsX; };
+  virtual Int_t    GetNPixelsY() { return fNPixelsY; };
+  virtual Int_t    GetNPixels() { return fNPixels; };
+  virtual Int_t    GetPixelSignX() { return fPixelSignX; };
+  virtual Int_t    GetPixelSignY() { return fPixelSignY; };
+  virtual Int_t    GetShutterSign() { return fShutterSign; };
   virtual Double_t GetIntegrationTime() { return fIntegrationTime; };
   virtual Double_t GetEpiThickness() { return fEpiTh; }
   virtual Double_t GetNoise() { return fNoise; };
+  virtual Double_t GetSignalRiseTime (){ return fSignalRiseTime;};
+  virtual Double_t GetSignalFallTime (){ return fSignalFallTime;};
+
+
 
   /** Description of the sensor for the digitizer **/
   virtual Double_t GetLandauMPV() { return fLandauMPV; };      // Landau for digitizer
@@ -109,6 +124,9 @@ public:
 
 
   virtual Double_t GetChargeThreshold() { return fChargeThreshold; };
+  virtual Int_t GetAnalogThreshold () {return fAnalogThreshold;};
+
+
 
   /** ADC description **/
 

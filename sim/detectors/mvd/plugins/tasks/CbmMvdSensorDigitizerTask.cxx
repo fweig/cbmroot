@@ -443,12 +443,8 @@ void CbmMvdSensorDigitizerTask::Exec()
       ProducePixelCharge(point);
     }  //loop on MCpoints
 
-
-    Int_t inputNr      = 0;
-    Int_t eventNr      = 0;
-    Double_t eventTime = .0;
     Int_t nDigis       = 0;
-    GetEventInfo(inputNr, eventNr, eventTime);
+    GetEventInfo(fInputNr, fEventNr, fEventTime);
 
     if (fproduceNoise) ProduceNoise();
 
@@ -459,18 +455,18 @@ void CbmMvdSensorDigitizerTask::Exec()
         nDigis = fDigis->GetEntriesFast();
 
         new ((*fDigis)[nDigis]) CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(),
-                                           fPixelSizeX, fPixelSizeY, pixel->GetTime(), pixel->GetFrame());
+                                           fPixelSizeX, fPixelSizeY, fEventTime+ pixel->GetTime(), pixel->GetFrame());
 
 
         new ((*fOutputBuffer)[nDigis])
           CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(), fPixelSizeX, fPixelSizeY,
-                     pixel->GetTime(), pixel->GetFrame());
+                     fEventTime+pixel->GetTime(), pixel->GetFrame());
 
         new ((*fDigiMatch)[nDigis]) CbmMatch();
         CbmMatch* match = (CbmMatch*) fDigiMatch->At(nDigis);
         for (Int_t iLink = 0; iLink < pixel->GetNContributors(); iLink++) {
           if (pixel->GetTrackID()[iLink] > -1)
-            match->AddLink((Double_t) pixel->GetPointWeight()[iLink], pixel->GetPointID()[iLink], eventNr, inputNr);
+            match->AddLink((Double_t) pixel->GetPointWeight()[iLink], pixel->GetPointID()[iLink], fEventNr, fInputNr);
           else
             match->AddLink((Double_t) pixel->GetPointWeight()[iLink], pixel->GetPointID()[iLink]);
         }
@@ -494,6 +490,50 @@ void CbmMvdSensorDigitizerTask::Exec()
 }  // end of exec
 
 // -------------------------------------------------------------------------
+
+
+
+Int_t CbmMvdSensorDigitizerTask::GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime) {
+
+/**
+ * Get the analog signal created by each signal. Assumption: Signal rise and signal fall follows exponential. Contributions of the individual hits add up.
+ **/
+
+ Int_t pixelCharge=0;
+ Double_t pixelSignalRiseTime=fsensorDataSheet->GetSignalRiseTime();
+ Double_t pixelSignalFallTime=fsensorDataSheet->GetSignalFallTime();
+ Int_t nHits=0; //=myPixel->GetNHits();
+
+  for(Int_t hitNr=0; hitNr<nHits; hitNr++){
+    Int_t hitCharge=0; //=pixel->GetHitCharge(hitNr);
+    Int_t hitTime=0; //=pixel->GetHitTime(hitNr);
+
+    pixelCharge=pixelCharge + hitCharge * (1- TMath::Exp(-(readoutTime-hitTime)/pixelSignalRiseTime)); //exponential signal rise of the analog charge
+    pixelCharge=pixelCharge - hitCharge * (1- TMath::Exp(-(readoutTime-hitTime)/pixelSignalFallTime)); //exponential signal fall of the analog charge
+  }
+
+  return pixelCharge;
+
+}
+
+// ------------------------------------------------------------------------------
+
+
+Bool_t CbmMvdSensorDigitizerTask::GetSignalAboveThreshold (CbmMvdPixelCharge* myPixel, Double_t readoutTime) {
+  /**
+   * Checks if pixel is above threshold.
+   **/
+
+  CbmMvdSensor* mySensor;
+
+
+
+  return (GetPixelCharge(myPixel, readoutTime)>fsensorDataSheet->GetAnalogThreshold ());
+
+}
+
+// ------------------------------------------------------------------------------
+
 
 // -------------------------------------------------------------------------
 void CbmMvdSensorDigitizerTask::GetEventInfo(Int_t& inputNr, Int_t& eventNr, Double_t& eventTime)
@@ -847,6 +887,8 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
                                                         / fPixelSize / fPixelSize
                                                       + 0.25 * fPar1 * fPar1)
                              + fPar2);
+
+
 
         if (totCharge < 1) {
 
