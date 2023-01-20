@@ -1,13 +1,10 @@
-/* Copyright (C) 2008-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2008-2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Christina Dritsa [committer], Samir Amar-Youcef, Florian Uhlig, Philipp Sitzmann */
 
-// -----------------------------------------------------------------------
-// -----               CbmMvdDigi source file                        -----
-// -----              Created 17/04/08  by C. Dritsa                 -----
-// -----------------------------------------------------------------------
-
 #include "CbmMvdPixelCharge.h"
+
+#include <Logger.h>
 
 #include <iostream>
 
@@ -15,35 +12,6 @@
 using std::cout;
 using std::endl;
 
-// -----   Default constructor   -------------------------------------------
-CbmMvdPixelCharge::CbmMvdPixelCharge()
-  : TObject()
-  , fFrame(-1)
-  , fCharge(-1.)
-  , fMaxChargeContribution(0.)
-  , fDominatingPointX(-1.)
-  , fDominatingPointY(-1.)
-  , fContributors(0.)
-  , fChannelNrX(0.)
-  , fChannelNrY(0.)
-  , fTrackCharge(0.)
-  , fDominatorTrackId(-1.)
-  , fDominatorPointId(-1.)
-  , fTrackId()
-  , fPointId()
-  , fPointWeight()
-  , fPointX()
-  , fPointY()
-  , fDominatorIndex(0)
-  , fPixelTime(-1.)
-{
-  for (Int_t i = 0; i < 5; i++) {
-    fTrackId[i] = -1;
-    fPointId[i] = -1;
-    fPointX[i]  = 0;
-    fPointY[i]  = 0;
-  }
-}
 // -------------------------------------------------------------------------
 Bool_t CbmMvdPixelCharge::TestXY(Int_t channelNrX, Int_t channelNrY)
 {
@@ -59,37 +27,22 @@ CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge, Int_t channelNrX, Int_t cha
                                      Float_t pointPosX, Float_t pointPosY, Float_t time, Int_t frame)
   : TObject()
   , fFrame(frame)
-  , fCharge(0.)
-  , fMaxChargeContribution(0.)
-  , fDominatingPointX(-1.)
-  , fDominatingPointY(-1.)
-  , fContributors(0.)
+  , fCharge(charge)
+  , fMaxChargeContribution(charge)
   , fChannelNrX(channelNrX)
   , fChannelNrY(channelNrY)
   , fTrackCharge(charge)
-  , fDominatorTrackId(-1.)
-  , fDominatorPointId(-1.)
-  , fTrackId()
-  , fPointId()
-  , fPointWeight()
-  , fPointX()
-  , fPointY()
-  , fDominatorIndex(0)
   , fPixelTime(time)
 {
-  for (Int_t i = 0; i < 5; i++) {
-    fTrackId[i]     = -1;
-    fPointId[i]     = -1;
-    fPointX[i]      = 0;
-    fPointY[i]      = 0;
-    fPointWeight[i] = 0;
-  }
+  fTrackId.push_back(trackId);
+  fPointId.push_back(pointId);
+  fPointWeight.push_back(charge);
+  fPointX.push_back(pointPosX);
+  fPointY.push_back(pointPosY);
+  fTime.push_back(time);
+//  fLink.push_back(); // TODO: pass link
+  fDominatorIndex        =  fPointWeight.size();
 
-  fTrackId[0]     = trackId;
-  fPointId[0]     = pointId;
-  fPointX[0]      = pointPosX;
-  fPointY[0]      = pointPosY;
-  fPointWeight[0] = charge;
 }
 
 // ------- DigestCharge ----------------------------------------------------#
@@ -102,52 +55,28 @@ void CbmMvdPixelCharge::DigestCharge(Float_t pointX, Float_t pointY, Int_t point
 {
   Float_t chargeContr = fTrackCharge;
 
-  for (Int_t i = 0; i < fContributors; i++) {
-    chargeContr -= fPointWeight[i];
+  for (auto charge : fPointWeight) {
+    chargeContr -= charge;
   }
 
-  if (chargeContr > 0) {
+  if (chargeContr > 0.) {
+    fCharge = fTrackCharge;
+    fTrackId.push_back(trackId);
+    fPointId.push_back(pointId);
+
+    fPointWeight.push_back(chargeContr);
+    fPointX.push_back(pointX);
+    fPointY.push_back(pointY);
+
+//  fTime.push_back(time);
+//  fLink.push_back(); // TODO: pass link 
+
     if (chargeContr > fMaxChargeContribution) {
-      fDominatorIndex        = fContributors;
+      fDominatorIndex        =  fPointWeight.size();
       fMaxChargeContribution = chargeContr;
     }
 
-    if (fContributors < 5) {
-      fCharge                     = fTrackCharge;
-      fTrackId[fContributors]     = trackId;
-      fPointId[fContributors]     = pointId;
-      fPointX[fContributors]      = pointX;
-      fPointY[fContributors]      = pointY;
-      fPointWeight[fContributors] = chargeContr;
-      fContributors               = fContributors + 1;
-    }
-    else {
-      // 			cout << "-W- " << GetName() << " Nr of Digi Contributors is bigger than 5!!!" << endl;
-    }
   }
-
-  //     if (fTrackCharge>0)
-  //     {
-  // 	if (fTrackCharge>fMaxChargeContribution)
-  // 	{
-  // 	    fDominatorIndex	   = fContributors;
-  // 	    fMaxChargeContribution = fTrackCharge;
-  // 	}
-  //
-  // 	fCharge = fCharge+fTrackCharge; // Add charge of the track
-  // 	fTrackCharge = 0;
-  // 	fTrackId[fContributors]=trackId;
-  // 	fPointId[fContributors]=pointId;
-  // 	fPointX [fContributors]=pointX;
-  // 	fPointY [fContributors]=pointY;
-  // 	fPointWeight[fContributors]=fTrackCharge;
-  // 	fContributors = fContributors+1;
-  //
-  //     }
 }
-
-// -----   Destructor   ----------------------------------------------------
-CbmMvdPixelCharge::~CbmMvdPixelCharge() {}
-// -------------------------------------------------------------------------
 
 ClassImp(CbmMvdPixelCharge)

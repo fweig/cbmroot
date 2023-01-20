@@ -455,12 +455,12 @@ void CbmMvdSensorDigitizerTask::Exec()
         nDigis = fDigis->GetEntriesFast();
 
         new ((*fDigis)[nDigis]) CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(),
-                                           fPixelSizeX, fPixelSizeY, fEventTime+ pixel->GetTime(), pixel->GetFrame());
+                                           fPixelSizeX, fPixelSizeY, fEventTime+pixel->GetPixelTime(), pixel->GetFrame());
 
 
         new ((*fOutputBuffer)[nDigis])
           CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(), fPixelSizeX, fPixelSizeY,
-                     fEventTime+pixel->GetTime(), pixel->GetFrame());
+                     fEventTime+pixel->GetPixelTime(), pixel->GetFrame());
 
         new ((*fDigiMatch)[nDigis]) CbmMatch();
         CbmMatch* match = (CbmMatch*) fDigiMatch->At(nDigis);
@@ -786,7 +786,7 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
   yUp = sPoint->y + fWidthOfCluster * sigmaY;
 
   if (fNumberOfSegments < 2) {
-    Fatal("-E- CbmMvdDigitizer: ", "fNumberOfSegments < 2, this makes no sense, check parameters.");
+    LOG(fatal) << "fNumberOfSegments < 2, this makes no sense, check parameters.";
   }
 
   Int_t* lowerXArray = new Int_t[fNumberOfSegments];
@@ -859,9 +859,9 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
 
       Double_t Current[3];
       fSensor->PixelToLocal(ix, iy, Current);
-      pixel = 0;  //decouple pixel-pointer from previous pixel
-                  //loop over segments, check if the pad received some charge
-
+      pixel = nullptr;  //decouple pixel-pointer from previous pixel
+                  
+      //loop over segments, check if the pad received some charge
       for (Int_t i = 0; i < fNumberOfSegments; ++i) {
         // 			cout << endl << "check segment nr. " << i << " from " << fNumberOfSegments << endl;
         // ignore pads, which are out of reach for this segments
@@ -956,7 +956,6 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
     }
   }
 
-
   if (fShowDebugHistos) {
     //cout << endl << "produced " << fPixelChargeShort.size() << " Digis with total charge of " << totClusterCharge << endl;
     TVector3 momentum, position;
@@ -1001,13 +1000,13 @@ void CbmMvdSensorDigitizerTask::ProduceNoise()
 
     if (fChargeMapIt == fChargeMap.end()) {
       pixel = new ((*fPixelCharge)[fPixelCharge->GetEntriesFast()])
-        CbmMvdPixelCharge(1000, xPix, yPix, 0, -4, Current[0], Current[1]);
+        CbmMvdPixelCharge(1000, xPix, yPix, 0, -4, Current[0], Current[1]); // TODO: Add time
       pixel->DigestCharge(Current[0], Current[1], 0, -4);
       fChargeMap[thispoint] = pixel;
     }
     else {
       pixel = fChargeMapIt->second;
-      pixel->AddCharge(1000);
+      pixel->AddCharge(1000); // TODO: Add time
       pixel->DigestCharge(Current[0], Current[1], 0, -4);
     }
   }
@@ -1042,8 +1041,7 @@ void CbmMvdSensorDigitizerTask::InitTask(CbmMvdSensor* mySensor)
   fInputPoints  = new TClonesArray("CbmMvdPoint", 100);
 
   if (!fSensor) {
-    Fatal(GetName(), "Fatal error: Init(CbmMvdSensor*) called without valid pointer, "
-                     "don't know how to proceed.");
+    LOG(fatal) << "Init(CbmMvdSensor*) called without valid pointer, don't know how to proceed.";
   };
 
   ReadSensorInformation();

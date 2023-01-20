@@ -1,15 +1,11 @@
-/* Copyright (C) 2008-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 20236 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Christina Dritsa [committer], Philipp Sitzmann */
-
-// -------------------------------------------------------------------------
-// -----                     CbmMvdDigi header file                    -----
-// -----                    Created 02/04/08  by C.Dritsa              -----
-// -------------------------------------------------------------------------
-
+   Authors: Christina Dritsa [committer], Philipp Sitzmann, Florian Uhlig */
 
 #ifndef CBMMVDPIXELCHARGE_H
 #define CBMMVDPIXELCHARGE_H 1
+
+#include "CbmLink.h"
 
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Float_t, Int_t, Short_t, Bool_t, Option_t
@@ -24,18 +20,18 @@ class CbmMvdPixelCharge : public TObject {
 
 public:
   /** Default constructor **/
-  CbmMvdPixelCharge();
+  CbmMvdPixelCharge() = default;
 
   /** Constructor with all variables **/
 
   CbmMvdPixelCharge(Float_t charge, Int_t channelNrX, Int_t channelNrY, Int_t hitId, Int_t trackId, Float_t pointX,
                     Float_t pointY, Float_t time = 0.0, Int_t frame = 0);
-  virtual ~CbmMvdPixelCharge();
+
+  virtual ~CbmMvdPixelCharge() = default;
 
   Bool_t TestXY(Int_t channelNrX, Int_t channelNrY);
 
-
-  void DigestCharge(Float_t pointX, Float_t pointY, Int_t PointId, Int_t trackId);
+  void DigestCharge(Float_t pointX, Float_t pointY, Int_t PointId, Int_t trackId); // TODO: add time here
   void AddCharge(Float_t charge) { fTrackCharge = fTrackCharge + charge; };
 
 
@@ -45,41 +41,42 @@ public:
   Float_t GetMaxChargeContribution() { return fMaxChargeContribution; };
   Short_t GetNContributors() { return fContributors; };
   Int_t GetDominatorIndex() { return fDominatorIndex; }
-  Int_t* GetTrackID() { return fTrackId; }
-  Int_t* GetPointID() { return fPointId; }
-  Float_t* GetPointX() { return fPointX; }
-  Float_t* GetPointY() { return fPointY; }
-  Float_t* GetPointWeight() { return fPointWeight; }
-  Float_t GetTime() { return fPixelTime; }
+  std::vector<Int_t>& GetTrackID() { return fTrackId; }
+  std::vector<Int_t>& GetPointID() { return fPointId; }
+  std::vector<Float_t>& GetPointX() { return fPointX; }
+  std::vector<Float_t>& GetPointY() { return fPointY; }
+  std::vector<Float_t>& GetPointWeight() { return fPointWeight; }
+  std::vector<Double_t>& GetTime() {return fTime;} 
+  Float_t GetPixelTime() { return fPixelTime; }
   Int_t GetFrame() { return fFrame; }
 
   virtual void Clear(Option_t* = "") {};
 
 
 private:
-  Int_t fFrame;
+  Int_t fFrame = {-1};
 
-  Float_t fCharge;
-  Float_t fMaxChargeContribution;
-  Float_t fDominatingPointX;
-  Float_t fDominatingPointY;
-  Short_t fContributors;
-  Int_t fChannelNrX;
-  Int_t fChannelNrY;
-  Float_t fTrackCharge;
-  Int_t fDominatorTrackId;
-  Int_t fDominatorPointId;
-  Int_t fTrackId[5];
-  Int_t fPointId[5];
-  Float_t fPointWeight[5];
-  Float_t fPointX[5];
-  Float_t fPointY[5];
-  Short_t fDominatorIndex;
-  Float_t fPixelTime;
-
+  Float_t fCharge = {-1.};
+  Float_t fMaxChargeContribution = {0.};
+  Float_t fDominatingPointX = {-1.};
+  Float_t fDominatingPointY = {-1.};
+  Short_t fContributors = {0};
+  Int_t fChannelNrX = {0};
+  Int_t fChannelNrY = {0};
+  Float_t fTrackCharge = {0.};
+  Int_t fDominatorTrackId = {-1};
+  Int_t fDominatorPointId = {-1};
+  Short_t fDominatorIndex = {0};
+  Float_t fPixelTime = {-1.};
+  std::vector<Int_t>    fTrackId = {};
+  std::vector<Int_t>    fPointId = {};
+  std::vector<Float_t>  fPointWeight = {};
+  std::vector<Float_t>  fPointX = {};
+  std::vector<Float_t>  fPointY = {};
+  std::vector<Double_t> fTime = {};
+  std::vector<CbmLink>  fLink = {};
 
   ClassDef(CbmMvdPixelCharge, 1);
 };
-
 
 #endif
