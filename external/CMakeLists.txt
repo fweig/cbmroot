@@ -57,6 +57,7 @@ if(DOWNLOAD_EXTERNALS)
   Add_Subdirectory(xpu)
   Set(XPU_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xpu/src PARENT_SCOPE)
 
+
   Include(InstallKFParticle.cmake)
   Include(InstallNicaFemto.cmake)
   Include(InstallAnalysisTree.cmake)
@@ -67,6 +68,9 @@ if(DOWNLOAD_EXTERNALS)
   Include(InstallGeometry.cmake)
 
   Include(InstallYamlCpp.cmake)
+
+  Include(InstallBBA.cmake)
+  
 else()
   # Define targets which are needed by CbmRoot but are not available
   # whithout the external packages
@@ -90,6 +94,10 @@ else()
   set_target_properties(external::fles_monitoring PROPERTIES
                         IMPORTED_LOCATION external::fles_monitoring-NOTFOUND
              )
+  add_library(bba::library STATIC IMPORTED GLOBAL)
+  set_target_properties(bba::library PROPERTIES
+                        IMPORTED_LOCATION bba::library-NOTFOUND
+            )           
 
  set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")

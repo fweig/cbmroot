@@ -18,4 +18,6 @@ add_subdirectory(qa)
 add_subdirectory (tasks)
 add_subdirectory (app)
 add_subdirectory (mq)
+add_subdirectory (alignment)
+
 
