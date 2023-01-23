@@ -84,7 +84,7 @@ void mvd_qa2_transDelta(const char* setup = "sis100_electron")
   Double_t targetDiameter  = 2.5;    // diameter in cm
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
-  Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
+  Double_t targetPosZ      = -44.;   // target z position in global c.s. [cm]
   Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
@@ -146,7 +146,7 @@ void mvd_qa2_transDelta(const char* setup = "sis100_electron")
 
   // -----   Create PrimaryGenerator   --------------------------------------
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
-  FairIonGenerator* fIongen     = new FairIonGenerator(79, 197, 79, 1, 0., 0., 25, 0., 0., -1.);
+  FairIonGenerator* fIongen     = new FairIonGenerator(79, 197, 79, 1, 0., 0., 25, 0., 0., (targetPosZ - 1.));
   primGen->AddGenerator(fIongen);
 
   fRun->SetGenerator(primGen);
