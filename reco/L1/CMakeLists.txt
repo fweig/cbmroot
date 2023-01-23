@@ -77,6 +77,8 @@ set(SRCS
   qa/CbmTrackerInputQaTrd.cxx
   qa/CbmTrackerInputQaTof.cxx
   qa/CbmTrackingInputQaSts.cxx
+  qa/CbmCaInputQaMuch.cxx
+  qa/CbmCaInputQaSts.cxx
 )
 
 set(NO_DICT_SRCS
@@ -95,6 +97,7 @@ set(HEADERS
   L1Algo/L1Def.h
   L1Algo/L1Vector.h
   catools/CaToolsWindowFinder.h
+  qa/CbmCaQaCuts.h
 )
 
 

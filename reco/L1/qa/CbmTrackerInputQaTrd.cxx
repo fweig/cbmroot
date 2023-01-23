@@ -123,6 +123,8 @@ void CbmTrackerInputQaTrd::DeInit()
 
 void CbmTrackerInputQaTrd::SetParContainers()
 {
+  // FIXME: SZh 13.01.2023: With tracking detector interfaces these data bases are no longer needed
+  //                        to be initialized in this class
   fTrdDigiPar = nullptr;
   fTrdGeoPar  = nullptr;
 

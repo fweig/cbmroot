@@ -46,6 +46,17 @@ public:
   /// Divide canvas into nPads in 2D in a nice way
   void Divide2D(int nPads);
 
+
+  /// a static canvas for temporary drawing
+  static CbmQaCanvas& GetDummyCanvas()
+  {
+    /// the static variable will be initialised at the first call;
+    /// deleted at the application end (c++11)
+    static CbmQaCanvas dummy("CbmQaTempCanvas", "CbmQaTempCanvas", 1, 1);
+    return dummy;
+  }
+
+
 private:
   /// Use a specific type name in order to avoid ambiguities when unrolling
   /// templates

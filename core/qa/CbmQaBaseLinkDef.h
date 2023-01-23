@@ -16,6 +16,7 @@
 #pragma link C++ class CbmQaPie - ;
 
 // create streamers automatically
+#pragma link C++ class CbmQaEff + ;
 #pragma link C++ class CbmQaPieSlice + ;
 #pragma link C++ class CbmQaHist < TH1F> + ;
 #pragma link C++ class CbmQaHist < TH1D> + ;
@@ -23,5 +24,6 @@
 #pragma link C++ class CbmQaHist < TProfile> + ;
 #pragma link C++ class CbmQaHist < TProfile2D> + ;
 #pragma link C++ class CbmQaTable + ;
+#pragma link C++ class CbmQaTask + ;
 
 #endif

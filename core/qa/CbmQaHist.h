@@ -70,10 +70,10 @@ public:
   TFitResultPtr Fit(Types... args)
   {
     TVirtualPad* padsav = gPad;
-    GetDummyCanvas().cd();
+    CbmQaCanvas::GetDummyCanvas().cd();
     this->Sumw2();
     auto ret = HistTypeT::Fit(args...);
-    GetDummyCanvas().Clear();
+    CbmQaCanvas::GetDummyCanvas().Clear();
 
     // make the output look nice
 
@@ -118,15 +118,15 @@ public:
     int saveStat         = gStyle->GetOptStat();
     int saveFit          = gStyle->GetOptFit();
 
-    GetDummyCanvas().cd();
+    CbmQaCanvas::GetDummyCanvas().cd();
     gStyle->SetOptStat(fOptStat);
     gStyle->SetOptFit(fOptFit);
 
     this->SetStats(0);  // remove the old stat window
     this->SetStats(1);  // set the flag to create the stat window during Draw()
     this->Draw();
-    GetDummyCanvas().Update();
-    GetDummyCanvas().Clear();
+    CbmQaCanvas::GetDummyCanvas().Update();
+    CbmQaCanvas::GetDummyCanvas().Clear();
 
     // restore the environment
     gStyle->SetOptStat(saveStat);
@@ -135,15 +135,6 @@ public:
   }
 
 private:
-  /// a static canvas for temporary drawing
-  static CbmQaCanvas& GetDummyCanvas()
-  {
-    /// the static variable will be initialised at the first call;
-    /// deleted at the application end (c++11)
-    static CbmQaCanvas dummy("CbmQaTempCanvas", "CbmQaTempCanvas", 1, 1);
-    return dummy;
-  }
-
   int fOptStat = 1;
   int fOptFit  = 0;
 

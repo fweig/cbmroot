@@ -7,12 +7,14 @@ set(SRCS
   CbmQaPie.cxx
   CbmQaHist.cxx
   CbmQaTable.cxx
+  CbmQaTask.cxx
   )
 
 
 set(LIBRARY_NAME CbmQaBase)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
+  FairRoot::Base
   FairLogger::FairLogger
   ROOT::Core
   ROOT::Gpad
@@ -24,3 +26,7 @@ set(INTERFACE_DEPENDENCIES
   )
 
 generate_cbm_library()
+
+Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h
+        DESTINATION include
+       )

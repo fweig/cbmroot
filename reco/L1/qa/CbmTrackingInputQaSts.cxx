@@ -542,24 +542,9 @@ CbmMatch CbmTrackingInputQaSts::MatchHits(const CbmStsHit* pHit, int iHit)
 //
 double CbmTrackingInputQaSts::ParticleMass(int pdg)
 {
+  // FIXME: SZh: Use masses defined by CbmMCTrack class instead
   if (fabs(pdg) < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
     return TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
-  }
-
-  constexpr double kAmuToGev {0.93149410242};  // 1 amu in GeV/c2
-
-  // Define masses of several light nuclei by hands
-  if (fabs(pdg) == 1000010020) {
-    return kAmuToGev * 2.01410177812;  // deutron
-  }
-  else if (fabs(pdg) == 1000010030) {
-    return kAmuToGev * 3.01604927790;  // triton
-  }
-  else if (fabs(pdg) == 1000020030) {
-    return kAmuToGev * 3.01602932007;  // He-3
-  }
-  else if (fabs(pdg) == 1000020040) {
-    return kAmuToGev * 4.00260325413;  // He-4
   }
 
   LOG(warn) << "\033[1;31m Found mass for pdg = " << pdg << " is undefined. "
@@ -753,8 +738,9 @@ void CbmTrackingInputQaSts::ResolutionQa()
     double mass = ParticleMass(pdgCode);
     constexpr double speedOfLight {29.9792458};  // cm/ns
     TVector3 mom;
+    double mom2 = mcPx * mcPx + mcPy * mcPy + mcPz * mcPz;
 
-    mcT += dz / (mcPz * speedOfLight) * sqrt(mass * mass + mom.Mag2());
+    mcT += dz / (mcPz * speedOfLight) * sqrt(mass * mass + mom2);
 
     double dx   = pHit->GetX() - mcX;
     double dy   = pHit->GetY() - mcY;
