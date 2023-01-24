@@ -188,6 +188,30 @@ Double_t CbmStsPhysics::LandauWidth(Double_t mostProbableCharge)
 }
 // -------------------------------------------------------------------------
 
+std::pair<std::vector<double>, double> CbmStsPhysics::GetLandauWidthTable() const
+{
+  std::vector<double> landauTableFlat;
+
+  auto landauEntry = fLandauWidth.begin();
+
+  landauTableFlat.push_back(landauEntry->second);
+
+  auto prevLandauEntry = landauEntry;
+  landauEntry++;
+
+  double stepSize = landauEntry->first - prevLandauEntry->first;
+
+  for (; landauEntry != fLandauWidth.end(); landauEntry++) {
+    LOG_IF(fatal, stepSize != landauEntry->first - prevLandauEntry->first)
+      << "StsLandau table doesn't have fixed step size.";
+
+    landauTableFlat.push_back(landauEntry->second);
+    prevLandauEntry = landauEntry;
+  }
+
+  return std::make_pair(std::move(landauTableFlat), stepSize);
+}
+
 
 // -----    Particle charge for PDG PID   ----------------------------------
 Double_t CbmStsPhysics::ParticleCharge(Int_t pid)

@@ -15,6 +15,8 @@
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
 
 #include <map>  // for map
+#include <utility>
+#include <vector>
 
 /** @class CbmStsPhysics
  ** @brief Auxiliary class for physics processes in Silicon
@@ -88,8 +90,10 @@ public:
      **/
   Double_t LandauWidth(Double_t mostProbableCharge);
 
-  std::map<Double_t, Double_t> GetLandauWidthTable() const { return fLandauWidth; }
-
+  /** @brief Raw values of landau width interpolation table
+   ** @return interpolation table values and step size of table
+   **/
+  std::pair<std::vector<double>, double> GetLandauWidthTable() const;
 
   /** @brief Energy for electron-hole pair creation in silicon
      ** @return Pair creation energy [GeV]
