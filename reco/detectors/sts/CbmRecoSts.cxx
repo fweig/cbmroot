@@ -13,7 +13,6 @@
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmStsDigi.h"
-#include "CbmStsGpuHitFinder.h"
 #include "CbmStsModule.h"
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSetSensor.h"
@@ -72,9 +71,9 @@ UInt_t CbmRecoSts::CreateModules()
 
   assert(fSetup);
 
-  std::vector<CbmStsParModule> gpuModules;  // for gpu reco
-  std::vector<int> moduleAddrs;
-  std::vector<experimental::CbmStsHitFinderConfig> hfCfg;
+  std::vector<cbm::algo::StsModulePar> gpuModules;  // for gpu reco
+  // std::vector<int> moduleAddrs;
+  // std::vector<experimental::CbmStsHitFinderConfig> hfCfg;
 
   for (Int_t iModule = 0; iModule < fSetup->GetNofModules(); iModule++) {
 
@@ -91,9 +90,6 @@ UInt_t CbmRecoSts::CreateModules()
     const CbmStsParModule& modPar       = fParSetModule->GetParModule(moduleAddress);
     const CbmStsParSensor& sensPar      = fParSetSensor->GetParSensor(sensorAddress);
     const CbmStsParSensorCond& sensCond = fParSetCond->GetParSensor(sensorAddress);
-
-    gpuModules.push_back(modPar);
-    moduleAddrs.push_back(moduleAddress);
 
     // --- Calculate and set average Lorentz shift
     // --- This will be used in hit finding for correcting the position.
@@ -135,25 +131,56 @@ UInt_t CbmRecoSts::CreateModules()
     auto result = fModules.insert({moduleAddress, recoModule});
     assert(result.second);
     fModuleIndex.push_back(recoModule);
-    hfCfg.push_back({
-      .dY       = sensPar.GetPar(3),
-      .pitch    = sensPar.GetPar(6),
-      .stereoF  = sensPar.GetPar(8),
-      .stereoB  = sensPar.GetPar(9),
-      .lorentzF = float(lorentzF),
-      .lorentzB = float(lorentzB),
-    });
+
+    // Get Transformation Matrix
+    cbm::algo::StsModuleTransformationMatrix localToGlobal;
+    TGeoHMatrix* matrix = recoModule->getMatrix();
+    std::copy_n(matrix->GetRotationMatrix(), 9, localToGlobal.rotation.begin());
+    std::copy_n(matrix->GetTranslation(), 3, localToGlobal.translation.begin());
+
+    // Collect GPU parameters
+    cbm::algo::StsModulePar gpuModulePars {
+      .address       = moduleAddress,
+      .dY            = sensPar.GetPar(3),
+      .pitch         = sensPar.GetPar(6),
+      .stereoF       = sensPar.GetPar(8),
+      .stereoB       = sensPar.GetPar(9),
+      .lorentzF      = float(lorentzF),
+      .lorentzB      = float(lorentzB),
+      .localToGlobal = localToGlobal,
+    };
+    gpuModules.emplace_back(gpuModulePars);
   }
 
-  // Gpu hitfinder
-  experimental::CbmGpuRecoSts::Config gpuConfig {
-    .parModules   = gpuModules,
-    .recoModules  = fModuleIndex,
-    .moduleAddrs  = moduleAddrs,
-    .hitfinderCfg = hfCfg,
-    .physics      = CbmStsPhysics::Instance(),
+  const CbmStsParModule& firstModulePars = fParSetModule->GetParModule(gpuModules[0].address);
+
+  CbmStsParAsic asic = firstModulePars.GetParAsic(0);
+  cbm::algo::StsAsicPar algoAsic {
+    .nAdc           = asic.GetNofAdc(),
+    .dynamicRange   = float(asic.GetDynRange()),
+    .threshold      = float(asic.GetThreshold()),
+    .timeResolution = float(asic.GetTimeResol()),
+    .deadTime       = float(asic.GetDeadTime()),
+    .noise          = float(asic.GetNoise()),
+    .zeroNoiseRate  = float(asic.GetZeroNoiseRate()),
   };
-  fGpuReco.SetConfig(gpuConfig);
+
+  int nChannels = firstModulePars.GetNofChannels();
+
+  auto [landauValues, landauStepSize] = CbmStsPhysics::Instance()->GetLandauWidthTable();
+  std::vector<float> landauValuesF;
+  std::copy(landauValues.begin(), landauValues.end(), std::back_inserter(landauValuesF));
+  cbm::algo::StsHitfinderPar pars {
+    .asic      = algoAsic,
+    .nChannels = nChannels,
+    .modules   = gpuModules,
+    .landauTable =
+      {
+        .values   = landauValuesF,
+        .stepSize = float(landauStepSize),
+      },
+  };
+  if (fUseGpuReco) fGpuReco.SetParameters(pars);
 
   return fModules.size();
 }
@@ -193,10 +220,10 @@ void CbmRecoSts::Exec(Option_t*)
   if (fUseGpuReco) {
 
     ProcessDataGpu();
-    fNofDigis     = fGpuReco.nDigis;
-    fNofDigisUsed = fGpuReco.nDigisUsed;
-    fNofClusters  = fGpuReco.nCluster;
-    fNofHits      = fGpuReco.nHits;
+    // fNofDigis     = fGpuReco.nDigis;
+    // fNofDigisUsed = fGpuReco.nDigisUsed;
+    // fNofClusters  = fGpuReco.nCluster;
+    // fNofHits      = fGpuReco.nHits;
 
     // Old reco in time based mode
   }
@@ -314,14 +341,15 @@ void CbmRecoSts::Finish()
               << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeHits << " ms\n";
   }
   else {
-    double gpuHitfinderTimeTotal =
-      fGpuReco.timeSortDigi + fGpuReco.timeCluster + fGpuReco.timeSortCluster + fGpuReco.timeHits;
+    cbm::algo::StsHitfinderTimes times = fGpuReco.GetHitfinderTimes();
+
+    double gpuHitfinderTimeTotal = times.timeSortDigi + times.timeCluster + times.timeSortCluster + times.timeHits;
     LOG(info) << "Time Reconstruct (GPU) : " << fixed << setprecision(1) << setw(6) << gpuHitfinderTimeTotal << " ms";
     LOG(info) << "Time by step:\n"
-              << "  Sort Digi   : " << fixed << setprecision(1) << setw(6) << fGpuReco.timeSortDigi << " ms\n"
-              << "  Find Cluster: " << fixed << setprecision(1) << setw(6) << fGpuReco.timeCluster << " ms\n"
-              << "  Sort Cluster: " << fixed << setprecision(1) << setw(6) << fGpuReco.timeSortCluster << " ms\n"
-              << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << fGpuReco.timeHits << " ms";
+              << "  Sort Digi   : " << fixed << setprecision(1) << setw(6) << times.timeSortDigi << " ms\n"
+              << "  Find Cluster: " << fixed << setprecision(1) << setw(6) << times.timeCluster << " ms\n"
+              << "  Sort Cluster: " << fixed << setprecision(1) << setw(6) << times.timeSortCluster << " ms\n"
+              << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << times.timeHits << " ms";
   }
   LOG(info) << "=====================================";
 }
@@ -636,8 +664,86 @@ void CbmRecoSts::ProcessDataGpu()
 {
   if (fMode == kCbmRecoEvent) throw std::runtime_error("STS GPU Reco does not yet support event-by-event mode.");
 
-  fGpuReco.RunHitFinder();
-  fGpuReco.ForwardClustersAndHits(fClusters, fHits);
+  auto digis = fDigiManager->GetArray<CbmStsDigi>();
+  fGpuReco(digis);
+  auto [nClustersForwarded, nHitsForwarded] = ForwardGpuClusterAndHits();
+
+  fNofDigis     = digis.size();
+  fNofDigisUsed = digis.size();
+  fNofClusters  = nClustersForwarded;
+  fNofHits      = nHitsForwarded;
+}
+
+std::pair<size_t, size_t> CbmRecoSts::ForwardGpuClusterAndHits()
+{
+  size_t nClustersForwarded = 0, nHitsForwarded = 0;
+
+  const cbm::algo::StsHitfinderHost& hfc = fGpuReco.GetHitfinderBuffers();
+  const cbm::algo::StsHitfinderPar& pars = fGpuReco.GetParameters();
+
+  for (int module = 0; module < hfc.nModules; module++) {
+
+    auto* gpuClusterF    = &hfc.clusterDataPerModule.h()[module * hfc.maxClustersPerModule];
+    auto* gpuClusterIdxF = &hfc.clusterIdxPerModule.h()[module * hfc.maxClustersPerModule];
+    int nClustersFGpu    = hfc.nClustersPerModule.h()[module];
+
+    nClustersForwarded += nClustersFGpu;
+
+    for (int i = 0; i < nClustersFGpu; i++) {
+      auto& cidx       = gpuClusterIdxF[i];
+      auto& clusterGpu = gpuClusterF[cidx.fIdx];
+
+      unsigned int outIdx = fClusters->GetEntriesFast();
+      auto* clusterOut    = new ((*fClusters)[outIdx])::CbmStsCluster {};
+
+      clusterOut->SetAddress(pars.modules[module].address);
+      clusterOut->SetProperties(clusterGpu.fCharge, clusterGpu.fPosition, clusterGpu.fPositionError, cidx.fTime,
+                                clusterGpu.fTimeError);
+      clusterOut->SetSize(clusterGpu.fSize);
+    }
+
+    auto* gpuClusterB    = &hfc.clusterDataPerModule.h()[(module + hfc.nModules) * hfc.maxClustersPerModule];
+    auto* gpuClusterIdxB = &hfc.clusterIdxPerModule.h()[(module + hfc.nModules) * hfc.maxClustersPerModule];
+    int nClustersBGpu    = hfc.nClustersPerModule.h()[module + hfc.nModules];
+
+    nClustersForwarded += nClustersBGpu;
+
+    for (int i = 0; i < nClustersBGpu; i++) {
+      auto& cidx          = gpuClusterIdxB[i];
+      auto& clusterGpu    = gpuClusterB[cidx.fIdx];
+      unsigned int outIdx = fClusters->GetEntriesFast();
+      auto* clusterOut    = new ((*fClusters)[outIdx])::CbmStsCluster {};
+
+      clusterOut->SetAddress(pars.modules[module].address);
+      clusterOut->SetProperties(clusterGpu.fCharge, clusterGpu.fPosition, clusterGpu.fPositionError, cidx.fTime,
+                                clusterGpu.fTimeError);
+      clusterOut->SetSize(clusterGpu.fSize);
+    }
+
+    auto* gpuHits = &hfc.hitsPerModule.h()[module * hfc.maxHitsPerModule];
+    int nHitsGpu  = hfc.nHitsPerModule.h()[module];
+
+    nHitsForwarded += nHitsGpu;
+
+    for (int i = 0; i < nHitsGpu; i++) {
+      auto& hitGpu = gpuHits[i];
+
+      unsigned int outIdx = fHits->GetEntriesFast();
+      new ((*fHits)[outIdx])::CbmStsHit {pars.modules[module].address,
+                                         TVector3 {hitGpu.fX, hitGpu.fY, hitGpu.fZ},
+                                         TVector3 {hitGpu.fDx, hitGpu.fDy, hitGpu.fDz},
+                                         hitGpu.fDxy,
+                                         0,
+                                         0,
+                                         double(hitGpu.fTime),
+                                         hitGpu.fTimeError,
+                                         hitGpu.fDu,
+                                         hitGpu.fDv};
+    }
+
+  }  // for (int module = 0; module < hfc.nModules; module++)
+
+  return {nClustersForwarded, nHitsForwarded};
 }
 
 
@@ -655,13 +761,13 @@ void CbmRecoSts::SetParContainers()
 void CbmRecoSts::DumpNewHits()
 {
   std::ofstream out {"newHits.csv"};
-
+  const cbm::algo::StsHitfinderHost& hfc = fGpuReco.GetHitfinderBuffers();
   out << "module, x, y, z, deltaX, deltaY, deltaZ, deltaXY, time, timeError, deltaU, deltaV" << std::endl;
-
   for (size_t m = 0; m < fModuleIndex.size(); m++) {
-    auto hits = fGpuReco.GetHits(m);
-
-    for (const auto& h : hits) {
+    int nHitsGpu  = hfc.nHitsPerModule.h()[m];
+    auto* gpuHits = &hfc.hitsPerModule.h()[m * hfc.maxHitsPerModule];
+    for (int i = 0; i < nHitsGpu; i++) {
+      auto& h = gpuHits[i];
       out << m << ", " << h.fX << ", " << h.fY << ", " << h.fZ << ", " << h.fDx << ", " << h.fDy << ", " << h.fDz
           << ", " << h.fDxy << ", " << h.fTime << ", " << h.fTimeError << ", " << h.fDu << ", " << h.fDv << std::endl;
     }

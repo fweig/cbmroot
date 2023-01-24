@@ -11,11 +11,12 @@
 #ifndef CBMRECOSTS_H
 #define CBMRECOSTS_H 1
 
-#include "CbmGpuRecoSts.h"
-
 #include <FairTask.h>
 
+#include <TClonesArray.h>
 #include <TStopwatch.h>
+
+#include "StsHitfinderChain.h"
 
 class CbmDigiManager;
 class CbmEvent;
@@ -214,6 +215,8 @@ public:
      */
   void UseSensorParSet(CbmStsParSetSensor* sensorParSet) { fUserParSetSensor = sensorParSet; }
 
+  void DumpNewHits();
+  void DumpOldHits();
 
 private:
   /** @brief Average Lorentz Shift in a sensor
@@ -257,11 +260,6 @@ private:
   void ProcessData(CbmEvent* event = nullptr);
 
   void ProcessDataGpu();
-
-  void DumpNewHits();
-
-  void DumpOldHits();
-
 
 private:
   // --- I/O
@@ -329,7 +327,9 @@ private:
   std::vector<CbmStsRecoModule*> fModuleIndex {};   //!
 
   bool fUseGpuReco = false;
-  ::experimental::CbmGpuRecoSts fGpuReco;
+  cbm::algo::StsHitfinderChain fGpuReco;
+
+  std::pair<size_t, size_t> ForwardGpuClusterAndHits();
 
   ClassDef(CbmRecoSts, 1);
 };

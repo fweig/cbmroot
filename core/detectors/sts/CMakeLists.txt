@@ -34,23 +34,23 @@ endif()
 
 set(LIBRARY_NAME CbmStsBase)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
-set(PUBLIC_DEPENDENCIES 
+set(PUBLIC_DEPENDENCIES
   FairRoot::Base
   FairRoot::ParBase
   CbmBase
-  ROOT::Core 
-  ROOT::Geom 
-  ROOT::Gpad 
-  ROOT::Hist 
-  ROOT::MathCore 
+  ROOT::Core
+  ROOT::Geom
+  ROOT::Gpad
+  ROOT::Hist
+  ROOT::MathCore
   ROOT::Physics
   )
 
-set(PRIVATE_DEPENDENCIES 
+set(PRIVATE_DEPENDENCIES
   FairLogger::FairLogger
   CbmData
-  ROOT::Graf 
-  ROOT::MLP 
+  ROOT::Graf
+  ROOT::MLP
   ROOT::Tree
   )
 

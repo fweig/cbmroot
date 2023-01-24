@@ -116,7 +116,6 @@ public:
      */
   void Init();
 
-
   /** @brief Copy assignment operator **/
   CbmStsParSensorCond& operator=(const CbmStsParSensorCond&);
 

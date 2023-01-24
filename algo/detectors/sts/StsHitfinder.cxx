@@ -1,19 +1,61 @@
-/* Copyright (C) 2021-2022 FIAS Frankfurt Institute for Advanced Studies, Frankfurt / Main
+/* Copyright (C) 2022 FIAS Frankfurt Institute for Advanced Studies, Frankfurt / Main
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Felix Weiglhofer [committer], Kilian Hunold */
-#include "CbmStsGpuHitFinder.h"
 
-using namespace experimental;
+#include "StsHitfinder.h"
+
+using namespace cbm::algo;
+
+
+XPU_IMAGE(GpuOnline);
+
+XPU_CONSTANT(TheStsHitfinder);
+
+XPU_KERNEL(SortDigis, StsSortDigiSmem)
+{
+  xpu::cmem<TheStsHitfinder>().SortDigisInSpaceAndTime(smem, xpu::block_idx::x());
+}
+
+XPU_KERNEL(FindClustersSingleStep, xpu::no_smem)
+{
+  xpu::cmem<TheStsHitfinder>().FindClustersSingleStep(xpu::block_idx::x());
+}
+
+XPU_KERNEL(CalculateOffsets, xpu::no_smem)
+{
+  xpu::cmem<TheStsHitfinder>().CalculateOffsetsParallel(xpu::block_idx::x());
+}
+
+XPU_KERNEL(FindClusters, xpu::no_smem) { xpu::cmem<TheStsHitfinder>().FindClustersParallel(xpu::block_idx::x()); }
+
+XPU_KERNEL(FindClustersBasic, xpu::no_smem)
+{
+  xpu::cmem<TheStsHitfinder>().FindClusterConnectionsBasic(xpu::block_idx::x());
+}
+
+XPU_KERNEL(CalculateClusters, xpu::no_smem)
+{
+  xpu::cmem<TheStsHitfinder>().CalculateClustersParallel(xpu::block_idx::x());
+}
+
+XPU_KERNEL(CalculateClustersBasic, xpu::no_smem)
+{
+  xpu::cmem<TheStsHitfinder>().CalculateClustersBasic(xpu::block_idx::x());
+}
+
+XPU_KERNEL(SortClusters, StsSortClusterSmem) { xpu::cmem<TheStsHitfinder>().SortClusters(smem, xpu::block_idx::x()); }
+
+XPU_KERNEL(FindHits, xpu::no_smem) { xpu::cmem<TheStsHitfinder>().FindHits(xpu::block_idx::x()); }
 
 /**
-  * CbmStsGpuHitFinder::sortDigisKhun
+  * StsHitfinderGpu::sortDigisKhun
   * Sorts digis channelwise. Inside a channel all digis are sorted in time.
   *
   * @param smem is the shared memory it is worked in
   * @param iBlock is the Block/Module that is currenty running
   *
 */
-XPU_D void CbmStsGpuHitFinder::SortDigisInSpaceAndTime(CbmStsSortDigiSmem& smem, int iBlock) const
+XPU_D void StsHitfinderGpu::SortDigisInSpaceAndTime(StsSortDigiSmem& smem, int iBlock) const
 {
   int iModule          = iBlock;
   CbmStsDigi* digis    = &digisPerModule[digiOffsetPerModule[iModule]];
@@ -29,7 +71,7 @@ XPU_D void CbmStsGpuHitFinder::SortDigisInSpaceAndTime(CbmStsSortDigiSmem& smem,
   if (xpu::thread_idx::x() == 0) { digisSortedPerModule[iModule] = digis; }
 }
 
-XPU_D void CbmStsGpuHitFinder::FindClustersSingleStep(int iBlock) const
+XPU_D void StsHitfinderGpu::FindClustersSingleStep(int iBlock) const
 {
   CalculateOffsetsParallel(iBlock);
   FindClustersParallel(iBlock);
@@ -37,7 +79,7 @@ XPU_D void CbmStsGpuHitFinder::FindClustersSingleStep(int iBlock) const
 }
 
 /**
-  * CbmStsGpuHitFinder::calculateChannelOffsets
+  * StsHitfinderGpu::calculateChannelOffsets
   * Calculates the Offsest of every channel. digis-Array is sorted in Channel and Time.
   * If a channelChange is detected it is stored in channelOffsetsPerModule.
   *
@@ -46,8 +88,8 @@ XPU_D void CbmStsGpuHitFinder::FindClustersSingleStep(int iBlock) const
   * @param nDigis Amount of digis in digis-Array
   *
 */
-XPU_D void CbmStsGpuHitFinder::CalculateChannelOffsets(CbmStsDigi* digis, unsigned int* channelOffsets,
-                                                       unsigned int const nDigis) const
+XPU_D void StsHitfinderGpu::CalculateChannelOffsets(CbmStsDigi* digis, unsigned int* channelOffsets,
+                                                    unsigned int const nDigis) const
 {
   channelOffsets[0] = 0;
 
@@ -71,14 +113,14 @@ XPU_D void CbmStsGpuHitFinder::CalculateChannelOffsets(CbmStsDigi* digis, unsign
 
 
 /**
-  * CbmStsGpuHitFinder::calculateOffsetsParallel
+  * StsHitfinderGpu::calculateOffsetsParallel
   * This function calculates the channeloffsets in a certain module.
   * An Offset is the Startingpoint of a Channel in a sorted array of Digis.
   *
   * @param iBlock is the Block/Module that is currently worked on
   *
 */
-XPU_D void CbmStsGpuHitFinder::CalculateOffsetsParallel(int iBlock) const
+XPU_D void StsHitfinderGpu::CalculateOffsetsParallel(int iBlock) const
 {
   int const iModule = iBlock;
   CbmStsDigi* digis = digisSortedPerModule[iModule];
@@ -92,14 +134,14 @@ XPU_D void CbmStsGpuHitFinder::CalculateOffsetsParallel(int iBlock) const
 }
 
 /**
-  * CbmStsGpuHitFinder::findClustersParallel
+  * StsHitfinderGpu::findClustersParallel
   * This function finds clusters form an sts-Digi Array inserted.
   * It runs the finding process highly parallel.
   *
   * @param iBlock is the Block/Module that is currently worked on
   *
 */
-XPU_D void CbmStsGpuHitFinder::FindClustersParallel(int iBlock) const
+XPU_D void StsHitfinderGpu::FindClustersParallel(int iBlock) const
 {
   int const iModule           = iBlock;
   CbmStsDigi* digis           = digisSortedPerModule[iModule];
@@ -108,7 +150,7 @@ XPU_D void CbmStsGpuHitFinder::FindClustersParallel(int iBlock) const
 
   if (nDigis == 0) return;
 
-  auto* digiConnector  = &digiConnectorPerModule[digiOffsetPerModule[iModule]];
+  auto* digiConnector  = &digiConnectorsPerModule[digiOffsetPerModule[iModule]];
   auto* channelOffsets = &channelOffsetPerModule[iModule * nChannels];
 
   // findClusterConnectionsChannelWise(digis, digiConnector, channelOffsets, iModule, threadId);
@@ -117,14 +159,14 @@ XPU_D void CbmStsGpuHitFinder::FindClustersParallel(int iBlock) const
 
 
 /**
-  * CbmStsGpuHitFinder::calculateClustersParallel
+  * StsHitfinderGpu::calculateClustersParallel
   * This function calculates clusters form an sts-Digi Array inserted.
   * It runs the calculating process highly parallel.
   *
   * @param iBlock is the Block/Module that is currently worked on
   *
 */
-XPU_D void CbmStsGpuHitFinder::CalculateClustersParallel(int iBlock) const
+XPU_D void StsHitfinderGpu::CalculateClustersParallel(int iBlock) const
 {
   int const iModule  = iBlock;
   CbmStsDigi* digis  = digisSortedPerModule[iModule];
@@ -133,7 +175,7 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersParallel(int iBlock) const
 
   if (nDigis == 0) { return; }
 
-  auto* digiConnector = &digiConnectorPerModule[digiOffsetPerModule[iModule]];
+  auto* digiConnector = &digiConnectorsPerModule[digiOffsetPerModule[iModule]];
   // auto* channelOffsets = &channelOffsetPerModule[iModule * nChannels];
 
   // calculateClustersChannelWise(digis, digiConnector, channelOffsets, iModule, threadId, nDigis);
@@ -142,7 +184,7 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersParallel(int iBlock) const
 
 
 /**
-  * CbmStsGpuHitFinder::findClusterConnectionsBasic
+  * StsHitfinderGpu::findClusterConnectionsBasic
   *
   * Each Thread one Channel
   *
@@ -159,13 +201,13 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersParallel(int iBlock) const
   * @param threadId Id of the thrad currently working
   *
 **/
-XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsBasic(int iBlock) const
+XPU_D void StsHitfinderGpu::FindClusterConnectionsBasic(int iBlock) const
 {
   int iModule          = iBlock;
   int threadId         = xpu::thread_idx::x();
   auto nDigis          = GetNDigis(iModule);
   CbmStsDigi* digis    = digisSortedPerModule[iModule];
-  auto* digiConnector  = &digiConnectorPerModule[digiOffsetPerModule[iModule]];
+  auto* digiConnector  = &digiConnectorsPerModule[digiOffsetPerModule[iModule]];
   auto* channelOffsets = &channelOffsetPerModule[iModule * nChannels];
 
   if (threadId != 0) return;
@@ -209,7 +251,7 @@ XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsBasic(int iBlock) const
 
 
 /**
-  * CbmStsGpuHitFinder::findClusterConnectionsChannelWise
+  * StsHitfinderGpu::findClusterConnectionsChannelWise
   *
   * Each Thread one Channel
   *
@@ -228,9 +270,9 @@ XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsBasic(int iBlock) const
   * @param threadId Id of the thrad currently working
   *
 **/
-XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsChannelWise(CbmStsDigi* digis, CbmStsDigiConnector* digiConnector,
-                                                                 unsigned int* channelOffsets, int const iModule,
-                                                                 unsigned int const threadId) const
+XPU_D void StsHitfinderGpu::FindClusterConnectionsChannelWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
+                                                              unsigned int* channelOffsets, int const iModule,
+                                                              unsigned int const threadId) const
 {
   // Expl: here we need to be smaller than nChannels because the last channel is the most Right.
   for (unsigned int channel = threadId; channel < (unsigned int) (nChannels - 1); channel += xpu::block_dim::x()) {
@@ -271,7 +313,7 @@ XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsChannelWise(CbmStsDigi* dig
 }
 
 /**
-  * CbmStsGpuHitFinder::findClusterConnectionsDigiWise
+  * StsHitfinderGpu::findClusterConnectionsDigiWise
   *
   * Each thread one Digi
   *
@@ -292,10 +334,9 @@ XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsChannelWise(CbmStsDigi* dig
   * @param nDigis Amount of digis in digis-Array
   *
 **/
-XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsDigiWise(CbmStsDigi* digis, CbmStsDigiConnector* digiConnector,
-                                                              unsigned int* channelOffsets, int const iModule,
-                                                              unsigned int const threadId,
-                                                              unsigned int const nDigis) const
+XPU_D void StsHitfinderGpu::FindClusterConnectionsDigiWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
+                                                           unsigned int* channelOffsets, int const iModule,
+                                                           unsigned int const threadId, unsigned int const nDigis) const
 {
 
   for (unsigned int currIter = threadId; currIter < nDigis; currIter += xpu::block_dim::x()) {
@@ -324,7 +365,7 @@ XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsDigiWise(CbmStsDigi* digis,
 
 
 /**
-  * CbmStsGpuHitFinder::calculateClustersBasic
+  * StsHitfinderGpu::calculateClustersBasic
   *
   * One Thread all Digis
   *
@@ -344,12 +385,12 @@ XPU_D void CbmStsGpuHitFinder::FindClusterConnectionsDigiWise(CbmStsDigi* digis,
   * @param threadId Id of the thrad currently working
   *
 **/
-XPU_D void CbmStsGpuHitFinder::CalculateClustersBasic(int iBlock) const
+XPU_D void StsHitfinderGpu::CalculateClustersBasic(int iBlock) const
 {
   int iModule         = iBlock;
   int threadId        = xpu::thread_idx::x();
   CbmStsDigi* digis   = digisSortedPerModule[iModule];
-  auto* digiConnector = &digiConnectorPerModule[digiOffsetPerModule[iModule]];
+  auto* digiConnector = &digiConnectorsPerModule[digiOffsetPerModule[iModule]];
 
   if (threadId != 0) return;
 
@@ -372,7 +413,7 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersBasic(int iBlock) const
 
 
 /**
-  * CbmStsGpuHitFinder::calculateClustersChannelWise
+  * StsHitfinderGpu::calculateClustersChannelWise
   *
   * Each Thread one Channel
   *
@@ -392,10 +433,9 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersBasic(int iBlock) const
   * @param threadId Id of the thrad currently working
   *
 **/
-XPU_D void CbmStsGpuHitFinder::CalculateClustersChannelWise(CbmStsDigi* digis, CbmStsDigiConnector* digiConnector,
-                                                            unsigned int* channelOffsets, int const iModule,
-                                                            unsigned int const threadId,
-                                                            unsigned int const nDigis) const
+XPU_D void StsHitfinderGpu::CalculateClustersChannelWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
+                                                         unsigned int* channelOffsets, int const iModule,
+                                                         unsigned int const threadId, unsigned int const nDigis) const
 {
 
   for (unsigned int channel = threadId; channel < (unsigned int) nChannels;
@@ -428,7 +468,7 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersChannelWise(CbmStsDigi* digis, C
 
 
 /**
-  * CbmStsGpuHitFinder::calculateClustersDigiWise
+  * StsHitfinderGpu::calculateClustersDigiWise
   *
   * Each Thread one Channel
   *
@@ -448,9 +488,9 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersChannelWise(CbmStsDigi* digis, C
   * @param threadId Id of the thrad currently working
   *
 **/
-XPU_D void CbmStsGpuHitFinder::CalculateClustersDigiWise(CbmStsDigi* digis, CbmStsDigiConnector* digiConnector,
-                                                         int const iModule, unsigned int const threadId,
-                                                         unsigned int const nDigis) const
+XPU_D void StsHitfinderGpu::CalculateClustersDigiWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
+                                                      int const iModule, unsigned int const threadId,
+                                                      unsigned int const nDigis) const
 {
 
   for (unsigned int currIter = threadId; currIter < nDigis; currIter += (unsigned int) xpu::block_dim::x()) {
@@ -473,19 +513,20 @@ XPU_D void CbmStsGpuHitFinder::CalculateClustersDigiWise(CbmStsDigi* digis, CbmS
 }
 
 
-XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors1(int const iModule, CbmStsDigi* digis, int digiIndex) const
+XPU_D void StsHitfinderGpu::CreateClusterFromConnectors1(int const iModule, CbmStsDigi* digis, int digiIndex) const
 {
   const CbmStsDigi& digi = digis[digiIndex];
 
-  CbmStsTimeNs time = digi.GetTimeU32();
+  uint32_t time = digi.GetTimeU32();
 
   const float timeError = asic.timeResolution;
 
-  CbmStsClusterData cluster {
+  StsGpuCluster cluster {
     .fCharge        = asic.AdcToCharge(digi.GetChargeU16()),
     .fSize          = 1,
     .fPosition      = float(digi.GetChannel()) + (IsBackside(iModule) ? nChannels : 0.f),
     .fPositionError = 1.f / xpu::sqrt(24.f),
+    .fTime          = time,
     .fTimeError     = timeError,
   };
 
@@ -494,9 +535,8 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors1(int const iModule, C
   AddCluster(iModule, time, cluster);
 }
 
-XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors2(int const iModule, CbmStsDigi* digis,
-                                                            CbmStsDigiConnector* digiConnector,
-                                                            int const digiIndex) const
+XPU_D void StsHitfinderGpu::CreateClusterFromConnectors2(int const iModule, CbmStsDigi* digis,
+                                                         StsDigiConnector* digiConnector, int const digiIndex) const
 {
 
   const CbmStsDigi& digi1 = digis[digiIndex];
@@ -504,7 +544,7 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors2(int const iModule, C
 
   float eNoiseSq = asic.noise * asic.noise;
 
-  float chargePerAdc = asic.dynRange / float(asic.nAdc);
+  float chargePerAdc = asic.dynamicRange / float(asic.nAdc);
   float eDigitSq     = chargePerAdc * chargePerAdc / 12.f;
 
   float x1 = float(digi1.GetChannel());
@@ -515,10 +555,10 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors2(int const iModule, C
   if (digi1.GetChannel() > digi2.GetChannel()) { x1 -= float(nChannels); }
 
   // Uncertainties of the charge measurements
-  XErrorT width1 = LandauWidth(q1);
-  XErrorT eq1sq  = width1 * width1 + eNoiseSq + eDigitSq;
-  XErrorT width2 = LandauWidth(q2);
-  XErrorT eq2sq  = width2 * width2 + eNoiseSq + eDigitSq;
+  float width1 = LandauWidth(q1);
+  float eq1sq  = width1 * width1 + eNoiseSq + eDigitSq;
+  float width2 = LandauWidth(q2);
+  float eq2sq  = width2 * width2 + eNoiseSq + eDigitSq;
 
   // Cluster time
   float time      = 0.5f * (digi1.GetTimeU32() + digi2.GetTimeU32());
@@ -531,9 +571,9 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors2(int const iModule, C
   if (x < -0.5f) { x += float(nChannels); }
 
   // Uncertainty on cluster position. See software note.
-  XErrorT ex0sq = 0.f;
-  XErrorT ex1sq = 0.f;
-  XErrorT ex2sq = 0.f;
+  float ex0sq = 0.f;
+  float ex1sq = 0.f;
+  float ex2sq = 0.f;
   if (q1 < q2) {
     ex0sq = (q2 - q1) * (q2 - q1) / q2 / q2 / 72.f;
     ex1sq = eq1sq / q2 / q2 / 9.f;
@@ -544,18 +584,19 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors2(int const iModule, C
     ex1sq = eq1sq * q2 * q2 / q1 / q1 / q1 / q1 / 9.f;
     ex2sq = eq2sq / q1 / q1 / 9.f;
   }
-  XErrorT xError = xpu::sqrt(ex0sq + ex1sq + ex2sq);
+  float xError = xpu::sqrt(ex0sq + ex1sq + ex2sq);
 
   // Cluster charge
   float charge = q1 + q2;
 
   if (IsBackside(iModule)) x += nChannels;
 
-  CbmStsClusterData cls {
+  StsGpuCluster cls {
     .fCharge        = charge,
     .fSize          = 2,
     .fPosition      = x,
     .fPositionError = xError,
+    .fTime          = uint32_t(time),
     .fTimeError     = timeError,
   };
 
@@ -564,16 +605,16 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectors2(int const iModule, C
 }
 
 
-XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectorsN(int iModule, CbmStsDigi* digis,
-                                                            CbmStsDigiConnector* digiConnector, int digiIndex) const
+XPU_D void StsHitfinderGpu::CreateClusterFromConnectorsN(int iModule, CbmStsDigi* digis,
+                                                         StsDigiConnector* digiConnector, int digiIndex) const
 {
-  CbmStsClusterCalculationProperties cProps;
+  StsClusterCalculationProperties cProps;
 
   //This Lambda calculates all charges for a single digi inside of a cluster
   auto calculateClusterCharges = [this, &cProps, &digis, &digiConnector](int index) {
     CbmStsDigi digi    = digis[index];
     float eNoiseSq     = asic.noise * asic.noise;
-    float chargePerAdc = asic.dynRange / float(asic.nAdc);
+    float chargePerAdc = asic.dynamicRange / float(asic.nAdc);
     float eDigitSq     = chargePerAdc * chargePerAdc / 12.f;
     cProps.tResolSum += asic.timeResolution;
     cProps.tSum += digi.GetTimeU32();
@@ -642,11 +683,12 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectorsN(int iModule, CbmStsD
 
   if (IsBackside(iModule)) { x += nChannels; }
 
-  CbmStsClusterData cls {
+  StsGpuCluster cls {
     .fCharge        = qSum,
     .fSize          = int(nDigis),
     .fPosition      = x,
     .fPositionError = xError,
+    .fTime          = uint32_t(cProps.tSum),
     .fTimeError     = timeError,
   };
 
@@ -654,37 +696,37 @@ XPU_D void CbmStsGpuHitFinder::CreateClusterFromConnectorsN(int iModule, CbmStsD
   AddCluster(iModule, cProps.tSum, cls);
 }
 
-XPU_D void CbmStsGpuHitFinder::SortClusters(CbmStsSortClusterSmem& smem, int iBlock) const
+XPU_D void StsHitfinderGpu::SortClusters(StsSortClusterSmem& smem, int iBlock) const
 {
   int iModule                     = iBlock;
   size_t offset                   = iModule * maxClustersPerModule;
-  CbmStsClusterIdx* clusterIdx    = &clusterIdxPerModule[offset];
-  CbmStsClusterIdx* clusterIdxTmp = &clusterIdxPerModuleTmp[offset];
+  StsGpuClusterIdx* clusterIdx    = &clusterIdxPerModule[offset];
+  StsGpuClusterIdx* clusterIdxTmp = &clusterIdxPerModuleTmp[offset];
   int nClusters                   = nClustersPerModule[iModule];
 
   SortClustersT clsSort(smem.sortBuf);
-  clusterIdx = clsSort.sort(clusterIdx, nClusters, clusterIdxTmp, [](const CbmStsClusterIdx a) { return a.fTime; });
+  clusterIdx = clsSort.sort(clusterIdx, nClusters, clusterIdxTmp, [](const StsGpuClusterIdx a) { return a.fTime; });
 
   if (xpu::thread_idx::x() == 0) clusterIdxSortedPerModule[iModule] = clusterIdx;
 }
 
-XPU_D void CbmStsGpuHitFinder::FindHits(int iBlock) const
+XPU_D void StsHitfinderGpu::FindHits(int iBlock) const
 {
-  int iModuleF                    = iBlock;
-  int iModuleB                    = iBlock + nModules;
-  size_t offsetF                  = iModuleF * maxClustersPerModule;
-  size_t offsetB                  = iModuleB * maxClustersPerModule;
-  CbmStsClusterIdx* clusterIdxF   = clusterIdxSortedPerModule[iModuleF];
-  CbmStsClusterIdx* clusterIdxB   = clusterIdxSortedPerModule[iModuleB];
-  CbmStsClusterData* clusterDataF = &clusterDataPerModule[offsetF];
-  CbmStsClusterData* clusterDataB = &clusterDataPerModule[offsetB];
-  int nClustersF                  = nClustersPerModule[iModuleF];
-  int nClustersB                  = nClustersPerModule[iModuleB];
+  int iModuleF                  = iBlock;
+  int iModuleB                  = iBlock + nModules;
+  size_t offsetF                = iModuleF * maxClustersPerModule;
+  size_t offsetB                = iModuleB * maxClustersPerModule;
+  StsGpuClusterIdx* clusterIdxF = clusterIdxSortedPerModule[iModuleF];
+  StsGpuClusterIdx* clusterIdxB = clusterIdxSortedPerModule[iModuleB];
+  StsGpuCluster* clusterDataF   = &clusterDataPerModule[offsetF];
+  StsGpuCluster* clusterDataB   = &clusterDataPerModule[offsetB];
+  int nClustersF                = nClustersPerModule[iModuleF];
+  int nClustersB                = nClustersPerModule[iModuleB];
 
 
-  CbmStsHitFinderParams pars;
+  StsHitfinderCache pars;
   {
-    CbmStsHitFinderConfig cfg = hitfinderConfig[iBlock];
+    StsSensorPar cfg = sensorPars[iBlock];
 
     pars.dY         = cfg.dY;
     pars.pitch      = cfg.pitch;
@@ -705,14 +747,14 @@ XPU_D void CbmStsGpuHitFinder::FindHits(int iBlock) const
 
   int startB = 0;
   for (int iClusterF = xpu::thread_idx::x(); iClusterF < nClustersF; iClusterF += xpu::block_dim::x()) {
-    CbmStsClusterIdx clsIdxF   = clusterIdxF[iClusterF];
-    CbmStsClusterData clsDataF = clusterDataF[clsIdxF.fIdx];
+    StsGpuClusterIdx clsIdxF = clusterIdxF[iClusterF];
+    StsGpuCluster clsDataF   = clusterDataF[clsIdxF.fIdx];
 
     float maxSigma = 4.f * xpu::sqrt(clsDataF.fTimeError * clsDataF.fTimeError + maxTerrF * maxTerrF);
 
     for (int iClusterB = startB; iClusterB < nClustersB; iClusterB++) {
-      CbmStsClusterIdx clsIdxB   = clusterIdxB[iClusterB];
-      CbmStsClusterData clsDataB = clusterDataB[clsIdxB.fIdx];
+      StsGpuClusterIdx clsIdxB = clusterIdxB[iClusterB];
+      StsGpuCluster clsDataB   = clusterDataB[clsIdxB.fIdx];
 
       float timeDiff = float(clsIdxF.fTime) - float(clsIdxB.fTime);
 
@@ -742,9 +784,9 @@ XPU_D void CbmStsGpuHitFinder::FindHits(int iBlock) const
   }
 }
 
-XPU_D void CbmStsGpuHitFinder::IntersectClusters(int iBlock, const CbmStsHitFinderParams& pars, CbmStsTimeNs timeF,
-                                                 const CbmStsClusterData& clsF, CbmStsTimeNs timeB,
-                                                 const CbmStsClusterData& clsB) const
+XPU_D void StsHitfinderGpu::IntersectClusters(int iBlock, const StsHitfinderCache& pars, uint32_t timeF,
+                                              const StsGpuCluster& clsF, uint32_t timeB,
+                                              const StsGpuCluster& clsB) const
 {
   // --- Calculate cluster centre position on readout edge
 
@@ -801,7 +843,7 @@ XPU_D void CbmStsGpuHitFinder::IntersectClusters(int iBlock, const CbmStsHitFind
   }
 }
 
-XPU_D float CbmStsGpuHitFinder::GetClusterPosition(const CbmStsHitFinderParams& pars, float centre, bool isFront) const
+XPU_D float StsHitfinderGpu::GetClusterPosition(const StsHitfinderCache& pars, float centre, bool isFront) const
 {
   // Take integer channel
 
@@ -827,8 +869,8 @@ XPU_D float CbmStsGpuHitFinder::GetClusterPosition(const CbmStsHitFinderParams& 
   return xCluster;
 }
 
-XPU_D bool CbmStsGpuHitFinder::Intersect(const CbmStsHitFinderParams& pars, float xF, float exF, float xB, float exB,
-                                         float& x, float& y, float& varX, float& varY, float& varXY) const
+XPU_D bool StsHitfinderGpu::Intersect(const StsHitfinderCache& pars, float xF, float exF, float xB, float exB, float& x,
+                                      float& y, float& varX, float& varY, float& varXY) const
 {
 
   // In the coordinate system with origin at the bottom left corner,
@@ -878,7 +920,7 @@ XPU_D bool CbmStsGpuHitFinder::Intersect(const CbmStsHitFinderParams& pars, floa
   return IsInside(pars, x - pars.dX / 2.f, y - pars.dY / 2.f);
 }
 
-XPU_D bool CbmStsGpuHitFinder::IsInside(const CbmStsHitFinderParams& pars, float x, float y) const
+XPU_D bool StsHitfinderGpu::IsInside(const StsHitfinderCache& pars, float x, float y) const
 {
   // clang-format off
   return x >= -pars.dX / 2.f
@@ -888,9 +930,9 @@ XPU_D bool CbmStsGpuHitFinder::IsInside(const CbmStsHitFinderParams& pars, float
   // clang-format on
 }
 
-XPU_D void CbmStsGpuHitFinder::CreateHit(int iModule, float xLocal, float yLocal, float varX, float varY, float varXY,
-                                         CbmStsTimeNs timeF, const CbmStsClusterData& clsF, CbmStsTimeNs timeB,
-                                         const CbmStsClusterData& clsB, float du, float dv) const
+XPU_D void StsHitfinderGpu::CreateHit(int iModule, float xLocal, float yLocal, float varX, float varY, float varXY,
+                                      uint32_t timeF, const StsGpuCluster& clsF, uint32_t timeB,
+                                      const StsGpuCluster& clsB, float du, float dv) const
 {
   // --- Transform into global coordinate system
   float globalX, globalY, globalZ;
@@ -909,11 +951,11 @@ XPU_D void CbmStsGpuHitFinder::CreateHit(int iModule, float xLocal, float yLocal
   float etB          = clsB.fTimeError;
   float hitTimeError = 0.5f * xpu::sqrt(etF * etF + etB * etB);
 
-  CbmStsHit hit {
+  StsGpuHit hit {
     .fX         = globalX,
     .fY         = globalY,
     .fZ         = globalZ,
-    .fTime      = static_cast<CbmStsTimeNs>(hitTime),
+    .fTime      = static_cast<uint32_t>(hitTime),
     .fDx        = errX,
     .fDy        = errY,
     .fDz        = errZ,
@@ -931,22 +973,21 @@ XPU_D void CbmStsGpuHitFinder::CreateHit(int iModule, float xLocal, float yLocal
 }
 
 
-XPU_D XErrorT CbmStsGpuHitFinder::LandauWidth(float charge) const
+XPU_D float StsHitfinderGpu::LandauWidth(float charge) const
 {
   if (charge <= landauStepSize) return landauTable[0];
   if (charge > landauStepSize * (landauTableSize - 1)) return landauTable[landauTableSize - 1];
 
   int tableIdx = xpu::ceil(charge / landauStepSize);
-  XErrorT e2   = tableIdx * landauStepSize;
-  XErrorT v2   = landauTable[tableIdx];
+  float e2     = tableIdx * landauStepSize;
+  float v2     = landauTable[tableIdx];
   tableIdx--;
-  XErrorT e1 = tableIdx * landauStepSize;
-  XErrorT v1 = landauTable[tableIdx];
+  float e1 = tableIdx * landauStepSize;
+  float v1 = landauTable[tableIdx];
   return v1 + (charge - e1) * (v2 - v1) / (e2 - e1);
 }
 
-XPU_D void CbmStsGpuHitFinder::ToGlobal(int iModule, float lx, float ly, float lz, float& gx, float& gy,
-                                        float& gz) const
+XPU_D void StsHitfinderGpu::ToGlobal(int iModule, float lx, float ly, float lz, float& gx, float& gy, float& gz) const
 {
   const float* tr  = &localToGlobalTranslationByModule[iModule * 3];
   const float* rot = &localToGlobalRotationByModule[iModule * 9];

@@ -32,20 +32,10 @@ set(SRCS
   qa/CbmStsFindTracksQa.cxx
   )
 
-
-set(DEVICE_SRCS
-  experimental/CbmStsGpuRecoDevice.cxx
-  experimental/CbmStsGpuHitFinder.cxx
-  )
-
-set(NO_DICT_SRCS
-  ${DEVICE_SRCS}
-  experimental/CbmGpuRecoSts.cxx
-  )
-
 set(LIBRARY_NAME CbmRecoSts)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
+  Algo
   CbmData
   CbmStsBase
   FairRoot::Base
@@ -83,10 +73,3 @@ set(INTERFACE_DEPENDENCIES
 # ---------------------------------------------------------
 
 generate_cbm_library()
-
-xpu_attach(CbmRecoSts ${DEVICE_SRCS})
-
-# FIXME: Why is this needed to install headers in subfolder?
-install(DIRECTORY experimental/ TYPE INCLUDE
-    FILES_MATCHING PATTERN "*.h"
-)
