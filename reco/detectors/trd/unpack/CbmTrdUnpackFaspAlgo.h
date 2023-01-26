@@ -51,13 +51,13 @@ public:
    * f - FASP id
    * d - ADC signal
    * t - time label inside epoch
-   * a - word type (1)
+   * a - word type (0)
    * c - channel id
    * - EPOCH WORD -
    * ffff.fftt tttt.tttt tttt.tttt ttta.cccc
    * f - FASP id
    * t - epoch index
-   * a - word type (0)
+   * a - word type (1)
    * c - channel id
    */
   enum CbmTrdFaspMessageLength
