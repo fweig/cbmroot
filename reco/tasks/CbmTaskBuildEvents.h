@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include "DigiEventSelector.h"
 #include "EventBuilder.h"
 
 class CbmDigiManager;
@@ -64,6 +65,23 @@ public:
     fEventWindows[system] = std::make_pair(tMin, tMax);
   }
 
+  /** @brief Activate event selector which requires a minimum number of fired layers
+   ** @param params Struct with minimum number of layers for different detectors
+   **/
+
+  void SetDigiEventSelector(cbm::algo::DigiEventSelectorParams params)
+  {
+    if (fSelector == nullptr) {
+      // New selector, straightforward
+      fSelector = std::make_unique<cbm::algo::DigiEventSelector>(params);
+    }
+    else {
+      // Re-use existing selector as functor without state
+      fSelector->SetParams(params);
+    }
+  }
+
+
 private:  // methods
   /** @brief Task initialisation **/
   virtual InitStatus Init();
@@ -80,25 +98,27 @@ private:  // methods
    **/
   size_t GetNumDigis(const CbmDigiData& data, ECbmModuleId system);
 
+private:                                                    // members
+  const CbmDigiTimeslice* fTimeslice   = nullptr;           //! Input data (from unpacking)
+  CbmDigiManager* fDigiMan             = nullptr;           //! Input data (from simulation)
+  const std::vector<double>* fTriggers = nullptr;           //! Input data (triggers)
+  std::vector<CbmDigiEvent>* fEvents   = nullptr;           //! Output data (events)
+  std::unique_ptr<cbm::algo::DigiEventSelector> fSelector;  //! Event selector
 
-private:                                           // members
-  const CbmDigiTimeslice* fTimeslice   = nullptr;  //! Input data (from unpacking)
-  CbmDigiManager* fDigiMan             = nullptr;  //! Input data (from simulation)
-  const std::vector<double>* fTriggers = nullptr;  //! Input data (triggers)
-  std::vector<CbmDigiEvent>* fEvents   = nullptr;  //! Output data (events)
-  cbm::algo::EventBuilder fAlgo {};                //! Algorithm
+  cbm::algo::EventBuilder fAlgo {};  //! Algorithm
 
   std::map<ECbmModuleId, std::pair<double, double>> fEventWindows;
 
   // for diagnostics
   std::map<ECbmModuleId, size_t> fNumDigisTs;  //  Number of digis in timeslices
   std::map<ECbmModuleId, size_t> fNumDigisEv;  //  Number of digis in events
-  size_t fNumTs        = 0;                    //  Number of processed time slices
-  size_t fNumTriggers  = 0;                    //  Number of triggers
-  size_t fNumEvents    = 0;                    //  Number of produced events
-  double fTimeFillTs   = 0.;
-  double fTimeBuildEvt = 0.;
-  double fTimeTot      = 0.;
+  size_t fNumTs           = 0;                 //  Number of processed time slices
+  size_t fNumTriggers     = 0;                 //  Number of triggers
+  size_t fNumEvents       = 0;                 //  Number of produced events
+  double fTimeFillTs      = 0.;
+  double fTimeBuildEvt    = 0.;
+  double fTimeSelectorEvt = 0.;
+  double fTimeTot         = 0.;
 
   ClassDef(CbmTaskBuildEvents, 1);
 };

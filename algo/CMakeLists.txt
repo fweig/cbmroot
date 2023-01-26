@@ -5,6 +5,7 @@ add_subdirectory(test)
 set(SRCS
   evbuild/EventBuilder.cxx
   trigger/TimeClusterTrigger.cxx
+  evselector/DigiEventSelector.cxx
   detectors/sts/StsReadoutConfig.cxx
   detectors/sts/UnpackSts.cxx
   detectors/much/MuchReadoutConfig.cxx
@@ -17,8 +18,10 @@ target_include_directories(Algo
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
          ${CMAKE_CURRENT_SOURCE_DIR}/evbuild
          ${CMAKE_CURRENT_SOURCE_DIR}/trigger
+         ${CMAKE_CURRENT_SOURCE_DIR}/evselector
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/sts
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/much
+         ${CMAKE_CURRENT_SOURCE_DIR}/detectors/tof
  )
 
 target_link_libraries(Algo PUBLIC OnlineData INTERFACE FairLogger::FairLogger external::fles_ipc)

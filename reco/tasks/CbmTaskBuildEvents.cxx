@@ -135,6 +135,16 @@ void CbmTaskBuildEvents::Exec(Option_t*)
     fTimeBuildEvt += timerStep.RealTime();
   }
 
+  // Apply event selector if desired
+  if (fSelector) {
+    timerStep.Start();
+    auto noTrigger = [&](CbmDigiEvent& ev) { return !(*fSelector)(ev); };
+    auto removeIt  = std::remove_if(fEvents->begin(), fEvents->end(), noTrigger);
+    fEvents->erase(removeIt, fEvents->end());
+    timerStep.Stop();
+    fTimeSelectorEvt += timerStep.RealTime();
+  }
+
   // --- Timeslice statistics
   size_t numTriggers = fTriggers->size();
   size_t numEvents   = fEvents->size();
@@ -195,6 +205,8 @@ void CbmTaskBuildEvents::Finish()
             << " ms = " << 100. * fTimeFillTs / fTimeTot << " %";
   LOG(info) << "Time build events    : " << fixed << setprecision(2) << 1000. * fTimeBuildEvt / double(fNumTs)
             << " ms = " << 100. * fTimeBuildEvt / fTimeTot << " %";
+  LOG(info) << "Time selector events   : " << fixed << setprecision(2) << 1000. * fTimeSelectorEvt / double(fNumTs)
+            << " ms = " << 100. * fTimeSelectorEvt / fTimeTot << " %";
   LOG(info) << "=====================================";
 }
 // ----------------------------------------------------------------------------

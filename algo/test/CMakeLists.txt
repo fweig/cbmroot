@@ -22,21 +22,26 @@ set(PVT_DEPS
   Gtest
   GtestMain
   )
-  
-  
+
+
 
 Set(TimeClusterTriggerSources
-  _GTestTimeClusterTrigger.cxx 
+  _GTestTimeClusterTrigger.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestTimeClusterTrigger "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${TimeClusterTriggerSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 Set(EventBuilderSources
-  _GTestEventBuilder.cxx 
+  _GTestEventBuilder.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestEventBuilder "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${EventBuilderSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
+Set(DigiEventSelectorSources
+  _GTestDigiEventSelector.cxx
+)
 
+CreateGTestExeAndAddTest(_GTestDigiEventSelector "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
+                         "${DigiEventSelectorSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
