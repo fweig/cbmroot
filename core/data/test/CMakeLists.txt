@@ -108,7 +108,7 @@ CreateGTestExeAndAddTest(_GTestCbmErrorMessage "${INCLUDE_DIRECTORIES}" "${LINK_
 
 Set(CbmAddressSources
   _GTestCbmAddress.cxx
-)  
+)
 
 CreateGTestExeAndAddTest(_GTestCbmAddress "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmAddressSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmErrorMessage")
@@ -149,4 +149,11 @@ Set(CbmMuchBeamTimeDigiSources
 
 CreateGTestExeAndAddTest(_GTestCbmMuchBeamTimeDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmMuchBeamTimeDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestMuchDigi")
+
+Set(CbmBmonDigiSources
+  bmon/_GTestCbmBmonDigi.cxx
+)
+
+CreateGTestExeAndAddTest(_GTestCbmBmonDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
+                         "${CbmBmonDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmMuchBeamTimeDigi")
 

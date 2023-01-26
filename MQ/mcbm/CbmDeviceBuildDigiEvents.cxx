@@ -336,7 +336,7 @@ try {
   /* clang-format on */
 
   /// Create input vectors
-  fvDigiT0   = new std::vector<CbmTzdDigi>(1000000);
+  fvDigiT0   = new std::vector<CbmBmonDigi>(1000000);
   fvDigiSts  = new std::vector<CbmStsDigi>(1000000);
   fvDigiMuch = new std::vector<CbmMuchDigi>(1000000);
   fvDigiTrd  = new std::vector<CbmTrdDigi>(1000000);

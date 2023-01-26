@@ -2,12 +2,12 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
-/** @file CbmTzdDigitize.cxx
+/** @file CbmBmonDigitize.cxx
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 07.11.2022
  **/
 
-#include "CbmTzdDigitize.h"
+#include "CbmBmonDigitize.h"
 
 #include "CbmMatch.h"
 
@@ -25,17 +25,17 @@ using std::setw;
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmTzdDigitize::CbmTzdDigitize(double sigma) : CbmDigitize<CbmTzdDigi>("TzdDigitize"), fResolution(sigma) {}
+CbmBmonDigitize::CbmBmonDigitize(double sigma) : CbmDigitize<CbmBmonDigi>("BmonDigitize"), fResolution(sigma) {}
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmTzdDigitize::~CbmTzdDigitize() {}
+CbmBmonDigitize::~CbmBmonDigitize() {}
 // -------------------------------------------------------------------------
 
 
 // -----   Task execution   ------------------------------------------------
-void CbmTzdDigitize::Exec(Option_t*)
+void CbmBmonDigitize::Exec(Option_t*)
 {
 
   // --- Start timer and reset counters
@@ -46,9 +46,9 @@ void CbmTzdDigitize::Exec(Option_t*)
   GetEventInfo();
 
   // --- Create digi and send it to DAQ
-  double digiTime  = fCurrentEventTime + gRandom->Gaus(0., fResolution);
-  double charge    = 1.;  // Placeholder
-  CbmTzdDigi* digi = new CbmTzdDigi(ToIntegralType<ECbmModuleId>(ECbmModuleId::kT0), digiTime, charge);
+  double digiTime   = fCurrentEventTime + gRandom->Gaus(0., fResolution);
+  double charge     = 1.;  // Placeholder
+  CbmBmonDigi* digi = new CbmBmonDigi(ToIntegralType<ECbmModuleId>(ECbmModuleId::kT0), digiTime, charge);
   if (fCreateMatches) {
     CbmMatch* digiMatch = new CbmMatch();
     digiMatch->AddLink(1., -1, fCurrentMCEntry, fCurrentInput);
@@ -70,7 +70,7 @@ void CbmTzdDigitize::Exec(Option_t*)
 
 
 // -----   Finish run    ---------------------------------------------------
-void CbmTzdDigitize::Finish()
+void CbmBmonDigitize::Finish()
 {
   std::cout << std::endl;
   LOG(info) << "=====================================";
@@ -83,7 +83,7 @@ void CbmTzdDigitize::Finish()
 
 
 // -----   Initialisation    -----------------------------------------------
-InitStatus CbmTzdDigitize::Init()
+InitStatus CbmBmonDigitize::Init()
 {
   std::cout << std::endl;
   LOG(info) << "==========================================================";
@@ -99,8 +99,8 @@ InitStatus CbmTzdDigitize::Init()
 
 
 // -----   Private method ReInit   -----------------------------------------
-InitStatus CbmTzdDigitize::ReInit() { return kSUCCESS; }
+InitStatus CbmBmonDigitize::ReInit() { return kSUCCESS; }
 // -------------------------------------------------------------------------
 
 
-ClassImp(CbmTzdDigitize)
+ClassImp(CbmBmonDigitize)

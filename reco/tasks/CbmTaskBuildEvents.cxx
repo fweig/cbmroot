@@ -83,8 +83,8 @@ CbmDigiTimeslice CbmTaskBuildEvents::FillTimeSlice()
         break;
       }
       case ECbmModuleId::kT0: {  //T0 has Tof digis
-        const vector<CbmTzdDigi>* digiVec =
-          boost::any_cast<const vector<CbmTzdDigi>*>(digiBranch->GetBranchContainer());
+        const vector<CbmBmonDigi>* digiVec =
+          boost::any_cast<const vector<CbmBmonDigi>*>(digiBranch->GetBranchContainer());
         assert(digiVec);
         ts.fData.fT0.fDigis = *digiVec;
         break;

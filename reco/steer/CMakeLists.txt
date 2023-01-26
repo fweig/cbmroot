@@ -29,7 +29,7 @@ set(PRIVATE_DEPENDENCIES
   CbmRichReco
   CbmRecoSts
   CbmTrdReco
-  CbmTzdReco
+  CbmBmonReco
   )
 
 set(INTERFACE_DEPENDENCIES

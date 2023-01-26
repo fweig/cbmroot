@@ -155,7 +155,7 @@ try {
 
   /// Full TS Digis storage (optional usage, controlled by fbStoreFullTs!)
   if (fbStoreFullTs) {
-    fvDigiT0   = new std::vector<CbmTzdDigi>();
+    fvDigiT0   = new std::vector<CbmBmonDigi>();
     fvDigiSts  = new std::vector<CbmStsDigi>();
     fvDigiMuch = new std::vector<CbmMuchDigi>();
     fvDigiTrd  = new std::vector<CbmTrdDigi>();
@@ -163,7 +163,7 @@ try {
     fvDigiRich = new std::vector<CbmRichDigi>();
     fvDigiPsd  = new std::vector<CbmPsdDigi>();
 
-    fpFairRootMgr->RegisterAny(CbmTzdDigi::GetBranchName(), fvDigiT0, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmBmonDigi::GetBranchName(), fvDigiT0, kTRUE);
     fpFairRootMgr->RegisterAny(CbmStsDigi::GetBranchName(), fvDigiSts, kTRUE);
     fpFairRootMgr->RegisterAny(CbmMuchDigi::GetBranchName(), fvDigiMuch, kTRUE);
     fpFairRootMgr->RegisterAny(CbmTrdDigi::GetBranchName(), fvDigiTrd, kTRUE);

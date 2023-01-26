@@ -2,11 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer] */
 
-#ifndef CBMTZDDIGIDATA_H
-#define CBMTZDDIGIDATA_H 1
+#ifndef CBMBMONDIGIDATA_H
+#define CBMBMONDIGIDATA_H 1
 
 
-#include "CbmTzdDigi.h"
+#include "CbmBmonDigi.h"
 
 #ifndef NO_ROOT
 #include <Rtypes.h>  // for ClassDef
@@ -18,19 +18,19 @@
 
 #include <vector>
 
-/** @class CbmTzdDigiData
- ** @brief Container class for CbmTzdDigi objects
+/** @class CbmBmonDigiData
+ ** @brief Container class for CbmBmonDigi objects
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 7.12.2022
  ** @version 1.0
  **
- ** Container class for transporting CbmTzdDigi objects.
+ ** Container class for transporting CbmBmonDigi objects.
  ** The current implementation is the simplest one: a std::vector.
  **/
-class CbmTzdDigiData {
+class CbmBmonDigiData {
 
 public:
-  std::vector<CbmTzdDigi> fDigis = {};  ///< Data vector
+  std::vector<CbmBmonDigi> fDigis = {};  ///< Data vector
 
   friend class boost::serialization::access;
 
@@ -46,7 +46,7 @@ public:
 
   // --- ROOT serializer
 #ifndef NO_ROOT
-  ClassDefNV(CbmTzdDigiData, 1);
+  ClassDefNV(CbmBmonDigiData, 1);
 #endif
 };
 

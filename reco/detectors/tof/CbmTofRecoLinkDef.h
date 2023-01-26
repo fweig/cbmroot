@@ -23,7 +23,6 @@
 
 #pragma link C++ class CbmTofUnpackAlgo + ;
 #pragma link C++ class CbmTofUnpackConfig + ;
-#pragma link C++ class CbmBmonUnpackConfig + ;
 #pragma link C++ class CbmTofUnpackMonitor + ;
 
 #endif

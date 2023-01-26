@@ -6,13 +6,13 @@
 #ifndef CBMDIGIDATA_H
 #define CBMDIGIDATA_H 1
 
+#include "CbmBmonDigiData.h"
 #include "CbmMuchDigiData.h"
 #include "CbmPsdDigiData.h"
 #include "CbmRichDigiData.h"
 #include "CbmStsDigiData.h"
 #include "CbmTofDigiData.h"
 #include "CbmTrdDigiData.h"
-#include "CbmTzdDigiData.h"
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -31,7 +31,7 @@
 class CbmDigiData {
 
 public:
-  CbmTzdDigiData fT0;     ///< Beam monitor data
+  CbmBmonDigiData fT0;    ///< Beam monitor data
   CbmStsDigiData fSts;    ///< STS data
   CbmMuchDigiData fMuch;  ///< MUCH data
   CbmRichDigiData fRich;  ///< RICH data

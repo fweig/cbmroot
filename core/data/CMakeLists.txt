@@ -7,6 +7,7 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/base
   ${CMAKE_CURRENT_SOURCE_DIR}/raw
   ${CMAKE_CURRENT_SOURCE_DIR}/mvd
+  ${CMAKE_CURRENT_SOURCE_DIR}/bmon
   ${CMAKE_CURRENT_SOURCE_DIR}/sts
   ${CMAKE_CURRENT_SOURCE_DIR}/much
   ${CMAKE_CURRENT_SOURCE_DIR}/trd
@@ -48,6 +49,8 @@ set(SRCS
   mvd/CbmMvdHit.cxx
   mvd/CbmMvdPoint.cxx
   mvd/CbmMvdHitMatch.cxx
+
+  bmon/CbmBmonDigi.cxx
 
   sts/CbmStsAddress.cxx
   sts/CbmStsCluster.cxx
@@ -99,7 +102,6 @@ set(SRCS
   psd/CbmPsdAddress.cxx
   psd/CbmPsdMCbmHit.cxx
 
-  global/CbmTzdDigi.cxx
   global/CbmGlobalTrack.cxx
   global/CbmVertex.cxx
   global/CbmTrackParam.cxx
@@ -126,8 +128,8 @@ SET_SOURCE_FILES_PROPERTIES(tof/etof/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-
 
 
 list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h
-sts/CbmStsDigiData.h much/CbmMuchDigiData.h rich/CbmRichDigiData.h trd/CbmTrdDigiData.h
-tof/CbmTofDigiData.h global/CbmTzdDigiData.h psd/CbmPsdDigiData.h)
+bmon/CbmBmonDigiData.h sts/CbmStsDigiData.h much/CbmMuchDigiData.h rich/CbmRichDigiData.h trd/CbmTrdDigiData.h
+tof/CbmTofDigiData.h psd/CbmPsdDigiData.h)
 
 set(LIBRARY_NAME CbmData)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
@@ -152,13 +154,13 @@ generate_cbm_library()
 Install(FILES
         CbmDefs.h
         base/CbmDigiData.h base/CbmDigiVector.h
+        bmon/CbmBmonDigiData.h
         much/CbmMuchDigiData.h
         psd/CbmPsdDigiData.h
         rich/CbmRichDigiData.h rich/CbmRichRingLight.h
         sts/CbmStsDigiData.h
         trd/CbmTrdDigiData.h
         tof/CbmTofDigiData.h
-        global/CbmTzdDigiData.h
         global/CbmDigiEvent.h global/CbmDigiTimeslice.h
         raw/bitmask_operators.hpp raw/StsXyterFinalHit.h raw/PsdGbtDataFormat-v0.00.h raw/PsdGbtDataFormat-v1.00.h
         DESTINATION include

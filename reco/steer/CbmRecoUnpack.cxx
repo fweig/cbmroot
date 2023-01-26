@@ -50,7 +50,7 @@ void CbmRecoUnpack::Finish()
   if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
   if (fTrd1DConfig) fTrd1DConfig->GetUnpacker()->Finish();
   if (fTrd2DConfig) fTrd2DConfig->GetUnpacker()->Finish();
-  if (fTzdConfig) fTzdConfig->GetUnpacker()->Finish();
+  if (fBmonConfig) fBmonConfig->GetUnpacker()->Finish();
 
   // Create some default performance profiling histograms and write them to a file
   if (fDoPerfProf) performanceProfiling();
@@ -156,14 +156,14 @@ Bool_t CbmRecoUnpack::Init()
   // for fasp created CbmTrdDigis PR 072021
 
   // --- Bmon
-  if (fTzdConfig) {
-    fTzdConfig->InitOutput();
-    RegisterOutputs(ioman, fTzdConfig);  /// Framework bound work = kept in this Task
-    fTzdConfig->SetAlgo();
-    fTzdConfig->LoadParFileName();  /// Needed to change the Parameter file name before it is used!!!
-    initParContainers(fTzdConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
-    fTzdConfig->InitAlgo();
-    initPerformanceMaps(fkFlesTzd, "Tzd");
+  if (fBmonConfig) {
+    fBmonConfig->InitOutput();
+    RegisterOutputs(ioman, fBmonConfig);  /// Framework bound work = kept in this Task
+    fBmonConfig->SetAlgo();
+    fBmonConfig->LoadParFileName();  /// Needed to change the Parameter file name before it is used!!!
+    initParContainers(fBmonConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fBmonConfig->InitAlgo();
+    initPerformanceMaps(fkFlesBmon, "Bmon");
   }
 
   if (fDoPerfProfPerTs) {
@@ -384,8 +384,8 @@ void CbmRecoUnpack::Reset()
   if (fTrd1DConfig) fTrd1DConfig->Reset();
   // ---- Trd2D ----
   if (fTrd2DConfig) fTrd2DConfig->Reset();
-  // ---- Tzd ----
-  if (fTzdConfig) fTzdConfig->Reset();
+  // ---- Bmon ----
+  if (fBmonConfig) fBmonConfig->Reset();
 }
 
 // ----------------------------------------------------------------------------
@@ -465,10 +465,10 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
         }
         break;
       }
-      case fkFlesTzd: {
-        if (fTzdConfig) {
-          fCbmTsEventHeader->AddNDigisBmon(unpack(systemId, &timeslice, component, fTzdConfig,
-                                                  fTzdConfig->GetOptOutAVec(), fTzdConfig->GetOptOutBVec()));
+      case fkFlesBmon: {
+        if (fBmonConfig) {
+          fCbmTsEventHeader->AddNDigisBmon(unpack(systemId, &timeslice, component, fBmonConfig,
+                                                  fBmonConfig->GetOptOutAVec(), fBmonConfig->GetOptOutBVec()));
         }
         break;
       }
@@ -488,7 +488,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     if (fTofConfig && fTofConfig->GetOutputVec()) { timesort(fTofConfig->GetOutputVec()); }
     if (fTrd1DConfig && fTrd1DConfig->GetOutputVec()) { timesort(fTrd1DConfig->GetOutputVec()); }
     if (fTrd2DConfig && fTrd2DConfig->GetOutputVec()) { timesort(fTrd2DConfig->GetOutputVec()); }
-    if (fTzdConfig && fTzdConfig->GetOutputVec()) { timesort(fTzdConfig->GetOutputVec()); }
+    if (fBmonConfig && fBmonConfig->GetOutputVec()) { timesort(fBmonConfig->GetOutputVec()); }
 
     /// Time sort the output vectors of all unpackers present
     if (fMuchConfig && fMuchConfig->GetOptOutAVec()) { timesort(fMuchConfig->GetOptOutAVec()); }
@@ -498,7 +498,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     if (fTofConfig && fTofConfig->GetOptOutAVec()) { timesort(fTofConfig->GetOptOutAVec()); }
     if (fTrd1DConfig && fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }
     if (fTrd2DConfig && fTrd2DConfig->GetOptOutAVec()) { timesort(fTrd2DConfig->GetOptOutAVec()); }
-    if (fTzdConfig && fTzdConfig->GetOptOutAVec()) { timesort(fTzdConfig->GetOptOutAVec()); }
+    if (fBmonConfig && fBmonConfig->GetOptOutAVec()) { timesort(fBmonConfig->GetOptOutAVec()); }
   }
 
   if (fDoPerfProfPerTs) {

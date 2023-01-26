@@ -13,6 +13,7 @@
 #define CBMDEVICEDIGIEVTSINK_H_
 
 /// CBM headers
+#include "CbmBmonDigi.h"
 #include "CbmDigiEvent.h"
 #include "CbmEvent.h"
 #include "CbmMqTMessage.h"
@@ -23,7 +24,6 @@
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
 #include "CbmTsEventHeader.h"
-#include "CbmTzdDigi.h"
 
 #include "TimesliceMetaData.h"
 
@@ -68,7 +68,7 @@ public:
   /// TS information in header
   CbmTsEventHeader fCbmTsEventHeader;
   /// Raw data
-  std::vector<CbmTzdDigi> fvDigiT0;
+  std::vector<CbmBmonDigi> fvDigiT0;
   std::vector<CbmStsDigi> fvDigiSts;
   std::vector<CbmMuchDigi> fvDigiMuch;
   std::vector<CbmTrdDigi> fvDigiTrd;
@@ -157,7 +157,7 @@ private:
   /// CbmEvents
   std::vector<CbmDigiEvent>* fEventsSel = nullptr;  //! output container of CbmEvents
   /// Full TS Digis storage (optional usage, controlled by fbStoreFullTs!)
-  std::vector<CbmTzdDigi>* fvDigiT0    = nullptr;
+  std::vector<CbmBmonDigi>* fvDigiT0   = nullptr;
   std::vector<CbmStsDigi>* fvDigiSts   = nullptr;
   std::vector<CbmMuchDigi>* fvDigiMuch = nullptr;
   std::vector<CbmTrdDigi>* fvDigiTrd   = nullptr;

@@ -40,9 +40,9 @@
 #include <string>  // for string
 
 //class CbmMatch;
-#ifndef CBMTZDDIGI_H
-class CbmTzdDigi;  // For declaration of the conversion constructor without starting a cyclic dependency
-#endif             /* CBMTZDDIGI_H */
+#ifndef CBMBMONDIGI_H
+class CbmBmonDigi;  // For declaration of the conversion constructor without starting a cyclic dependency
+#endif              /* CBMBMONDIGI_H */
 
 class CbmTofDigi {
 public:
@@ -73,14 +73,14 @@ public:
              uint32_t SmType = 0);
 
   /** @brief Constructor
-   ** @param reference to CbmTzdDigi (equivalent content)
+   ** @param reference to CbmBmonDigi (equivalent content)
    **/
-  CbmTofDigi(const CbmTzdDigi& digi);
+  CbmTofDigi(const CbmBmonDigi& digi);
 
   /** @brief Constructor
-   ** @param pointer to const CbmTzdDigi object (equivalent content)
+   ** @param pointer to const CbmBmonDigi object (equivalent content)
    **/
-  CbmTofDigi(const CbmTzdDigi* digi);
+  CbmTofDigi(const CbmBmonDigi* digi);
 
   /**
        ** @brief Copy constructor.

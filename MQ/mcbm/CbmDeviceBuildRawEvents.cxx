@@ -121,7 +121,7 @@ try {
                                                      : kRawEventBuilderDetUndef)))))));
   if (kRawEventBuilderDetUndef != refDet) {
     fpAlgo->SetReferenceDetector(refDet);
-  } 
+  }
   else {
     LOG(info) << "CbmDeviceBuildRawEvents::InitTask => Trying to change "
                  "reference to unsupported detector, ignored! "
@@ -142,14 +142,14 @@ try {
                                                         : kRawEventBuilderDetUndef)))))));
     if (kRawEventBuilderDetUndef != addDet) {
       fpAlgo->AddDetector(addDet);
-    } 
+    }
     else {
       LOG(info) << "CbmDeviceBuildRawEvents::InitTask => Trying to add "
                    "unsupported detector, ignored! "
                 << (*itStrAdd);
       continue;
     }
-  } 
+  }
 
      /// Extract detector to remove if any
   for (std::vector<std::string>::iterator itStrRem = fvsDelDet.begin();
@@ -165,14 +165,14 @@ try {
                                                         : kRawEventBuilderDetUndef)))))));
     if (kRawEventBuilderDetUndef != remDet) {
       fpAlgo->RemoveDetector(remDet);
-    } 
+    }
     else {
       LOG(info) << "CbmDeviceBuildRawEvents::InitTask => Trying to remove "
                    "unsupported detector, ignored! "
                 << (*itStrRem);
       continue;
-    } 
-  }  
+    }
+  }
      /// Extract Trigger window to add if any
   for (std::vector<std::string>::iterator itStrTrigWin = fvsSetTrigWin.begin();
        itStrTrigWin != fvsSetTrigWin.end();
@@ -185,7 +185,7 @@ try {
         << " (Should be ECbmModuleId,dWinBeg,dWinEnd but instead found "
         << (*itStrTrigWin) << " )";
       continue;
-    } 
+    }
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrTrigWin).substr(0, charPosDel);
@@ -203,7 +203,7 @@ try {
         << "Trying to set trigger window for unsupported detector, ignored! "
         << sSelDet;
       continue;
-    } 
+    }
 
     /// Window beginning
     charPosDel++;
@@ -216,7 +216,7 @@ try {
         << " (Should be ECbmModuleId,dWinBeg,dWinEnd but instead found "
         << (*itStrTrigWin) << " )";
       continue;
-    } 
+    }
     Double_t dWinBeg = std::stod(sNext.substr(0, charPosDel));
 
     /// Window end
@@ -224,7 +224,7 @@ try {
     Double_t dWinEnd = std::stod(sNext.substr(charPosDel));
 
     fpAlgo->SetTriggerWindow(selDet, dWinBeg, dWinEnd);
-  }  
+  }
      /// Extract MinNb for trigger if any
   for (std::vector<std::string>::iterator itStrMinNb = fvsSetTrigMinNb.begin();
        itStrMinNb != fvsSetTrigMinNb.end();
@@ -262,13 +262,13 @@ try {
     UInt_t uMinNb = std::stoul((*itStrMinNb).substr(charPosDel));
 
     fpAlgo->SetTriggerMinNumber(selDet, uMinNb);
-  } 
+  }
 
   /// FIXME: Re-enable clang formatting after formatted lines
   /* clang-format on */
 
   /// Create input vectors
-  fvDigiT0   = new std::vector<CbmTzdDigi>();
+  fvDigiT0   = new std::vector<CbmBmonDigi>();
   fvDigiSts  = new std::vector<CbmStsDigi>();
   fvDigiMuch = new std::vector<CbmMuchBeamTimeDigi>();
   fvDigiTrd  = new std::vector<CbmTrdDigi>();

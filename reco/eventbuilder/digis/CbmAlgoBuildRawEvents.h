@@ -31,7 +31,7 @@ class CbmRichDigi;
 class CbmStsDigi;
 class CbmTofDigi;
 class CbmTrdDigi;
-class CbmTzdDigi;
+class CbmBmonDigi;
 class TClonesArray;
 class TH1;
 class TH2;
@@ -194,7 +194,7 @@ public:
   std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
 
   /// Set digi containers
-  void SetDigis(std::vector<CbmTzdDigi>* T0Digis) { fT0Digis = T0Digis; }
+  void SetDigis(std::vector<CbmBmonDigi>* T0Digis) { fT0Digis = T0Digis; }
   void SetDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
   void SetDigis(std::vector<CbmMuchDigi>* MuchDigis)
   {
@@ -252,7 +252,7 @@ private:
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
 
-  void SetTzdEventTime(CbmEvent* event);
+  void SetBmonEventTime(CbmEvent* event);
 
   TFolder* outFolder;  // oputput folder to store histograms
 
@@ -291,7 +291,7 @@ private:
   /// Data input
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
 
-  const std::vector<CbmTzdDigi>* fT0Digis                    = nullptr;
+  const std::vector<CbmBmonDigi>* fT0Digis                   = nullptr;
   const std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   const std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
   const std::vector<CbmStsDigi>* fStsDigis                   = nullptr;

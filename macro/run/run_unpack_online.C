@@ -113,6 +113,10 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       }
       /// Enable Monitor plots
       bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+      if (2337 <= runid) {
+        bmonconfig->GetMonitor()->SetSpillThreshold(250);
+        bmonconfig->GetMonitor()->SetSpillThresholdNonPulser(100);
+      }
     }
   }
   // -------------

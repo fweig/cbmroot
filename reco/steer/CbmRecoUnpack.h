@@ -12,6 +12,7 @@
 #ifndef CBMRECOUNPACK_H
 #define CBMRECOUNPACK_H 1
 
+#include "CbmBmonUnpackConfig.h"
 #include "CbmMuchUnpackConfig.h"
 #include "CbmPsdUnpackConfig.h"
 #include "CbmRichUnpackConfig.h"
@@ -20,7 +21,6 @@
 #include "CbmTrdUnpackConfig.h"
 #include "CbmTrdUnpackFaspConfig.h"
 #include "CbmTsEventHeader.h"
-#include "CbmTzdUnpackConfig.h"
 
 #include <MicrosliceDescriptor.hpp>
 #include <Timeslice.hpp>
@@ -150,7 +150,7 @@ public:
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackFaspConfig> config) { fTrd2DConfig = config; }
 
   /** @brief Set the Bmon Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTzdUnpackConfig> config) { fTzdConfig = config; }
+  void SetUnpackConfig(std::shared_ptr<CbmBmonUnpackConfig> config) { fBmonConfig = config; }
 
   /** @brief Trigger the unpacking procedure **/
   void Unpack(std::unique_ptr<fles::Timeslice> ts);
@@ -164,7 +164,7 @@ private:
   static constexpr std::uint16_t fkFlesTrd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::TRD);
   static constexpr std::uint16_t fkFlesTrd2D = static_cast<std::uint16_t>(fles::SubsystemIdentifier::TRD2D);
   static constexpr std::uint16_t fkFlesTof   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::RPC);
-  static constexpr std::uint16_t fkFlesTzd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::T0);
+  static constexpr std::uint16_t fkFlesBmon  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::T0);
 
   /** @brief Flag if extended debug output is to be printed or not*/
   bool fDoDebugPrints = false;  //!
@@ -428,8 +428,8 @@ private:
   /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmTrdUnpackFaspConfig> fTrd2DConfig = nullptr;  //!
 
-  /** @brief Configuration of the Tzd unpacker. Provides the configured algorithm */
-  std::shared_ptr<CbmTzdUnpackConfig> fTzdConfig = nullptr;  //!
+  /** @brief Configuration of the Bmon unpacker. Provides the configured algorithm */
+  std::shared_ptr<CbmBmonUnpackConfig> fBmonConfig = nullptr;  //!
 
   /** @brief Pointer to the Timeslice start time used to write it to the output tree @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion */
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;

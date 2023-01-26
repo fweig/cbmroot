@@ -9,6 +9,7 @@
 
 #include "CbmDigitization.h"
 
+#include "CbmBmonDigitize.h"
 #include "CbmDigitizationSource.h"
 #include "CbmMuchDigitizeGem.h"
 #include "CbmMvdDigitizer.h"
@@ -19,7 +20,6 @@
 #include "CbmStsDigitize.h"
 #include "CbmTofDigitize.h"
 #include "CbmTrdDigitizer.h"
-#include "CbmTzdDigitize.h"
 
 #include "FairFileSource.h"
 #include "FairMCEventHeader.h"
@@ -204,8 +204,8 @@ Int_t CbmDigitization::CreateDefaultDigitizers()
         nDigis++;
         break;
       case ECbmModuleId::kT0:
-        fDigitizers[system]->SetDigitizer(new CbmTzdDigitize());
-        ss << "TZD ";
+        fDigitizers[system]->SetDigitizer(new CbmBmonDigitize());
+        ss << "BMON ";
         nDigis++;
         break;
       default: LOG(fatal) << fName << ": Unknown system " << system; break;

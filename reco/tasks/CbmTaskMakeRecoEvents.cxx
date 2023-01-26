@@ -64,7 +64,7 @@ void CbmTaskMakeRecoEvents::Exec(Option_t*)
     CbmEvent* recoEvent = new ((*fRecoEvents)[eventNr]) CbmEvent(eventNr);
 
     // --- Copy T0 digis
-    FillTree<CbmTzdDigi>(digiEvent.fData.fT0.fDigis, fT0Digis, recoEvent, ECbmDataType::kT0Digi);
+    FillTree<CbmBmonDigi>(digiEvent.fData.fT0.fDigis, fT0Digis, recoEvent, ECbmDataType::kT0Digi);
 
     // --- Copy STS digis
     FillTree<CbmStsDigi>(digiEvent.fData.fSts.fDigis, fStsDigis, recoEvent, ECbmDataType::kStsDigi);
@@ -150,8 +150,8 @@ InitStatus CbmTaskMakeRecoEvents::Init()
     }
 
     // --- T0 digis
-    fT0Digis = new std::vector<CbmTzdDigi>;
-    frm->RegisterAny("TzdDigi", fT0Digis, kFALSE);
+    fT0Digis = new std::vector<CbmBmonDigi>;
+    frm->RegisterAny("BmonDigi", fT0Digis, kFALSE);
 
     // --- STS digis
     fStsDigis = new std::vector<CbmStsDigi>;

@@ -7,34 +7,34 @@
  ** @date 07.11.2022
  **/
 
-#ifndef CBMTZDDIGITIZE_H
-#define CBMTZDDIGITIZE_H 1
+#ifndef CBMBMONDIGITIZE_H
+#define CBMBMONDIGITIZE_H 1
 
+#include "CbmBmonDigi.h"
 #include "CbmDefs.h"
 #include "CbmDigitize.h"
-#include "CbmTzdDigi.h"
 
 #include <Rtypes.h>
 
 
-/** @class CbmTzdDigitize
+/** @class CbmBmonDigitize
  ** @brief Task class for simulating the detector response of the t-zero detector
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 07.11.2022
  ** @version 1.0
  **
- ** The current implementation of the TZD simulation is a placeholder until a realistic
+ ** The current implementation of the BMON simulation is a placeholder until a realistic
  ** detector response model is available. It smears the MC event time with a Gaussian resolution.
  **/
-class CbmTzdDigitize : public CbmDigitize<CbmTzdDigi> {
+class CbmBmonDigitize : public CbmDigitize<CbmBmonDigi> {
 
 public:
   /** Constructor **/
-  CbmTzdDigitize(double resolution = 0.025);
+  CbmBmonDigitize(double resolution = 0.025);
 
 
   /** Destructor **/
-  virtual ~CbmTzdDigitize();
+  virtual ~CbmBmonDigitize();
 
 
   /** @brief Detector system ID
@@ -72,7 +72,7 @@ private:
   virtual InitStatus Init();
 
 
-  ClassDef(CbmTzdDigitize, 1);
+  ClassDef(CbmBmonDigitize, 1);
 };
 
 #endif

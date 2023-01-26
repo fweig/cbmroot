@@ -2,10 +2,10 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer]  */
 
-#include "CbmTzdUnpackConfig.h"
+#include "CbmBmonUnpackConfig.h"
 
+#include "CbmBmonUnpackAlgo.h"
 #include "CbmTofDigi.h"
-#include "CbmTzdUnpackAlgo.h"
 
 #include <Logger.h>
 
@@ -15,16 +15,16 @@
 #include <memory>
 #include <vector>
 
-CbmTzdUnpackConfig::CbmTzdUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
-  : CbmRecoUnpackConfig("CbmTzdUnpackConfig", detGeoSetupTag, runid)
+CbmBmonUnpackConfig::CbmBmonUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
+  : CbmRecoUnpackConfig("CbmBmonUnpackConfig", detGeoSetupTag, runid)
 {
   SetFlagBmonParMode();
 }
 
-CbmTzdUnpackConfig::~CbmTzdUnpackConfig() {}
+CbmBmonUnpackConfig::~CbmBmonUnpackConfig() {}
 
 // ---- Init ----
-void CbmTzdUnpackConfig::InitAlgo()
+void CbmBmonUnpackConfig::InitAlgo()
 {
   fAlgo->SetFlagEpochCountHack2021(fbEpochCountHack2021);
 
@@ -35,13 +35,13 @@ void CbmTzdUnpackConfig::InitAlgo()
 }
 
 // ---- chooseAlgo ----
-std::shared_ptr<CbmTzdUnpackAlgo> CbmTzdUnpackConfig::chooseAlgo()
+std::shared_ptr<CbmBmonUnpackAlgo> CbmBmonUnpackConfig::chooseAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::Init - chooseAlgo";
 
   // Default unpacker selection
   // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
-  auto algo = std::make_shared<CbmTzdUnpackAlgo>();
+  auto algo = std::make_shared<CbmBmonUnpackAlgo>();
   LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
   if (fbBmonParMode) {
     LOG(info) << fName << "::chooseAlgo - Setting the new algo in BMon Par mode";
@@ -55,4 +55,4 @@ std::shared_ptr<CbmTzdUnpackAlgo> CbmTzdUnpackConfig::chooseAlgo()
   return nullptr;
 }
 
-ClassImp(CbmTzdUnpackConfig)
+ClassImp(CbmBmonUnpackConfig)

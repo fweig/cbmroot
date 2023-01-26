@@ -90,14 +90,14 @@ public:
   void SetMonitor(std::shared_ptr<CbmTofUnpackMonitor> monitor) { fMonitor = monitor; }
 
   /**
-   * @brief Get a reference to the output vector. Used by TZD encapsulating algo to access output.
+   * @brief Get a reference to the output vector. Used by BMON encapsulating algo to access output.
    *
    * @return std::vector<CbmTofDigi>&
   */
   std::vector<CbmTofDigi>& GetOutputVec() { return fOutputVec; }
 
 public:
-  /// Raise permissions for access to these protected methods to allow access in encapsulating TZD algo
+  /// Raise permissions for access to these protected methods to allow access in encapsulating BMON algo
 
   /** @brief Finish function for this algorithm base clase */
   void finish()

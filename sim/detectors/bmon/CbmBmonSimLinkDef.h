@@ -8,7 +8,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class CbmDigitize < CbmTzdDigi> + ;
-#pragma link C++ class CbmTzdDigitize + ;
+#pragma link C++ class CbmDigitize < CbmBmonDigi> + ;
+#pragma link C++ class CbmBmonDigitize + ;
 
 #endif /* __CINT__ */

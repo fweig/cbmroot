@@ -4,11 +4,11 @@ set(INCLUDE_DIRECTORIES
 
 
 set(SRCS
-  CbmTzdDigitize.cxx
+  CbmBmonDigitize.cxx
   )
 
 
-set(LIBRARY_NAME CbmTzdSim)
+set(LIBRARY_NAME CbmBmonSim)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   CbmBase

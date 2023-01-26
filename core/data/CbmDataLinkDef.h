@@ -38,6 +38,9 @@
 #pragma link C++ class CbmMCEventList;
 #pragma link C++ class CbmMCEventInfo;
 
+#pragma link C++ class CbmBmonDigi + ;
+#pragma link C++ class CbmBmonDigiData + ;
+
 #pragma link C++ class CbmMvdCluster + ;
 #pragma link C++ class CbmMvdDetectorId + ;
 #pragma link C++ class CbmMvdDigi + ;
@@ -99,8 +102,6 @@
 
 // --- data/global
 #pragma link C++ class CbmGlobalTrack + ;
-#pragma link C++ class CbmTzdDigi + ;
-#pragma link C++ class CbmTzdDigiData + ;
 #pragma link C++ class CbmVertex + ;
 #pragma link C++ class std::vector < CbmDigiEvent>;
 
@@ -131,7 +132,7 @@
 #pragma link C++ class vector < CbmMuchBeamTimeDigi> + ;
 #pragma link C++ class vector < CbmTrdDigi> + ;
 #pragma link C++ class vector < CbmTofDigi> + ;
-#pragma link C++ class vector < CbmTzdDigi> + ;
+#pragma link C++ class vector < CbmBmonDigi> + ;
 #pragma link C++ class vector < CbmPsdDigi> + ;
 #pragma link C++ class vector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmMatch> + ;

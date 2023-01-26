@@ -92,7 +92,7 @@ private:  // methods
 private:  // members
   const std::vector<CbmDigiEvent>* fDigiEvents = nullptr;
   TClonesArray* fRecoEvents                    = nullptr;
-  std::vector<CbmTzdDigi>* fT0Digis            = nullptr;
+  std::vector<CbmBmonDigi>* fT0Digis           = nullptr;
   std::vector<CbmStsDigi>* fStsDigis           = nullptr;
   std::vector<CbmRichDigi>* fRichDigis         = nullptr;
   std::vector<CbmMuchDigi>* fMuchDigis         = nullptr;

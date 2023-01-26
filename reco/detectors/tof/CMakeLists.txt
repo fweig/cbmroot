@@ -21,7 +21,6 @@ set(SRCS
 
   unpack/CbmTofUnpackAlgo.cxx
   unpack/CbmTofUnpackConfig.cxx
-  unpack/CbmBmonUnpackConfig.cxx
   unpack/CbmTofUnpackMonitor.cxx
 )
 

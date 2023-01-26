@@ -2,16 +2,16 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer]  */
 
-#ifndef CbmTzdUnpackAlgo_H
-#define CbmTzdUnpackAlgo_H
+#ifndef CbmBmonUnpackAlgo_H
+#define CbmBmonUnpackAlgo_H
 
+#include "CbmBmonDigi.h"
 #include "CbmErrorMessage.h"
 #include "CbmMcbm2018TofPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmTofDigi.h"
 #include "CbmTofUnpackAlgo.h"
 #include "CbmTofUnpackMonitor.h"
-#include "CbmTzdDigi.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -25,19 +25,19 @@
 #include <memory>
 #include <utility>
 
-class CbmTzdUnpackAlgo : public CbmRecoUnpackAlgo<CbmTzdDigi, CbmErrorMessage> {
+class CbmBmonUnpackAlgo : public CbmRecoUnpackAlgo<CbmBmonDigi, CbmErrorMessage> {
 public:
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
-  CbmTzdUnpackAlgo();
+  CbmBmonUnpackAlgo();
 
   /** @brief Destroy the Cbm Trd Unpack Task object */
-  virtual ~CbmTzdUnpackAlgo();
+  virtual ~CbmBmonUnpackAlgo();
 
   /** @brief Copy constructor - not implemented **/
-  CbmTzdUnpackAlgo(const CbmTzdUnpackAlgo&) = delete;
+  CbmBmonUnpackAlgo(const CbmBmonUnpackAlgo&) = delete;
 
   /** @brief Assignment operator - not implemented **/
-  CbmTzdUnpackAlgo& operator=(const CbmTzdUnpackAlgo&) = delete;
+  CbmBmonUnpackAlgo& operator=(const CbmBmonUnpackAlgo&) = delete;
 
   /**
    * @brief Initialisation at begin of run. Forwards to TOF unpacker algo instance.
@@ -61,7 +61,7 @@ public:
    *
    * @remark The content of the component can only be accessed via the timeslice. Hence, we need to pass the pointer to the full timeslice
   */
-  std::vector<CbmTzdDigi> Unpack(const fles::Timeslice* ts, std::uint16_t icomp)
+  std::vector<CbmBmonDigi> Unpack(const fles::Timeslice* ts, std::uint16_t icomp)
   {
 
     bool unpackOk = true;
@@ -145,7 +145,7 @@ public:
    *
    * @return size_t
   */
-  static size_t GetOutputObjSize() { return sizeof(CbmTzdDigi); }
+  static size_t GetOutputObjSize() { return sizeof(CbmBmonDigi); }
 
   /** @brief Get the global system time offset
    * Forwards to TOF unpacker algo instance.
@@ -263,7 +263,7 @@ protected:
   {
     fOutputVec.reserve(fTofAlgo.GetOutputVec().size());
     for (CbmTofDigi internalDigi : fTofAlgo.GetOutputVec()) {
-      fOutputVec.push_back(CbmTzdDigi(internalDigi));
+      fOutputVec.push_back(CbmBmonDigi(internalDigi));
     }
     return;
   }
@@ -286,7 +286,7 @@ private:
   /** @brief Actual unpacker algo */
   CbmTofUnpackAlgo fTofAlgo;
 
-  ClassDef(CbmTzdUnpackAlgo, 1)
+  ClassDef(CbmBmonUnpackAlgo, 1)
 };
 
-#endif  // CbmTzdUnpackAlgo_H
+#endif  // CbmBmonUnpackAlgo_H

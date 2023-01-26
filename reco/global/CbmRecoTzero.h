@@ -6,7 +6,7 @@
 #ifndef CBMRECOTZERO_H
 #define CBMRECOTZERO_H 1
 
-#include "CbmTzdDigi.h"
+#include "CbmBmonDigi.h"
 
 #include "FairTask.h"
 
@@ -23,18 +23,18 @@ class TClonesArray;
 struct CbmRecoTzeroMoniData {
   size_t fNumTs       = 0;
   size_t fNumEvents   = 0;
-  size_t fNumEvtsTzd0 = 0;
-  size_t fNumEvtsTzd1 = 0;
-  size_t fNumEvtsTzdn = 0;
+  size_t fNumEvtsBmon0 = 0;
+  size_t fNumEvtsBmon1 = 0;
+  size_t fNumEvtsBmonn = 0;
   double fExecTime    = 0.;
 
   CbmRecoTzeroMoniData& operator+=(const CbmRecoTzeroMoniData& other)
   {
     fNumTs += other.fNumTs;
     fNumEvents += other.fNumEvents;
-    fNumEvtsTzd0 += other.fNumEvtsTzd0;
-    fNumEvtsTzd1 += other.fNumEvtsTzd1;
-    fNumEvtsTzdn += other.fNumEvtsTzdn;
+    fNumEvtsBmon0 += other.fNumEvtsBmon0;
+    fNumEvtsBmon1 += other.fNumEvtsBmon1;
+    fNumEvtsBmonn += other.fNumEvtsBmonn;
     fExecTime += other.fExecTime;
     return *this;
   }
@@ -77,8 +77,8 @@ public:
 
 private:
   // --- Data
-  const std::vector<CbmTzdDigi>* fTzdDigis = nullptr;  ///< TZD digis
-  TClonesArray* fEvents                    = nullptr;  ///< CbmEvent
+  const std::vector<CbmBmonDigi>* fBmonDigis = nullptr;  ///< BMON digis
+  TClonesArray* fEvents                      = nullptr;  ///< CbmEvent
 
   // --- Monitor
   CbmRecoTzeroMoniData fMonitor = {};  ///< Monitor data

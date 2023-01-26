@@ -10,7 +10,7 @@
  **/
 #include "CbmTofDigi.h"
 
-#include "CbmTzdDigi.h"
+#include "CbmBmonDigi.h"
 
 #include <iomanip>  // for hex, setw, setfill, fixed, setprecission
 #include <sstream>  // for operator<<, basic_ostream, char_trait
@@ -36,14 +36,14 @@ CbmTofDigi::CbmTofDigi(uint32_t Sm, uint32_t Rpc, uint32_t Channel, double time,
   fuAddress = CbmTofAddress::GetUniqueAddress(Sm, Rpc, Channel, Side, SmType);
 }
 
-CbmTofDigi::CbmTofDigi(const CbmTzdDigi& digi)
+CbmTofDigi::CbmTofDigi(const CbmBmonDigi& digi)
   : fdTime(digi.GetTime())
   , fdTot(digi.GetCharge())
   , fuAddress(digi.GetAddress())
 {
 }
 
-CbmTofDigi::CbmTofDigi(const CbmTzdDigi* digi)
+CbmTofDigi::CbmTofDigi(const CbmBmonDigi* digi)
   : fdTime(digi->GetTime())
   , fdTot(digi->GetCharge())
   , fuAddress(digi->GetAddress())

@@ -32,6 +32,7 @@ set(PUBLIC_DEPS
 
 set(PRIVATE_DEPS
   CbmFlibFlesTools
+  CbmBmonReco
   CbmMuchReco
   CbmPsdReco
   CbmRecoSts
@@ -39,7 +40,6 @@ set(PRIVATE_DEPS
   CbmSimSteer
   CbmTofReco
   CbmTrdReco
-  CbmTzdReco
   CbmEventBuilder
   FairMQ::Tools
   FairRoot::Base
@@ -56,8 +56,8 @@ set(INTERFACE_DEPS
 set(EXE_NAME McbmUnpack)
 set(SRCS CbmDeviceMcbmUnpack.cxx runMcbmUnpack.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -65,8 +65,8 @@ generate_cbm_executable()
 set(EXE_NAME McbmMonitorPulser)
 set(SRCS CbmDeviceMcbmMonitorPulser.cxx runMcbmMonitorPulser.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -74,8 +74,8 @@ generate_cbm_executable()
 set(EXE_NAME BuildRawEvents)
 set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -84,7 +84,7 @@ generate_cbm_executable()
 set(EXE_NAME McbmEventBuilderWin)
 set(SRCS CbmDeviceMcbmEventBuilderWin.cxx runMcbmEvtBuilderWin.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
 set(PRIVATE_DEPENDENCIES "${PRIVATE_DEPS};FairRoot::Online")
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
@@ -93,7 +93,7 @@ generate_cbm_executable()
 set(EXE_NAME McbmEventSink)
 set(SRCS CbmDeviceMcbmEventSink.cxx runMcbmEventSink.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
 set(PRIVATE_DEPENDENCIES "${PRIVATE_DEPS};FairRoot::Online")
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
@@ -103,8 +103,8 @@ generate_cbm_executable()
 set(EXE_NAME MqUnpack)
 set(SRCS CbmDeviceUnpack.cxx runUnpack.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -112,8 +112,8 @@ generate_cbm_executable()
 set(EXE_NAME BuildDigiEvents)
 set(SRCS CbmDeviceBuildDigiEvents.cxx runBuildDigiEvents.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -121,7 +121,7 @@ generate_cbm_executable()
 set(EXE_NAME DigiEventSink)
 set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
 set(PRIVATE_DEPENDENCIES "${PRIVATE_DEPS};FairRoot::Online")
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
@@ -131,8 +131,8 @@ generate_cbm_executable()
 set(EXE_NAME BmonMonitor)
 set(SRCS CbmDeviceBmonMonitor.cxx runBmonMonitor.cxx)
 
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()

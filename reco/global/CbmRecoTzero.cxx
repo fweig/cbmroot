@@ -5,8 +5,8 @@
 
 #include "CbmRecoTzero.h"
 
+#include "CbmBmonDigi.h"
 #include "CbmEvent.h"
-#include "CbmTzdDigi.h"
 
 #include <FairRootManager.h>
 #include <Logger.h>
@@ -48,13 +48,13 @@ InitStatus CbmRecoTzero::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  // --- Get TzdDigi array
-  fTzdDigis = ioman->InitObjectAs<const std::vector<CbmTzdDigi>*>("TzdDigi");
-  if (!fTzdDigis) {
-    LOG(error) << GetName() << ": No TzdDigi array!";
+  // --- Get BmonDigi array
+  fBmonDigis = ioman->InitObjectAs<const std::vector<CbmBmonDigi>*>("BmonDigi");
+  if (!fBmonDigis) {
+    LOG(error) << GetName() << ": No BmonDigi array!";
     return kERROR;
   }
-  LOG(info) << "--- Found branch TzdDigi";
+  LOG(info) << "--- Found branch BmonDigi";
 
   // --- Get CbmEvent array
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
@@ -94,25 +94,25 @@ void CbmRecoTzero::Exec(Option_t*)
     double tzero = -999999.;
     switch (nDigis) {
 
-      // If there is no TZD digi, set t0 to -999999 (error code).
+      // If there is no BMON digi, set t0 to -999999 (error code).
       case 0: {
         tzero = -999999.;
-        tsMonitor.fNumEvtsTzd0++;
+        tsMonitor.fNumEvtsBmon0++;
         break;
       }
 
-      // If there is exactly one TZD digi, take the event time from there
+      // If there is exactly one BMON digi, take the event time from there
       case 1: {
         uint32_t digiIndex = event->GetIndex(ECbmDataType::kT0Digi, 0);
-        tzero              = fTzdDigis->at(digiIndex).GetTime();
-        tsMonitor.fNumEvtsTzd1++;
+        tzero              = fBmonDigis->at(digiIndex).GetTime();
+        tsMonitor.fNumEvtsBmon1++;
         break;
       }
 
-      // If there are more than one TZD digis, set t0 to -999999 (error code).
+      // If there are more than one BMON digis, set t0 to -999999 (error code).
       default: {
         tzero = -999999.;
-        tsMonitor.fNumEvtsTzdn++;
+        tsMonitor.fNumEvtsBmonn++;
         break;
       }
     }
@@ -130,9 +130,9 @@ void CbmRecoTzero::Exec(Option_t*)
   logOut << setw(20) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fMonitor.fNumTs << ", events " << tsMonitor.fNumEvents;
-  logOut << " (1 TZD: " << tsMonitor.fNumEvtsTzd1;
-  logOut << " , 0 TZD: " << tsMonitor.fNumEvtsTzd0;
-  logOut << " , n TZD: " << tsMonitor.fNumEvtsTzdn << ")";
+  logOut << " (1 BMON: " << tsMonitor.fNumEvtsBmon1;
+  logOut << " , 0 BMON: " << tsMonitor.fNumEvtsBmon0;
+  logOut << " , n BMON: " << tsMonitor.fNumEvtsBmonn << ")";
   LOG(info) << logOut.str();
 
   // Run monitor
@@ -146,18 +146,18 @@ void CbmRecoTzero::Finish()
 {
   double tExec     = fMonitor.fExecTime / double(fMonitor.fNumTs);
   double evtsPerTs = double(fMonitor.fNumEvents) / double(fMonitor.fNumTs);
-  double fracTzd1  = 100. * double(fMonitor.fNumEvtsTzd1) / double(fMonitor.fNumEvents);
-  double fracTzd0  = 100. * double(fMonitor.fNumEvtsTzd0) / double(fMonitor.fNumEvents);
-  double fracTzdn  = 100. * double(fMonitor.fNumEvtsTzdn) / double(fMonitor.fNumEvents);
+  double fracBmon1 = 100. * double(fMonitor.fNumEvtsBmon1) / double(fMonitor.fNumEvents);
+  double fracBmon0 = 100. * double(fMonitor.fNumEvtsBmon0) / double(fMonitor.fNumEvents);
+  double fracBmonn = 100. * double(fMonitor.fNumEvtsBmonn) / double(fMonitor.fNumEvents);
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Time slices         : " << fMonitor.fNumTs;
   LOG(info) << "Exec time  / TS     : " << fixed << setprecision(2) << tExec << " ms";
   LOG(info) << "Events / TS         : " << fixed << setprecision(2) << evtsPerTs;
-  LOG(info) << "Fraction with 1 TZD : " << fixed << setprecision(2) << fracTzd1 << " %";
-  LOG(info) << "Fraction with 0 TZD : " << fixed << setprecision(2) << fracTzd0 << " %";
-  LOG(info) << "Fraction with n TZD : " << fixed << setprecision(2) << fracTzdn << " %";
+  LOG(info) << "Fraction with 1 BMON : " << fixed << setprecision(2) << fracBmon1 << " %";
+  LOG(info) << "Fraction with 0 BMON : " << fixed << setprecision(2) << fracBmon0 << " %";
+  LOG(info) << "Fraction with n BMON : " << fixed << setprecision(2) << fracBmonn << " %";
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------

@@ -3,8 +3,8 @@
    Authors: Pierre-Alain Loizeau, Volker Friese [committer] */
 
 
-#ifndef CBMTZDDIGI_H
-#define CBMTZDDIGI_H 1
+#ifndef CBMBMONDIGI_H
+#define CBMBMONDIGI_H 1
 
 #include "CbmDefs.h"
 
@@ -21,53 +21,53 @@
 class CbmTofDigi;  // For declaration of the conversion constructor without starting a cyclic dependency
 #endif             // CBMTOFDIGI_H
 
-/** @class CbmTzdDigi
+/** @class CbmBmonDigi
  ** @brief Data class for a signal in the t-zero detector
  **
  ** The current implementation is a placeholder, storing just the event time. To be replaced
  ** with a real detector measurement model once available.
  **/
-class CbmTzdDigi {
+class CbmBmonDigi {
 
 public:
   /** @brief Default Constructor
    **/
-  CbmTzdDigi() = default;
+  CbmBmonDigi() = default;
 
   /** @brief Constructor
    ** @param time Measurement time [ns]
    ** @param charge Measured charge]
    ** @param address [32b CbmAddress]
    **/
-  CbmTzdDigi(int32_t addr, double time, float charge) : fAddress(addr), fTime(time), fCharge(charge) {};
+  CbmBmonDigi(int32_t addr, double time, float charge) : fAddress(addr), fTime(time), fCharge(charge) {};
 
 
   /** @brief Constructor
    ** @param reference to CbmTofDigi (equivalent content)
    **/
-  CbmTzdDigi(const CbmTofDigi& digi);
+  CbmBmonDigi(const CbmTofDigi& digi);
 
 
   /** @brief Constructor
    ** @param pointer to const CbmTofDigi object (equivalent content)
    **/
-  CbmTzdDigi(const CbmTofDigi* digi);
+  CbmBmonDigi(const CbmTofDigi* digi);
 
 
   /** @brief Destructor **/
-  virtual ~CbmTzdDigi() {};
+  virtual ~CbmBmonDigi() {};
 
 
   /** @brief Get the desired name of the branch for this objects in the cbm output tree  (static)
    ** @return "BmonDigi"
    **/
-  static const char* GetBranchName() { return "TzdDigi"; }
+  static const char* GetBranchName() { return "BmonDigi"; }
 
 
   /** @brief Class name (static)
-   ** @return CbmTzdDigi
+   ** @return CbmBmonDigi
    **/
-  static const char* GetClassName() { return "CbmTzdDigi"; }
+  static const char* GetClassName() { return "CbmBmonDigi"; }
 
 
   /** System ID (static)
@@ -114,7 +114,7 @@ public:
 
 private:
   int32_t fAddress = ToIntegralType<ECbmModuleId>(ECbmModuleId::kT0);  ///< Unique CBM address
-  double fTime     = -1.;                                              ///< Time of signal in TZD [ns]
+  double fTime     = -1.;                                              ///< Time of signal in BMON [ns]
   float fCharge    = -1.;                                              ///< Charge
 
   friend class boost::serialization::access;
@@ -128,8 +128,8 @@ private:
   }
 
 #ifndef NO_ROOT
-  ClassDefNV(CbmTzdDigi, 1);
+  ClassDefNV(CbmBmonDigi, 1);
 #endif
 };
 
-#endif /* CBMTZDDIGI_H */
+#endif /* CBMBMONDIGI_H */

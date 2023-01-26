@@ -8,7 +8,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class CbmTzdUnpackAlgo + ;
-#pragma link C++ class CbmTzdUnpackConfig + ;
+#pragma link C++ class CbmBmonUnpackAlgo + ;
+#pragma link C++ class CbmBmonUnpackConfig + ;
 
 #endif

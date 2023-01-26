@@ -2,14 +2,14 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer]  */
 
-#ifndef CbmTzdUnpackConfig_H
-#define CbmTzdUnpackConfig_H
+#ifndef CbmBmonUnpackConfig_H
+#define CbmBmonUnpackConfig_H
 
+#include "CbmBmonDigi.h"
+#include "CbmBmonUnpackAlgo.h"
 #include "CbmErrorMessage.h"
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmTofUnpackMonitor.h"
-#include "CbmTzdDigi.h"
-#include "CbmTzdUnpackAlgo.h"
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
@@ -19,7 +19,7 @@
 #include <memory>
 #include <vector>
 
-class CbmTzdUnpackConfig : public CbmRecoUnpackConfig<CbmTzdUnpackAlgo, CbmTzdDigi, CbmErrorMessage> {
+class CbmBmonUnpackConfig : public CbmRecoUnpackConfig<CbmBmonUnpackAlgo, CbmBmonDigi, CbmErrorMessage> {
 
 public:
   /**
@@ -29,19 +29,19 @@ public:
    * @param runid set if unpacker is rerun on a special run with special parameters
    *@remark We use the string instead of CbmSetup here, to not having to link against sim/steer...
   */
-  CbmTzdUnpackConfig(std::string detGeoSetupTag, UInt_t runid = 0);
+  CbmBmonUnpackConfig(std::string detGeoSetupTag, UInt_t runid = 0);
 
   /**
    * @brief Destroy the Cbm Tof Unpack Task object
    *
   */
-  virtual ~CbmTzdUnpackConfig();
+  virtual ~CbmBmonUnpackConfig();
 
   /** @brief Copy constructor - not implemented **/
-  CbmTzdUnpackConfig(const CbmTzdUnpackConfig&) = delete;
+  CbmBmonUnpackConfig(const CbmBmonUnpackConfig&) = delete;
 
   /** @brief Assignment operator - not implemented **/
-  CbmTzdUnpackConfig& operator=(const CbmTzdUnpackConfig&) = delete;
+  CbmBmonUnpackConfig& operator=(const CbmBmonUnpackConfig&) = delete;
 
   // Getters
 
@@ -87,7 +87,7 @@ protected:
    *
    * @return Bool_t initOk
   */
-  virtual std::shared_ptr<CbmTzdUnpackAlgo> chooseAlgo();
+  virtual std::shared_ptr<CbmBmonUnpackAlgo> chooseAlgo();
 
 private:
   /// Control flags
@@ -99,7 +99,7 @@ private:
   /** @brief pointer to the monitor object */
   std::shared_ptr<CbmTofUnpackMonitor> fMonitor = nullptr;
 
-  ClassDef(CbmTzdUnpackConfig, 1)
+  ClassDef(CbmBmonUnpackConfig, 1)
 };
 
-#endif  // CbmTzdUnpackConfig_H
+#endif  // CbmBmonUnpackConfig_H

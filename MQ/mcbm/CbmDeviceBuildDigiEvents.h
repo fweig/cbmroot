@@ -14,13 +14,13 @@
 
 /// CBM headers
 #include "CbmAlgoBuildRawEvents.h"
+#include "CbmBmonDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
 #include "CbmRichDigi.h"
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
-#include "CbmTzdDigi.h"
 
 /// FAIRROOT headers
 #include "FairMQDevice.h"
@@ -103,7 +103,7 @@ private:
   /// TS information in header
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
   /// Digis storage
-  std::vector<CbmTzdDigi>* fvDigiT0    = nullptr;
+  std::vector<CbmBmonDigi>* fvDigiT0   = nullptr;
   std::vector<CbmStsDigi>* fvDigiSts   = nullptr;
   std::vector<CbmMuchDigi>* fvDigiMuch = nullptr;
   std::vector<CbmTrdDigi>* fvDigiTrd   = nullptr;

@@ -16,6 +16,7 @@
 #include "CbmTofHitMaker.h"
 
 // TOF Classes and includes
+#include "CbmBmonDigi.h"  // in cbmdata/bmon
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmMatch.h"
@@ -31,7 +32,6 @@
 #include "CbmTofGeoHandler.h"       // in tof/TofTools
 #include "CbmTofHit.h"              // in cbmdata/tof
 #include "CbmTofPoint.h"            // in cbmdata/tof
-#include "CbmTzdDigi.h"             // in cbmdata/global
 #include "CbmVertex.h"
 
 #include "TTrbHeader.h"
@@ -337,7 +337,7 @@ void CbmTofHitMaker::Exec(Option_t* option)
 
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kT0Digi); iDigi++) {
         Int_t iDigiIndex       = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kT0Digi, iDigi));
-        CbmTofDigi tDigi(fDigiMan->Get<CbmTzdDigi>(iDigiIndex));
+        CbmTofDigi tDigi(fDigiMan->Get<CbmBmonDigi>(iDigiIndex));
         if (tDigi.GetType() != 5)
           LOG(fatal) << "Wrong T0 type " << tDigi.GetType() << ", Addr 0x" << std::hex << tDigi.GetAddress();
         fTofDigiVec.push_back(tDigi);

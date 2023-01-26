@@ -5,12 +5,12 @@ set(INCLUDE_DIRECTORIES
 
 
 set(SRCS
-  unpack/CbmTzdUnpackAlgo.cxx
-  unpack/CbmTzdUnpackConfig.cxx
+  unpack/CbmBmonUnpackAlgo.cxx
+  unpack/CbmBmonUnpackConfig.cxx
 )
 
 
-set(LIBRARY_NAME CbmTzdReco)
+set(LIBRARY_NAME CbmBmonReco)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   CbmBase

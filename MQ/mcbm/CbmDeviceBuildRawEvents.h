@@ -14,13 +14,13 @@
 
 /// CBM headers
 #include "CbmAlgoBuildRawEvents.h"
+#include "CbmBmonDigi.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmPsdDigi.h"
 #include "CbmRichDigi.h"
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
-#include "CbmTzdDigi.h"
 
 /// FAIRROOT headers
 #include "FairMQDevice.h"
@@ -100,7 +100,7 @@ private:
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
   TimesliceMetaData* fTsMetaData        = nullptr;
   /// Digis storage
-  std::vector<CbmTzdDigi>* fvDigiT0            = nullptr;
+  std::vector<CbmBmonDigi>* fvDigiT0           = nullptr;
   std::vector<CbmStsDigi>* fvDigiSts           = nullptr;
   std::vector<CbmMuchBeamTimeDigi>* fvDigiMuch = nullptr;
   std::vector<CbmTrdDigi>* fvDigiTrd           = nullptr;

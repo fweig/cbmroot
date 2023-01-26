@@ -6,9 +6,11 @@ set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/CbmDefs.cxx
   ${CMAKE_SOURCE_DIR}/core/data/CbmAddress.cxx
 
+  ${CMAKE_SOURCE_DIR}/core/data/bmon/CbmBmonDigi.cxx
+
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsAddress.cxx
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
- 
+
   ${CMAKE_SOURCE_DIR}/core/data/rich/CbmRichDigi.cxx
 
   ${CMAKE_SOURCE_DIR}/core/data/much/CbmMuchDigi.cxx
@@ -24,7 +26,6 @@ set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdAddress.cxx
 
-  ${CMAKE_SOURCE_DIR}/core/data/global/CbmTzdDigi.cxx
 
   ${CMAKE_SOURCE_DIR}/core/data/raw/StsXyterMessage.cxx
 )
@@ -34,6 +35,7 @@ add_library(OnlineData SHARED ${SRCS})
 target_include_directories(OnlineData
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/base
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/bmon
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/sts
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/rich
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/much

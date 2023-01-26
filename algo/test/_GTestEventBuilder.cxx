@@ -32,7 +32,7 @@ TEST(_GTestEventBuilder, CheckEventBuilderAlgorithmSimple)
     //tsIn.fData.fTrd.fDigis.push_back(CbmTrdDigi(0, 1.0, 1.0, i * inputSpacing));
     tsIn.fData.fRich.fDigis.push_back(CbmRichDigi(1111, i * inputSpacing, 1.0));
     tsIn.fData.fPsd.fDigis.push_back(CbmPsdDigi(1111, i * inputSpacing, 1.0));
-    tsIn.fData.fT0.fDigis.push_back(CbmTzdDigi(1111, i * inputSpacing, 1.0));
+    tsIn.fData.fT0.fDigis.push_back(CbmBmonDigi(1111, i * inputSpacing, 1.0));
   }
 
   std::vector<double> triggerIn;
