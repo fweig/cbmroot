@@ -120,6 +120,14 @@ public:
   /** @brief Perform reconstruction **/
   void Reconstruct();
 
+  void SortDigis();
+
+  void FindClusters();
+
+  void SortClusters();
+
+  void FindHits();
+
 
   /** @brief Clear input queue **/
   void Reset();

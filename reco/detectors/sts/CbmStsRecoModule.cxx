@@ -76,8 +76,14 @@ void CbmStsRecoModule::AddDigiToQueue(const CbmStsDigi* digi, Int_t digiIndex)
 // -----   Reconstruction   ------------------------------------------------
 void CbmStsRecoModule::Reconstruct()
 {
+  SortDigis();
+  FindClusters();
+  SortClusters();
+  FindHits();
+}
 
-  // return;
+void CbmStsRecoModule::SortDigis()
+{
   TStopwatch timer;
 
   timer.Start();
@@ -92,8 +98,13 @@ void CbmStsRecoModule::Reconstruct()
             });
   timer.Stop();
   fTimings.timeSortDigi = timer.RealTime();
+}
 
+void CbmStsRecoModule::FindClusters()
+{
   // --- Perform cluster finding
+  TStopwatch timer;
+
   timer.Start();
   fClusterFinder->Exec(fDigisF, fClustersF, fSetupModule->GetAddress(), fNofStripsF, 0, fTimeCutDigisSig,
                        fTimeCutDigisAbs, fConnectEdgeFront, fParModule);
@@ -108,8 +119,13 @@ void CbmStsRecoModule::Reconstruct()
 
   timer.Stop();
   fTimings.timeCluster = timer.RealTime();
+}
 
+void CbmStsRecoModule::SortClusters()
+{
   // --- Sort clusters by time
+  TStopwatch timer;
+
   timer.Start();
   std::sort(fClustersF.begin(), fClustersF.end(), [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
     return (cluster1.GetTime() < cluster2.GetTime());
@@ -119,8 +135,13 @@ void CbmStsRecoModule::Reconstruct()
   });
   timer.Stop();
   fTimings.timeSortCluster = timer.RealTime();
+}
 
+void CbmStsRecoModule::FindHits()
+{
   // --- Perform hit finding
+  TStopwatch timer;
+
   timer.Start();
   if (fHitFinder)
     fHitFinder->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClustersSig,
@@ -133,6 +154,7 @@ void CbmStsRecoModule::Reconstruct()
   timer.Stop();
   fTimings.timeHits = timer.RealTime();
 }
+
 // -------------------------------------------------------------------------
 
 

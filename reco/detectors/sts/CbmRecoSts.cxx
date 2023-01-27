@@ -286,7 +286,7 @@ void CbmRecoSts::Finish()
   Double_t clusterHit  = Double_t(fNofClusters) / Double_t(fNofHits);
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  if (fUseGpuReco) LOG(info) << "Ran new GPU STS reconstruction.";
+  if (fUseGpuReco) LOG(info) << "Ran new GPU STS reconstruction. (Device " << xpu::device_properties().name << ")";
   else if (ompThreads < 0)
     LOG(info) << "STS reconstruction ran single threaded (No OpenMP).";
   else
@@ -301,7 +301,6 @@ void CbmRecoSts::Finish()
   LOG(info) << "Digis per cluster      : " << fixed << setprecision(2) << digiCluster;
   LOG(info) << "Clusters per hit       : " << fixed << setprecision(2) << clusterHit;
   LOG(info) << "Time per TSlice        : " << fixed << setprecision(2) << 1000. * fTimeRun / Double_t(fNofTs) << " ms ";
-
 
   // Aggregate times for substeps of reconstruction
   // Note: These times are meaningless when reconstruction runs with > 1 thread.
@@ -323,6 +322,8 @@ void CbmRecoSts::Finish()
   fTime3 /= nEvent;
   fTime4 /= nEvent;
 
+  auto throughput = [](auto bytes, auto timeMs) { return bytes * 1000. / timeMs / double(1ull << 30); };
+
   if (not fUseGpuReco) {
     LOG(info) << "NofEvents        : " << fNofEvents;
     LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6) << 1000. * fTime1 << " ms ("
@@ -332,24 +333,35 @@ void CbmRecoSts::Finish()
     LOG(info) << "Time Reconstruct: " << fixed << setprecision(1) << setw(6) << 1000. * fTime3 << " ms ("
               << setprecision(1) << setw(4) << 100. * fTime3 / fTimeTot << " %)";
     LOG(info) << "Time by step:\n"
-              << "  Sort Digi   : " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeSortDigi
-              << " ms\n"
-              << "  Find Cluster: " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeCluster
-              << " ms\n"
-              << "  Sort Cluster: " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeSortCluster
-              << " ms\n"
-              << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeHits << " ms\n";
+              << "  Sort Digi   : " << fixed << setprecision(2) << setw(6) << 1000. * fTimeSortDigis << " ms ("
+              << throughput(fNofDigis * 8, 1000. * fTimeSortDigis) << " GB/s)\n"
+              << "  Find Cluster: " << fixed << setprecision(2) << setw(6) << 1000. * fTimeFindClusters << " ms ("
+              << throughput(fNofDigis * sizeof(CbmStsDigi), 1000. * fTimeFindClusters) << " GB/s)\n"
+              << "  Sort Cluster: " << fixed << setprecision(2) << setw(6) << 1000. * fTimeSortClusters << " ms ("
+              << throughput(fNofClusters * sizeof(CbmStsCluster), 1000. * fTimeSortClusters) << " GB/s)\n"
+              << "  Find Hits   : " << fixed << setprecision(2) << setw(6) << 1000. * fTimeFindHits << " ms ("
+              << throughput(fNofClusters * sizeof(CbmStsCluster), 1000. * fTimeFindHits) << " GB/s)";
   }
   else {
     cbm::algo::StsHitfinderTimes times = fGpuReco.GetHitfinderTimes();
 
     double gpuHitfinderTimeTotal = times.timeSortDigi + times.timeCluster + times.timeSortCluster + times.timeHits;
-    LOG(info) << "Time Reconstruct (GPU) : " << fixed << setprecision(1) << setw(6) << gpuHitfinderTimeTotal << " ms";
+
+    double sortDigiThroughput    = throughput(fNofDigis * sizeof(CbmStsDigi), times.timeSortDigi);
+    double findClusterThroughput = throughput(fNofDigis * sizeof(CbmStsDigi), times.timeCluster);
+    double sortClusterThroughput = throughput(fNofClusters * 8, times.timeSortCluster);
+    double findHitThroughput     = throughput(fNofClusters * 24, times.timeHits);
+
+    LOG(info) << "Time Reconstruct (GPU) : " << fixed << setprecision(2) << setw(6) << gpuHitfinderTimeTotal << " ms";
     LOG(info) << "Time by step:\n"
-              << "  Sort Digi   : " << fixed << setprecision(1) << setw(6) << times.timeSortDigi << " ms\n"
-              << "  Find Cluster: " << fixed << setprecision(1) << setw(6) << times.timeCluster << " ms\n"
-              << "  Sort Cluster: " << fixed << setprecision(1) << setw(6) << times.timeSortCluster << " ms\n"
-              << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << times.timeHits << " ms";
+              << "  Sort Digi   : " << fixed << setprecision(2) << setw(6) << times.timeSortDigi << " ms ("
+              << sortDigiThroughput << " GB/s)\n"
+              << "  Find Cluster: " << fixed << setprecision(2) << setw(6) << times.timeCluster << " ms ("
+              << findClusterThroughput << " GB/s)\n"
+              << "  Sort Cluster: " << fixed << setprecision(2) << setw(6) << times.timeSortCluster << " ms ("
+              << sortClusterThroughput << " GB/s)\n"
+              << "  Find Hits   : " << fixed << setprecision(2) << setw(6) << times.timeHits << "ms ("
+              << findHitThroughput << " GB/s)";
   }
   LOG(info) << "=====================================";
 }
@@ -586,14 +598,54 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 
 
   // --- Execute reconstruction in the modules
+  // Run each step individually. This allows us to meassure the runtime of each step
+  // even when running in parallel
+  TStopwatch timeSubstep;
   fTimer.Start();
+  timeSubstep.Start();
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
   for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
     assert(fModuleIndex[it]);
-    fModuleIndex[it]->Reconstruct();
+    fModuleIndex[it]->SortDigis();
   }
+  timeSubstep.Stop();
+  fTimeSortDigis = timeSubstep.RealTime();
+
+  timeSubstep.Start();
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+  for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
+    assert(fModuleIndex[it]);
+    fModuleIndex[it]->FindClusters();
+  }
+  timeSubstep.Stop();
+  fTimeFindClusters = timeSubstep.RealTime();
+
+  timeSubstep.Start();
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+  for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
+    assert(fModuleIndex[it]);
+    fModuleIndex[it]->SortClusters();
+  }
+  timeSubstep.Stop();
+  fTimeSortClusters = timeSubstep.RealTime();
+
+  timeSubstep.Start();
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+  for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
+    assert(fModuleIndex[it]);
+    fModuleIndex[it]->FindHits();
+  }
+  timeSubstep.Stop();
+  fTimeFindHits = timeSubstep.RealTime();
+
   fTimer.Stop();
   Double_t time3 = fTimer.RealTime();  // Time for reconstruction
 

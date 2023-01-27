@@ -304,6 +304,10 @@ private:
   Double_t fTime2           = 0.;  ///< Time for distributing data
   Double_t fTime3           = 0.;  ///< Time for reconstruction
   Double_t fTime4           = 0.;  ///< Time for output results
+  double fTimeSortDigis     = 0.;
+  double fTimeFindClusters  = 0.;
+  double fTimeSortClusters  = 0.;
+  double fTimeFindHits      = 0.;
 
   // --- Run counters
   TStopwatch fTimer {};               //! ROOT timer
