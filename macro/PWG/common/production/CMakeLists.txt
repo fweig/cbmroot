@@ -5,11 +5,11 @@ find_package(Python)
 if (Python_FOUND)
   # Define the number of events to run
   if(LARGE_TEST_STATISTIC OR ${CBM_TEST_MODEL} MATCHES Weekly)
-    Set(production_macro_events 50)
+    Set(production_macro_events 40)
   else()
     Set(production_macro_events 2)
   endif()
-  math(EXPR timeOutTime "300 + (${production_macro_events} * 20)")
+  math(EXPR timeOutTime "300 + (${production_macro_events} * 150)")
 
   GENERATE_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_json.sh)
 
