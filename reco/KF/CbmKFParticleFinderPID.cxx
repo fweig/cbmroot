@@ -74,7 +74,6 @@ CbmKFParticleFinderPID::CbmKFParticleFinderPID(const char* name, Int_t iVerbose)
   , fMuchTrackArray(0)
   , fMCTracks(0)
   , fPIDMode(0)
-  , fSisMode(1)
   , fTrdPIDMode(0)
   , fRichPIDMode(0)
   , fMuchMode(0)
@@ -95,6 +94,7 @@ CbmKFParticleFinderPID::~CbmKFParticleFinderPID() {}
 
 InitStatus CbmKFParticleFinderPID::Init()
 {
+
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -102,7 +102,6 @@ InitStatus CbmKFParticleFinderPID::Init()
     Error("CbmKFParticleFinderPID::Init", "RootManager not instantiated!");
     return kERROR;
   }
-
 
   //check the mode
   fTimeSliceMode = 0;
@@ -113,7 +112,6 @@ InitStatus CbmKFParticleFinderPID::Init()
   else
     LOG(info) << GetName() << ": Running in the event by event mode.";
 
-  // Get reconstructed events
 
   if (fPIDMode == 1) {
     FairRootManager* fManger = FairRootManager::Instance();
@@ -122,16 +120,16 @@ InitStatus CbmKFParticleFinderPID::Init()
       return kERROR;
     }
 
-
     CbmMCDataManager* mcManager = 0;
 
     if (fTimeSliceMode) mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
 
-    if (fTimeSliceMode)
+    if (fTimeSliceMode) {
       if (mcManager == 0) {
         Fatal("CbmKFParticleFinderPID::Init", "MC Data Manager is not found!");
         return kERROR;
       }
+    }
 
     if (fTimeSliceMode) {
       fMCTracks = mcManager->InitBranch("MCTrack");
@@ -150,7 +148,7 @@ InitStatus CbmKFParticleFinderPID::Init()
 
     //Track match
     fTrackMatchArray = (TClonesArray*) ioman->GetObject(fTrackMatchBranchName);
-    if (fTrackMatchArray == 0) {
+    if (!fTrackMatchArray) {
       Error("CbmKFParticleFinderPID::Init", "track match array not found!");
       return kERROR;
     }
@@ -164,6 +162,15 @@ InitStatus CbmKFParticleFinderPID::Init()
   }
 
   if (fPIDMode == 2) {
+
+    // Get reconstructed events
+
+    fRecoEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+    if (nullptr == fRecoEvents) {
+      LOG(error) << GetName() << ": No event array! Run the event builder!";
+      return kERROR;
+    }
+
     // Get global tracks
     fGlobalTrackArray = (TClonesArray*) ioman->GetObject(fGlobalTrackBranchName);
     if (fGlobalTrackArray == 0) {
@@ -302,40 +309,28 @@ void CbmKFParticleFinderPID::SetMCPID()
   }
 }
 
+
 void CbmKFParticleFinderPID::SetRecoPID()
 {
   const Double_t m2TOF[7] = {0.885, 0.245, 0.019479835, 0., 3.49, 7.83, 1.95};
 
-  Double_t sP[7][5];
-  if (fSisMode == 0)  //SIS-100
-  {
-    Double_t sPLocal[7][5] = {{0.056908, -0.0470572, 0.0216465, -0.0021016, 8.50396e-05},
-                              {0.00943075, -0.00635429, 0.00998695, -0.00111527, 7.77811e-05},
-                              {0.00176298, 0.00367263, 0.00308013, 0.000844013, -0.00010423},
-                              {0.00218401, 0.00152391, 0.00895357, -0.000533423, 3.70326e-05},
-                              {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},
-                              {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
-                              {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}};
-    for (Int_t iSp = 0; iSp < 7; iSp++)
-      for (Int_t jSp = 0; jSp < 5; jSp++)
-        sP[iSp][jSp] = sPLocal[iSp][jSp];
-  }
-
-  if (fSisMode == 1)  //SIS-300
-  {
-    Double_t sPLocal[7][5] = {{0.0337428, -0.013939, 0.00567602, -0.000202229, 4.07531e-06},
-                              {0.00717827, -0.00257353, 0.00389851, -9.83097e-05, 1.33011e-06},
-                              {0.001348, 0.00220126, 0.0023619, 7.35395e-05, -4.06706e-06},
-                              {0.00142972, 0.00308919, 0.00326995, 6.91715e-05, -2.44194e-06},
-                              {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},  //TODO tune for SIS300
-                              {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
-                              {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}};
-    for (Int_t iSp = 0; iSp < 7; iSp++)
-      for (Int_t jSp = 0; jSp < 5; jSp++)
-        sP[iSp][jSp] = sPLocal[iSp][jSp];
-  }
-
   const Int_t PdgHypo[9] = {2212, 321, 211, -11, 1000010029, 1000010030, 1000020030, -13, -19};
+
+  if (!fRecoEvents) {
+    LOG(fatal) << GetName() << " no reco events! ";
+    return;
+  }
+
+  int nRecoEvents = fRecoEvents->GetEntriesFast();
+
+  if (nRecoEvents != 1) {
+    LOG(error) << GetName() << " can only work with exactly one reco event per time slice!";
+    return;
+  }
+
+  CbmEvent* event = static_cast<CbmEvent*>(fRecoEvents->At(0));
+
+  double eventTime = event->GetTzero();
 
   for (Int_t igt = 0; igt < fGlobalTrackArray->GetEntriesFast(); igt++) {
     const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTrackArray->At(igt));
@@ -517,25 +512,20 @@ void CbmKFParticleFinderPID::SetRecoPID()
 
     if (fTofHitArray && isMuon == 0) {
       Double_t l = globalTrack->GetLength();  // l is calculated by global tracking
-      if (fSisMode == 0)                      //SIS-100
-        if (!((l > 500.) && (l < 900.))) continue;
-      if (fSisMode == 1)  //SIS 300
-        if (!((l > 700.) && (l < 1500.))) continue;
+      if (!((l > fCuts.fTrackLengthMin) && (l < fCuts.fTrackLengthMax))) continue;
 
-      Double_t time;
       Int_t tofHitIndex = globalTrack->GetTofHitIndex();
-      if (tofHitIndex >= 0) {
-        const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHitArray->At(tofHitIndex));
-        if (!tofHit) continue;
-        time = tofHit->GetTime();
-      }
-      else
-        continue;
+      if (tofHitIndex < 0) continue;
 
-      if (fSisMode == 0)  //SIS-100
-        if (!((time > 16.) && (time < 42.))) continue;
-      if (fSisMode == 1)  //SIS 300
-        if (!((time > 26.) && (time < 52.))) continue;
+      const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHitArray->At(tofHitIndex));
+      if (!tofHit) {
+        LOG(error) << "null Tof hit pointer";
+        continue;
+      }
+
+      Double_t time = tofHit->GetTime() - eventTime;
+
+      if (!((time > fCuts.fTrackTofTimeMin) && (time < fCuts.fTrackTofTimeMax))) continue;
 
       Double_t m2 = p * p * (1. / ((l / time / 29.9792458) * (l / time / 29.9792458)) - 1.);
 
@@ -543,8 +533,8 @@ void CbmKFParticleFinderPID::SetRecoPID()
       Double_t dm2[7];
 
       for (int iSigma = 0; iSigma < 7; iSigma++) {
-        sigma[iSigma] = sP[iSigma][0] + sP[iSigma][1] * p + sP[iSigma][2] * p * p + sP[iSigma][3] * p * p * p
-                        + sP[iSigma][4] * p * p * p * p;
+        sigma[iSigma] = fCuts.fSP[iSigma][0] + fCuts.fSP[iSigma][1] * p + fCuts.fSP[iSigma][2] * p * p
+                        + fCuts.fSP[iSigma][3] * p * p * p + fCuts.fSP[iSigma][4] * p * p * p * p;
         dm2[iSigma] = fabs(m2 - m2TOF[iSigma]) / sigma[iSigma];
       }
 

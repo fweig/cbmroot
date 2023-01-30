@@ -9,7 +9,6 @@
 #define CbmKFParticleFinderPID_HH
 
 #include "CbmMCDataArray.h"
-#include "CbmMCEventList.h"
 
 #include "FairTask.h"
 
@@ -24,6 +23,14 @@ class CbmDigiManager;
 
 class CbmKFParticleFinderPID : public FairTask {
 public:
+  struct Cuts {
+    Double_t fTrackLengthMin {0.};
+    Double_t fTrackLengthMax {1.e10};
+    Double_t fTrackTofTimeMin {0.};
+    Double_t fTrackTofTimeMax {1.e10};
+    Double_t fSP[7][5] {0};  // ?
+  };
+
   // Constructors/Destructors ---------
   CbmKFParticleFinderPID(const char* name = "CbmKFParticleFinderPID", Int_t iVerbose = 0);
   ~CbmKFParticleFinderPID();
@@ -45,8 +52,7 @@ public:
   void UseNoPID() { fPIDMode = 0; }
   void UseMCPID() { fPIDMode = 1; }
   void UseDetectorPID() { fPIDMode = 2; }
-  void SetSIS100() { fSisMode = 0; }
-  void SetSIS300() { fSisMode = 1; }
+  void SetCuts(const Cuts& val) { fCuts = val; }
 
   void DoNotUseTRD() { fTrdPIDMode = 0; }
   void UseTRDWknPID() { fTrdPIDMode = 1; }
@@ -95,8 +101,9 @@ private:
   TString fMuchTrackBranchName;
 
   //input branches
-  TClonesArray* fTrackArray;        //input reco tracks
-  TClonesArray* fGlobalTrackArray;  //input reco tracks
+  TClonesArray* fRecoEvents {nullptr};  //! Array of CbmEvent objects
+  TClonesArray* fTrackArray;            //input reco tracks
+  TClonesArray* fGlobalTrackArray;      //input reco tracks
   TClonesArray* fStsHitArray;
   TClonesArray* fStsClusterArray;
   CbmDigiManager* fDigiManager;    //! Interface to digi branch
@@ -110,8 +117,8 @@ private:
   CbmMCDataArray* fMCTracks;
 
   //PID variables
+  Cuts fCuts;  // cuts for reco PID
   Int_t fPIDMode;
-  Int_t fSisMode;
   Int_t fTrdPIDMode;
   Int_t fRichPIDMode;
   Int_t fMuchMode;

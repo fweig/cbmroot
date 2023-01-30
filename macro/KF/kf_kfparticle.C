@@ -42,8 +42,8 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
   // -----   In- and output file names   ------------------------------------
   TString mcFile    = dataset + ".tra.root";
   TString parFile   = dataset + ".par.root";
-  TString rawFile   = dataset + ".event.raw.root";
-  TString recFile   = dataset + ".rec.root";
+  TString rawFile   = dataset + ".raw.root";
+  TString recFile   = dataset + ".reco.root";
   TString outFile   = dataset + ".phys.root";
   TString effFile   = dataset + ".Efficiency_KFParticleFinder.txt";
   TString histoFile = dataset + ".KFParticleFinder.root";
@@ -126,6 +126,8 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
 
+  run->AddTask(new CbmMatchRecoToMC());
+
   // ----- KF and L1 are needed for field and material   --------------------
   run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* KF = new CbmKF();
@@ -146,7 +148,7 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
 
   // ----- PID for KF Particle Finder ---------------------------------------
   CbmKFParticleFinderPID* kfParticleFinderPID = new CbmKFParticleFinderPID();
-  kfParticleFinderPID->SetSIS100();
+
   if (useDetectorPID) {
     kfParticleFinderPID->UseDetectorPID();
     if (setup->IsActive(ECbmModuleId::kMuch)) {
@@ -161,10 +163,49 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
       kfParticleFinderPID->UseTRDANNPID();
       kfParticleFinderPID->UseRICHRvspPID();
     }
+
+    CbmKFParticleFinderPID::Cuts cutsSIS100 = {
+
+      500.,   // track length min
+      1400.,  // track length max
+      16.,    // track TOF time min
+      62.,    // track TOF time max
+
+      {{0.056908, -0.0470572, 0.0216465, -0.0021016, 8.50396e-05},
+       {0.00943075, -0.00635429, 0.00998695, -0.00111527, 7.77811e-05},
+       {0.00176298, 0.00367263, 0.00308013, 0.000844013, -0.00010423},
+       {0.00218401, 0.00152391, 0.00895357, -0.000533423, 3.70326e-05},
+       {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},
+       {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
+       {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}}
+
+    };
+
+    CbmKFParticleFinderPID::Cuts cutsSIS300 = {
+
+      700.,   // track length min
+      1500.,  // track length max
+      26.,    // track TOF time min
+      52.,    // track TOF time max
+
+      {{0.0337428, -0.013939, 0.00567602, -0.000202229, 4.07531e-06},
+       {0.00717827, -0.00257353, 0.00389851, -9.83097e-05, 1.33011e-06},
+       {0.001348, 0.00220126, 0.0023619, 7.35395e-05, -4.06706e-06},
+       {0.00142972, 0.00308919, 0.00326995, 6.91715e-05, -2.44194e-06},
+       {0.261491, -0.103121, 0.0247587, -0.00123286, 2.61731e-05},  //TODO tune for SIS300
+       {0.657274, -0.22355, 0.0430177, -0.0026822, 7.34146e-05},
+       {0.116525, -0.045522, 0.0151319, -0.000495545, 4.43144e-06}}
+
+    };
+
+    kfParticleFinderPID->SetCuts(cutsSIS100);
   }
-  else
+  else {
     kfParticleFinderPID->UseMCPID();
+  }
+
   run->AddTask(kfParticleFinderPID);
+
   // ------------------------------------------------------------------------
 
   // ----- KF Particle Finder -----------------------------------------------
@@ -195,8 +236,8 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
 
   // ----- KF Track QA ------------------------------------------------------
   // The module is under development.
-  //   CbmKFTrackQa* kfTrackQA = new CbmKFTrackQa();
-  //   run->AddTask(kfTrackQA);
+  CbmKFTrackQa* kfTrackQA = new CbmKFTrackQa();
+  run->AddTask(kfTrackQA);
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------
