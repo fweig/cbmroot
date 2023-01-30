@@ -93,6 +93,7 @@ protected:
   bool HandleMissTsData(FairMQMessagePtr&, int);
   bool HandleData(FairMQParts&, int);
   bool HandleCommand(FairMQMessagePtr&, int);
+  virtual void PostRun();
 
 private:
   /// Constants

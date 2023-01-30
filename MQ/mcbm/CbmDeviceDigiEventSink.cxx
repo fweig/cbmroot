@@ -760,6 +760,16 @@ bool CbmDeviceDigiEventSink::SendHistograms()
 }
 
 //--------------------------------------------------------------------//
+void CbmDeviceDigiEventSink::PostRun()
+{
+  // Needed to avoid due to other end of ZMQ channel being already gone if called during Finish/destructor
+  if (kTRUE == fbFillHistos) {
+    SendHistograms();
+    fLastPublishTime = std::chrono::system_clock::now();
+  }  // if( kTRUE == fbFillHistos )
+}
+
+//--------------------------------------------------------------------//
 CbmDeviceDigiEventSink::~CbmDeviceDigiEventSink()
 {
   /// FIXME: Add pointers check before delete
@@ -787,14 +797,12 @@ void CbmDeviceDigiEventSink::Finish()
   LOG(info) << "Still buffered TS " << fmFullTsStorage.size() << " and still buffered empties "
             << fvulMissedTsIndices.size();
 
-  if (kTRUE == fbFillHistos) {
-    SendHistograms();
-    fLastPublishTime = std::chrono::system_clock::now();
-  }  // if( kTRUE == fbFillHistos )
-
-  ChangeState(fair::mq::Transition::Stop);
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-  ChangeState(fair::mq::Transition::End);
+  if (fair::mq::State::Running == GetCurrentState()) {
+    /// Force state transitions only if not already done by ODC/DDS!
+    ChangeState(fair::mq::Transition::Stop);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    ChangeState(fair::mq::Transition::End);
+  }
 
   fbFinishDone = kTRUE;
 }
