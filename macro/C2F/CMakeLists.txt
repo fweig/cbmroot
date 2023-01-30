@@ -19,6 +19,7 @@ else()
   Set(NumEvents 20)
 endif()
 
+
 List(APPEND cbm_setup sis100_electron)
 
 ForEach(setup IN LISTS cbm_setup)
@@ -28,61 +29,69 @@ ForEach(setup IN LISTS cbm_setup)
     # and concurrent access to this file results in erros.
     # The logical dependences are expressed in the required "ok" files.
 
+    math(EXPR timeOutTime "${NumEvents} * 20")
     # --- Transport run, using run_transport.C
     Set(testname c2f_transport_${setup})
     Add_Test(${testname} ${MACRO_DIR}/c2f_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" \"TGeant4\" false)
     Set_Tests_Properties(${testname} PROPERTIES 
-        TIMEOUT "900"
+        TIMEOUT ${timeOutTime}
         PASS_REGULAR_EXPRESSION "Test Passed;All ok"
         FIXTURES_SETUP fixture_c2f_digi_${setup}
     )
   
+    math(EXPR timeOutTime "${NumEvents} * 20")
     # --- Digitisation run, event-by-event
     Set(testname c2f_digi_event_${setup})
     Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"data/${setup}_test\" ${NumEvents} 
     	\"data/${setup}_test.event\" -1.)
     Set_Tests_Properties(${testname} PROPERTIES 
-        TIMEOUT "300"
+        TIMEOUT ${timeOutTime}
         PASS_REGULAR_EXPRESSION "Macro finished successfully"
         FIXTURES_REQUIRED fixture_c2f_digi_${setup}
         FIXTURES_SETUP fixture_c2f_reco_event_${setup}
     )
 
+    math(EXPR timeOutTime "${NumEvents} * 30")
     # --- Reconstruction run, event-by-event
     Set(testname c2f_reco_event_${setup})
     Add_Test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\")
     Set_Tests_Properties(${testname} PROPERTIES 
-        TIMEOUT "1300"
+        TIMEOUT ${timeOutTime}
         PASS_REGULAR_EXPRESSION "Test Passed;All ok"
         FIXTURES_REQUIRED fixture_c2f_reco_event_${setup}
         FIXTURES_SETUP fixture_c2f_ana_${setup}
     )
   
+    math(EXPR timeOutTime "${NumEvents} * 10")
     # --- AnalysisTree
     Set(testname analysis_tree_maker_${setup})
     Add_Test(${testname} ${MACRO_DIR}/run_analysis_tree_maker.sh \"data/${setup}_test\" \"${setup}\")
     Set_Tests_Properties(${testname} PROPERTIES 
-        TIMEOUT "300"
+        TIMEOUT ${timeOutTime}
         PASS_REGULAR_EXPRESSION "Test Passed;All ok"
         FIXTURES_REQUIRED fixture_c2f_ana_${setup}
         FIXTURES_SETUP fixture_c2f_analysistree_${setup}
     )
 
+
+    math(EXPR timeOutTime "${NumEvents} * 10")
     # --- AnalysisTree to KFPF interface
     Set(testname at_kfpf_${setup})
     Add_Test(${testname} ${MACRO_DIR}/run_at_kfpf.sh ${NumEvents} \"data/${setup}_test\")
     Set_Tests_Properties(${testname} PROPERTIES 
-        TIMEOUT "300"
+        TIMEOUT ${timeOutTime}
         PASS_REGULAR_EXPRESSION "Test Passed;All ok"
         FIXTURES_REQUIRED fixture_c2f_analysistree_${setup}
         FIXTURES_SETUP fixture_c2f_at_kfpf_interface_${setup}
     )
 
+
+    math(EXPR timeOutTime "${NumEvents} * 10")
     # --- AnalysisTreeQA
     Set(testname analysistree_qa_${setup})
     Add_Test(${testname} ${MACRO_DIR}/run_analysistree_qa.sh \"data/${setup}_test.analysistree.root\" true)
     Set_Tests_Properties(${testname} PROPERTIES 
-        TIMEOUT "300"
+        TIMEOUT ${timeOutTime}
         PASS_REGULAR_EXPRESSION "Test Passed;All ok"
         FIXTURES_REQUIRED fixture_c2f_at_kfpf_interface_${setup}
 #        FIXTURES_SETUP fixture_c2f_at_qa_${setup}
