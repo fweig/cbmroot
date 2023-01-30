@@ -10,7 +10,9 @@
 #ifndef CBMMCEVENTINFO_H
 #define CBMMCEVENTINFO_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include "CbmLink.h"
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 #include <cstdint>
 #include <string>  // for string
@@ -60,6 +62,10 @@ public:
      **/
   double GetTime() const { return fTime; }
 
+  /** @brief Event file and event indices as CbmLink
+     ** @value Event time [ns]
+     **/
+  CbmLink GetCbmLink() const { return CbmLink(0., -1, fEventId, fFileId); }
 
   /** Status to string **/
   std::string ToString() const;

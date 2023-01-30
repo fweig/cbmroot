@@ -128,6 +128,15 @@ int32_t CbmMCEventList::GetFileIdByIndex(uint32_t index)
 }
 // ----------------------------------------------------------------------------
 
+// -----   Get file number for event at index in list   -----------------------
+CbmLink CbmMCEventList::GetEventLinkByIndex(uint32_t index)
+{
+  if (!fIsSorted) Sort();
+  if (index >= GetNofEvents()) return CbmLink();
+  return fEvents[index].GetCbmLink();
+}
+// ----------------------------------------------------------------------------
+
 
 // -----   Insert an event   --------------------------------------------------
 bool CbmMCEventList::Insert(uint32_t event, uint32_t file, double time)

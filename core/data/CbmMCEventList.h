@@ -106,6 +106,10 @@ public:
   Int_t GetEventIndex(const CbmLink& link) { return GetEventIndex(link.GetEntry(), link.GetFile()); }
 
 
+  /** @brief Event file and event indices as CbmLink
+     **/
+  CbmLink GetEventLinkByIndex(uint32_t index);
+
   /** @brief Number of events in the list
      ** @value Number of events
      **/
