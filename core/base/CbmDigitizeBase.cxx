@@ -16,6 +16,7 @@
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 
 #include <cassert>  // for assert
+#include <cstdio>
 
 // -----   Default constructor   --------------------------------------------
 CbmDigitizeBase::CbmDigitizeBase()
@@ -71,6 +72,29 @@ void CbmDigitizeBase::GetEventInfo()
     fCurrentMCEntry   = -1;
     fCurrentEventTime = 0.;
   }  //? not FairRunAna
+}
+// --------------------------------------------------------------------------
+
+
+// -----   Read list of inactive channels   ---------------------------------
+std::pair<size_t, bool> CbmDigitizeBase::ReadInactiveChannels()
+{
+
+  if (fInactiveChannelFileName.IsNull()) return std::make_pair(0, true);
+
+  FILE* channelFile = fopen(fInactiveChannelFileName.Data(), "r");
+  if (channelFile == nullptr) return std::make_pair(0, false);
+
+  size_t nLines    = 0;
+  uint32_t channel = 0;
+  while (fscanf(channelFile, "%u", &channel) == 1) {
+    fInactiveChannels.insert(channel);
+    nLines++;
+  }
+  bool success = feof(channelFile);
+
+  fclose(channelFile);
+  return std::make_pair(nLines, success);
 }
 // --------------------------------------------------------------------------
 

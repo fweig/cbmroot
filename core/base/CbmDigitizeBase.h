@@ -17,8 +17,11 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Bool_t, Double_t, Int_t, kTRUE, ULong64_t
 
+#include <set>
 #include <string>  // for string
+
 class CbmTimeSlice;
+
 
 /** @class CbmDigitizeBase
  ** @brief Abstract base class for CBM digitisation tasks
@@ -152,6 +155,15 @@ public:
   void SetEventMode(Bool_t choice = kTRUE) { fEventMode = choice; }
 
 
+  /** @brief Set the file containing the list of inactive channels
+   ** @param fileName   Name of file
+   **
+   ** Channels are identified by their CbmAddress. The file must contain a list of addresses,
+   ** one per line. Comments after the address are allowed if separated by a blank.
+   **/
+  void SetInactiveChannelFile(const char* fileName) { fInactiveChannelFileName = fileName; }
+
+
   /** @brief Set production of inter-event noise
      ** @param Choice If kTRUE, the digitizer will produce noise
      **/
@@ -159,13 +171,24 @@ public:
 
 
 protected:
-  Bool_t fEventMode;           /// Flag for event-by-event mode
-  Bool_t fProduceNoise;        /// Flag for production of inter-event noise
-  Bool_t fCreateMatches;       /// Flag for creation of links to MC
-  Int_t fCurrentInput;         /// Number of current input
-  Int_t fCurrentEvent;         /// Number of current MC event
-  Int_t fCurrentMCEntry;       /// Number of current MC entry
-  Double_t fCurrentEventTime;  /// Time of current MC event [ns]
+  Bool_t fEventMode;                          /// Flag for event-by-event mode
+  Bool_t fProduceNoise;                       /// Flag for production of inter-event noise
+  Bool_t fCreateMatches;                      /// Flag for creation of links to MC
+  Int_t fCurrentInput;                        /// Number of current input
+  Int_t fCurrentEvent;                        /// Number of current MC event
+  Int_t fCurrentMCEntry;                      /// Number of current MC entry
+  Double_t fCurrentEventTime;                 /// Time of current MC event [ns]
+  TString fInactiveChannelFileName     = "";  /// Name of file with inactive channels
+  std::set<uint32_t> fInactiveChannels = {};  /// Set of inactive channels, indicated by CbmAddress
+
+  /** @brief Read the list of inactive channels from file
+   ** @param fileName   File name
+   ** @return Number of channels read from file, success of file reading
+   **
+   ** Reading from the file will stop when a read error occurs. In that case, or when the file
+   ** could not be opened at all, the success flag will be .false.
+   **/
+  virtual std::pair<size_t, bool> ReadInactiveChannels();
 
 
 private:

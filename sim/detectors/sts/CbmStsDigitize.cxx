@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <tuple>
 
 // Includes from ROOT
 #include "TClonesArray.h"
@@ -151,6 +152,9 @@ string CbmStsDigitize::BufferStatus() const
 void CbmStsDigitize::CreateDigi(Int_t address, UShort_t channel, Long64_t time, UShort_t adc, const CbmMatch& match)
 {
   assert(time >= 0);
+
+  // No action if the channel is marked inactive
+  if (!IsChannelActiveSts(address, channel)) return;
 
   // Update times of first and last digi
   fTimeDigiFirst = fNofDigis ? TMath::Min(fTimeDigiFirst, Double_t(time)) : time;
@@ -334,6 +338,21 @@ InitStatus CbmStsDigitize::Init()
   // --- Initialise parameters
   InitParams();
 
+  // --- Read list of inactive channels
+  if (!fInactiveChannelFileName.IsNull()) {
+    LOG(info) << GetName() << ": Reading inactive channels from " << fInactiveChannelFileName;
+    auto result = ReadInactiveChannels();
+    if (!result.second) {
+      LOG(error) << GetName() << ": Error in reading from file! Task will be inactive.";
+      return kFATAL;
+    }
+    LOG(info) << GetName() << ": " << std::get<0>(result) << " lines read from file";
+  }
+  size_t nChanInactive = 0;
+  for (auto& entry : fInactiveChannelsSts)
+    nChanInactive += entry.second.size();
+  LOG(info) << GetName() << ": " << nChanInactive << " channels set inactive";
+
   // Instantiate modules
   UInt_t nModules = InitModules();
   LOG(info) << GetName() << ": Created " << nModules << " modules";
@@ -341,7 +360,6 @@ InitStatus CbmStsDigitize::Init()
   // Instantiate sensors
   UInt_t nSensors = InitSensors();
   LOG(info) << GetName() << ": Created " << nSensors << " sensors";
-
 
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
@@ -355,6 +373,7 @@ InitStatus CbmStsDigitize::Init()
   fTracks = (TClonesArray*) ioman->GetObject("MCTrack");
   assert(fTracks);
 
+  // --- Register the output branches
   RegisterOutput();
 
   // --- Screen output
@@ -594,6 +613,17 @@ void CbmStsDigitize::InitSetup()
 // -------------------------------------------------------------------------
 
 
+// -----   Check for channel being active   --------------------------------
+bool CbmStsDigitize::IsChannelActiveSts(Int_t address, UShort_t channel)
+{
+  auto it = fInactiveChannelsSts.find(address);
+  if (it == fInactiveChannelsSts.end()) return true;
+  if (it->second.count(channel)) return false;
+  return true;
+}
+// -------------------------------------------------------------------------
+
+
 // -----   Process the analogue buffers of all modules   -------------------
 void CbmStsDigitize::ProcessAnalogBuffers(Double_t readoutTime)
 {
@@ -664,6 +694,30 @@ void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, 
               << nSignalsB << " )";
   fNofSignalsF += nSignalsF;
   fNofSignalsB += nSignalsB;
+}
+// -------------------------------------------------------------------------
+
+
+// -----  Read list of inactive channels from file   -----------------------
+std::pair<size_t, bool> CbmStsDigitize::ReadInactiveChannels()
+{
+
+  if (fInactiveChannelFileName.IsNull()) return std::make_pair(0, true);
+
+  FILE* channelFile = fopen(fInactiveChannelFileName.Data(), "r");
+  if (channelFile == nullptr) return std::make_pair(0, false);
+
+  size_t nLines    = 0;
+  uint32_t address = 0;
+  uint16_t channel = 0;
+  while (fscanf(channelFile, "%u %hu", &address, &channel) == 2) {
+    fInactiveChannelsSts[address].insert(channel);
+    nLines++;
+  }
+  bool success = feof(channelFile);
+
+  fclose(channelFile);
+  return std::make_pair(nLines, success);
 }
 // -------------------------------------------------------------------------
 

@@ -288,7 +288,7 @@ private:
   Int_t fNofDigis      = 0;  ///< Number of created digis in Exec
 
   // --- Run counters
-  Int_t fNofEvents           = 0;   ///< Total number of procesed events
+  Int_t fNofEvents           = 0;   ///< Total number of processed events
   Double_t fNofPointsProcTot = 0;   ///< Total number of processed points
   Double_t fNofPointsIgnoTot = 0;   ///< Total number of ignored points
   Double_t fNofSignalsFTot   = 0;   ///< Number of signals on front side
@@ -296,6 +296,11 @@ private:
   Double_t fNofDigisTot      = 0;   ///< Total number of digis created
   Double_t fNofNoiseTot      = 0;   ///< Total number of noise digis
   Double_t fTimeTot          = 0.;  ///< Total execution time
+
+  // --- List of inactive channels
+  // --- We do not use the base class here since STS channels are identified not only by
+  // --- CbmAddress like in all other detectors, but by address plus channel number.
+  std::map<Int_t, std::set<UShort_t>> fInactiveChannelsSts = {};
 
 
   /** @brief Number of signals in the analogue buffers
@@ -335,6 +340,17 @@ private:
   UInt_t InitSensors();
 
 
+  /** @brief Test if the channel of a digi object is set active
+   ** @param address CbmStdAddress of module
+   ** @param channel Channel number in module
+   ** @return .true. if the respective channel is active
+   **
+   ** We do not use the base class method IsChannelActive(), because unlike for the other detector systems,
+   ** an STS channel is not identified by the address only, but by address plus channel number.
+   **/
+  bool IsChannelActiveSts(Int_t address, UShort_t channel);
+
+
   /** Process the analog buffers of all modules
    ** @param readoutTime  Time of readout [ns]
    **/
@@ -350,6 +366,21 @@ private:
    ** @param link   Link to MCPoint
    **/
   void ProcessPoint(const CbmStsPoint* point, Double_t eventTime, const CbmLink& link);
+
+
+  /** @brief Read the list of inactive channels from file
+   ** @param fileName   File name
+   ** @return Number of channels read from file, success of file reading
+   **
+   ** This re-implements the respective method from the base class by reading not only the address,
+   ** but also the channel number from file. The file must contain one line for each channel
+   ** containing the module address and the channel number, separated by a blank. Comments can
+   ** follow after the channel number, if separated by a blank.
+   **
+   ** Reading from the file will stop when a read error occurs. In that case, or when the file
+   ** could not be opened at all, the success flag will be .false.
+   **/
+  std::pair<size_t, bool> ReadInactiveChannels();
 
 
   /** @brief Reset event counters **/

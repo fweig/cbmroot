@@ -24,6 +24,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -227,9 +228,11 @@ public:
      **/
   void SendData(Double_t time, Digi* digi, CbmMatch* match = nullptr)
   {
-    std::unique_ptr<Digi> tmpDigi(digi);
-    std::unique_ptr<CbmMatch> tmpMatch(match);
-    fDaqBuffer.insert(make_pair(time, std::make_pair(std::move(tmpDigi), std::move(tmpMatch))));
+    if (IsChannelActive(*digi)) {
+      std::unique_ptr<Digi> tmpDigi(digi);
+      std::unique_ptr<CbmMatch> tmpMatch(match);
+      fDaqBuffer.insert(make_pair(time, std::make_pair(std::move(tmpDigi), std::move(tmpMatch))));
+    }
   }
   // --------------------------------------------------------------------------
 
@@ -326,6 +329,19 @@ private:
     fDaqBuffer.erase(fDaqBuffer.begin(), it);
 
     return nData;
+  }
+  // --------------------------------------------------------------------------
+
+
+  // --------------------------------------------------------------------------
+  /** @brief Test if the channel of a digi object is set active
+   ** @param digi object
+   ** @return .true. if the respective channel is active
+   **/
+  bool IsChannelActive(const Digi& digi)
+  {
+    if (fInactiveChannels.count(digi.GetAddress())) return false;
+    return true;
   }
   // --------------------------------------------------------------------------
 
