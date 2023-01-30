@@ -30,8 +30,6 @@ public:
   ~CbmKFParticleFinderQa();
 
   void SetEffFileName(const TString& name) { fEfffileName = name; }
-  void SetMCTrackBranchName(const TString& name) { fMCTracksBranchName = name; }
-  void SetTrackMatchBranchName(const TString& name) { fTrackMatchBranchName = name; }
 
   virtual InitStatus Init();
   virtual void Exec(Option_t* opt);
@@ -59,45 +57,43 @@ private:
   void FitDecayQAHistograms(float sigma[14], const bool saveReferenceResults = false) const;
   void CheckDecayQA();
 
-  //names of input branches
-  TString fMCTracksBranchName;    //! Name of the input TCA with MC tracks
-  TString fTrackMatchBranchName;  //! Name of the input TCA with track match
-
   //input branches
-  CbmMCDataArray* fMCTrackArray;  //mc tracks
-  TClonesArray* fMCTrackArrayEvent;
-  CbmMCEventList* fEventList;      //mc event list in timeslice
-  TClonesArray* fTrackMatchArray;  //track match
+  TClonesArray* fRecoEvents {nullptr};      //! Array of CbmEvent objects
+  CbmMCDataArray* fMCTrackArray {nullptr};  //mc tracks
+  TClonesArray* fMCTrackArrayEvent {nullptr};
+  CbmMCEventList* fMcEventList {nullptr};    //mc event list in timeslice
+  TClonesArray* fTrackMatchArray {nullptr};  //track match
 
   // output arrays of particles
-  TClonesArray* fRecParticles;    // output array of KF Particles
-  TClonesArray* fMCParticles;     // output array of MC Particles
-  TClonesArray* fMatchParticles;  // output array of match objects
+  TClonesArray* fRecParticles {nullptr};    // output array of KF Particles
+  TClonesArray* fMCParticles {nullptr};     // output array of MC Particles
+  TClonesArray* fMatchParticles {nullptr};  // output array of match objects
 
-  Bool_t fSaveParticles;
-  Bool_t fSaveMCParticles;
+  Bool_t fSaveParticles {false};
+  Bool_t fSaveMCParticles {false};
 
-  bool fTimeSliceMode;
+  bool fLegacyEventMode {false};  // event-by-event mode where data is stored in an old-fasion way
 
   //output file with histograms
-  TString fOutFileName;
-  TFile* fOutFile;
-  TString fEfffileName;
-  //KF Particle QA
-  KFTopoPerformance* fTopoPerformance;
+  TString fOutFileName {"CbmKFParticleFinderQa.root"};
+  TFile* fOutFile {nullptr};
+  TString fEfffileName {"Efficiency.txt"};
 
-  Int_t fPrintFrequency;
-  Int_t fNEvents;
+  //KF Particle QA
+  KFTopoPerformance* fTopoPerformance {nullptr};
+
+  Int_t fPrintFrequency {100};
+  Int_t fNEvents {0};
   Double_t fTime[5];
 
   //for super event analysis
-  bool fSuperEventAnalysis;
+  bool fSuperEventAnalysis {false};
 
   //for tests
-  TString fReferenceResults;
-  int fDecayToAnalyse;
-  bool fCheckDecayQA;
-  bool fTestOk;
+  TString fReferenceResults {"./"};
+  int fDecayToAnalyse {-1};
+  bool fCheckDecayQA {false};
+  bool fTestOk {false};
 
   ClassDef(CbmKFParticleFinderQa, 1);
 };

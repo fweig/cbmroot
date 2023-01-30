@@ -45,30 +45,7 @@ using std::vector;
 CbmKFParticleFinderQa::CbmKFParticleFinderQa(const char* name, Int_t iVerbose, const KFParticleTopoReconstructor* tr,
                                              TString outFileName)
   : FairTask(name, iVerbose)
-  , fMCTracksBranchName("MCTrack")
-  , fTrackMatchBranchName("StsTrackMatch")
-  , fMCTrackArray(nullptr)
-  , fMCTrackArrayEvent(nullptr)
-  , fEventList(nullptr)
-  , fTrackMatchArray(nullptr)
-  , fRecParticles(nullptr)
-  , fMCParticles(nullptr)
-  , fMatchParticles(nullptr)
-  , fSaveParticles(false)
-  , fSaveMCParticles(false)
-  , fTimeSliceMode(false)
   , fOutFileName(outFileName)
-  , fOutFile(nullptr)
-  , fEfffileName("Efficiency.txt")
-  , fTopoPerformance(nullptr)
-  , fPrintFrequency(100)
-  , fNEvents(0)
-  , fTime()
-  , fSuperEventAnalysis(false)
-  , fReferenceResults("./")
-  , fDecayToAnalyse(-1)
-  , fCheckDecayQA(false)
-  , fTestOk(false)
 {
   for (Int_t i = 0; i < 5; i++)
     fTime[i] = 0;
@@ -80,8 +57,9 @@ CbmKFParticleFinderQa::CbmKFParticleFinderQa(const char* name, Int_t iVerbose, c
   TDirectory* curDirectory = gDirectory;
 
   if (!(fOutFileName == "")) fOutFile = new TFile(fOutFileName.Data(), "RECREATE");
-  else
+  else {
     fOutFile = gFile;
+  }
   fTopoPerformance->CreateHistos("KFTopoReconstructor", fOutFile, tr->GetKFParticleFinder()->GetReconstructionList());
 
   gFile      = curFile;
@@ -109,12 +87,12 @@ InitStatus CbmKFParticleFinderQa::Init()
     return kERROR;
   }
 
-  //check the mode
-  fTimeSliceMode = 0;
-  if (ioman->CheckBranch("CbmEvent")) fTimeSliceMode = 1;
+  // check the mode
+  fLegacyEventMode = 0;
+  if (!ioman->CheckBranch("CbmEvent") && ioman->CheckBranch("MCTrack")) { fLegacyEventMode = 1; }
 
-  //MC Tracks
-  if (fTimeSliceMode) {
+  // MC Tracks
+  if (!fLegacyEventMode) {
     FairRootManager* fManger    = FairRootManager::Instance();
     CbmMCDataManager* mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
     if (mcManager == 0) Error("CbmKFParticleFinderQa::Init", "MC Data Manager not found!");
@@ -126,18 +104,21 @@ InitStatus CbmKFParticleFinderQa::Init()
       return kERROR;
     }
 
-    fEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
-    if (fEventList == 0) {
+    fMcEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
+    if (fMcEventList == 0) {
       Error("CbmKFParticleFinderQa::Init", "MC Event List not found!");
       return kERROR;
     }
+
+    fRecoEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+    if (nullptr == fRecoEvents) { LOG(warn) << GetName() << ": No event array! Will process entire tree."; }
   }
   else {
     fMCTrackArrayEvent = (TClonesArray*) ioman->GetObject("MCTrack");
   }
 
-  //Track match
-  fTrackMatchArray = (TClonesArray*) ioman->GetObject(fTrackMatchBranchName);
+  // Track match
+  fTrackMatchArray = (TClonesArray*) ioman->GetObject("StsTrackMatch");
   if (fTrackMatchArray == 0) {
     Error("CbmKFParticleFinderQa::Init", "track match array not found!");
     return kERROR;
@@ -158,181 +139,210 @@ InitStatus CbmKFParticleFinderQa::Init()
     fMatchParticles = new TClonesArray("KFParticleMatch", 100);
     ioman->Register("KFParticleMatch", "KFParticle", fMatchParticles, IsOutputBranchPersistent("KFParticleMatch"));
   }
+
   return kSUCCESS;
 }
 
 void CbmKFParticleFinderQa::Exec(Option_t* /*opt*/)
 {
-  if (!fSuperEventAnalysis) {
-    if (fSaveParticles) fRecParticles->Delete();
-    if (fSaveMCParticles) {
-      fMCParticles->Delete();
-      fMatchParticles->Delete();
+  if (fSuperEventAnalysis) {
+    LOG(error) << GetName() << " SuperEventAnalysis option currently doesn't work";
+    return;
+  }
+
+  if (fSaveParticles) fRecParticles->Delete();
+  if (fSaveMCParticles) {
+    fMCParticles->Delete();
+    fMatchParticles->Delete();
+  }
+
+  // make sure that the number of events in time slice is 1
+
+  int nRecoEvents = 1;
+  int nMCEvents   = 1;
+
+  if (!fLegacyEventMode) {
+    if (fRecoEvents) { nRecoEvents = fRecoEvents->GetEntriesFast(); }
+    nMCEvents = fMcEventList->GetNofEvents();
+  }
+
+  if (nMCEvents != 1 || nRecoEvents != 1) {
+    LOG(warning) << GetName() << " the task doesn't properly work with more than one event in the time slice";
+  }
+
+  vector<KFMCTrack> mcTracks;
+  vector<int> mcToKFmcMap[nMCEvents];
+
+  int mcIndexOffset = 0;
+
+  for (int iMCEvent = 0; iMCEvent < nMCEvents; iMCEvent++) {
+
+    CbmLink mcEventLink = fMcEventList->GetEventLinkByIndex(iMCEvent);
+    int nMCTracks       = 0;
+    if (!fLegacyEventMode) {
+      nMCTracks = fMCTrackArray->Size(mcEventLink);
+      mcToKFmcMap[iMCEvent].resize(nMCTracks, -1);
+    }
+    else {
+      nMCTracks = fMCTrackArrayEvent->GetEntriesFast();
     }
 
-    int nMCEvents = 1;
-    if (fTimeSliceMode) nMCEvents = fEventList->GetNofEvents();
+    for (Int_t iMC = 0; iMC < nMCTracks; iMC++) {
 
-    vector<KFMCTrack> mcTracks;
-    vector<vector<vector<int>>> indexMap(1);
-    indexMap[0].resize(nMCEvents);
+      CbmMCTrack* cbmMCTrack;
+      CbmLink mcTrackLink = mcEventLink;
+      mcTrackLink.SetIndex(iMC);
+      if (!fLegacyEventMode) { cbmMCTrack = (CbmMCTrack*) fMCTrackArray->Get(mcTrackLink); }
+      else {
+        cbmMCTrack = (CbmMCTrack*) fMCTrackArrayEvent->At(iMC);
+      }
 
-    int mcIndexOffset = 0;
+      KFMCTrack kfMCTrack;
+      kfMCTrack.SetX(cbmMCTrack->GetStartX());
+      kfMCTrack.SetY(cbmMCTrack->GetStartY());
+      kfMCTrack.SetZ(cbmMCTrack->GetStartZ());
+      kfMCTrack.SetPx(cbmMCTrack->GetPx());
+      kfMCTrack.SetPy(cbmMCTrack->GetPy());
+      kfMCTrack.SetPz(cbmMCTrack->GetPz());
 
-    for (int iMCEvent = 0; iMCEvent < nMCEvents; iMCEvent++) {
-      int nMCTracks = 0;
-      if (fTimeSliceMode) nMCTracks = fMCTrackArray->Size(0, iMCEvent);
+      Int_t pdg  = cbmMCTrack->GetPdgCode();
+      Double_t q = 1;
+      if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg)))
+        q = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
+      else if (pdg == 1000010020)
+        q = 1;
+      else if (pdg == -1000010020)
+        q = -1;
+      else if (pdg == 1000010030)
+        q = 1;
+      else if (pdg == -1000010030)
+        q = -1;
+      else if (pdg == 1000020030)
+        q = 2;
+      else if (pdg == -1000020030)
+        q = -2;
+      else if (pdg == 1000020040)
+        q = 2;
+      else if (pdg == -1000020040)
+        q = -2;
       else
-        nMCTracks = fMCTrackArrayEvent->GetEntriesFast();
+        q = 0;
+      Double_t p = cbmMCTrack->GetP();
 
-      if (fTimeSliceMode) indexMap[0][iMCEvent].resize(nMCTracks);
+      if (cbmMCTrack->GetMotherId() >= 0) kfMCTrack.SetMotherId(cbmMCTrack->GetMotherId() + mcIndexOffset);
+      else
+        kfMCTrack.SetMotherId(-iMCEvent - 1);
+      kfMCTrack.SetQP(q / p);
+      kfMCTrack.SetPDG(pdg);
+      kfMCTrack.SetNMCPoints(0);
 
-      for (Int_t iMC = 0; iMC < nMCTracks; iMC++) {
-        CbmMCTrack* cbmMCTrack;
-        if (fTimeSliceMode) cbmMCTrack = (CbmMCTrack*) fMCTrackArray->Get(0, iMCEvent, iMC);
-        else
-          cbmMCTrack = (CbmMCTrack*) fMCTrackArrayEvent->At(iMC);
-
-        KFMCTrack kfMCTrack;
-        kfMCTrack.SetX(cbmMCTrack->GetStartX());
-        kfMCTrack.SetY(cbmMCTrack->GetStartY());
-        kfMCTrack.SetZ(cbmMCTrack->GetStartZ());
-        kfMCTrack.SetPx(cbmMCTrack->GetPx());
-        kfMCTrack.SetPy(cbmMCTrack->GetPy());
-        kfMCTrack.SetPz(cbmMCTrack->GetPz());
-
-        Int_t pdg  = cbmMCTrack->GetPdgCode();
-        Double_t q = 1;
-        if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg)))
-          q = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
-        else if (pdg == 1000010020)
-          q = 1;
-        else if (pdg == -1000010020)
-          q = -1;
-        else if (pdg == 1000010030)
-          q = 1;
-        else if (pdg == -1000010030)
-          q = -1;
-        else if (pdg == 1000020030)
-          q = 2;
-        else if (pdg == -1000020030)
-          q = -2;
-        else if (pdg == 1000020040)
-          q = 2;
-        else if (pdg == -1000020040)
-          q = -2;
-        else
-          q = 0;
-        Double_t p = cbmMCTrack->GetP();
-
-        if (cbmMCTrack->GetMotherId() >= 0) kfMCTrack.SetMotherId(cbmMCTrack->GetMotherId() + mcIndexOffset);
-        else
-          kfMCTrack.SetMotherId(-iMCEvent - 1);
-        kfMCTrack.SetQP(q / p);
-        kfMCTrack.SetPDG(pdg);
-        kfMCTrack.SetNMCPoints(0);
-
-        if (fTimeSliceMode) indexMap[0][iMCEvent][iMC] = mcTracks.size();
-        mcTracks.push_back(kfMCTrack);
-      }
-
-      mcIndexOffset += nMCTracks;
+      if (!fLegacyEventMode) { mcToKFmcMap[iMCEvent][iMC] = mcTracks.size(); }
+      mcTracks.push_back(kfMCTrack);
     }
 
-    Int_t ntrackMatches = fTrackMatchArray->GetEntriesFast();
+    mcIndexOffset += nMCTracks;
+  }
 
-    vector<int> trackMatch(ntrackMatches, -1);
+  Int_t ntrackMatches = fTrackMatchArray->GetEntriesFast();
+  vector<int> trackMatch(ntrackMatches, -1);
 
-    for (int iTr = 0; iTr < ntrackMatches; iTr++) {
-      CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fTrackMatchArray->At(iTr);
+  for (int iTr = 0; iTr < ntrackMatches; iTr++) {
 
-      if (stsTrackMatch->GetNofLinks() == 0) continue;
-      Float_t bestWeight  = 0.f;
-      Float_t totalWeight = 0.f;
-      Int_t mcTrackId     = -1;
-      CbmLink link;
-      for (int iLink = 0; iLink < stsTrackMatch->GetNofLinks(); iLink++) {
-        totalWeight += stsTrackMatch->GetLink(iLink).GetWeight();
-        if (stsTrackMatch->GetLink(iLink).GetWeight() > bestWeight) {
-          bestWeight   = stsTrackMatch->GetLink(iLink).GetWeight();
-          int iMCTrack = stsTrackMatch->GetLink(iLink).GetIndex();
-          link         = stsTrackMatch->GetLink(iLink);
+    CbmTrackMatchNew* stsTrackMatch = (CbmTrackMatchNew*) fTrackMatchArray->At(iTr);
 
-          if (fTimeSliceMode) mcTrackId = indexMap[link.GetFile()][link.GetEntry()][iMCTrack];
-          else
-            mcTrackId = stsTrackMatch->GetLink(iLink).GetIndex();
-        }
-      }
-      if (bestWeight / totalWeight < 0.7) continue;
-      //       if(mcTrackId >= nMCTracks || mcTrackId < 0)
-      //       {
-      //         std::cout << "Sts Matching is wrong!    StsTackId = " << mcTrackId << " N mc tracks = " << nMCTracks << std::endl;
-      //         continue;
-      //       }
+    if (stsTrackMatch->GetNofLinks() == 0) continue;
+    Float_t bestWeight  = 0.f;
+    Float_t totalWeight = 0.f;
+    Int_t mcTrackId     = -1;
+    CbmLink link;
 
-      if (TMath::Abs(mcTracks[mcTrackId].PDG()) > 4000
-          && !(TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000010020
-               || TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000010030
-               || TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000020030
-               || TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000020040))
-        continue;
-      mcTracks[mcTrackId].SetReconstructed();
-      trackMatch[iTr] = mcTrackId;
-    }
-
-    fTopoPerformance->SetMCTracks(mcTracks);
-    fTopoPerformance->SetTrackMatch(trackMatch);
-
-    fTopoPerformance->CheckMCTracks();
-    fTopoPerformance->MatchTracks();
-    fTopoPerformance->FillHistos();
-
-    fNEvents++;
-    fTime[4] += fTopoPerformance->GetTopoReconstructor()->Time();
-    for (int iT = 0; iT < 4; iT++)
-      fTime[iT] += fTopoPerformance->GetTopoReconstructor()->StatTime(iT);
-    if (fNEvents % fPrintFrequency == 0) {
-      std::cout << "Topo reconstruction time"
-                << " Real = " << std::setw(10) << fTime[4] / fNEvents * 1.e3 << " ms" << std::endl;
-      std::cout << "    Init                " << fTime[0] / fNEvents * 1.e3 << " ms" << std::endl;
-      std::cout << "    PV Finder           " << fTime[1] / fNEvents * 1.e3 << " ms" << std::endl;
-      std::cout << "    Sort Tracks         " << fTime[2] / fNEvents * 1.e3 << " ms" << std::endl;
-      std::cout << "    KF Particle Finder  " << fTime[3] / fNEvents * 1.e3 << " ms" << std::endl;
-    }
-
-    // save particles to a ROOT file
-    if (fSaveParticles) {
-      for (unsigned int iP = 0; iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size(); iP++) {
-        new ((*fRecParticles)[iP]) KFParticle(fTopoPerformance->GetTopoReconstructor()->GetParticles()[iP]);
-      }
-    }
-
-    if (fSaveMCParticles) {
-      for (unsigned int iP = 0; iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size(); iP++) {
-        new ((*fMatchParticles)[iP]) KFParticleMatch();
-        KFParticleMatch* p = (KFParticleMatch*) (fMatchParticles->At(iP));
-
-        Short_t matchType = 0;
-        int iMCPart       = -1;
-        if (!(fTopoPerformance->ParticlesMatch()[iP].IsMatchedWithPdg()))  //background
-        {
-          if (fTopoPerformance->ParticlesMatch()[iP].IsMatched()) {
-            iMCPart   = fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
-            matchType = 1;
-          }
+    for (int iLink = 0; iLink < stsTrackMatch->GetNofLinks(); iLink++) {
+      totalWeight += stsTrackMatch->GetLink(iLink).GetWeight();
+      if (stsTrackMatch->GetLink(iLink).GetWeight() > bestWeight) {
+        bestWeight   = stsTrackMatch->GetLink(iLink).GetWeight();
+        int iMCTrack = stsTrackMatch->GetLink(iLink).GetIndex();
+        link         = stsTrackMatch->GetLink(iLink);
+        if (!fLegacyEventMode) {
+          int eventIndex = fMcEventList->GetEventIndex(link);
+          if (eventIndex >= 0) { mcTrackId = mcToKFmcMap[eventIndex][iMCTrack]; }
         }
         else {
-          iMCPart   = fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
-          matchType = 2;
+          mcTrackId = stsTrackMatch->GetLink(iLink).GetIndex();
         }
+      }
+    }
 
-        p->SetMatch(iMCPart);
-        p->SetMatchType(matchType);
+    if (mcTrackId < 0) continue;
+
+    if (bestWeight / totalWeight < 0.7) continue;
+    //       if(mcTrackId >= nMCTracks || mcTrackId < 0)
+    //       {
+    //         std::cout << "Sts Matching is wrong!    StsTackId = " << mcTrackId << " N mc tracks = " << nMCTracks << std::endl;
+    //         continue;
+    //       }
+
+    if (TMath::Abs(mcTracks[mcTrackId].PDG()) > 4000
+        && !(TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000010020 || TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000010030
+             || TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000020030
+             || TMath::Abs(mcTracks[mcTrackId].PDG()) == 1000020040))
+      continue;
+
+    mcTracks[mcTrackId].SetReconstructed();
+    trackMatch[iTr] = mcTrackId;
+  }
+
+  fTopoPerformance->SetMCTracks(mcTracks);
+  fTopoPerformance->SetTrackMatch(trackMatch);
+
+  fTopoPerformance->CheckMCTracks();
+  fTopoPerformance->MatchTracks();
+  fTopoPerformance->FillHistos();
+
+  fNEvents++;
+  fTime[4] += fTopoPerformance->GetTopoReconstructor()->Time();
+  for (int iT = 0; iT < 4; iT++)
+    fTime[iT] += fTopoPerformance->GetTopoReconstructor()->StatTime(iT);
+  if (fNEvents % fPrintFrequency == 0) {
+    std::cout << "Topo reconstruction time"
+              << " Real = " << std::setw(10) << fTime[4] / fNEvents * 1.e3 << " ms" << std::endl;
+    std::cout << "    Init                " << fTime[0] / fNEvents * 1.e3 << " ms" << std::endl;
+    std::cout << "    PV Finder           " << fTime[1] / fNEvents * 1.e3 << " ms" << std::endl;
+    std::cout << "    Sort Tracks         " << fTime[2] / fNEvents * 1.e3 << " ms" << std::endl;
+    std::cout << "    KF Particle Finder  " << fTime[3] / fNEvents * 1.e3 << " ms" << std::endl;
+  }
+
+  // save particles to a ROOT file
+  if (fSaveParticles) {
+    for (unsigned int iP = 0; iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size(); iP++) {
+      new ((*fRecParticles)[iP]) KFParticle(fTopoPerformance->GetTopoReconstructor()->GetParticles()[iP]);
+    }
+  }
+
+  if (fSaveMCParticles) {
+    for (unsigned int iP = 0; iP < fTopoPerformance->GetTopoReconstructor()->GetParticles().size(); iP++) {
+      new ((*fMatchParticles)[iP]) KFParticleMatch();
+      KFParticleMatch* p = (KFParticleMatch*) (fMatchParticles->At(iP));
+
+      Short_t matchType = 0;
+      int iMCPart       = -1;
+      if (!(fTopoPerformance->ParticlesMatch()[iP].IsMatchedWithPdg()))  //background
+      {
+        if (fTopoPerformance->ParticlesMatch()[iP].IsMatched()) {
+          iMCPart   = fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
+          matchType = 1;
+        }
+      }
+      else {
+        iMCPart   = fTopoPerformance->ParticlesMatch()[iP].GetBestMatchWithPdg();
+        matchType = 2;
       }
 
-      for (unsigned int iP = 0; iP < fTopoPerformance->MCParticles().size(); iP++) {
-        new ((*fMCParticles)[iP]) KFMCParticle(fTopoPerformance->MCParticles()[iP]);
-      }
+      p->SetMatch(iMCPart);
+      p->SetMatchType(matchType);
+    }
+
+    for (unsigned int iP = 0; iP < fTopoPerformance->MCParticles().size(); iP++) {
+      new ((*fMCParticles)[iP]) KFMCParticle(fTopoPerformance->MCParticles()[iP]);
     }
   }
 }
