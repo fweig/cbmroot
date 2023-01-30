@@ -79,7 +79,7 @@ CbmKFParticleFinderPID::CbmKFParticleFinderPID(const char* name, Int_t iVerbose)
   , fMuchMode(0)
   , fUseSTSdEdX(kFALSE)
   , fUseTRDdEdX(kFALSE)
-  , fTimeSliceMode(0)
+  , fLegacyEventMode(0)
   , fPID(0)
 {
   //MuCh cuts
@@ -104,9 +104,9 @@ InitStatus CbmKFParticleFinderPID::Init()
   }
 
   //check the mode
-  fTimeSliceMode = 0;
+  fLegacyEventMode = 1;
   if (ioman->CheckBranch("CbmEvent")) {
-    fTimeSliceMode = 1;
+    fLegacyEventMode = 0;
     LOG(info) << GetName() << ": Running in the timeslice mode.";
   }
   else
@@ -122,16 +122,12 @@ InitStatus CbmKFParticleFinderPID::Init()
 
     CbmMCDataManager* mcManager = 0;
 
-    if (fTimeSliceMode) mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
-
-    if (fTimeSliceMode) {
+    if (!fLegacyEventMode) {
+      mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
       if (mcManager == 0) {
         Fatal("CbmKFParticleFinderPID::Init", "MC Data Manager is not found!");
         return kERROR;
       }
-    }
-
-    if (fTimeSliceMode) {
       fMCTracks = mcManager->InitBranch("MCTrack");
       if (fMCTracks == 0) {
         Fatal("CbmKFParticleFinderPID::Init", "MC track array not found!");
@@ -255,7 +251,7 @@ void CbmKFParticleFinderPID::SetMCPID()
 {
   Int_t nTracks   = fTrackArray->GetEntriesFast();
   Int_t nMCTracks = 0;
-  if (!fTimeSliceMode) nMCTracks = fMCTrackArray->GetEntriesFast();
+  if (fLegacyEventMode) nMCTracks = fMCTrackArray->GetEntriesFast();
 
   for (int iTr = 0; iTr < nTracks; iTr++) {
     fPID[iTr] = -2;
@@ -273,7 +269,7 @@ void CbmKFParticleFinderPID::SetMCPID()
       if (stsTrackMatch->GetLink(iLink).GetWeight() > bestWeight) {
         bestWeight = stsTrackMatch->GetLink(iLink).GetWeight();
         mcTrackId  = stsTrackMatch->GetLink(iLink).GetIndex();
-        if (fTimeSliceMode) {
+        if (!fLegacyEventMode) {
           iFile  = stsTrackMatch->GetLink(iLink).GetFile();
           iEvent = stsTrackMatch->GetLink(iLink).GetEntry();
         }
@@ -281,7 +277,7 @@ void CbmKFParticleFinderPID::SetMCPID()
     }
     if (bestWeight / totalWeight < 0.7) continue;
 
-    if ((!fTimeSliceMode) && (mcTrackId >= nMCTracks || mcTrackId < 0)) continue;
+    if ((fLegacyEventMode) && (mcTrackId >= nMCTracks || mcTrackId < 0)) continue;
     //     if(mcTrackId >= nMCTracks || mcTrackId < 0)
     //     {
     //       LOG(info) << "Sts Matching is wrong!    StsTrackId = " << mcTrackId << " N mc tracks = " << nMCTracks;
@@ -293,10 +289,10 @@ void CbmKFParticleFinderPID::SetMCPID()
 
     CbmMCTrack* cbmMCTrack = 0;
 
-    if (fTimeSliceMode) cbmMCTrack = dynamic_cast<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, mcTrackId));
-    else
+    if (!fLegacyEventMode) { cbmMCTrack = dynamic_cast<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, mcTrackId)); }
+    else {
       cbmMCTrack = (CbmMCTrack*) fMCTrackArray->At(mcTrackId);
-
+    }
 
     if (!(TMath::Abs(cbmMCTrack->GetPdgCode()) == 11 || TMath::Abs(cbmMCTrack->GetPdgCode()) == 13
           || TMath::Abs(cbmMCTrack->GetPdgCode()) == 211 || TMath::Abs(cbmMCTrack->GetPdgCode()) == 321

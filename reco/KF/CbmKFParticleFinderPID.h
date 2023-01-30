@@ -125,7 +125,7 @@ private:
   Bool_t fUseSTSdEdX;
   Bool_t fUseTRDdEdX;
 
-  bool fTimeSliceMode;
+  bool fLegacyEventMode;
 
   //MuCh cuts
   float fMuchCutsFloat[2];
