@@ -462,6 +462,18 @@ InitStatus CbmMuchDigitizeGem::Init()
   //  else fgDeltaResponse[i] = exp(-(time-fPeakingTime)/fRemainderTime);
   //}
 
+  // --- Read list of inactive channels
+  if (!fInactiveChannelFileName.IsNull()) {
+    LOG(info) << GetName() << ": Reading inactive channels from " << fInactiveChannelFileName;
+    auto result = ReadInactiveChannels();
+    if (!result.second) {
+      LOG(error) << GetName() << ": Error in reading from file! Task will be inactive.";
+      return kFATAL;
+    }
+    LOG(info) << GetName() << ": " << std::get<0>(result) << " lines read from file, " << fInactiveChannels.size()
+              << " channels set inactive";
+  }
+
   // --- Enable histogram if want to enalyze Noise spectrum.
   //noise = new TH1D("noise", "Noise Generated per Event NoiseRate 10e-8", 100 , 0 , 200);
   LOG(info) << GetName() << ": Initialisation successful";

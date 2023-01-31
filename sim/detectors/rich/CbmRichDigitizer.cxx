@@ -92,6 +92,17 @@ InitStatus CbmRichDigitizer::Init()
 
   RegisterOutput();
 
+  // --- Read list of inactive channels
+  if (!fInactiveChannelFileName.IsNull()) {
+    LOG(info) << GetName() << ": Reading inactive channels from " << fInactiveChannelFileName;
+    auto result = ReadInactiveChannels();
+    if (!result.second) {
+      LOG(error) << GetName() << ": Error in reading from file! Task will be inactive.";
+      return kFATAL;
+    }
+    LOG(info) << GetName() << ": " << std::get<0>(result) << " lines read from file, " << fInactiveChannels.size()
+              << " channels set inactive";
+  }
 
   LOG(info) << GetName() << ": Initialisation successful";
 
