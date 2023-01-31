@@ -3,8 +3,13 @@
 message(" -- Read CTestCustom.cmake --")
 
 # Maximum size of uploaded test output of failed tests is 100kB
+# or 10MB in case of weekly tests
 # Larger output is cutted
-set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "102400")
+if(${CBM_TEST_MODEL} MATCHES Weekly)
+  set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "10240000")
+else()
+  set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "102400")
+endif()
 
 # Maximum size of uploaded test output of passed tests is 1kB
 # Larger output is cutted
