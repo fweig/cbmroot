@@ -359,8 +359,8 @@ void L1Algo::L1KFTrackFitter()
   fvec time_first;
   fvec dt2_first;
 
-  fvec x_last;
-  fvec y_last;
+  fvec x_last, x_2last;
+  fvec y_last, y_2last;
   fvec d_xx_lst;
   fvec d_yy_lst;
   fvec d_xy_lst;
@@ -378,7 +378,7 @@ void L1Algo::L1KFTrackFitter()
   fvec fldZ1;
   fvec fldZ2;
   fvec z_start;
-  fvec z_end;
+  fvec z_end, z_2last;
 
   L1FieldValue fB[L1Constants::size::kMaxNstations], fB_temp _fvecalignment;
 
@@ -454,6 +454,7 @@ void L1Algo::L1KFTrackFitter()
           d_yy_fst[iVec]   = d_yy[ista][iVec];
           d_xy_fst[iVec]   = d_xy[ista][iVec];
         }
+
         else if (ih == nHitsTrack - 1) {
           z_end[iVec]     = z[ista][iVec];
           x_last[iVec]    = x[ista][iVec];
@@ -463,6 +464,11 @@ void L1Algo::L1KFTrackFitter()
           d_xy_lst[iVec]  = d_xy[ista][iVec];
           time_last[iVec] = time[ista][iVec];
           dt2_last[iVec]  = dt2[ista][iVec];
+        }
+        else if (ih == nHitsTrack - 2) {
+          z_2last[iVec] = z[ista][iVec];
+          x_2last[iVec] = x[ista][iVec];
+          y_2last[iVec] = y[ista][iVec];
         }
       }
 
@@ -481,11 +487,17 @@ void L1Algo::L1KFTrackFitter()
       }
     }
 
-    GuessVec(fit, x, y, z, Sy, w, nStations, &z_end, time, w_time);
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+      GuessVecNoField(fit, x_last, x_2last, y_last, y_2last, z_end, z_2last, time_last, w_time, dt2_last);
+    }
 
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { tr.qp = fvec(0.); }
+    else
 
-    //tr.qp = iif(isFieldPresent, tr.qp, fvec(1. / 0.25));
+      GuessVec(fit, x, y, z, Sy, w, nStations, &z_end, time, w_time);
+
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { tr.qp = fvec(1. / 1.1); }
+
+    // tr.qp = iif(isFieldPresent, tr.qp, fvec(1. / 0.25));
 
     for (int iter = 0; iter < 2; iter++) {  // 1.5 iterations
 
@@ -529,16 +541,20 @@ void L1Algo::L1KFTrackFitter()
 
         fit.Extrapolate(z[ista], qp01, fld1, wExtr);
 
+
         //if (ista == fNstationsBeforePipe - 1) {
         //fit.AddPipeMaterial(qp01, wExtr);
         //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(1.f), wExtr);
         //}
         fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
+
         fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(1.f), wExtr);
 
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
         fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
+
         fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);
+
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
@@ -734,6 +750,28 @@ void L1Algo::L1KFTrackFitter()
     }  // iter
   }
 }
+void L1Algo::GuessVecNoField(L1TrackParFit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
+                             fvec& z_2last, fvec& time_last, fvec* w_time, fvec& dt2_last)
+{
+  fvec dzi = fvec(1.) / (z_end - z_2last);
+
+  t.fTr.x    = x_last;
+  t.fTr.y    = y_last;
+  t.fTr.tx   = (x_last - x_2last) * dzi;
+  t.fTr.ty   = (y_last - y_2last) * dzi;
+  t.fTr.t    = time_last;
+  t.fTr.z    = z_end;
+  t.fTr.chi2 = fvec(0.);
+  t.fTr.NDF  = fvec(2.);
+
+  t.fTr.C20 = t.fTr.C21 = fvec(0.);
+  t.fTr.C30 = t.fTr.C31 = t.fTr.C32 = fvec(0.);
+  t.fTr.C40 = t.fTr.C41 = t.fTr.C42 = t.fTr.C43 = fvec(0.);
+  t.fTr.C50 = t.fTr.C51 = t.fTr.C52 = t.fTr.C53 = t.fTr.C54 = fvec(0.);
+  t.fTr.C22 = t.fTr.C33 = vINF;
+  t.fTr.C44             = fvec(1.);
+  t.fTr.C55             = fvec(dt2_last);
+}
 
 
 void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur)
@@ -829,10 +867,12 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
     y = yV[i];
     w = wV[i];
     if (timeV) nhits = nhits + w_time[i];
-    z  = zV[i] - z0;
-    S  = Sy[i];
+    z = zV[i] - z0;
+    S = Sy[i];
+
     wz = w * z;
     wS = w * S;
+
     A0 += w;
     A1 += wz;
     A2 += wz * z;
@@ -876,8 +916,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   A1         = A1 + A3 * L1;
   A2         = A2 + (A4 + A4 + A5 * L1) * L1;
   b1 += b2 * L1;
-  det = fvec::One() / (-A1 * A1 + A0 * A2);
-
+  det      = fvec::One() / (-A1 * A1 + A0 * A2);
   t.fTr.y  = (A2 * b0 - A1 * b1) * det;
   t.fTr.ty = (-A1 * b0 + A0 * b1) * det;
   t.fTr.qp = -L * c_light_i / sqrt(txtx1 + t.fTr.ty * t.fTr.ty);

@@ -1008,23 +1008,15 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
     fpAlgo->CATrackFinder();
-    //      IdealTrackFinder();
+    //     IdealTrackFinder();
     fTrackingTime += fpAlgo->fCATime;
 
     if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
     //  fpAlgo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
 
-    {  // track fit
-      L1FieldValue b = fpAlgo->GetParameters()->GetVertexFieldValue();
+    // track fit
+    fpAlgo->L1KFTrackFitter();
 
-      if ((fabs(b.x[0]) < 0.0000001) && (fabs(b.y[0]) < 0.0000001) && (fabs(b.z[0]) < 0.0000001)) {
-        // no field
-        fpAlgo->KFTrackFitter_simple();
-      }
-      else {
-        fpAlgo->L1KFTrackFitter();
-      }
-    }
 
     if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 

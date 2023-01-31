@@ -342,6 +342,8 @@ public:
   void GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur = 0);
   void GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur = 0,
                 fvec* timeV = 0, fvec* w_time = 0);
+  void GuessVecNoField(L1TrackParFit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
+                       fvec& z_2last, fvec& time_last, fvec* w_time, fvec& dt2_last);
 
   void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& dx2, fvec& dy2, fvec& dxy);
 
