@@ -3,7 +3,7 @@ Macro(Remove_Trailing_Slash _variable)
   String(FIND ${_variable} "/" _pos_last_slash REVERSE)
   STRING(LENGTH ${_variable} _length)
   Math(EXPR _last_pos ${_pos_last_slash}+1)
-  If(${_last_pos} EQUAL ${_length})  
+  If(${_last_pos} EQUAL ${_length})
     String(SUBSTRING ${_variable} 0 ${_pos_last_slash} _ret_val)
   Else()
     Set(_ret_val ${_variable})
@@ -50,7 +50,7 @@ Macro(FairRootVersion)
 
   Set(FairRoot_VERSION
       ${FairRoot_VERSION_MAJOR}.${FairRoot_VERSION_MINOR}.${FairRoot_VERSION_PATCH}
-     ) 
+     )
 EndMacro()
 
 Macro(FairSoftVersion)
@@ -95,10 +95,10 @@ Macro(FairSoftVersion)
 
   Set(FairSoft_VERSION
       ${FairSoft_VERSION_MAJOR}.${FairSoft_VERSION_MINOR}
-     ) 
+     )
 EndMacro()
 
-Macro(Gen_Exe_Script _ExeName) 
+Macro(Gen_Exe_Script _ExeName)
 
   set(shell_script_name "${_ExeName}.sh")
 
@@ -141,8 +141,8 @@ function(download_project_if_needed)
                    )
     If(NOT ${MY_GIT_TAG} STREQUAL ${CURRENT_SPADIC_HASH})
       If(MY_GIT_STASH)
-        Execute_Process(COMMAND git stash  WORKING_DIRECTORY ${MY_SOURCE_DIR}) 
-        Execute_Process(COMMAND git stash clear  WORKING_DIRECTORY ${MY_SOURCE_DIR}) 
+        Execute_Process(COMMAND git stash  WORKING_DIRECTORY ${MY_SOURCE_DIR})
+        Execute_Process(COMMAND git stash clear  WORKING_DIRECTORY ${MY_SOURCE_DIR})
       EndIF()
       download_project(PROJ            ${MY_PROJECT}
                        GIT_REPOSITORY  ${MY_GIT_REPOSITORY}
@@ -209,7 +209,7 @@ macro(generate_cbm_library)
 
   ######################### build the library ############################
   add_library(${LIBRARY_NAME} SHARED ${HEADERS} ${SRCS} ${NO_DICT_SRCS} ${LINKDEF})
-  
+
   target_link_libraries(${LIBRARY_NAME} PUBLIC ${DEPENDENCIES} ${PUBLIC_DEPENDENCIES} PRIVATE ${PRIVATE_DEPENDENCIES} INTERFACE ${INTERFACE_DEPENDENCIES})
   target_include_directories(${LIBRARY_NAME} PUBLIC ${INCLUDE_DIRECTORIES})
 
@@ -228,14 +228,8 @@ macro(generate_cbm_library)
 
 
   if(LINKDEF)
-    set(rootmap_file ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}.rootmap)
-    set(pcm_file ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}_rdict.pcm)
-
-    add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${rootmap_file} ${LIBRARY_OUTPUT_PATH}
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pcm_file} ${LIBRARY_OUTPUT_PATH}
-                       DEPENDS ${LIBRARY_NAME}
-                      )
+    set(rootmap_file ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}.rootmap)
+    set(pcm_file ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}_rdict.pcm)
 
     install(FILES ${rootmap_file} ${pcm_file} DESTINATION lib)
   endif(LINKDEF)
@@ -295,7 +289,7 @@ macro(print_info)
   set(BMagenta "${Esc}[1;35m")
   set(BCyan    "${Esc}[1;36m")
   set(BWhite   "${Esc}[1;37m")
-  
+
 
 message(STATUS "  ")
 message(STATUS "  ${Cyan}CXX STANDARD${CR}       ${BGreen}C++${CMAKE_CXX_STANDARD}${CR} (change with ${BMagenta}-DCMAKE_CXX_STANDARD=17${CR})")
@@ -306,19 +300,19 @@ if(packages)
   message(STATUS "  ")
   message(STATUS "  ${Cyan}PACKAGE              VERSION         OPTION${CR}")
   foreach(dep IN LISTS packages)
-   
+
     if(${${dep}_FOUND}} MATCHES "TRUE" OR ${${dep}_FOUND}} MATCHES "1" OR ${${dep}_FOUND}} MATCHES  "true")
         set(dep_found "${BGreen}-FOUND")
        else()
         set(dep_found "${Red}-NOT FOUND")
     endif()
-     
-    pad("${BYellow}${${dep}_VERSION}${CR}" 15 " " dep_version COLOR 1)      
+
+    pad("${BYellow}${${dep}_VERSION}${CR}" 15 " " dep_version COLOR 1)
     pad(${dep} 20 " " dep_name)
     pad("${dep_found}${CR}" 15 " " version_found COLOR 1)
 
     message(STATUS "  ${BWhite}${dep_name}${CR}${dep_version}${version_found}")
-    
+
     unset(dep)
     unset(dep_found)
     unset(dep_version)

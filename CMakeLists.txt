@@ -97,7 +97,7 @@ if(FairLogger_FOUND)
     INTERFACE_INCLUDE_DIRECTORIES "${_incDirs}/fairlogger"
     )
 endif()
-  
+
 #Searches for VMC Package
 if(ROOT_vmc_FOUND)
   set(VMCLIB ROOT::VMC)
@@ -177,7 +177,7 @@ check_external_stack()
 set_compiler_flags()
 
 # Define where the produced targets are placed in the binary directory
-Set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
+Set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 Set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 Set(INCLUDE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/include")
 set(CMAKE_INSTALL_LIBDIR lib)
@@ -269,5 +269,5 @@ generate_config_files()
 Install(DIRECTORY geometry input parameters
         DESTINATION share/cbmroot
         PATTERN ".git" EXCLUDE)
-        
+
 print_info()
