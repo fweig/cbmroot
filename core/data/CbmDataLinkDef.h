@@ -26,7 +26,6 @@
 #pragma link C++ class CbmLink + ;
 #pragma link C++ class CbmModuleList;
 #pragma link C++ class CbmErrorMessage + ;
-#pragma link C++ class CbmRawEvent + ;
 #pragma link C++ class CbmTsEventHeader + ;
 #pragma link C++ class std::vector < CbmErrorMessage> + ;
 
