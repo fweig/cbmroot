@@ -58,3 +58,6 @@ generate_cbm_library()
 Install(FILES CbmDigitize.h CbmTrackingDetectorInterfaceBase.h report/CbmReportElement.h
         DESTINATION include
        )
+
+# Fles tools/utils
+Add_Subdirectory(utils/flestools)
