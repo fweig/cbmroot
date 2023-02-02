@@ -40,7 +40,7 @@ private:
 
   static bool CompareTrackTime(const SortTracks& a, const SortTracks& b)
   {
-    return (a.Track.GetTime() < b.Track.GetTime());
+    return (a.Track.GetStartTime() < b.Track.GetStartTime());
   }
 
   TClonesArray* fStsTracks;  ///< Input array (class CbmStsDigi)

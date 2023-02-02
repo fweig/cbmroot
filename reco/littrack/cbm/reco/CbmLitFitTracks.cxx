@@ -107,7 +107,7 @@ void CbmLitFitTracks::DoFit()
     Int_t stsTrackId      = track->GetPreviousTrackId();
     CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsTrackId));
     CbmTrackParam cbmLPar;
-    cbmLPar.Set(*stsTrack->GetParamLast(), stsTrack->GetTime(), stsTrack->GetTimeError());
+    cbmLPar.Set(*stsTrack->GetParamLast(), stsTrack->GetLastHitTime(), stsTrack->GetLastHitTimeError());
     CbmLitTrackParam lpar;
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmLPar, &lpar);
     track->SetParamFirst(&lpar);

@@ -104,10 +104,10 @@ public:
     CbmLitTrackParam paramFirst, paramLast;
     //TODO remove this const typecasting
     CbmTrackParam cbmParamFirst;
-    cbmParamFirst.Set(*stsTrack->GetParamFirst(), stsTrack->GetTime(), stsTrack->GetTimeError());
+    cbmParamFirst.Set(*stsTrack->GetParamFirst(), stsTrack->GetFirstHitTime(), stsTrack->GetFirstHitTimeError());
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamFirst, &paramFirst);
     CbmTrackParam cbmParamLast;
-    cbmParamLast.Set(*stsTrack->GetParamLast(), stsTrack->GetTime(), stsTrack->GetTimeError());
+    cbmParamLast.Set(*stsTrack->GetParamLast(), stsTrack->GetLastHitTime(), stsTrack->GetLastHitTimeError());
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamLast, &paramLast);
     Double_t firstTime;
     Double_t lastTime;
@@ -137,10 +137,10 @@ public:
     ltrack->SetPDG(track->GetPidHypo());
     CbmLitTrackParam paramFirst, paramLast;
     CbmTrackParam cbmParamFirst;
-    cbmParamFirst.Set(*track->GetParamFirst(), track->GetTime(), track->GetTimeError());
+    cbmParamFirst.Set(*track->GetParamFirst(), track->GetFirstHitTime(), track->GetFirstHitTimeError());
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamFirst, &paramFirst);
     CbmTrackParam cbmParamLast;
-    cbmParamLast.Set(*track->GetParamLast(), track->GetTime(), track->GetTimeError());
+    cbmParamLast.Set(*track->GetParamLast(), track->GetLastHitTime(), track->GetLastHitTimeError());
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamLast, &paramLast);
     ltrack->SetParamFirst(&paramFirst);
     ltrack->SetParamLast(&paramLast);
@@ -330,6 +330,10 @@ public:
 
   static void GetStsTrackTimes(const CbmStsTrack* track, Double_t& firstTime, Double_t& lastTime)
   {
+    firstTime = track->GetFirstHitTime();
+    lastTime  = track->GetLastHitTime();
+    return;
+
     static FairRootManager* ioman = 0;
     static CbmVertex* primVertex  = 0;
     static TClonesArray* stsHits  = 0;
@@ -359,10 +363,10 @@ public:
     CbmLitTrackParam paramFirst;
     CbmLitTrackParam paramLast;
     CbmTrackParam cbmParamFirst;
-    cbmParamFirst.Set(*track->GetParamFirst(), track->GetTime(), track->GetTimeError());
+    cbmParamFirst.Set(*track->GetParamFirst(), track->GetFirstHitTime(), track->GetFirstHitTimeError());
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamFirst, &paramFirst);
     CbmTrackParam cbmParamLast;
-    cbmParamLast.Set(*track->GetParamLast(), track->GetTime(), track->GetTimeError());
+    cbmParamLast.Set(*track->GetParamLast(), track->GetLastHitTime(), track->GetLastHitTimeError());
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamLast, &paramLast);
 
     Double_t x = paramFirst.GetX();

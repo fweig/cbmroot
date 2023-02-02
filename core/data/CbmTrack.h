@@ -66,8 +66,12 @@ public:
   const FairTrackParam* GetParamFirst() const { return &fParamFirst; }
   const FairTrackParam* GetParamLast() const { return &fParamLast; }
   CbmMatch* GetMatch() const { return fMatch; }
-  double GetTime() const { return fTime; }
-  double GetTimeError() const { return fTimeError; }
+  double GetStartTime() const { return fStartTime; }
+  double GetStartTimeError() const { return fStartTimeError; }
+  double GetFirstHitTime() const { return fFirstHitTime; }
+  double GetFirstHitTimeError() const { return fFirstHitTimeError; }
+  double GetLastHitTime() const { return fLastHitTime; }
+  double GetLastHitTimeError() const { return fLastHitTimeError; }
 
   /** Modifiers  **/
   void SetPidHypo(int32_t pid) { fPidHypo = pid; }
@@ -78,8 +82,12 @@ public:
   void SetParamFirst(const FairTrackParam* par) { fParamFirst = *par; }
   void SetParamLast(const FairTrackParam* par) { fParamLast = *par; }
   void SetMatch(CbmMatch* match);
-  void SetTime(double time) { fTime = time; }
-  void SetTimeError(double error) { fTimeError = error; }
+  void SetStartTime(double time) { fStartTime = time; }
+  void SetStartTimeError(double error) { fStartTimeError = error; }
+  void SetFirstHitTime(double time) { fFirstHitTime = time; }
+  void SetFirstHitTimeError(double error) { fFirstHitTimeError = error; }
+  void SetLastHitTime(double time) { fLastHitTime = time; }
+  void SetLastHitTimeError(double error) { fLastHitTimeError = error; }
 
   virtual std::string ToString() const;
 
@@ -98,8 +106,16 @@ protected:
   FairTrackParam fParamLast;
 
   /** Track start time **/
-  double fTime;
-  double fTimeError;
+  double fStartTime;
+  double fStartTimeError;
+
+  /** Track time at the first hit **/
+  double fFirstHitTime;
+  double fFirstHitTimeError;
+
+  /** Track time at the last hit **/
+  double fLastHitTime;
+  double fLastHitTimeError;
 
   /** Quality flag **/
   int32_t fFlag;
@@ -114,7 +130,7 @@ protected:
   /** Monte-Carlo information **/
   CbmMatch* fMatch;
 
-  ClassDef(CbmTrack, 4);
+  ClassDef(CbmTrack, 5);
 };
 
 #endif

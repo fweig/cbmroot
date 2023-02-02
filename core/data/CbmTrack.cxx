@@ -27,8 +27,12 @@ CbmTrack::CbmTrack()
   , fPidHypo(0)
   , fParamFirst()
   , fParamLast()
-  , fTime(0.)
-  , fTimeError(0.)
+  , fStartTime(0.)
+  , fStartTimeError(0.)
+  , fFirstHitTime(0.)
+  , fFirstHitTimeError(0.)
+  , fLastHitTime(0.)
+  , fLastHitTimeError(0.)
   , fFlag(0)
   , fChiSq(0.)
   , fNDF(0)
@@ -45,8 +49,12 @@ CbmTrack::CbmTrack(const CbmTrack& rhs)
   , fPidHypo(rhs.fPidHypo)
   , fParamFirst(rhs.fParamFirst)
   , fParamLast(rhs.fParamLast)
-  , fTime(rhs.fTime)
-  , fTimeError(rhs.fTimeError)
+  , fStartTime(rhs.fStartTime)
+  , fStartTimeError(rhs.fStartTimeError)
+  , fFirstHitTime(rhs.fFirstHitTime)
+  , fFirstHitTimeError(rhs.fFirstHitTimeError)
+  , fLastHitTime(rhs.fLastHitTime)
+  , fLastHitTimeError(rhs.fLastHitTimeError)
   , fFlag(rhs.fFlag)
   , fChiSq(rhs.fChiSq)
   , fNDF(rhs.fNDF)
@@ -60,19 +68,23 @@ CbmTrack& CbmTrack::operator=(const CbmTrack& rhs)
 {
 
   if (this != &rhs) {
-    TObject::operator=(rhs);
-    fHitIndex        = rhs.fHitIndex;
-    fHitType         = rhs.fHitType;
-    fPidHypo         = rhs.fPidHypo;
-    fParamFirst      = rhs.fParamFirst;
-    fParamLast       = rhs.fParamLast;
-    fTime            = rhs.fTime;
-    fTimeError       = rhs.fTimeError;
-    fFlag            = rhs.fFlag;
-    fChiSq           = rhs.fChiSq;
-    fNDF             = rhs.fNDF;
-    fPreviousTrackId = rhs.fPreviousTrackId;
-    fMatch           = nullptr;
+    TObject::operator  =(rhs);
+    fHitIndex          = rhs.fHitIndex;
+    fHitType           = rhs.fHitType;
+    fPidHypo           = rhs.fPidHypo;
+    fParamFirst        = rhs.fParamFirst;
+    fParamLast         = rhs.fParamLast;
+    fStartTime         = rhs.fStartTime;
+    fStartTimeError    = rhs.fStartTimeError;
+    fFirstHitTime      = rhs.fFirstHitTime;
+    fFirstHitTimeError = rhs.fFirstHitTimeError;
+    fLastHitTime       = rhs.fLastHitTime;
+    fLastHitTimeError  = rhs.fLastHitTimeError;
+    fFlag              = rhs.fFlag;
+    fChiSq             = rhs.fChiSq;
+    fNDF               = rhs.fNDF;
+    fPreviousTrackId   = rhs.fPreviousTrackId;
+    fMatch             = nullptr;
   }
   return *this;
 }

@@ -323,7 +323,7 @@ void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
 
     CbmStsTrack* track = (CbmStsTrack*) fStsTracks->At(iTrack);
 
-    fTimeHisto[0]->Fill(track->GetTime());
+    fTimeHisto[0]->Fill(track->GetStartTime());
 
 
     UInt_t NHits = track->GetNofStsHits();
@@ -381,8 +381,8 @@ void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(0, mcEvent, mcTrackId);
 
     double mcTime   = mcTrack->GetStartT() + fEventList->GetEventTime(mcEvent + 1, link.GetFile());
-    double residual = track->GetTime() - mcTime;
-    double pull     = residual / track->GetTimeError();
+    double residual = track->GetStartTime() - mcTime;
+    double pull     = residual / track->GetStartTimeError();
     fTimeHisto[1]->Fill(residual);
     fTimeHisto[2]->Fill(pull);
   }
@@ -504,12 +504,12 @@ void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
 
       CbmStsTrack* track = (CbmStsTrack*) fStsTracks->At(stsTrackIndex);
 
-      if ((track->GetTime()) > tLastTrack) tLastTrack = (track->GetTime());
-      if ((track->GetTime()) < tFirstTrack) tFirstTrack = (track->GetTime());
+      if ((track->GetStartTime()) > tLastTrack) tLastTrack = (track->GetStartTime());
+      if ((track->GetStartTime()) < tFirstTrack) tFirstTrack = (track->GetStartTime());
 
       double mcTime = mcTrack->GetStartT() + fEventList->GetEventTime(mcEvent + 1, link.GetFile());
 
-      fTimeHisto[24]->Fill(fabs(track->GetTime() - mcTime) / track->GetTimeError());
+      fTimeHisto[24]->Fill(fabs(track->GetStartTime() - mcTime) / track->GetStartTimeError());
 
       if (fMCEvents[mcEvent].IsReconstructable()) EventMatch.AddTrack(mcEvent);
 
@@ -518,8 +518,8 @@ void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
         const int stsTrackIndex1 = event->GetStsTrackIndex(iTr1);
         CbmStsTrack* track1      = (CbmStsTrack*) fStsTracks->At(stsTrackIndex1);
 
-        fTimeHisto[25]->Fill(fabs(track->GetTime() - track1->GetTime())
-                             / sqrt(track->GetTimeError() + track1->GetTimeError()));
+        fTimeHisto[25]->Fill(fabs(track->GetStartTime() - track1->GetStartTime())
+                             / sqrt(track->GetStartTimeError() + track1->GetStartTimeError()));
       }
 
       for (int iEvent1 = 0; iEvent1 < fEvents->GetEntriesFast(); iEvent1++) {
@@ -532,10 +532,10 @@ void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
           const int stsTrackIndex1 = event1->GetStsTrackIndex(iTr1);
           CbmStsTrack* track1      = (CbmStsTrack*) fStsTracks->At(stsTrackIndex1);
 
-          if (fabs(track->GetTime() - track1->GetTime()) > 8.5) continue;
+          if (fabs(track->GetStartTime() - track1->GetStartTime()) > 8.5) continue;
 
-          fTimeHisto[26]->Fill(fabs(track->GetTime() - track1->GetTime())
-                               / sqrt(track->GetTimeError() + track1->GetTimeError()));
+          fTimeHisto[26]->Fill(fabs(track->GetStartTime() - track1->GetStartTime())
+                               / sqrt(track->GetStartTimeError() + track1->GetStartTimeError()));
         }
       }
     }
@@ -589,10 +589,10 @@ void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
       const int stsTrackIndex = event->GetStsTrackIndex(i);
       CbmStsTrack* track      = (CbmStsTrack*) fStsTracks->At(stsTrackIndex);
 
-      fTimeHisto[6]->Fill(track->GetTime());
+      fTimeHisto[6]->Fill(track->GetStartTime());
 
 
-      fTimeHisto[11 + iCol]->Fill(track->GetTime());
+      fTimeHisto[11 + iCol]->Fill(track->GetStartTime());
 
       UInt_t NHits = track->GetNofStsHits();
 

@@ -209,8 +209,12 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmStsTrack(CbmL1Track l1track, CbmStsT
   track->SetChiSq(T->chi2);
   track->SetNDF(T->NDF);
   track->SetPidHypo(T->T[4] >= 0 ? 211 : -211);
-  track->SetTime(T->Tpv[6]);
-  track->SetTimeError(T->Cpv[20]);
+  track->SetStartTime(T->Tpv[6]);
+  track->SetStartTimeError(T->Cpv[20]);
+  track->SetFirstHitTime(T->T[6]);
+  track->SetFirstHitTimeError(T->C[20]);
+  track->SetLastHitTime(T->TLast[6]);
+  track->SetLastHitTimeError(T->CLast[20]);
 
   FairTrackParam fpar(*track->GetParamFirst()), lpar(*track->GetParamLast());
   CbmKFMath::CopyTC2TrackParam(&fpar, T->T, T->C);

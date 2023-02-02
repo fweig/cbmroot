@@ -32,8 +32,8 @@ CbmTofTrack::~CbmTofTrack() {}
 std::string CbmTofTrack::ToString() const
 {
   stringstream ss;
-  ss << "CbmTofTrack: time " << fTime << " ns | hits STS " << GetNofTofHits() << " | q/p " << GetParamFirst()->GetQp()
-     << " | chisq " << GetChiSq() << " | NDF " << GetNDF() << " | STS hits ";
+  ss << "CbmTofTrack: start time " << fStartTime << " ns | hits STS " << GetNofTofHits() << " | q/p "
+     << GetParamFirst()->GetQp() << " | chisq " << GetChiSq() << " | NDF " << GetNDF() << " | STS hits ";
   for (int32_t iHit = 0; iHit < GetNofTofHits(); iHit++) {
     ss << GetTofHitIndex(iHit) << " ";
   }

@@ -92,8 +92,8 @@ void CbmBuildEventsFromTracksReal::Exec(Option_t*)
   for (unsigned int iTrack = 0; iTrack < nTracks; iTrack++) {
     CbmStsTrack* track = (CbmStsTrack*) fStsTracks->At(iTrack);
 
-    Double_t time   = track->GetTime();
-    Double_t timeEr = track->GetTimeError();
+    Double_t time   = track->GetStartTime();
+    Double_t timeEr = track->GetStartTimeError();
 
     SortTracks structure;
 
@@ -129,14 +129,14 @@ void CbmBuildEventsFromTracksReal::Exec(Option_t*)
     for (unsigned int iTrack = 0; iTrack < Tracks.size(); iTrack++) {
       if (Tracks[iTrack].used) continue;
 
-      float time1  = Tracks[iTrack].Track.GetTime();
-      float timeC1 = Tracks[iTrack].Track.GetTimeError();
+      float time1  = Tracks[iTrack].Track.GetStartTime();
+      float timeC1 = Tracks[iTrack].Track.GetStartTimeError();
 
       for (unsigned int iClusterTrack = 0; iClusterTrack < cluster.size(); iClusterTrack++) {
         CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(cluster[iClusterTrack]);
 
-        float time2  = stsTrack->GetTime();
-        float timeC2 = stsTrack->GetTimeError();
+        float time2  = stsTrack->GetStartTime();
+        float timeC2 = stsTrack->GetStartTimeError();
 
         float dt    = fabs(time1 - time2);
         float error = sqrt(timeC1 + timeC2);  ///&&????????????????
@@ -157,9 +157,9 @@ void CbmBuildEventsFromTracksReal::Exec(Option_t*)
     for (unsigned int iClusterTrack = 0; iClusterTrack < cluster.size(); iClusterTrack++) {
       CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(cluster[iClusterTrack]);
 
-      if (time_min > stsTrack->GetTime()) time_min = stsTrack->GetTime();
+      if (time_min > stsTrack->GetStartTime()) time_min = stsTrack->GetStartTime();
 
-      if (time_max < stsTrack->GetTime()) time_max = stsTrack->GetTime();
+      if (time_max < stsTrack->GetStartTime()) time_max = stsTrack->GetStartTime();
     }
 
     if (cluster.size() > 1) clusters.push_back(cluster);

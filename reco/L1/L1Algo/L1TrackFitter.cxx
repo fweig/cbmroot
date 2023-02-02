@@ -508,7 +508,7 @@ void L1Algo::L1KFTrackFitter()
       int ista = nStations - 1;
 
       time_last = iif(w_time[ista] > fvec::Zero(), time_last, fvec::Zero());
-      dt2_last  = iif(w_time[ista] > fvec::Zero(), dt2_last, fvec(100.));
+      dt2_last  = iif(w_time[ista] > fvec::Zero(), dt2_last, fvec(1.e6));
 
       FilterFirst(fit, x_last, y_last, time_last, dt2_last, d_xx_lst, d_yy_lst, d_xy_lst);
 
@@ -751,7 +751,7 @@ void L1Algo::L1KFTrackFitter()
   }
 }
 void L1Algo::GuessVecNoField(L1TrackParFit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
-                             fvec& z_2last, fvec& time_last, fvec* w_time, fvec& dt2_last)
+                             fvec& z_2last, fvec& time_last, fvec* /*w_time*/, fvec& dt2_last)
 {
   fvec dzi = fvec(1.) / (z_end - z_2last);
 

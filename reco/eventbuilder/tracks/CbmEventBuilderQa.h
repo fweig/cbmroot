@@ -67,7 +67,7 @@ private:
 
   static bool CompareTrackTime(const SortEvents& a, const SortEvents& b)
   {
-    return (a.track.GetTime() < b.track.GetTime());
+    return (a.track.GetStartTime() < b.track.GetStartTime());
   }
 
   bool CalculateIsReconstructable(const int iMCFile, const int iMCEvent,
