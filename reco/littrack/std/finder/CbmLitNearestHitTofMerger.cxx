@@ -75,11 +75,16 @@ LitStatus CbmLitNearestHitTofMerger::DoMerge(HitPtrVector& hits, TrackPtrVector&
       if (zParamMap.find(hit->GetZ()) == zParamMap.end()) {  // This should never happen
         std::cout << "-E- CbmLitNearestHitTofMerger::DoMerge: Z position " << hit->GetZ()
                   << " not found in map. Something is wrong.\n";
+        assert(0);
       }
       CbmLitTrackParam tpar(zParamMap[hit->GetZ()]);
-      litfloat chi = 0.;
+      litfloat chi = 1.e10;
       fFilter->Update(&tpar, hit, chi);
-      if (chi < fChiSqCut && chi < minChiSq) {  // Check if hit is inside validation gate and closer to the track.
+
+      // Check if hit is inside validation gate.
+      if (fChiSqCut >= 0. && chi >= fChiSqCut) { continue; }
+
+      if (chi < minChiSq) {  // Check if hit is closer to the track.
         minChiSq = chi;
         minHit   = hit;
         minPar   = tpar;

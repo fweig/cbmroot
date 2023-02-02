@@ -131,10 +131,10 @@ public:
   {
     std::vector<litfloat> covFirst(fParamFirst.GetCovMatrix());
     std::vector<litfloat> covLast(fParamLast.GetCovMatrix());
-    for (Int_t i = 0; i < 21; i++) {
+    // don't check the time error, because time can be unmeasured -- S.Gorbunov
+    for (Int_t i = 0; i < 15; i++) {
       if (std::abs(covFirst[i]) > 10000. || std::abs(covLast[i]) > 10000.) { return false; }
     }
-    if (GetNofHits() < 1) { return false; }
     return true;
   }
 

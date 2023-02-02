@@ -609,25 +609,14 @@ void CbmLitFindGlobalTracks::RunTrackReconstruction()
 
 void CbmLitFindGlobalTracks::SelectTracksForTofMerging()
 {
-  // The aim of this procedure is to select only those tracks
-  // which have at least one hit in the last station group.
-  // Only those tracks will be propagated further and merged
-  // with TOF hits.
-
-  Int_t nofStations = CbmLitTrackingGeometryConstructor::Instance()->GetNofMuchTrdStations();
-  //   Int_t stationCut = nofStations - 4;
-  // TODO: Fix this issue in a better way. This is done only as an ugly fix
-  // FU 19.09.13
-  Int_t stationCut = nofStations - 3;
+  // Select tracks for merging with TOF.
+  // Currently all tracks are selected, no matter if they have hits in TRD / MUCH or not.
+  // The only requirement is the numerical quality of the covariance matrix. -- Sergey Gorbunov
 
   for (TrackPtrIterator it = fLitOutputTracks.begin(); it != fLitOutputTracks.end(); it++) {
     CbmLitTrack* track = *it;
     if (track->GetQuality() == kLITBAD) { continue; }
-    const CbmLitHit* hit = track->GetHit(track->GetNofHits() - 1);
-    if (hit->GetStation() >= stationCut) {
-      // OK select this track for further merging with TOF
-      track->SetQuality(kLITGOODMERGE);
-    }
+    track->SetQuality(kLITGOODMERGE);
   }
 }
 

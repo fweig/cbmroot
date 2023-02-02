@@ -213,7 +213,7 @@ HitToTrackMergerPtr CbmLitToolFactory::CreateHitToTrackMerger(const std::string&
     nhMerger->SetLinePropagator(CreateTrackPropagator("line"));
     nhMerger->SetFilter(CreateTrackUpdate("kalman"));
     nhMerger->SetPDG(211);
-    nhMerger->SetChiSqCut(50.);  //13.86);
+    nhMerger->SetChiSqCut(-1.);  //50.);  //13.86);
     return HitToTrackMergerPtr(nhMerger);
   }
   else if (name == "tof_all_hits") {
