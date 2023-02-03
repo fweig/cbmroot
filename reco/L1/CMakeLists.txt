@@ -77,8 +77,11 @@ set(SRCS
   qa/CbmTrackerInputQaTrd.cxx
   qa/CbmTrackerInputQaTof.cxx
   qa/CbmTrackingInputQaSts.cxx
-  qa/CbmCaInputQaMuch.cxx
   qa/CbmCaInputQaSts.cxx
+  qa/CbmCaInputQaMuch.cxx
+  qa/CbmCaInputQaTrd.cxx
+  qa/CbmCaInputQaTof.cxx
+  qa/CbmTofInteraction.cxx # Tests
 )
 
 set(NO_DICT_SRCS
@@ -96,8 +99,11 @@ set(HEADERS
   CbmL1Vtx.h
   L1Algo/L1Def.h
   L1Algo/L1Vector.h
+  L1Algo/L1Undef.h
   catools/CaToolsWindowFinder.h
+  catools/CaToolsLinkKey.h
   qa/CbmCaQaCuts.h
+  
 )
 
 

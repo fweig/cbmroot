@@ -187,6 +187,10 @@ void run_reco_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw
     CbmMuchHitFinderQa* muchHitFinderQa = new CbmMuchHitFinderQa();
     muchHitFinderQa->SetGeoFileName(muchParFile);
     run->AddTask(muchHitFinderQa);
+
+    auto* pInputQaMuch = new CbmCaInputQaMuch(verbose, bUseMC);
+    pInputQaMuch->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(new CbmCaInputQaMuch(verbose, bUseMC));
   }
 
   // ----- TRD QA  ---------------------------------
@@ -198,10 +202,14 @@ void run_reco_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw
     run->AddTask(new CbmTrdHitProducerQa());
     run->AddTask(new CbmTrdCalibTracker());
     run->AddTask(new CbmTrackerInputQaTrd());  // Tracker requirements to TRD
+
+    auto* pInputQaTrd = new CbmCaInputQaTrd(verbose, bUseMC);
+    pInputQaTrd->SetEfficiencyThrsh(0.5, 0, 100);        // Integration over the whole range
+    run->AddTask(new CbmCaInputQaTrd(verbose, bUseMC));  // Tracker requirements to TRD
   }
   // ------------------------------------------------------------------------
 
-  // ----- TRD QA  ---------------------------------
+  // ----- TOF QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kTof)) {
     // TODO: SZh 19.10.2022:
     // After the proper TOF digi parameters initialization it is appeared,
@@ -212,6 +220,10 @@ void run_reco_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw
     // resolved.
 
     //run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TRD
+
+    auto* pInputQaTof = new CbmCaInputQaTof(verbose, bUseMC);
+    pInputQaTof->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(new CbmCaInputQaTof(verbose, bUseMC));
   }
   // ------------------------------------------------------------------------
 
@@ -219,8 +231,9 @@ void run_reco_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) {
     //run->AddTask(new CbmStsDigitizeQa()); //opens lots of windows
     run->AddTask(new CbmStsFindTracksQa());
-    run->AddTask(new CbmTrackingInputQaSts());
-    run->AddTask(new CbmCaInputQaSts(verbose, bUseMC));
+
+    auto* pInputQaSts = new CbmCaInputQaSts(verbose, bUseMC);
+    run->AddTask(pInputQaSts);
   }
   // ------------------------------------------------------------------------
 

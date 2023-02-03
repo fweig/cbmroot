@@ -31,7 +31,7 @@ CbmQaTable::CbmQaTable(const char* name, const char* title, Int_t nRows, Int_t n
   //
   // Setup default style of the table
   TH2D::SetStats(kFALSE);
-  TH2D::SetOption("text");
+  TH2D::SetOption("textX+");
   TH2D::GetXaxis()->SetTickLength(0.);
   TH2D::GetYaxis()->SetTickLength(0.);
   TH2D::GetXaxis()->SetLabelFont(kDefaultFontStyle);
@@ -39,7 +39,8 @@ CbmQaTable::CbmQaTable(const char* name, const char* title, Int_t nRows, Int_t n
 
   // Define basic names of rows and columns
   for (Int_t iRow = 1; iRow <= fNrows; ++iRow) {
-    TH2D::GetYaxis()->SetBinLabel(fNrows - iRow + 1, TString::Format("row %d", iRow).Data());
+    //TH2D::GetYaxis()->SetBinLabel(fNrows - iRow + 1, TString::Format("row %d", iRow).Data());
+    TH2D::GetYaxis()->SetBinLabel(fNrows - iRow + 1, "");
   }
   for (Int_t iCol = 1; iCol <= fNcols; ++iCol) {
     TH2D::GetXaxis()->SetBinLabel(iCol, TString::Format("col %d", iCol).Data());
@@ -90,10 +91,35 @@ void CbmQaTable::SetNamesOfRows(const std::vector<std::string>& names)
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
-std::string CbmQaTable::ToString() const
+std::string CbmQaTable::ToString(int prec) const
 {
   std::stringstream aStream;
-  aStream << (*this);
+  aStream.setf(std::ios::fixed);
+  aStream.setf(std::ios::showpoint);
+  aStream.setf(std::ios::left);
+  aStream.precision(prec);
+
+  aStream << "Table: " << GetTitle() << '\n';
+  aStream << std::setw(fColWidth) << std::setfill(' ') << ' ' << ' ';
+
+  for (Int_t iCol = 0; iCol < fNcols; ++iCol) {
+    std::string entry = std::string(this->GetXaxis()->GetBinLabel(iCol + 1));
+    if (Int_t(entry.size()) + 3 > fColWidth) { entry = entry.substr(0, fColWidth - 3) + "..."; }
+    aStream << std::setw(fColWidth) << std::setfill(' ') << entry << ' ';
+  }
+  aStream << '\n';
+
+  for (Int_t iRow = 0; iRow < fNrows; ++iRow) {
+    // Print row title
+    std::string entry = std::string(GetYaxis()->GetBinLabel(fNrows - iRow));
+    if (static_cast<Int_t>(entry.size()) > fColWidth) { entry = entry.substr(0, fColWidth - 3) + "..."; }
+    aStream << std::setw(fColWidth) << std::setfill(' ') << entry << ' ';
+
+    for (Int_t iCol = 0; iCol < fNcols; ++iCol) {
+      aStream << std::setw(fColWidth) << std::setfill(' ') << GetCell(iRow, iCol) << ' ';
+    }
+    aStream << '\n';
+  }
   return aStream.str();
 }
 //
@@ -120,34 +146,7 @@ void CbmQaTable::SetTextSize(Float_t size)
 //
 std::ostream& operator<<(std::ostream& out, const CbmQaTable& aTable)
 {
-  out.setf(std::ios::fixed);
-  out.setf(std::ios::showpoint);
-  out.precision(3);
-  out.setf(std::ios::left);
-  // Print column titles
-  out << std::setw(CbmQaTable::kRowTitlesSetwPar) << std::setfill(' ') << ' ' << ' ';  // top-left cell, always
-  for (Int_t iCol = 1; iCol <= aTable.fNcols; ++iCol) {
-    std::string entry = std::string(aTable.GetXaxis()->GetBinLabel(iCol));
-    if (static_cast<Int_t>(entry.size()) > CbmQaTable::kDefaultSetwPar) {
-      entry = entry.substr(0, CbmQaTable::kDefaultSetwPar - 3) + "...";
-    }
-    out << std::setw(CbmQaTable::kDefaultSetwPar) << std::setfill(' ') << entry << ' ';
-  }
-  out << '\n';
-
-  for (Int_t iRow = 0; iRow < aTable.fNrows; ++iRow) {
-    // Print row title
-    std::string entry = std::string(aTable.GetYaxis()->GetBinLabel(aTable.fNrows - iRow));
-    if (static_cast<Int_t>(entry.size()) > CbmQaTable::kRowTitlesSetwPar) {
-      entry = entry.substr(0, CbmQaTable::kDefaultSetwPar - 3) + "...";
-    }
-    out << std::setw(CbmQaTable::kRowTitlesSetwPar) << std::setfill(' ') << entry << ' ';
-
-    for (Int_t iCol = 0; iCol < aTable.fNcols; ++iCol) {
-      out << std::setw(CbmQaTable::kDefaultSetwPar) << std::setfill(' ') << aTable.GetCell(iRow, iCol) << ' ';
-    }
-    out << '\n';
-  }
+  out << aTable.ToString(3);
   return out;
 }
 //

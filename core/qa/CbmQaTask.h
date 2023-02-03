@@ -10,6 +10,8 @@
 #ifndef CbmQaTask_h
 #define CbmQaTask_h 1
 
+#include "CbmQaTable.h"
+
 #include "FairTask.h"
 #include "Logger.h"
 
@@ -20,6 +22,7 @@
 #include "TParameter.h"
 #include "TROOT.h"
 
+#include <algorithm>
 #include <string_view>
 
 /// Class CbmQaTask is to be inherited with a particular QA-task. It provides mechanisms for storage and management
@@ -28,9 +31,10 @@ class CbmQaTask : public FairTask {
 public:
   /// Constructor from parameters
   /// \param  name     Name of the task
+  /// \param  prefix   Unique prefix for writeable root objects
   /// \param  verbose  Verbose level
   /// \param  isMCUsed Flag: true - MC information is used, false - only reconstructed data QA is processed
-  CbmQaTask(const char* name, int verbose, bool isMCUsed);
+  CbmQaTask(const char* name, const char* prefix, int verbose, bool isMCUsed);
 
   /// Default constructor
   CbmQaTask() = delete;  // TODO: Let's see, what can happen, if one deletes default constructor
@@ -66,9 +70,8 @@ protected:
   // ** Functions accessible inside the derived classes **
   // *****************************************************
 
-  /// Method to check, if the QA results are acceptable
-  /// NOTE: Here one can add a geometry check ...
-  virtual bool Check() const { return true; }
+  /// \brief Method to check, if the QA results are acceptable
+  virtual bool Check() = 0;
 
   /// De-initialize the task
   virtual void DeInit();
@@ -85,29 +88,32 @@ protected:
   /// Method to fill histograms per event or time-slice
   virtual void FillHistograms();
 
-  /// Method to process histograms in the end of the run (optional)
-  virtual void AnalyzeHistograms();
-
-  /// Creates, initializes and registers the histogram
+  /// Creates, initializes and registers a canvas
   /// \tparam  T     Type of the canvas: TCanvas or CbmQaCanvas (\note T should not be a pointer)
   /// \param   name  Name of canvas
   /// \param   args  The rest of the arguments, which will be passed to the canvas constructor
   template<typename T, typename... Args>
   T* MakeCanvas(const char* name, Args... args);
 
-  /// Creates, initializes and registers the efficiency
+  /// Creates, initializes and registers an efficiency
   /// \tparam  T     Type of the canvas: either TProfile, TProfile2D or TEfficiency (\note T should not be a pointer)
   /// \param   name  Name of canvas
   /// \param   args  The rest of the arguments, which will be passed to the efficiency constructor
   template<typename T, typename... Args>
   T* MakeEfficiency(const char* name, Args... args);
 
-  /// Creates, initializes and registers the histogram
+  /// Creates, initializes and registers a histogram
   /// \tparam  T     Type of the histogram (\note T should not be a pointer)
   /// \param   name  Name of histogram
   /// \param   args  The rest of the arguments, which will be passed to the histogram constructor
   template<typename T, typename... Args>
   T* MakeHisto(const char* name, Args... args);
+
+  /// Creates, initializes and registers a table
+  /// \param  name  Name of the table
+  /// \param  args  The rest of the arguments, which will be passed to the table constructor
+  template<typename... Args>
+  CbmQaTable* MakeTable(const char* name, Args... args);
 
   /// Method to setup histogram properties (text sizes etc.)
   /// \param  pHist  Pointer to a histogram to tune
@@ -123,6 +129,20 @@ protected:
   int GetEventNumber() const { return fNofEvents.GetVal(); }
 
 
+  // ***********************
+  // ** Utility functions **
+  // ***********************
+
+  /// Checks range of variable
+  /// \param name  Name of the variable
+  /// \param var   Variable to check
+  /// \param lo    Lower limit of the variable
+  /// \param hi    Upper limit of the variable
+  /// \return  False, if variable exits the range
+  template<typename T>
+  bool CheckRange(const std::string_view& name, const T& var, const T& lo, const T& hi) const;
+
+
 private:
   // **********************************************************
   // ** Functions accessible inside the CbmQaTask class only **
@@ -135,14 +155,15 @@ private:
   // ** Private variables **
   // ***********************
 
-  // Flags
-  bool fbUseMC = false;  ///< Flag, if MC is used
-
   // I/O
   std::unique_ptr<TFolder> fpFolderRoot = nullptr;  ///< Root folder to store histograms and canvases
   TFolder* fpFolderHist                 = nullptr;  ///< Folder for raw histograms
   TFolder* fpFolderCanv                 = nullptr;  ///< Folder for canvases
   TFolder* fpFolderEff                  = nullptr;  ///< Folder for efficiencies
+  TFolder* fpFolderTable                = nullptr;  ///< Folder for tables
+
+  TString fsPrefix = "";  ///< Unique prefix for all writeable root objects to avoid collisions between different tasks
+  bool fbUseMC     = false;  ///< Flag, if MC is used
 
   TParameter<int> fNofEvents {"nEvents", 0};  ///< Number of processed events
 };
@@ -154,9 +175,26 @@ private:
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-template<typename T, typename... Args>
-T* CbmQaTask::MakeCanvas(const char* name, Args... args)
+template<typename T>
+bool CbmQaTask::CheckRange(const std::string_view& name, const T& var, const T& lo, const T& hi) const
 {
+  if (std::clamp(var, lo, hi) == lo) {
+    LOG(error) << fName << ": " << name << " is found to be under the lower limit (" << var << " < " << lo << ')';
+    return false;
+  }
+  if (std::clamp(var, lo, hi) == hi) {
+    LOG(error) << fName << ": " << name << " is found to be above the upper limit (" << var << " > " << hi << ')';
+    return false;
+  }
+  return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<typename T, typename... Args>
+T* CbmQaTask::MakeCanvas(const char* nameBase, Args... args)
+{
+  TString name = fsPrefix + "_" + nameBase;
   if (gROOT->FindObject(name)) {
     LOG(warn) << fName << ": A canvas with name \"" << name << "\" was previously created and will be deleted now "
               << "to avoid memory leaks";
@@ -180,8 +218,9 @@ T* CbmQaTask::MakeCanvas(const char* name, Args... args)
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<typename T, typename... Args>
-T* CbmQaTask::MakeEfficiency(const char* name, Args... args)
+T* CbmQaTask::MakeEfficiency(const char* nameBase, Args... args)
 {
+  TString name = fsPrefix + "_" + nameBase;
   if (gROOT->FindObject(name)) {
     LOG(warn) << fName << ": An efficiency with name \"" << name << "\" was previously created and will be deleted now "
               << "to avoid memory leaks";
@@ -203,8 +242,9 @@ T* CbmQaTask::MakeEfficiency(const char* name, Args... args)
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<typename T, typename... Args>
-T* CbmQaTask::MakeHisto(const char* name, Args... args)
+T* CbmQaTask::MakeHisto(const char* nameBase, Args... args)
 {
+  TString name = fsPrefix + "_" + nameBase;
   // Check, if the histogram with a given name was already created. If so, delete it
   if (gROOT->FindObject(name)) {
     LOG(warn) << fName << ": A histogram with name \"" << name << "\" was previously created and will be deleted now "
@@ -215,7 +255,6 @@ T* CbmQaTask::MakeHisto(const char* name, Args... args)
 
   // Create a new histogram or profile
   T* pHist = new T(name, args...);
-  pHist->Sumw2();
 
   // Register histogram in the folder
   if (!fpFolderHist) { fpFolderHist = fpFolderRoot->AddFolder("histograms", "Histograms"); }
@@ -225,5 +264,30 @@ T* CbmQaTask::MakeHisto(const char* name, Args... args)
 
   return pHist;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<typename... Args>
+CbmQaTable* CbmQaTask::MakeTable(const char* nameBase, Args... args)
+{
+  TString name = fsPrefix + "_" + nameBase;
+  // Check, if the table with a given name was already created. If so, delete it
+  if (gROOT->FindObject(name)) {
+    LOG(warn) << fName << ": A table with name \"" << name << "\" was previously created and will be deleted now "
+              << "to avoid memory leaks";
+    CbmQaTable* pTable = (CbmQaTable*) gROOT->FindObject(name);
+    delete pTable;
+  }
+
+  // Create a new table
+  CbmQaTable* pTable = new CbmQaTable(name, args...);
+
+  // Register table in folder
+  if (!fpFolderTable) { fpFolderTable = fpFolderRoot->AddFolder("tables", "Tables"); }
+  fpFolderTable->Add(pTable);
+
+  return pTable;
+}
+
 
 #endif  // CbmQaTask_h

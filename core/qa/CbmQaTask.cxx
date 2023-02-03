@@ -1,4 +1,4 @@
-/* opyright (C) 2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer] */
 
@@ -24,7 +24,12 @@ ClassImp(CbmQaTask);
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-CbmQaTask::CbmQaTask(const char* name, int verbose, bool isMCUsed) : FairTask(name, verbose), fbUseMC(isMCUsed) {}
+CbmQaTask::CbmQaTask(const char* name, const char* prefix, int verbose, bool isMCUsed)
+  : FairTask(name, verbose)
+  , fsPrefix(prefix)
+  , fbUseMC(isMCUsed)
+{
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -40,10 +45,9 @@ void CbmQaTask::Exec(Option_t* /*option*/)
 void CbmQaTask::Finish()
 {
   // Processes histograms in the end of the run
-  AnalyzeHistograms();
-
-  // Check QA
-  Check();
+  LOG(info) << fName << ": Checking QA...";
+  bool qaResult = Check();
+  LOG(info) << fName << ": Checking QA: " << (qaResult ? "\033[1;32mpassed\033[0m" : "\033[1;31mfailed\033[0m");
 
   // Processes canvases in the end of the run
   LOG_IF(info, fVerbose > 1) << fName << ": initializing canvases";
@@ -52,7 +56,6 @@ void CbmQaTask::Finish()
   // Write the root folder to sinker
   FairSink* pSink = FairRootManager::Instance()->GetSink();
   LOG_IF(fatal, !pSink) << fName << ": sink file was not found";
-
   pSink->WriteObject(fpFolderRoot.get(), nullptr);
 }
 
@@ -148,13 +151,6 @@ InitStatus CbmQaTask::InitHistograms()
 void CbmQaTask::FillHistograms()
 {
   LOG_IF(info, fVerbose > 1) << fName << ": histogram filling function is not defined";
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void CbmQaTask::AnalyzeHistograms()
-{
-  LOG_IF(info, fVerbose > 1) << fName << ": no action on histograms in the end of the run is provided";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

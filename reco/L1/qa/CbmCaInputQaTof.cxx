@@ -2,26 +2,26 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer] */
 
-/// \file   CbmCaInputQaSts.cxx
-/// \date   13.01.2023
-/// \brief  QA-task for CA tracking input from MuCh detector (implementation)
+/// \file   CbmCaInputQaTof.cxx
+/// \date   30.01.2023
+/// \brief  QA-task for CA tracking input from TOF detector (implementation)
 /// \author S.Zharko <s.zharko@gsi.de>
 
-#include "CbmCaInputQaSts.h"
+#include "CbmCaInputQaTof.h"
 
 #include "CbmAddress.h"
+#include "CbmLink.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCEventList.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
 #include "CbmQaCanvas.h"
 #include "CbmQaEff.h"
-#include "CbmQaTable.h"
-#include "CbmStsCluster.h"
-#include "CbmStsHit.h"
-#include "CbmStsPoint.h"
-#include "CbmStsTrackingInterface.h"
 #include "CbmTimeSlice.h"
+#include "CbmTofHit.h"
+#include "CbmTofInteraction.h"
+#include "CbmTofPoint.h"
+#include "CbmTofTrackingInterface.h"
 
 #include "FairRootManager.h"
 #include "Logger.h"
@@ -41,23 +41,24 @@
 #include <fstream>
 #include <iomanip>
 #include <numeric>
-#include <tuple>
+#include <set>  // TMP!!!!
 
+#include "CaToolsLinkKey.h"
 #include "L1Constants.h"
 
-ClassImp(CbmCaInputQaSts);
+ClassImp(CbmCaInputQaTof);
 
 namespace phys = L1Constants::phys;  // from L1Constants.h
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-CbmCaInputQaSts::CbmCaInputQaSts(int verbose, bool isMCUsed) : CbmQaTask("CbmCaInputQaSts", "casts", verbose, isMCUsed)
+CbmCaInputQaTof::CbmCaInputQaTof(int verbose, bool isMCUsed) : CbmQaTask("CbmCaInputQaTof", "catof", verbose, isMCUsed)
 {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-bool CbmCaInputQaSts::Check()
+bool CbmCaInputQaTof::Check()
 {
   bool res = true;
 
@@ -236,7 +237,7 @@ bool CbmCaInputQaSts::Check()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaInputQaSts::DeInit()
+void CbmCaInputQaTof::DeInit()
 {
   // Vectors with pointers to histograms
   fvph_hit_ypos_vs_xpos.clear();
@@ -247,8 +248,6 @@ void CbmCaInputQaSts::DeInit()
 
   fvph_hit_dx.clear();
   fvph_hit_dy.clear();
-  fvph_hit_du.clear();
-  fvph_hit_dv.clear();
   fvph_hit_dt.clear();
 
   fvph_n_points_per_hit.clear();
@@ -261,26 +260,18 @@ void CbmCaInputQaSts::DeInit()
 
   fvph_res_x.clear();
   fvph_res_y.clear();
-  fvph_res_u.clear();
-  fvph_res_v.clear();
   fvph_res_t.clear();
 
   fvph_pull_x.clear();
   fvph_pull_y.clear();
-  fvph_pull_u.clear();
-  fvph_pull_v.clear();
   fvph_pull_t.clear();
 
   fvph_res_x_vs_x.clear();
   fvph_res_y_vs_y.clear();
-  fvph_res_u_vs_u.clear();
-  fvph_res_v_vs_v.clear();
   fvph_res_t_vs_t.clear();
 
   fvph_pull_x_vs_x.clear();
   fvph_pull_y_vs_y.clear();
-  fvph_pull_u_vs_u.clear();
-  fvph_pull_v_vs_v.clear();
   fvph_pull_t_vs_t.clear();
 
   fvpe_reco_eff_vs_xy.clear();
@@ -289,27 +280,31 @@ void CbmCaInputQaSts::DeInit()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaInputQaSts::FillHistograms()
+void CbmCaInputQaTof::FillHistograms()
 {
-  int nSt       = fpDetInterface->GetNtrackingStations();
-  int nHits     = fpHits->GetEntriesFast();
-  int nMCevents = (IsMCUsed()) ? fpMCEventList->GetNofEvents() : -1;
+  int nSt   = fpDetInterface->GetNtrackingStations();
+  int nHits = fpHits->GetEntriesFast();
 
-  std::vector<std::vector<int>> vNofHitsPerPoint;  // Number of hits per MC point in different MC events
-
+  // ----- Fill TOF interactions
+  std::shared_ptr<TClonesArray> pMCInteractions  = nullptr;  // Array of MC interactions
+  std::shared_ptr<TClonesArray> pHitInterMatches = nullptr;  // Array of hit matches to MC interactions
   if (IsMCUsed()) {
-    vNofHitsPerPoint.resize(nMCevents);
-    for (int iE = 0; iE < nMCevents; ++iE) {
-      int iFile   = fpMCEventList->GetFileIdByIndex(iE);
-      int iEvent  = fpMCEventList->GetEventIdByIndex(iE);
-      int nPoints = fpMCPoints->Size(iFile, iEvent);
-      vNofHitsPerPoint[iE].resize(nPoints, 0);
-    }
-  }
+    pMCInteractions  = std::make_shared<TClonesArray>("CbmTofInteraction");
+    pHitInterMatches = std::make_shared<TClonesArray>("CbmMatch", nHits);
+    FillInteractions(pMCInteractions, pHitInterMatches);
+  }  // IsMCUsed
+
+  std::vector<int> vNofHitsPerInteraction;  // Number of hits per MC point in TS
+
+  if (IsMCUsed()) { vNofHitsPerInteraction.resize(pMCInteractions->GetEntriesFast()); }
 
   for (int iH = 0; iH < nHits; ++iH) {
-    const auto* pHit = dynamic_cast<const CbmStsHit*>(fpHits->At(iH));
-    LOG_IF(fatal, !pHit) << fName << ": hit with iH = " << iH << " is not an CbmStsHit (dynamic cast failed)";
+    const auto* pHit = dynamic_cast<const CbmTofHit*>(fpHits->At(iH));
+    LOG_IF(fatal, !pHit) << fName << ": hit with iH = " << iH << " is not an CbmTofHit (dynamic cast failed)";
+
+    // FIXME: Is this cut still needed??
+    int32_t address = pHit->GetAddress();
+    if (0x00202806 == address || 0x00002806 == address) { continue; }
 
     // *************************
     // ** Reconstructed hit QA
@@ -318,18 +313,12 @@ void CbmCaInputQaSts::FillHistograms()
     int iSt = fpDetInterface->GetTrackingStationIndex(pHit);
     LOG_IF(fatal, iSt < 0 || iSt >= nSt) << fName << ": index of station (" << iSt << ") is out of range "
                                          << "for hit with id = " << iH;
-    double stPhiF = fpDetInterface->GetStripsStereoAngleFront(iSt);  // STS front strips stereo angle
-    double stPhiB = fpDetInterface->GetStripsStereoAngleBack(iSt);   // STS back strips stereo angle
 
     // Hit position
     double xHit = pHit->GetX();
     double yHit = pHit->GetY();
     double zHit = pHit->GetZ();
-    double uHit = xHit * cos(stPhiF) + yHit * sin(stPhiB);
-    double vHit = xHit * cos(stPhiB) + yHit * sin(stPhiB);
 
-    double duHit = pHit->GetDu();
-    double dvHit = pHit->GetDv();
     double dxHit = pHit->GetDx();
     double dyHit = pHit->GetDy();
     //double dxyHit = pHit->GetDxy();
@@ -346,8 +335,6 @@ void CbmCaInputQaSts::FillHistograms()
 
     fvph_hit_dx[iSt]->Fill(dxHit);
     fvph_hit_dy[iSt]->Fill(dyHit);
-    fvph_hit_du[iSt]->Fill(duHit);
-    fvph_hit_dv[iSt]->Fill(dvHit);
     fvph_hit_dt[iSt]->Fill(dtHit);
 
     fvph_hit_ypos_vs_xpos[nSt]->Fill(xHit, yHit);
@@ -355,8 +342,6 @@ void CbmCaInputQaSts::FillHistograms()
     fvph_hit_ypos_vs_zpos[nSt]->Fill(zHit, yHit);
     fvph_hit_dx[nSt]->Fill(dxHit);
     fvph_hit_dy[nSt]->Fill(dyHit);
-    fvph_hit_du[nSt]->Fill(duHit);
-    fvph_hit_dv[nSt]->Fill(dvHit);
     fvph_hit_dt[nSt]->Fill(dtHit);
 
 
@@ -364,29 +349,27 @@ void CbmCaInputQaSts::FillHistograms()
     // ** MC information QA
 
     if (IsMCUsed()) {
-      CbmMatch hitMatch = GetHitMatch(iH);
+      CbmMatch* pHitMatch = dynamic_cast<CbmMatch*>(pHitInterMatches->At(iH));
+      LOG_IF(fatal, !pHitMatch) << fName << ": match object not found for hit ID " << iH;
 
+      // NOTE: Here we treat interactions simply as MC points
       // Evaluate number of hits per one MC point
       int nMCpoints = 0;  // Number of MC points for this hit
-      for (int iLink = 0; iLink < hitMatch.GetNofLinks(); ++iLink) {
-        const auto& link = hitMatch.GetLink(iLink);
+      int nLinks    = pHitMatch->GetNofLinks();
+      for (int iLink = 0; iLink < nLinks; ++iLink) {
+        const auto& link = pHitMatch->GetLink(iLink);
 
-        int iP = link.GetIndex();  // Index of MC point
+        int iP = link.GetIndex();  // Index of MC interaction
 
         // Skip noisy links
         if (iP < 0) { continue; }
 
         ++nMCpoints;
 
-        int iE = fpMCEventList->GetEventIndex(link);
-
-        LOG_IF(fatal, iE < 0 || iE >= nMCevents) << fName << ": id of MC event is out of range (hit id = " << iH
-                                                 << ", link id = " << iLink << ", event id = " << iE << ')';
-
-        LOG_IF(fatal, iP >= (int) vNofHitsPerPoint[iE].size())
+        LOG_IF(fatal, iP >= (int) vNofHitsPerInteraction.size())
           << fName << ": index of MC point is out of range (hit id = " << iH << ", link id = " << iLink
-          << ", event id = " << iE << ", point id = " << iP << ')';
-        vNofHitsPerPoint[iE][iP]++;
+          << ", point id = " << iP << ')';
+        vNofHitsPerInteraction[iP]++;
       }
 
       fvph_n_points_per_hit[iSt]->Fill(nMCpoints);
@@ -395,13 +378,13 @@ void CbmCaInputQaSts::FillHistograms()
       if (nMCpoints != 1) { continue; }  // ??
 
       // The best link to in the match (probably, the cut on nMCpoints is meaningless)
-      const auto& bestPointLink = hitMatch.GetMatchedLink();
+      const auto& bestPointLink = pHitMatch->GetMatchedLink();
 
       // Skip noisy links
       if (bestPointLink.GetIndex() < 0) { continue; }
 
       // Point matched by the best link
-      const auto* pMCPoint = dynamic_cast<const CbmStsPoint*>(fpMCPoints->Get(bestPointLink));
+      const auto* pMCPoint = dynamic_cast<const CbmTofInteraction*>(pMCInteractions->At(bestPointLink.GetIndex()));
       LOG_IF(fatal, !pMCPoint) << fName << ": MC point object does not exist for hit " << iH;
 
       // MC track for this point
@@ -413,7 +396,6 @@ void CbmCaInputQaSts::FillHistograms()
       double t0MC = fpMCEventList->GetEventTime(bestPointLink);
       LOG_IF(fatal, t0MC < 0) << fName << ": MC time zero is lower then 0 ns: " << t0MC;
 
-
       // ----- MC point properties
       //
       double mass = pMCTrack->GetMass();
@@ -421,11 +403,9 @@ void CbmCaInputQaSts::FillHistograms()
       //double pdg    = pMCTrack->GetPdgCode();
 
       // Entrance position and time
-      double xMC = pMCPoint->GetXIn();
-      double yMC = pMCPoint->GetYIn();
-      //double uMC = xMC * cos(stPhiF) + yMC * sin(stPhiF);
-      //double vMC = xMC * cos(stPhiB) + yMC * sin(stPhiB);
-      double zMC = pMCPoint->GetZIn();
+      double xMC = pMCPoint->GetX();
+      double yMC = pMCPoint->GetY();
+      double zMC = pMCPoint->GetZ();
       double tMC = pMCPoint->GetTime() + t0MC;
 
       // MC point entrance momenta
@@ -434,30 +414,20 @@ void CbmCaInputQaSts::FillHistograms()
       double pzMC = pMCPoint->GetPz();
       double pMC  = sqrt(pxMC * pxMC + pyMC * pyMC + pzMC * pzMC);
 
-      // MC point exit momenta
-      // double pxMCo = pMCPoint->GetPxOut();
-      // double pyMCo = pMCPoint->GetPyOut();
-      // double pzMCo = pMCPoint->GetPzOut();
-      // double pMCo  = sqrt(pxMCo * pxMCo + pyMCo * pyMCo + pzMCo * pzMCo);
-
       // Position and time shifted to z-coordinate of the hit
       double shiftZ = zHit - zMC;  // Difference between hit and point z positions
       double xMCs   = xMC + shiftZ * pxMC / pzMC;
       double yMCs   = yMC + shiftZ * pyMC / pzMC;
-      double uMCs   = xMCs * cos(stPhiF) + yMCs * sin(stPhiF);
-      double vMCs   = xMCs * cos(stPhiB) + yMCs * sin(stPhiB);
       double tMCs   = tMC + shiftZ / (pzMC * phys::kSpeedOfLight) * sqrt(mass * mass + pMC * pMC);
 
       // Residuals
       double xRes = xHit - xMCs;
       double yRes = yHit - yMCs;
-      double uRes = uHit - uMCs;
-      double vRes = vHit - vMCs;
       double tRes = tHit - tMCs;
 
       // ------ Cuts
 
-      if (std::fabs(pMCPoint->GetPzOut()) < 0.01) { continue; }  // CUT ON MINIMUM MOMENTUM
+      if (std::fabs(pMCPoint->GetPz()) < fMinMomentum) { continue; }  // CUT ON MINIMUM MOMENTUM
       //if (pMCo < cuts::kMinP) { continue; }  // Momentum threshold
 
 
@@ -469,26 +439,18 @@ void CbmCaInputQaSts::FillHistograms()
 
       fvph_res_x[iSt]->Fill(xRes);
       fvph_res_y[iSt]->Fill(yRes);
-      fvph_res_u[iSt]->Fill(uRes);
-      fvph_res_v[iSt]->Fill(vRes);
       fvph_res_t[iSt]->Fill(tRes);
 
       fvph_pull_x[iSt]->Fill(xRes / dxHit);
       fvph_pull_y[iSt]->Fill(yRes / dyHit);
-      fvph_pull_u[iSt]->Fill(uRes / duHit);
-      fvph_pull_v[iSt]->Fill(vRes / dvHit);
       fvph_pull_t[iSt]->Fill(tRes / dtHit);
 
       fvph_res_x_vs_x[iSt]->Fill(xHit, xRes);
       fvph_res_y_vs_y[iSt]->Fill(yHit, yRes);
-      fvph_res_u_vs_u[iSt]->Fill(uHit, uRes);
-      fvph_res_v_vs_v[iSt]->Fill(vHit, vRes);
       fvph_res_t_vs_t[iSt]->Fill(tHit, tRes);
 
       fvph_pull_x_vs_x[iSt]->Fill(xHit, xRes / dxHit);
       fvph_pull_y_vs_y[iSt]->Fill(yHit, yRes / dyHit);
-      fvph_pull_u_vs_u[iSt]->Fill(uHit, uRes / duHit);
-      fvph_pull_v_vs_v[iSt]->Fill(vHit, vRes / dvHit);
       fvph_pull_t_vs_t[iSt]->Fill(tHit, tRes / dtHit);
 
       fvph_point_ypos_vs_xpos[nSt]->Fill(xMC, yMC);
@@ -499,71 +461,154 @@ void CbmCaInputQaSts::FillHistograms()
 
       fvph_res_x[nSt]->Fill(xRes);
       fvph_res_y[nSt]->Fill(yRes);
-      fvph_res_u[nSt]->Fill(uRes);
-      fvph_res_v[nSt]->Fill(vRes);
       fvph_res_t[nSt]->Fill(tRes);
 
       fvph_pull_x[nSt]->Fill(xRes / dxHit);
       fvph_pull_y[nSt]->Fill(yRes / dyHit);
-      fvph_pull_u[nSt]->Fill(uRes / duHit);
-      fvph_pull_v[nSt]->Fill(vRes / dvHit);
       fvph_pull_t[nSt]->Fill(tRes / dtHit);
 
       fvph_res_x_vs_x[nSt]->Fill(xHit, xRes);
       fvph_res_y_vs_y[nSt]->Fill(yHit, yRes);
-      fvph_res_u_vs_u[nSt]->Fill(uHit, uRes);
-      fvph_res_v_vs_v[nSt]->Fill(vHit, vRes);
       fvph_res_t_vs_t[nSt]->Fill(tHit, tRes);
 
       fvph_pull_x_vs_x[nSt]->Fill(xHit, xRes / dxHit);
       fvph_pull_y_vs_y[nSt]->Fill(yHit, yRes / dyHit);
-      fvph_pull_u_vs_u[nSt]->Fill(uHit, uRes / duHit);
-      fvph_pull_v_vs_v[nSt]->Fill(vHit, vRes / dvHit);
       fvph_pull_t_vs_t[nSt]->Fill(tHit, tRes / dtHit);
     }
   }  // loop over hits: end
 
   // Fill hit reconstruction efficiencies
   if (IsMCUsed()) {
-    for (int iE = 0; iE < nMCevents; ++iE) {
-      int iFile   = fpMCEventList->GetFileIdByIndex(iE);
-      int iEvent  = fpMCEventList->GetEventIdByIndex(iE);
-      int nPoints = fpMCPoints->Size(iFile, iEvent);
+    int nPoints = pMCInteractions->GetEntriesFast();
 
-      for (int iP = 0; iP < nPoints; ++iP) {
-        const auto* pMCPoint = dynamic_cast<const CbmStsPoint*>(fpMCPoints->Get(iFile, iEvent, iP));
-        LOG_IF(fatal, !pMCPoint) << fName << ": MC point does not exist for iFile = " << iFile
-                                 << ", iEvent = " << iEvent << ", iP = " << iP;
-        int address = pMCPoint->GetDetectorID();
-        int iSt     = fpDetInterface->GetTrackingStationIndex(address);
-        LOG_IF(fatal, iSt < 0 || iSt >= nSt)
-          << fName << ": MC point for FEI = " << iFile << ", " << iEvent << ", " << iP << " and address " << address
-          << " has wrong station index: iSt = " << iSt;
+    for (int iP = 0; iP < nPoints; ++iP) {
+      const auto* pMCPoint = dynamic_cast<const CbmTofInteraction*>(pMCInteractions->At(iP));
+      LOG_IF(fatal, !pMCPoint) << fName << ": MC point does not exist for interaction " << iP;
+      //int address = pMCPoint->GetDetectorID();
+      int iSt = GetStationID(pMCPoint);
+      LOG_IF(fatal, iSt < 0 || iSt >= nSt)
+        << fName << ": MC point for index = " << iP << " has wrong station index: iSt = " << iSt;
 
-        double xMC = pMCPoint->GetXIn();
-        double yMC = pMCPoint->GetYIn();
-        double rMC = sqrt(xMC * xMC + yMC * yMC);
+      double xMC = pMCPoint->GetX();
+      double yMC = pMCPoint->GetY();
+      double rMC = sqrt(xMC * xMC + yMC * yMC);
 
-        // Conditions under which point is accounted as reconstructed: point
-        bool ifPointHasHits = (vNofHitsPerPoint[iE][iP] > 0);
+      // Conditions under which point is accounted as reconstructed: point
+      bool ifPointHasHits = (vNofHitsPerInteraction[iP] > 0);
 
-        fvpe_reco_eff_vs_xy[iSt]->Fill(ifPointHasHits, xMC, yMC);
-        fvpe_reco_eff_vs_xy[nSt]->Fill(ifPointHasHits, xMC, yMC);
+      fvpe_reco_eff_vs_xy[iSt]->Fill(ifPointHasHits, xMC, yMC);
+      fvpe_reco_eff_vs_xy[nSt]->Fill(ifPointHasHits, xMC, yMC);
 
-        fvpe_reco_eff_vs_r[iSt]->Fill(ifPointHasHits, rMC);
-        fvpe_reco_eff_vs_r[nSt]->Fill(ifPointHasHits, rMC);
+      fvpe_reco_eff_vs_r[iSt]->Fill(ifPointHasHits, rMC);
+      fvpe_reco_eff_vs_r[nSt]->Fill(ifPointHasHits, rMC);
+    }  // iP
+  }    // MC is used: end
 
-      }  // loop over MC-points: end
-    }    // loop over MC-events: end
-  }      // MC is used: end
+  // Clear TClonesArray objects
+  if (IsMCUsed()) {
+    pHitInterMatches->Clear();
+    pMCInteractions->Clear();
+  }  // IsMCUsed
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmCaInputQaSts::InitDataBranches()
+void CbmCaInputQaTof::FillInteractions(std::shared_ptr<TClonesArray>& pvInters,
+                                       std::shared_ptr<TClonesArray>& pvMatches)
+{
+  std::unordered_map<ca::tools::LinkKey, int> mPointToInter;  // Map of point (defined by a link key) to interaction
+
+  int nHits     = fpHits->GetEntriesFast();
+  int nMCevents = (IsMCUsed()) ? fpMCEventList->GetNofEvents() : -1;
+
+  // ----- Fill array of interactions
+  int iInter = -1;  // Index of interaction (global over all MC events)
+  for (int iE = 0; iE < nMCevents; ++iE) {
+    int iFile     = fpMCEventList->GetFileIdByIndex(iE);
+    int iEvent    = fpMCEventList->GetEventIdByIndex(iE);
+    int nMCPoints = fpMCPoints->Size(iFile, iEvent);
+
+    int iDprev = -1;  // detector ID for previous point
+    int iTprev = -1;  // track ID for previous point
+    for (int iP = 0; iP < nMCPoints; ++iP) {
+      const auto* pMCPoint = dynamic_cast<const CbmTofPoint*>(fpMCPoints->Get(iFile, iEvent, iP));
+      LOG_IF(fatal, !pMCPoint) << fName << ": MC point is not defined for link (f,e,i) = " << iFile << ' ' << iEvent
+                               << ' ' << iP;
+
+      int iDcurr = pMCPoint->GetDetectorID();  // Current detector ID
+      int iTcurr = pMCPoint->GetTrackID();     // Current track ID
+      if (iDcurr != iDprev || iTcurr != iTprev) {
+        iInter++;
+        iDprev = iDcurr;
+        iTprev = iTcurr;
+        new ((*pvInters)[iInter]) CbmTofInteraction();  // Add empty interaction object
+      }
+
+      // Update current intercation with point, and updtate the map
+      auto* pCurrInter = static_cast<CbmTofInteraction*>(pvInters->At(iInter));
+      pCurrInter->AddPoint(pMCPoint);
+      mPointToInter[ca::tools::LinkKey(iP, iEvent, iFile)] = iInter;
+    }  // iP
+  }    // iE
+
+  // ----- Match interactions with hits
+  for (int iH = 0; iH < nHits; ++iH) {
+    const auto* pHit = dynamic_cast<const CbmTofHit*>(fpHits->At(iH));
+    LOG_IF(fatal, !pHit) << fName << ": Hit is not defined for iH = " << iH;
+
+    // FIXME: Is this cut still needed??
+    int32_t address = pHit->GetAddress();
+    if (0x00202806 == address || 0x00002806 == address) { continue; }
+
+    auto* pHitInterMatch = new ((*pvMatches)[iH]) CbmMatch();
+
+    // Collect create interaction links from point links and fill the match
+    auto* pHitPointMatch = dynamic_cast<CbmMatch*>(fpHitMatches->At(iH));
+    int nPointLinks      = pHitPointMatch->GetNofLinks();
+    for (int iL = 0; iL < nPointLinks; ++iL) {
+      const auto& link = pHitPointMatch->GetLink(iL);
+      int iFile        = link.GetFile();
+      int iEvent       = link.GetEntry();
+      int iP           = link.GetIndex();
+      double weight    = link.GetWeight();
+      int iInteraction = mPointToInter[ca::tools::LinkKey(iP, iEvent, iFile)];
+
+      // Create a TOF interaction link with a proper index
+      pHitInterMatch->AddLink(weight, iInteraction, iEvent, iFile);
+
+      // Update interaction with information from point matched to the hit
+      // Since the averaged interaction in general may not be on the MC-trajectory of the particle,
+      // we decided to shift the interaction to the matched point. Here we assume, that there is only one
+      // matched point from the interaction.
+      auto* pPoint = static_cast<CbmTofPoint*>(fpMCPoints->Get(iFile, iEvent, iP));
+      auto* pInter = static_cast<CbmTofInteraction*>(pvInters->At(iInteraction));
+      pInter->SetFromPoint(pPoint);
+    }
+  }  // iH
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+int CbmCaInputQaTof::GetStationID(const CbmTofPoint* pPoint) const
+{
+  double dist   = 1000.;  // NOTE: arbitrary large number
+  int iStSelect = -1;
+  // We select the station, which center is closest to the MC point
+  for (int iSt = 0; iSt < fpDetInterface->GetNtrackingStations(); ++iSt) {
+    if (std::fabs(pPoint->GetZ() - fpDetInterface->GetZ(iSt)) < dist) {
+      dist      = std::fabs(pPoint->GetZ() - fpDetInterface->GetZ(iSt));
+      iStSelect = iSt;
+    }
+  }
+  return iStSelect;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+InitStatus CbmCaInputQaTof::InitDataBranches()
 {
   // STS tracking detector interface
-  fpDetInterface = CbmStsTrackingInterface::Instance();
+  fpDetInterface = CbmTofTrackingInterface::Instance();
 
   LOG_IF(fatal, !fpDetInterface) << "\033[1;31m" << fName << ": tracking detector interface is undefined\033[0m";
 
@@ -578,13 +623,8 @@ InitStatus CbmCaInputQaSts::InitDataBranches()
   // ----- Reconstructed data-branches initialization
 
   // Hits container
-  fpHits = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("StsHit"));
-  LOG_IF(fatal, !fpHits) << "\033[1;31m" << fName << ": container of reconstructed hits in STS is not found\033[0m";
-
-  // Clusters container
-  fpClusters = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("StsCluster"));
-  LOG_IF(fatal, !fpClusters) << "\033[1;31m" << fName << ": container of hit clusters in STS is not found\033[0m";
-
+  fpHits = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("TofHit"));
+  LOG_IF(fatal, !fpHits) << "\033[1;31m" << fName << ": container of reconstructed hits in TOF is not found\033[0m";
 
   // ----- MC-information branches initialization
   if (IsMCUsed()) {
@@ -601,12 +641,12 @@ InitStatus CbmCaInputQaSts::InitDataBranches()
     LOG_IF(fatal, !fpMCTracks) << "\033[1;31m" << fName << ": MC track branch is not found\033[0m";
 
     // MC points
-    fpMCPoints = fpMCDataManager->InitBranch("StsPoint");
-    LOG_IF(fatal, !fpMCTracks) << "\033[1;31m" << fName << ": MC point branch is not found for STS\033[0m";
+    fpMCPoints = fpMCDataManager->InitBranch("TofPoint");
+    LOG_IF(fatal, !fpMCTracks) << "\033[1;31m" << fName << ": MC point branch is not found for TOF\033[0m";
 
-    // Cluster matches
-    fpClusterMatches = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("StsClusterMatch"));
-    LOG_IF(fatal, !fpClusterMatches) << "\033[1;31m]" << fName << ": cluster match branch is not found for STS\033[0m";
+    // Hit matches
+    fpHitMatches = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("TofHitMatch"));
+    LOG_IF(fatal, !fpHitMatches) << "\033[1;31m]" << fName << ": hit match branch is not found for TOF\033[0m";
   }
 
   return kSUCCESS;
@@ -614,7 +654,7 @@ InitStatus CbmCaInputQaSts::InitDataBranches()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmCaInputQaSts::InitCanvases()
+InitStatus CbmCaInputQaTof::InitCanvases()
 {
   gStyle->SetOptFit(1);
   int nSt = fpDetInterface->GetNtrackingStations();
@@ -823,23 +863,7 @@ InitStatus CbmCaInputQaSts::InitCanvases()
       fvph_res_y[iSt]->DrawCopy("", "");
     }
 
-    // x-coordinate
-    auto* pc_res_u = MakeCanvas<CbmQaCanvas>("res_u", "Residuals for u coordinate", 1600, 800);
-    pc_res_u->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_res_u->cd(iSt + 1);
-      fvph_res_u[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
-    auto* pc_res_v = MakeCanvas<CbmQaCanvas>("res_v", "Residuals for v coordinate", 1600, 800);
-    pc_res_v->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_res_v->cd(iSt + 1);
-      fvph_res_v[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
+    // time
     auto* pc_res_t = MakeCanvas<CbmQaCanvas>("res_t", "Residuals for time", 1600, 800);
     pc_res_t->Divide2D(nSt);
     for (int iSt = 0; iSt < nSt; ++iSt) {
@@ -867,23 +891,7 @@ InitStatus CbmCaInputQaSts::InitCanvases()
       fvph_pull_y[iSt]->DrawCopy("", "");
     }
 
-    // x-coordinate
-    auto* pc_pull_u = MakeCanvas<CbmQaCanvas>("pull_u", "Pulls for u coordinate", 1600, 800);
-    pc_pull_u->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_pull_u->cd(iSt + 1);
-      fvph_pull_u[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
-    auto* pc_pull_v = MakeCanvas<CbmQaCanvas>("pull_v", "Pulls for v coordinate", 1600, 800);
-    pc_pull_v->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_pull_v->cd(iSt + 1);
-      fvph_pull_v[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
+    // time
     auto* pc_pull_t = MakeCanvas<CbmQaCanvas>("pull_t", "Pulls for time", 1600, 800);
     pc_pull_t->Divide2D(nSt);
     for (int iSt = 0; iSt < nSt; ++iSt) {
@@ -929,7 +937,7 @@ InitStatus CbmCaInputQaSts::InitCanvases()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmCaInputQaSts::InitHistograms()
+InitStatus CbmCaInputQaTof::InitHistograms()
 {
   int nSt = fpDetInterface->GetNtrackingStations();
 
@@ -943,12 +951,10 @@ InitStatus CbmCaInputQaSts::InitHistograms()
   fvph_hit_dx.resize(nSt + 1, nullptr);
   fvph_hit_dy.resize(nSt + 1, nullptr);
   fvph_hit_dt.resize(nSt + 1, nullptr);
-  fvph_hit_dv.resize(nSt + 1, nullptr);
-  fvph_hit_du.resize(nSt + 1, nullptr);
 
   for (int iSt = 0; iSt <= nSt; ++iSt) {
     TString nsuff = (iSt == nSt) ? "" : Form("_st%d", iSt);               // Histogram name suffix
-    TString tsuff = (iSt == nSt) ? "" : Form(" in STS station %d", iSt);  // Histogram title suffix
+    TString tsuff = (iSt == nSt) ? "" : Form(" in TOF station %d", iSt);  // Histogram title suffix
     TString sN    = "";
     TString sT    = "";
 
@@ -974,14 +980,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
     sT               = (TString) "Hit position error along y-axis" + tsuff + ";dy_{hit} [cm]";
     fvph_hit_dy[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDy[0], kRHitDy[1]);
 
-    sN               = (TString) "hit_du" + nsuff;
-    sT               = (TString) "Hit position error across front strips" + tsuff + ";du_{hit} [cm]";
-    fvph_hit_du[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDu[0], kRHitDu[1]);
-
-    sN               = (TString) "hit_dv" + nsuff;
-    sT               = (TString) "Hit position error across back strips" + tsuff + ";dv_{hit} [cm]";
-    fvph_hit_dv[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDv[0], kRHitDv[1]);
-
     sN               = (TString) "hit_dt" + nsuff;
     sT               = (TString) "Hit time error" + tsuff + ";dt_{hit} [ns]";
     fvph_hit_dt[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDt[0], kRHitDt[1]);
@@ -1004,30 +1002,22 @@ InitStatus CbmCaInputQaSts::InitHistograms()
     fvph_point_hit_delta_z.resize(nSt + 1, nullptr);
     fvph_res_x.resize(nSt + 1, nullptr);
     fvph_res_y.resize(nSt + 1, nullptr);
-    fvph_res_u.resize(nSt + 1, nullptr);
-    fvph_res_v.resize(nSt + 1, nullptr);
     fvph_res_t.resize(nSt + 1, nullptr);
     fvph_pull_x.resize(nSt + 1, nullptr);
     fvph_pull_y.resize(nSt + 1, nullptr);
-    fvph_pull_u.resize(nSt + 1, nullptr);
-    fvph_pull_v.resize(nSt + 1, nullptr);
     fvph_pull_t.resize(nSt + 1, nullptr);
     fvph_res_x_vs_x.resize(nSt + 1, nullptr);
     fvph_res_y_vs_y.resize(nSt + 1, nullptr);
-    fvph_res_u_vs_u.resize(nSt + 1, nullptr);
-    fvph_res_v_vs_v.resize(nSt + 1, nullptr);
     fvph_res_t_vs_t.resize(nSt + 1, nullptr);
     fvph_pull_x_vs_x.resize(nSt + 1, nullptr);
     fvph_pull_y_vs_y.resize(nSt + 1, nullptr);
-    fvph_pull_u_vs_u.resize(nSt + 1, nullptr);
-    fvph_pull_v_vs_v.resize(nSt + 1, nullptr);
     fvph_pull_t_vs_t.resize(nSt + 1, nullptr);
     fvpe_reco_eff_vs_xy.resize(nSt + 1, nullptr);
     fvpe_reco_eff_vs_r.resize(nSt + 1, nullptr);
 
     for (int iSt = 0; iSt <= nSt; ++iSt) {
       TString nsuff = (iSt == nSt) ? "" : Form("_st%d", iSt);               // Histogram name suffix
-      TString tsuff = (iSt == nSt) ? "" : Form(" in STS station %d", iSt);  // Histogram title suffix
+      TString tsuff = (iSt == nSt) ? "" : Form(" in TOF station %d", iSt);  // Histogram title suffix
       TString sN    = "";
       TString sT    = "";
 
@@ -1053,7 +1043,7 @@ InitStatus CbmCaInputQaSts::InitHistograms()
 
       // Difference between MC input z and hit z coordinates
       sN = (TString) "point_hit_delta_z" + nsuff;
-      sT = (TString) "Distance between STS point and hit along z axis" + tsuff + ";z_{reco} - z_{MC} [cm]";
+      sT = (TString) "Distance between point and hit along z axis" + tsuff + ";z_{reco} - z_{MC} [cm]";
       fvph_point_hit_delta_z[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, -0.04, 0.04);
 
       sN              = (TString) "res_x" + nsuff;
@@ -1063,14 +1053,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sN              = (TString) "res_y" + nsuff;
       sT              = (TString) "Residuals for y-coordinate" + tsuff + ";y_{reco} - y_{MC} [cm]";
       fvph_res_y[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRResY[0], kRResY[1]);
-
-      sN              = (TString) "res_u" + nsuff;
-      sT              = (TString) "Residuals for front strips coordinate" + tsuff + ";u_{reco} - u_{MC} [cm]";
-      fvph_res_u[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRResU[0], kRResU[1]);
-
-      sN              = (TString) "res_v" + nsuff;
-      sT              = (TString) "Residuals for back strips coordinate" + tsuff + ";v_{reco} - v_{MC} [cm]";
-      fvph_res_v[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRResV[1], kRResV[1]);
 
       sN              = (TString) "res_t" + nsuff;
       sT              = (TString) "Residuals for time" + tsuff + ";t_{reco} - t_{MC} [ns]";
@@ -1084,14 +1066,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sT               = (TString) "Pulls for y-coordinate" + tsuff + ";(y_{reco} - y_{MC}) / #sigma_{y}^{reco}";
       fvph_pull_y[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullY[0], kRPullY[1]);
 
-      sN = (TString) "pull_u" + nsuff;
-      sT = (TString) "Pulls for front strips coordinate" + tsuff + ";(u_{reco} - u_{MC}) / #sigma_{u}^{reco}";
-      fvph_pull_u[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullU[0], kRPullU[1]);
-
-      sN = (TString) "pull_v" + nsuff;
-      sT = (TString) "Pulls for back strips coordinate" + tsuff + ";(v_{reco} - v_{MC}) / #sigma_{v}^{reco}";
-      fvph_pull_v[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullV[0], kRPullV[1]);
-
       sN               = (TString) "pull_t" + nsuff;
       sT               = (TString) "Pulls for time" + tsuff + ";(t_{reco} - t_{MC}) / #sigma_{t}^{reco}";
       fvph_pull_t[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullT[0], kRPullT[1]);
@@ -1104,14 +1078,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sT                   = (TString) "Residuals for y-coordinate" + tsuff + ";y_{reco} [cm];y_{reco} - y_{MC} [cm]";
       fvph_res_y_vs_y[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResY[0], kRResY[1]);
 
-      sN = (TString) "res_u_vs_u" + nsuff;
-      sT = (TString) "Residuals for front strips coordinate" + tsuff + ";u_{reco} [cm];u_{reco} - u_{MC} [cm]";
-      fvph_res_u_vs_u[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResU[0], kRResU[1]);
-
-      sN = (TString) "res_v_vs_u" + nsuff;
-      sT = (TString) "Residuals for back strips coordinate" + tsuff + ";v_{reco} [cm];v_{reco} - v_{MC} [cm]";
-      fvph_res_v_vs_v[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResV[0], kRResV[1]);
-
       sN                   = (TString) "res_t_vs_t" + nsuff;
       sT                   = (TString) "Residuals for time" + tsuff + "t_{reco} [ns];t_{reco} - t_{MC} [ns]";
       fvph_res_t_vs_t[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResT[0], kRResT[1]);
@@ -1123,16 +1089,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sN = (TString) "pull_y_vs_y" + nsuff;
       sT = (TString) "Pulls for y-coordinate" + tsuff + ";y_{reco} [cm];(y_{reco} - y_{MC}) / #sigma_{y}^{reco}";
       fvph_pull_y_vs_y[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRPullY[0], kRPullY[1]);
-
-      sN = (TString) "pull_u_vs_u" + nsuff;
-      sT = (TString) "Pulls for front strips coordinate" + tsuff
-           + ";u_{reco} [cm];(u_{reco} - u_{MC}) / #sigma_{u}^{reco}";
-      fvph_pull_u_vs_u[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRPullU[0], kRPullU[1]);
-
-      sN = (TString) "pull_v_vs_v" + nsuff;
-      sT =
-        (TString) "Pulls for back strips coordinate" + tsuff + ";v_{reco} [cm];(v_{reco} - v_{MC}) / #sigma_{v}^{reco}";
-      fvph_pull_v_vs_v[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRPullV[0], kRPullV[1]);
 
       sN = (TString) "pull_t_vs_t" + nsuff;
       sT = (TString) "Pulls for time" + tsuff + ";t_{reco} [ns];(t_{reco} - t_{MC}) / #sigma_{t}^{reco}";
@@ -1149,59 +1105,4 @@ InitStatus CbmCaInputQaSts::InitHistograms()
     }
   }
   return kSUCCESS;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-CbmMatch CbmCaInputQaSts::GetHitMatch(int iHit) const
-{
-  CbmMatch aMatch;
-
-  const auto* pHit = static_cast<const CbmStsHit*>(fpHits->At(iHit));  // NOTE: dynamic cast check is done in main loop
-
-  // Get front and back clusters
-  int iCf = pHit->GetFrontClusterId();
-  int iCb = pHit->GetBackClusterId();
-
-  // TODO: errors instead of fatals?
-  LOG_IF(fatal, iCf < 0) << fName << ": hit with id = " << iHit << " has wrong front cluster (iCf = " << iCf << ')';
-  LOG_IF(fatal, iCb < 0) << fName << ": hit with id = " << iHit << " has wrong back cluster (iCb = " << iCb << ')';
-
-  const auto* pClusterF = dynamic_cast<const CbmStsCluster*>(fpClusters->At(iCf));
-  const auto* pClusterB = dynamic_cast<const CbmStsCluster*>(fpClusters->At(iCb));
-
-  LOG_IF(fatal, !pClusterF) << fName << ": front cluster does not exist for hit with id = " << iHit
-                            << " and cluster id = " << iCf;
-  LOG_IF(fatal, !pClusterB) << fName << ": back cluster does not exist for hit with id = " << iHit
-                            << " and cluster id = " << iCb;
-
-  const auto* pClusterMatchF = dynamic_cast<const CbmMatch*>(fpClusterMatches->At(iCf));
-  const auto* pClusterMatchB = dynamic_cast<const CbmMatch*>(fpClusterMatches->At(iCb));
-
-  LOG_IF(fatal, !pClusterMatchF) << fName << ": front cluster match was not found for cluster with id = " << iCf;
-  LOG_IF(fatal, !pClusterMatchB) << fName << ": back cluster match was not found for cluster with id = " << iCf;
-
-  // Check addresses of hit and cluster
-  int addrHit      = pHit->GetAddress();
-  int addrClusterF = pClusterF->GetAddress();
-  int addrClusterB = pClusterB->GetAddress();
-  bool ifAddrCons  = addrHit == addrClusterF && addrClusterF == addrClusterB;
-  LOG_IF(fatal, !ifAddrCons) << fName << ": hit, front and (or) back cluster has inconsistent addresses: hit - "
-                             << addrHit << ", front - " << addrClusterF << ", back - " << addrClusterB << '\n';
-
-  // CUSTOM MATCHING IN STS: The link is selected if it is presented BOTH in front and back cluster, thus only true
-  //                         hits are matched. The standard matching in STS assumes only one (front or back) cluster
-  //                         to be matched, so it matches both true and fake hits.
-
-  for (int iLinkF = 0; iLinkF < pClusterMatchF->GetNofLinks(); ++iLinkF) {
-    const auto& linkF = pClusterMatchF->GetLink(iLinkF);
-    for (int iLinkB = 0; iLinkB < pClusterMatchB->GetNofLinks(); ++iLinkB) {
-      const auto& linkB = pClusterMatchB->GetLink(iLinkB);
-      if (linkF == linkB) {
-        aMatch.AddLink(linkF);
-        aMatch.AddLink(linkB);
-      }
-    }
-  }
-  return aMatch;
 }

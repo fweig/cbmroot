@@ -926,8 +926,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
   else {
     fvSortedStsHitsIndexes.clear();
     fvSortedStsHitsIndexes.reserve(nStsHits);
-    for (int i = 0; i < nStsHits; i++)
+    for (int i = 0; i < nStsHits; i++) {
       fvSortedStsHitsIndexes.push_back(i);
+    }
   }
   // -----------------------------------------------------------------------
 

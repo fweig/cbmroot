@@ -2,12 +2,12 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer] */
 
-/// \file   CbmCaInputQaSts.cxx
+/// \file   CbmCaInputQaTrd.cxx
 /// \date   13.01.2023
-/// \brief  QA-task for CA tracking input from MuCh detector (implementation)
+/// \brief  QA-task for CA tracking input from TRD detector (implementation)
 /// \author S.Zharko <s.zharko@gsi.de>
 
-#include "CbmCaInputQaSts.h"
+#include "CbmCaInputQaTrd.h"
 
 #include "CbmAddress.h"
 #include "CbmMCDataArray.h"
@@ -16,12 +16,10 @@
 #include "CbmMatch.h"
 #include "CbmQaCanvas.h"
 #include "CbmQaEff.h"
-#include "CbmQaTable.h"
-#include "CbmStsCluster.h"
-#include "CbmStsHit.h"
-#include "CbmStsPoint.h"
-#include "CbmStsTrackingInterface.h"
 #include "CbmTimeSlice.h"
+#include "CbmTrdHit.h"
+#include "CbmTrdPoint.h"
+#include "CbmTrdTrackingInterface.h"
 
 #include "FairRootManager.h"
 #include "Logger.h"
@@ -41,23 +39,22 @@
 #include <fstream>
 #include <iomanip>
 #include <numeric>
-#include <tuple>
 
 #include "L1Constants.h"
 
-ClassImp(CbmCaInputQaSts);
+ClassImp(CbmCaInputQaTrd);
 
 namespace phys = L1Constants::phys;  // from L1Constants.h
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-CbmCaInputQaSts::CbmCaInputQaSts(int verbose, bool isMCUsed) : CbmQaTask("CbmCaInputQaSts", "casts", verbose, isMCUsed)
+CbmCaInputQaTrd::CbmCaInputQaTrd(int verbose, bool isMCUsed) : CbmQaTask("CbmCaInputQaTrd", "catrd", verbose, isMCUsed)
 {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-bool CbmCaInputQaSts::Check()
+bool CbmCaInputQaTrd::Check()
 {
   bool res = true;
 
@@ -236,7 +233,7 @@ bool CbmCaInputQaSts::Check()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaInputQaSts::DeInit()
+void CbmCaInputQaTrd::DeInit()
 {
   // Vectors with pointers to histograms
   fvph_hit_ypos_vs_xpos.clear();
@@ -247,8 +244,6 @@ void CbmCaInputQaSts::DeInit()
 
   fvph_hit_dx.clear();
   fvph_hit_dy.clear();
-  fvph_hit_du.clear();
-  fvph_hit_dv.clear();
   fvph_hit_dt.clear();
 
   fvph_n_points_per_hit.clear();
@@ -261,26 +256,18 @@ void CbmCaInputQaSts::DeInit()
 
   fvph_res_x.clear();
   fvph_res_y.clear();
-  fvph_res_u.clear();
-  fvph_res_v.clear();
   fvph_res_t.clear();
 
   fvph_pull_x.clear();
   fvph_pull_y.clear();
-  fvph_pull_u.clear();
-  fvph_pull_v.clear();
   fvph_pull_t.clear();
 
   fvph_res_x_vs_x.clear();
   fvph_res_y_vs_y.clear();
-  fvph_res_u_vs_u.clear();
-  fvph_res_v_vs_v.clear();
   fvph_res_t_vs_t.clear();
 
   fvph_pull_x_vs_x.clear();
   fvph_pull_y_vs_y.clear();
-  fvph_pull_u_vs_u.clear();
-  fvph_pull_v_vs_v.clear();
   fvph_pull_t_vs_t.clear();
 
   fvpe_reco_eff_vs_xy.clear();
@@ -289,7 +276,7 @@ void CbmCaInputQaSts::DeInit()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaInputQaSts::FillHistograms()
+void CbmCaInputQaTrd::FillHistograms()
 {
   int nSt       = fpDetInterface->GetNtrackingStations();
   int nHits     = fpHits->GetEntriesFast();
@@ -308,8 +295,8 @@ void CbmCaInputQaSts::FillHistograms()
   }
 
   for (int iH = 0; iH < nHits; ++iH) {
-    const auto* pHit = dynamic_cast<const CbmStsHit*>(fpHits->At(iH));
-    LOG_IF(fatal, !pHit) << fName << ": hit with iH = " << iH << " is not an CbmStsHit (dynamic cast failed)";
+    const auto* pHit = dynamic_cast<const CbmTrdHit*>(fpHits->At(iH));
+    LOG_IF(fatal, !pHit) << fName << ": hit with iH = " << iH << " is not an CbmTrdHit (dynamic cast failed)";
 
     // *************************
     // ** Reconstructed hit QA
@@ -318,18 +305,14 @@ void CbmCaInputQaSts::FillHistograms()
     int iSt = fpDetInterface->GetTrackingStationIndex(pHit);
     LOG_IF(fatal, iSt < 0 || iSt >= nSt) << fName << ": index of station (" << iSt << ") is out of range "
                                          << "for hit with id = " << iH;
-    double stPhiF = fpDetInterface->GetStripsStereoAngleFront(iSt);  // STS front strips stereo angle
-    double stPhiB = fpDetInterface->GetStripsStereoAngleBack(iSt);   // STS back strips stereo angle
+
+    int hitType = pHit->GetClassType();  // TRD-1D, TRD-2D
 
     // Hit position
     double xHit = pHit->GetX();
     double yHit = pHit->GetY();
     double zHit = pHit->GetZ();
-    double uHit = xHit * cos(stPhiF) + yHit * sin(stPhiB);
-    double vHit = xHit * cos(stPhiB) + yHit * sin(stPhiB);
 
-    double duHit = pHit->GetDu();
-    double dvHit = pHit->GetDv();
     double dxHit = pHit->GetDx();
     double dyHit = pHit->GetDy();
     //double dxyHit = pHit->GetDxy();
@@ -346,30 +329,28 @@ void CbmCaInputQaSts::FillHistograms()
 
     fvph_hit_dx[iSt]->Fill(dxHit);
     fvph_hit_dy[iSt]->Fill(dyHit);
-    fvph_hit_du[iSt]->Fill(duHit);
-    fvph_hit_dv[iSt]->Fill(dvHit);
     fvph_hit_dt[iSt]->Fill(dtHit);
 
-    fvph_hit_ypos_vs_xpos[nSt]->Fill(xHit, yHit);
-    fvph_hit_xpos_vs_zpos[nSt]->Fill(zHit, xHit);
-    fvph_hit_ypos_vs_zpos[nSt]->Fill(zHit, yHit);
-    fvph_hit_dx[nSt]->Fill(dxHit);
-    fvph_hit_dy[nSt]->Fill(dyHit);
-    fvph_hit_du[nSt]->Fill(duHit);
-    fvph_hit_dv[nSt]->Fill(dvHit);
-    fvph_hit_dt[nSt]->Fill(dtHit);
+    fvph_hit_ypos_vs_xpos[nSt + hitType]->Fill(xHit, yHit);
+    fvph_hit_xpos_vs_zpos[nSt + hitType]->Fill(zHit, xHit);
+    fvph_hit_ypos_vs_zpos[nSt + hitType]->Fill(zHit, yHit);
+    fvph_hit_dx[nSt + hitType]->Fill(dxHit);
+    fvph_hit_dy[nSt + hitType]->Fill(dyHit);
+    fvph_hit_dt[nSt + hitType]->Fill(dtHit);
 
 
     // **********************
     // ** MC information QA
 
     if (IsMCUsed()) {
-      CbmMatch hitMatch = GetHitMatch(iH);
+      CbmMatch* pHitMatch = dynamic_cast<CbmMatch*>(fpHitMatches->At(iH));
+      LOG_IF(fatal, !pHitMatch) << fName << ": match object not found for hit ID " << iH;
 
       // Evaluate number of hits per one MC point
       int nMCpoints = 0;  // Number of MC points for this hit
-      for (int iLink = 0; iLink < hitMatch.GetNofLinks(); ++iLink) {
-        const auto& link = hitMatch.GetLink(iLink);
+
+      for (int iLink = 0; iLink < pHitMatch->GetNofLinks(); ++iLink) {
+        const auto& link = pHitMatch->GetLink(iLink);
 
         int iP = link.GetIndex();  // Index of MC point
 
@@ -390,18 +371,18 @@ void CbmCaInputQaSts::FillHistograms()
       }
 
       fvph_n_points_per_hit[iSt]->Fill(nMCpoints);
-      fvph_n_points_per_hit[nSt]->Fill(nMCpoints);
+      fvph_n_points_per_hit[nSt + hitType]->Fill(nMCpoints);
 
       if (nMCpoints != 1) { continue; }  // ??
 
       // The best link to in the match (probably, the cut on nMCpoints is meaningless)
-      const auto& bestPointLink = hitMatch.GetMatchedLink();
+      const auto& bestPointLink = pHitMatch->GetMatchedLink();
 
       // Skip noisy links
       if (bestPointLink.GetIndex() < 0) { continue; }
 
       // Point matched by the best link
-      const auto* pMCPoint = dynamic_cast<const CbmStsPoint*>(fpMCPoints->Get(bestPointLink));
+      const auto* pMCPoint = dynamic_cast<const CbmTrdPoint*>(fpMCPoints->Get(bestPointLink));
       LOG_IF(fatal, !pMCPoint) << fName << ": MC point object does not exist for hit " << iH;
 
       // MC track for this point
@@ -421,11 +402,9 @@ void CbmCaInputQaSts::FillHistograms()
       //double pdg    = pMCTrack->GetPdgCode();
 
       // Entrance position and time
-      double xMC = pMCPoint->GetXIn();
-      double yMC = pMCPoint->GetYIn();
-      //double uMC = xMC * cos(stPhiF) + yMC * sin(stPhiF);
-      //double vMC = xMC * cos(stPhiB) + yMC * sin(stPhiB);
-      double zMC = pMCPoint->GetZIn();
+      double xMC = pMCPoint->GetX();
+      double yMC = pMCPoint->GetY();
+      double zMC = pMCPoint->GetZ();
       double tMC = pMCPoint->GetTime() + t0MC;
 
       // MC point entrance momenta
@@ -444,20 +423,16 @@ void CbmCaInputQaSts::FillHistograms()
       double shiftZ = zHit - zMC;  // Difference between hit and point z positions
       double xMCs   = xMC + shiftZ * pxMC / pzMC;
       double yMCs   = yMC + shiftZ * pyMC / pzMC;
-      double uMCs   = xMCs * cos(stPhiF) + yMCs * sin(stPhiF);
-      double vMCs   = xMCs * cos(stPhiB) + yMCs * sin(stPhiB);
       double tMCs   = tMC + shiftZ / (pzMC * phys::kSpeedOfLight) * sqrt(mass * mass + pMC * pMC);
 
       // Residuals
       double xRes = xHit - xMCs;
       double yRes = yHit - yMCs;
-      double uRes = uHit - uMCs;
-      double vRes = vHit - vMCs;
       double tRes = tHit - tMCs;
 
       // ------ Cuts
 
-      if (std::fabs(pMCPoint->GetPzOut()) < 0.01) { continue; }  // CUT ON MINIMUM MOMENTUM
+      if (std::fabs(pMCPoint->GetPzOut()) < fMinMomentum) { continue; }  // CUT ON MINIMUM MOMENTUM
       //if (pMCo < cuts::kMinP) { continue; }  // Momentum threshold
 
 
@@ -469,57 +444,41 @@ void CbmCaInputQaSts::FillHistograms()
 
       fvph_res_x[iSt]->Fill(xRes);
       fvph_res_y[iSt]->Fill(yRes);
-      fvph_res_u[iSt]->Fill(uRes);
-      fvph_res_v[iSt]->Fill(vRes);
       fvph_res_t[iSt]->Fill(tRes);
 
       fvph_pull_x[iSt]->Fill(xRes / dxHit);
       fvph_pull_y[iSt]->Fill(yRes / dyHit);
-      fvph_pull_u[iSt]->Fill(uRes / duHit);
-      fvph_pull_v[iSt]->Fill(vRes / dvHit);
       fvph_pull_t[iSt]->Fill(tRes / dtHit);
 
       fvph_res_x_vs_x[iSt]->Fill(xHit, xRes);
       fvph_res_y_vs_y[iSt]->Fill(yHit, yRes);
-      fvph_res_u_vs_u[iSt]->Fill(uHit, uRes);
-      fvph_res_v_vs_v[iSt]->Fill(vHit, vRes);
       fvph_res_t_vs_t[iSt]->Fill(tHit, tRes);
 
       fvph_pull_x_vs_x[iSt]->Fill(xHit, xRes / dxHit);
       fvph_pull_y_vs_y[iSt]->Fill(yHit, yRes / dyHit);
-      fvph_pull_u_vs_u[iSt]->Fill(uHit, uRes / duHit);
-      fvph_pull_v_vs_v[iSt]->Fill(vHit, vRes / dvHit);
       fvph_pull_t_vs_t[iSt]->Fill(tHit, tRes / dtHit);
 
-      fvph_point_ypos_vs_xpos[nSt]->Fill(xMC, yMC);
-      fvph_point_xpos_vs_zpos[nSt]->Fill(zMC, xMC);
-      fvph_point_ypos_vs_zpos[nSt]->Fill(zMC, yMC);
+      fvph_point_ypos_vs_xpos[nSt + hitType]->Fill(xMC, yMC);
+      fvph_point_xpos_vs_zpos[nSt + hitType]->Fill(zMC, xMC);
+      fvph_point_ypos_vs_zpos[nSt + hitType]->Fill(zMC, yMC);
 
-      fvph_point_hit_delta_z[nSt]->Fill(shiftZ);
+      fvph_point_hit_delta_z[nSt + hitType]->Fill(shiftZ);
 
-      fvph_res_x[nSt]->Fill(xRes);
-      fvph_res_y[nSt]->Fill(yRes);
-      fvph_res_u[nSt]->Fill(uRes);
-      fvph_res_v[nSt]->Fill(vRes);
-      fvph_res_t[nSt]->Fill(tRes);
+      fvph_res_x[nSt + hitType]->Fill(xRes);
+      fvph_res_y[nSt + hitType]->Fill(yRes);
+      fvph_res_t[nSt + hitType]->Fill(tRes);
 
-      fvph_pull_x[nSt]->Fill(xRes / dxHit);
-      fvph_pull_y[nSt]->Fill(yRes / dyHit);
-      fvph_pull_u[nSt]->Fill(uRes / duHit);
-      fvph_pull_v[nSt]->Fill(vRes / dvHit);
-      fvph_pull_t[nSt]->Fill(tRes / dtHit);
+      fvph_pull_x[nSt + hitType]->Fill(xRes / dxHit);
+      fvph_pull_y[nSt + hitType]->Fill(yRes / dyHit);
+      fvph_pull_t[nSt + hitType]->Fill(tRes / dtHit);
 
-      fvph_res_x_vs_x[nSt]->Fill(xHit, xRes);
-      fvph_res_y_vs_y[nSt]->Fill(yHit, yRes);
-      fvph_res_u_vs_u[nSt]->Fill(uHit, uRes);
-      fvph_res_v_vs_v[nSt]->Fill(vHit, vRes);
-      fvph_res_t_vs_t[nSt]->Fill(tHit, tRes);
+      fvph_res_x_vs_x[nSt + hitType]->Fill(xHit, xRes);
+      fvph_res_y_vs_y[nSt + hitType]->Fill(yHit, yRes);
+      fvph_res_t_vs_t[nSt + hitType]->Fill(tHit, tRes);
 
-      fvph_pull_x_vs_x[nSt]->Fill(xHit, xRes / dxHit);
-      fvph_pull_y_vs_y[nSt]->Fill(yHit, yRes / dyHit);
-      fvph_pull_u_vs_u[nSt]->Fill(uHit, uRes / duHit);
-      fvph_pull_v_vs_v[nSt]->Fill(vHit, vRes / dvHit);
-      fvph_pull_t_vs_t[nSt]->Fill(tHit, tRes / dtHit);
+      fvph_pull_x_vs_x[nSt + hitType]->Fill(xHit, xRes / dxHit);
+      fvph_pull_y_vs_y[nSt + hitType]->Fill(yHit, yRes / dyHit);
+      fvph_pull_t_vs_t[nSt + hitType]->Fill(tHit, tRes / dtHit);
     }
   }  // loop over hits: end
 
@@ -531,7 +490,7 @@ void CbmCaInputQaSts::FillHistograms()
       int nPoints = fpMCPoints->Size(iFile, iEvent);
 
       for (int iP = 0; iP < nPoints; ++iP) {
-        const auto* pMCPoint = dynamic_cast<const CbmStsPoint*>(fpMCPoints->Get(iFile, iEvent, iP));
+        const auto* pMCPoint = dynamic_cast<const CbmTrdPoint*>(fpMCPoints->Get(iFile, iEvent, iP));
         LOG_IF(fatal, !pMCPoint) << fName << ": MC point does not exist for iFile = " << iFile
                                  << ", iEvent = " << iEvent << ", iP = " << iP;
         int address = pMCPoint->GetDetectorID();
@@ -560,10 +519,10 @@ void CbmCaInputQaSts::FillHistograms()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmCaInputQaSts::InitDataBranches()
+InitStatus CbmCaInputQaTrd::InitDataBranches()
 {
   // STS tracking detector interface
-  fpDetInterface = CbmStsTrackingInterface::Instance();
+  fpDetInterface = CbmTrdTrackingInterface::Instance();
 
   LOG_IF(fatal, !fpDetInterface) << "\033[1;31m" << fName << ": tracking detector interface is undefined\033[0m";
 
@@ -578,13 +537,8 @@ InitStatus CbmCaInputQaSts::InitDataBranches()
   // ----- Reconstructed data-branches initialization
 
   // Hits container
-  fpHits = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("StsHit"));
-  LOG_IF(fatal, !fpHits) << "\033[1;31m" << fName << ": container of reconstructed hits in STS is not found\033[0m";
-
-  // Clusters container
-  fpClusters = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("StsCluster"));
-  LOG_IF(fatal, !fpClusters) << "\033[1;31m" << fName << ": container of hit clusters in STS is not found\033[0m";
-
+  fpHits = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("TrdHit"));
+  LOG_IF(fatal, !fpHits) << "\033[1;31m" << fName << ": container of reconstructed hits in TRD is not found\033[0m";
 
   // ----- MC-information branches initialization
   if (IsMCUsed()) {
@@ -601,12 +555,12 @@ InitStatus CbmCaInputQaSts::InitDataBranches()
     LOG_IF(fatal, !fpMCTracks) << "\033[1;31m" << fName << ": MC track branch is not found\033[0m";
 
     // MC points
-    fpMCPoints = fpMCDataManager->InitBranch("StsPoint");
-    LOG_IF(fatal, !fpMCTracks) << "\033[1;31m" << fName << ": MC point branch is not found for STS\033[0m";
+    fpMCPoints = fpMCDataManager->InitBranch("TrdPoint");
+    LOG_IF(fatal, !fpMCTracks) << "\033[1;31m" << fName << ": MC point branch is not found for TRD\033[0m";
 
-    // Cluster matches
-    fpClusterMatches = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("StsClusterMatch"));
-    LOG_IF(fatal, !fpClusterMatches) << "\033[1;31m]" << fName << ": cluster match branch is not found for STS\033[0m";
+    // Hit matches
+    fpHitMatches = dynamic_cast<TClonesArray*>(pFairRootManager->GetObject("TrdHitMatch"));
+    LOG_IF(fatal, !fpHitMatches) << "\033[1;31m]" << fName << ": hit match branch is not found for TRD\033[0m";
   }
 
   return kSUCCESS;
@@ -614,7 +568,7 @@ InitStatus CbmCaInputQaSts::InitDataBranches()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmCaInputQaSts::InitCanvases()
+InitStatus CbmCaInputQaTrd::InitCanvases()
 {
   gStyle->SetOptFit(1);
   int nSt = fpDetInterface->GetNtrackingStations();
@@ -823,23 +777,7 @@ InitStatus CbmCaInputQaSts::InitCanvases()
       fvph_res_y[iSt]->DrawCopy("", "");
     }
 
-    // x-coordinate
-    auto* pc_res_u = MakeCanvas<CbmQaCanvas>("res_u", "Residuals for u coordinate", 1600, 800);
-    pc_res_u->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_res_u->cd(iSt + 1);
-      fvph_res_u[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
-    auto* pc_res_v = MakeCanvas<CbmQaCanvas>("res_v", "Residuals for v coordinate", 1600, 800);
-    pc_res_v->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_res_v->cd(iSt + 1);
-      fvph_res_v[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
+    // time
     auto* pc_res_t = MakeCanvas<CbmQaCanvas>("res_t", "Residuals for time", 1600, 800);
     pc_res_t->Divide2D(nSt);
     for (int iSt = 0; iSt < nSt; ++iSt) {
@@ -867,23 +805,7 @@ InitStatus CbmCaInputQaSts::InitCanvases()
       fvph_pull_y[iSt]->DrawCopy("", "");
     }
 
-    // x-coordinate
-    auto* pc_pull_u = MakeCanvas<CbmQaCanvas>("pull_u", "Pulls for u coordinate", 1600, 800);
-    pc_pull_u->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_pull_u->cd(iSt + 1);
-      fvph_pull_u[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
-    auto* pc_pull_v = MakeCanvas<CbmQaCanvas>("pull_v", "Pulls for v coordinate", 1600, 800);
-    pc_pull_v->Divide2D(nSt);
-    for (int iSt = 0; iSt < nSt; ++iSt) {
-      pc_pull_v->cd(iSt + 1);
-      fvph_pull_v[iSt]->DrawCopy("", "");
-    }
-
-    // x-coordinate
+    // time
     auto* pc_pull_t = MakeCanvas<CbmQaCanvas>("pull_t", "Pulls for time", 1600, 800);
     pc_pull_t->Divide2D(nSt);
     for (int iSt = 0; iSt < nSt; ++iSt) {
@@ -907,6 +829,8 @@ InitStatus CbmCaInputQaSts::InitCanvases()
         continue;
       }
       pGr->DrawClone("AP");
+      auto* pFit = (TF1*) pGr->FindObject("pol0");
+      if (pFit) { pFit->Draw("SAME"); }
     }
 
     auto* pc_reco_eff_vs_xy = MakeCanvas<CbmQaCanvas>("reco_eff_vs_xy", "Hit efficiencies wrt x and y", 1600, 800);
@@ -929,28 +853,42 @@ InitStatus CbmCaInputQaSts::InitCanvases()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmCaInputQaSts::InitHistograms()
+InitStatus CbmCaInputQaTrd::InitHistograms()
 {
   int nSt = fpDetInterface->GetNtrackingStations();
 
   // ----- Histograms initialization
-  fvph_hit_ypos_vs_xpos.resize(nSt + 1, nullptr);
-  fvph_hit_ypos_vs_zpos.resize(nSt + 1, nullptr);
-  fvph_hit_xpos_vs_zpos.resize(nSt + 1, nullptr);
+  fvph_hit_ypos_vs_xpos.resize(nSt + 2, nullptr);
+  fvph_hit_ypos_vs_zpos.resize(nSt + 2, nullptr);
+  fvph_hit_xpos_vs_zpos.resize(nSt + 2, nullptr);
 
   fvph_hit_station_delta_z.resize(nSt);
 
-  fvph_hit_dx.resize(nSt + 1, nullptr);
-  fvph_hit_dy.resize(nSt + 1, nullptr);
-  fvph_hit_dt.resize(nSt + 1, nullptr);
-  fvph_hit_dv.resize(nSt + 1, nullptr);
-  fvph_hit_du.resize(nSt + 1, nullptr);
+  fvph_hit_dx.resize(nSt + 2, nullptr);
+  fvph_hit_dy.resize(nSt + 2, nullptr);
+  fvph_hit_dt.resize(nSt + 2, nullptr);
 
-  for (int iSt = 0; iSt <= nSt; ++iSt) {
-    TString nsuff = (iSt == nSt) ? "" : Form("_st%d", iSt);               // Histogram name suffix
-    TString tsuff = (iSt == nSt) ? "" : Form(" in STS station %d", iSt);  // Histogram title suffix
-    TString sN    = "";
-    TString sT    = "";
+  for (int iSt = 0; iSt < nSt + 2; ++iSt) {
+    TString nsuff = "";  // Histogram name suffix
+    TString tsuff = "";  // Histogram title suffix
+
+    // Select group: indexes 0 .. iSt - 1 stand for single TRD stations, index iSt == nSt is TRD-1D
+    // and iSt == nSt + 1 is TRD-2D
+    if (iSt < nSt) {
+      nsuff = Form("_st%d", iSt);
+      tsuff = Form(" in TRD station %d", iSt);
+    }
+    else if (iSt == nSt) {
+      nsuff = "_1D";
+      tsuff = " in TRD-1D";
+    }
+    else {
+      nsuff = "_2D";
+      tsuff = " in TRD-2D";
+    }
+
+    TString sN = "";
+    TString sT = "";
 
     // Hit occupancy
     sN                         = (TString) "hit_ypos_vs_xpos" + nsuff;
@@ -974,19 +912,11 @@ InitStatus CbmCaInputQaSts::InitHistograms()
     sT               = (TString) "Hit position error along y-axis" + tsuff + ";dy_{hit} [cm]";
     fvph_hit_dy[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDy[0], kRHitDy[1]);
 
-    sN               = (TString) "hit_du" + nsuff;
-    sT               = (TString) "Hit position error across front strips" + tsuff + ";du_{hit} [cm]";
-    fvph_hit_du[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDu[0], kRHitDu[1]);
-
-    sN               = (TString) "hit_dv" + nsuff;
-    sT               = (TString) "Hit position error across back strips" + tsuff + ";dv_{hit} [cm]";
-    fvph_hit_dv[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDv[0], kRHitDv[1]);
-
     sN               = (TString) "hit_dt" + nsuff;
     sT               = (TString) "Hit time error" + tsuff + ";dt_{hit} [ns]";
     fvph_hit_dt[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRHitDt[0], kRHitDt[1]);
 
-    if (iSt == nSt) { continue; }  // Following histograms are defined only for separate station
+    if (iSt >= nSt) { continue; }  // Following histograms are defined only for separate station
 
     sN = (TString) "hit_station_delta_z" + nsuff;
     sT = (TString) "Different between hit and station z-positions" + tsuff + ";z_{hit} - z_{st} [cm]";
@@ -997,39 +927,47 @@ InitStatus CbmCaInputQaSts::InitHistograms()
   // ----- Initialize histograms, which are use MC-information
   if (IsMCUsed()) {
     // Resize histogram vectors
-    fvph_n_points_per_hit.resize(nSt + 1, nullptr);
-    fvph_point_ypos_vs_xpos.resize(nSt + 1, nullptr);
-    fvph_point_xpos_vs_zpos.resize(nSt + 1, nullptr);
-    fvph_point_ypos_vs_zpos.resize(nSt + 1, nullptr);
-    fvph_point_hit_delta_z.resize(nSt + 1, nullptr);
-    fvph_res_x.resize(nSt + 1, nullptr);
-    fvph_res_y.resize(nSt + 1, nullptr);
-    fvph_res_u.resize(nSt + 1, nullptr);
-    fvph_res_v.resize(nSt + 1, nullptr);
-    fvph_res_t.resize(nSt + 1, nullptr);
-    fvph_pull_x.resize(nSt + 1, nullptr);
-    fvph_pull_y.resize(nSt + 1, nullptr);
-    fvph_pull_u.resize(nSt + 1, nullptr);
-    fvph_pull_v.resize(nSt + 1, nullptr);
-    fvph_pull_t.resize(nSt + 1, nullptr);
-    fvph_res_x_vs_x.resize(nSt + 1, nullptr);
-    fvph_res_y_vs_y.resize(nSt + 1, nullptr);
-    fvph_res_u_vs_u.resize(nSt + 1, nullptr);
-    fvph_res_v_vs_v.resize(nSt + 1, nullptr);
-    fvph_res_t_vs_t.resize(nSt + 1, nullptr);
-    fvph_pull_x_vs_x.resize(nSt + 1, nullptr);
-    fvph_pull_y_vs_y.resize(nSt + 1, nullptr);
-    fvph_pull_u_vs_u.resize(nSt + 1, nullptr);
-    fvph_pull_v_vs_v.resize(nSt + 1, nullptr);
-    fvph_pull_t_vs_t.resize(nSt + 1, nullptr);
-    fvpe_reco_eff_vs_xy.resize(nSt + 1, nullptr);
-    fvpe_reco_eff_vs_r.resize(nSt + 1, nullptr);
+    fvph_n_points_per_hit.resize(nSt + 2, nullptr);
+    fvph_point_ypos_vs_xpos.resize(nSt + 2, nullptr);
+    fvph_point_xpos_vs_zpos.resize(nSt + 2, nullptr);
+    fvph_point_ypos_vs_zpos.resize(nSt + 2, nullptr);
+    fvph_point_hit_delta_z.resize(nSt + 2, nullptr);
+    fvph_res_x.resize(nSt + 2, nullptr);
+    fvph_res_y.resize(nSt + 2, nullptr);
+    fvph_res_t.resize(nSt + 2, nullptr);
+    fvph_pull_x.resize(nSt + 2, nullptr);
+    fvph_pull_y.resize(nSt + 2, nullptr);
+    fvph_pull_t.resize(nSt + 2, nullptr);
+    fvph_res_x_vs_x.resize(nSt + 2, nullptr);
+    fvph_res_y_vs_y.resize(nSt + 2, nullptr);
+    fvph_res_t_vs_t.resize(nSt + 2, nullptr);
+    fvph_pull_x_vs_x.resize(nSt + 2, nullptr);
+    fvph_pull_y_vs_y.resize(nSt + 2, nullptr);
+    fvph_pull_t_vs_t.resize(nSt + 2, nullptr);
+    fvpe_reco_eff_vs_xy.resize(nSt + 2, nullptr);
+    fvpe_reco_eff_vs_r.resize(nSt + 2, nullptr);
 
     for (int iSt = 0; iSt <= nSt; ++iSt) {
-      TString nsuff = (iSt == nSt) ? "" : Form("_st%d", iSt);               // Histogram name suffix
-      TString tsuff = (iSt == nSt) ? "" : Form(" in STS station %d", iSt);  // Histogram title suffix
-      TString sN    = "";
-      TString sT    = "";
+      TString nsuff = "";  // Histogram name suffix
+      TString tsuff = "";  // Histogram title suffix
+
+      // Select group: indexes 0 .. iSt - 1 stand for single TRD stations, index iSt == nSt is TRD-1D
+      // and iSt == nSt + 1 is TRD-2D
+      if (iSt < nSt) {
+        nsuff = Form("_st%d", iSt);
+        tsuff = Form(" in TRD station %d", iSt);
+      }
+      else if (iSt == nSt) {
+        nsuff = "_1D";
+        tsuff = " in TRD-1D";
+      }
+      else {
+        nsuff = "_2D";
+        tsuff = " in TRD-2D";
+      }
+
+      TString sN = "";
+      TString sT = "";
 
       sN                         = (TString) "n_points_per_hit" + nsuff;
       sT                         = (TString) "Number of points per hit" + tsuff + ";N_{point}/hit";
@@ -1053,7 +991,7 @@ InitStatus CbmCaInputQaSts::InitHistograms()
 
       // Difference between MC input z and hit z coordinates
       sN = (TString) "point_hit_delta_z" + nsuff;
-      sT = (TString) "Distance between STS point and hit along z axis" + tsuff + ";z_{reco} - z_{MC} [cm]";
+      sT = (TString) "Distance between point and hit along z axis" + tsuff + ";z_{reco} - z_{MC} [cm]";
       fvph_point_hit_delta_z[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, -0.04, 0.04);
 
       sN              = (TString) "res_x" + nsuff;
@@ -1063,14 +1001,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sN              = (TString) "res_y" + nsuff;
       sT              = (TString) "Residuals for y-coordinate" + tsuff + ";y_{reco} - y_{MC} [cm]";
       fvph_res_y[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRResY[0], kRResY[1]);
-
-      sN              = (TString) "res_u" + nsuff;
-      sT              = (TString) "Residuals for front strips coordinate" + tsuff + ";u_{reco} - u_{MC} [cm]";
-      fvph_res_u[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRResU[0], kRResU[1]);
-
-      sN              = (TString) "res_v" + nsuff;
-      sT              = (TString) "Residuals for back strips coordinate" + tsuff + ";v_{reco} - v_{MC} [cm]";
-      fvph_res_v[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRResV[1], kRResV[1]);
 
       sN              = (TString) "res_t" + nsuff;
       sT              = (TString) "Residuals for time" + tsuff + ";t_{reco} - t_{MC} [ns]";
@@ -1084,14 +1014,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sT               = (TString) "Pulls for y-coordinate" + tsuff + ";(y_{reco} - y_{MC}) / #sigma_{y}^{reco}";
       fvph_pull_y[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullY[0], kRPullY[1]);
 
-      sN = (TString) "pull_u" + nsuff;
-      sT = (TString) "Pulls for front strips coordinate" + tsuff + ";(u_{reco} - u_{MC}) / #sigma_{u}^{reco}";
-      fvph_pull_u[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullU[0], kRPullU[1]);
-
-      sN = (TString) "pull_v" + nsuff;
-      sT = (TString) "Pulls for back strips coordinate" + tsuff + ";(v_{reco} - v_{MC}) / #sigma_{v}^{reco}";
-      fvph_pull_v[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullV[0], kRPullV[1]);
-
       sN               = (TString) "pull_t" + nsuff;
       sT               = (TString) "Pulls for time" + tsuff + ";(t_{reco} - t_{MC}) / #sigma_{t}^{reco}";
       fvph_pull_t[iSt] = MakeHisto<TH1F>(sN, sT, kNbins, kRPullT[0], kRPullT[1]);
@@ -1104,14 +1026,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sT                   = (TString) "Residuals for y-coordinate" + tsuff + ";y_{reco} [cm];y_{reco} - y_{MC} [cm]";
       fvph_res_y_vs_y[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResY[0], kRResY[1]);
 
-      sN = (TString) "res_u_vs_u" + nsuff;
-      sT = (TString) "Residuals for front strips coordinate" + tsuff + ";u_{reco} [cm];u_{reco} - u_{MC} [cm]";
-      fvph_res_u_vs_u[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResU[0], kRResU[1]);
-
-      sN = (TString) "res_v_vs_u" + nsuff;
-      sT = (TString) "Residuals for back strips coordinate" + tsuff + ";v_{reco} [cm];v_{reco} - v_{MC} [cm]";
-      fvph_res_v_vs_v[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResV[0], kRResV[1]);
-
       sN                   = (TString) "res_t_vs_t" + nsuff;
       sT                   = (TString) "Residuals for time" + tsuff + "t_{reco} [ns];t_{reco} - t_{MC} [ns]";
       fvph_res_t_vs_t[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRResT[0], kRResT[1]);
@@ -1123,16 +1037,6 @@ InitStatus CbmCaInputQaSts::InitHistograms()
       sN = (TString) "pull_y_vs_y" + nsuff;
       sT = (TString) "Pulls for y-coordinate" + tsuff + ";y_{reco} [cm];(y_{reco} - y_{MC}) / #sigma_{y}^{reco}";
       fvph_pull_y_vs_y[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRPullY[0], kRPullY[1]);
-
-      sN = (TString) "pull_u_vs_u" + nsuff;
-      sT = (TString) "Pulls for front strips coordinate" + tsuff
-           + ";u_{reco} [cm];(u_{reco} - u_{MC}) / #sigma_{u}^{reco}";
-      fvph_pull_u_vs_u[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRPullU[0], kRPullU[1]);
-
-      sN = (TString) "pull_v_vs_v" + nsuff;
-      sT =
-        (TString) "Pulls for back strips coordinate" + tsuff + ";v_{reco} [cm];(v_{reco} - v_{MC}) / #sigma_{v}^{reco}";
-      fvph_pull_v_vs_v[iSt] = MakeHisto<TH2F>(sN, sT, kNbins, 0, 0, kNbins, kRPullV[0], kRPullV[1]);
 
       sN = (TString) "pull_t_vs_t" + nsuff;
       sT = (TString) "Pulls for time" + tsuff + ";t_{reco} [ns];(t_{reco} - t_{MC}) / #sigma_{t}^{reco}";
@@ -1149,59 +1053,4 @@ InitStatus CbmCaInputQaSts::InitHistograms()
     }
   }
   return kSUCCESS;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-CbmMatch CbmCaInputQaSts::GetHitMatch(int iHit) const
-{
-  CbmMatch aMatch;
-
-  const auto* pHit = static_cast<const CbmStsHit*>(fpHits->At(iHit));  // NOTE: dynamic cast check is done in main loop
-
-  // Get front and back clusters
-  int iCf = pHit->GetFrontClusterId();
-  int iCb = pHit->GetBackClusterId();
-
-  // TODO: errors instead of fatals?
-  LOG_IF(fatal, iCf < 0) << fName << ": hit with id = " << iHit << " has wrong front cluster (iCf = " << iCf << ')';
-  LOG_IF(fatal, iCb < 0) << fName << ": hit with id = " << iHit << " has wrong back cluster (iCb = " << iCb << ')';
-
-  const auto* pClusterF = dynamic_cast<const CbmStsCluster*>(fpClusters->At(iCf));
-  const auto* pClusterB = dynamic_cast<const CbmStsCluster*>(fpClusters->At(iCb));
-
-  LOG_IF(fatal, !pClusterF) << fName << ": front cluster does not exist for hit with id = " << iHit
-                            << " and cluster id = " << iCf;
-  LOG_IF(fatal, !pClusterB) << fName << ": back cluster does not exist for hit with id = " << iHit
-                            << " and cluster id = " << iCb;
-
-  const auto* pClusterMatchF = dynamic_cast<const CbmMatch*>(fpClusterMatches->At(iCf));
-  const auto* pClusterMatchB = dynamic_cast<const CbmMatch*>(fpClusterMatches->At(iCb));
-
-  LOG_IF(fatal, !pClusterMatchF) << fName << ": front cluster match was not found for cluster with id = " << iCf;
-  LOG_IF(fatal, !pClusterMatchB) << fName << ": back cluster match was not found for cluster with id = " << iCf;
-
-  // Check addresses of hit and cluster
-  int addrHit      = pHit->GetAddress();
-  int addrClusterF = pClusterF->GetAddress();
-  int addrClusterB = pClusterB->GetAddress();
-  bool ifAddrCons  = addrHit == addrClusterF && addrClusterF == addrClusterB;
-  LOG_IF(fatal, !ifAddrCons) << fName << ": hit, front and (or) back cluster has inconsistent addresses: hit - "
-                             << addrHit << ", front - " << addrClusterF << ", back - " << addrClusterB << '\n';
-
-  // CUSTOM MATCHING IN STS: The link is selected if it is presented BOTH in front and back cluster, thus only true
-  //                         hits are matched. The standard matching in STS assumes only one (front or back) cluster
-  //                         to be matched, so it matches both true and fake hits.
-
-  for (int iLinkF = 0; iLinkF < pClusterMatchF->GetNofLinks(); ++iLinkF) {
-    const auto& linkF = pClusterMatchF->GetLink(iLinkF);
-    for (int iLinkB = 0; iLinkB < pClusterMatchB->GetNofLinks(); ++iLinkB) {
-      const auto& linkB = pClusterMatchB->GetLink(iLinkB);
-      if (linkF == linkB) {
-        aMatch.AddLink(linkF);
-        aMatch.AddLink(linkB);
-      }
-    }
-  }
-  return aMatch;
 }

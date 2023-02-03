@@ -1315,7 +1315,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     fvHitPointIndexes.push_back(th.iMC);
   }
 
-  if (fVerbose >= 1) cout << "ReadEvent: mvd and sts are saved." << endl;
+  if (fVerbose >= 2) cout << "ReadEvent: mvd and sts are saved." << endl;
 
   // ----- Send data from IODataManager to L1Algo --------------------------------------------------------------------
   if (1 == fSTAPDataMode) { WriteSTAPAlgoInputData(nCalls); }

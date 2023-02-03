@@ -72,7 +72,14 @@ namespace L1Constants
     /* Particle masses used for track fit */
     constexpr float kMuonMass     = 0.10565800f;  ///< Muon mass     [GeV/c2]
     constexpr float kElectronMass = 0.000511f;    ///< Electron mass [GeV/c2]
+    constexpr double kSpeedOfLight = 29.9792458;   ///< Speed of light [cm/ns]
   }                                               // namespace phys
+
+  /// Math constants
+  namespace math
+  {
+    constexpr double kPi = 3.14159265358979323846;  ///< Value of PI, used in ROOT TMath
+  }
 
   /// Miscellaneous constants
   namespace misc

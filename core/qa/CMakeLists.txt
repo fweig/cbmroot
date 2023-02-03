@@ -4,6 +4,7 @@ set(INCLUDE_DIRECTORIES
 
 set(SRCS
   CbmQaCanvas.cxx
+  CbmQaEff.cxx
   CbmQaPie.cxx
   CbmQaHist.cxx
   CbmQaTable.cxx
@@ -27,6 +28,6 @@ set(INTERFACE_DEPENDENCIES
 
 generate_cbm_library()
 
-Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h
+Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h
         DESTINATION include
        )

@@ -7,8 +7,7 @@
 
 namespace cbm::ca::qa::cuts
 {
-  constexpr double kMinP   = 0.05;  ///< minimal momentum [Gev/c]
-  constexpr double kMinEff = 0.50;  ///< minimal efficiency of hit finders (NOTE: value is tmp)
+  constexpr double kMinP = 0.05;  ///< minimal momentum [Gev/c]
 
   // Max difference between hit and station z
   constexpr double kMaxDzStHitSts = 1.;  ///< Max distance for STS
