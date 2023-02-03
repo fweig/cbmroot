@@ -1,4 +1,4 @@
-set(INPUT_VERSION e7571e3af56ba81fa586efc7fa676b2b8e9beea4)
+set(INPUT_VERSION ecbd1f37a0d449a5c2a344957a889441963852ae) # branch newFieldMaps
 
 set(INPUT_SRC_URL "https://git.cbm.gsi.de/CbmSoft/cbmroot_input.git")
 
