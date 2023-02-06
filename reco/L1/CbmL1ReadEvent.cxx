@@ -900,7 +900,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.iStation = stIdx;  //h->GetStationNr() - 1;
 
         //Get time
-        th.time = h->GetTime() - 14.5;
+        th.time = h->GetTime();
         th.dt   = h->GetTimeError();
 
 
