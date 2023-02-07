@@ -3,7 +3,13 @@
 find_package(Python)
 
 if (Python_FOUND)
-  set(production_macro_events 2)
+  # Define the number of events to run
+  if(LARGE_TEST_STATISTIC OR ${CBM_TEST_MODEL} MATCHES Weekly)
+    Set(production_macro_events 50)
+  else()
+    Set(production_macro_events 2)
+  endif()
+  math(EXPR timeOutTime "300 + (${production_macro_events} * 20)")
 
   GENERATE_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_json.sh)
 
@@ -18,5 +24,5 @@ if (Python_FOUND)
   Set(testname PWG_common_production_run_json)
 
   Add_Test(${testname} ${CMAKE_CURRENT_BINARY_DIR}/run_json.sh ${CMAKE_CURRENT_BINARY_DIR}/config_ci.json)
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT 600)
+  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
 endif()

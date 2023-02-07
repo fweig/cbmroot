@@ -11,15 +11,13 @@ If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)
   add_subdirectory(field)
   add_subdirectory(C2F)
   add_subdirectory(dimuon)
+  add_subdirectory(PWG)
   Message("Additional Nightly tests")
 EndIf()
-
-  add_subdirectory(PWG)
 
 #--- Additional tests for weekly builds
 If(${CBM_TEST_MODEL} MATCHES Weekly)
   add_subdirectory(KF)
-  add_subdirectory(PWG)
   Message("Additional long running Weekly tests")
 EndIf()
 
