@@ -1142,6 +1142,8 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
       if (0x00202806 == h->GetAddress() || 0x00002806 == h->GetAddress()) continue;  // TODO: Why? (S.Zharko)
 
+      if (5 == CbmTofAddress::GetSmType(h->GetAddress())) continue;
+
       int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStationIndex(h);
 
       if (sttof < 0) continue;
@@ -1168,6 +1170,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       th.x = pos.X();
       th.y = pos.Y();
       th.z = pos.Z();
+
 
       if (th.z > 400) continue;  // is it still needed here? (S.Zharko)
 

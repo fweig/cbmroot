@@ -905,25 +905,30 @@ void CbmL1::Reconstruct(CbmEvent* event)
   // TODO: Refactor this part, check usage ---------------------------------
   int nStsHits = (fUseSTS && fpStsHits ? fpStsHits->GetEntriesFast() : 0);
 
-  /// sort input hits by time
-  L1Vector<std::pair<double, int>> SortHits("CbmL1::SortHits");
-  SortHits.reserve(nStsHits);
-  float start_t = 10000000000;
-  for (Int_t j = 0; j < nStsHits; j++) {
-    CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(j));
-    double t      = sh->GetTime();
-    if (t < start_t) start_t = t;
-    SortHits.push_back(std::pair<double, int>(t, j));
+  if (!event) {
+    /// sort input hits by time
+    L1Vector<std::pair<double, int>> SortHits("CbmL1::SortHits");
+    SortHits.reserve(nStsHits);
+    for (Int_t j = 0; j < nStsHits; j++) {
+      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(j));
+      double t      = sh->GetTime();
+      SortHits.push_back(std::pair<double, int>(t, j));
+    }
+    std::sort(SortHits.begin(), SortHits.end());
+    if (SortHits.size() > 0) TsStart = SortHits[0].first;  ///reco TS start time is set to smallest hit time
+    fvSortedStsHitsIndexes.clear();
+    fvSortedStsHitsIndexes.reserve(SortHits.size());
+    for (unsigned int i = 0; i < SortHits.size(); i++) {
+      int j = SortHits[i].second;
+      fvSortedStsHitsIndexes.push_back(j);
+    };
   }
-  TsStart = start_t;  ///reco TS start time is set to smallest hit time
-
-  std::sort(SortHits.begin(), SortHits.end());
-  fvSortedStsHitsIndexes.clear();
-  fvSortedStsHitsIndexes.reserve(SortHits.size());
-  for (unsigned int i = 0; i < SortHits.size(); i++) {
-    int j = SortHits[i].second;
-    fvSortedStsHitsIndexes.push_back(j);
-  };
+  else {
+    fvSortedStsHitsIndexes.clear();
+    fvSortedStsHitsIndexes.reserve(nStsHits);
+    for (unsigned int i = 0; i < nStsHits; i++)
+      fvSortedStsHitsIndexes.push_back(i);
+  }
   // -----------------------------------------------------------------------
 
   if (!fLegacyEventMode && fPerformance) {
@@ -1008,7 +1013,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
     fpAlgo->CATrackFinder();
-    //     IdealTrackFinder();
+    //       IdealTrackFinder();
     fTrackingTime += fpAlgo->fCATime;
 
     if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
