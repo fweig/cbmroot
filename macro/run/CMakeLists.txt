@@ -1,7 +1,5 @@
 # =====   Generate the needed shell scripts   ================================
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_file.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_transport_json_config.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi_json_config.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_beam.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco.C)
@@ -78,33 +76,6 @@ foreach(setup IN LISTS cbm_setup)
   else()
   	set(sname test)
   endif()
-
-  # --- Test run_transport_json_config
-  # --- Transport run using run_transport_json_config.C
-  set(json_config_file ${CBMROOT_SOURCE_DIR}/macro/run/config_ci.json)
-  set(testname run_transport_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"${json_config_file}\" 2 ${randomSeed})
-  set_tests_properties(${testname} PROPERTIES
-  	TIMEOUT ${timeOutTime}
-	FAIL_REGULAR_EXPRESSION "segmentation violation"
-  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED run_cleanup
-  	FIXTURES_SETUP fixt_tra_json_config
-  	RESOURCE_LOCK json_config_ParDb
-  )
-
-  # --- Test run_digi_json_config
-  # --- Digitization run with using run_digi_json_config.C
-  set(testname run_digi_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh \"${json_config_file}\")
-  set_tests_properties(${testname} PROPERTIES
-  	TIMEOUT ${timeOutTime}
-	FAIL_REGULAR_EXPRESSION "segmentation violation"
-  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED fixt_tra_json_config
-  	FIXTURES_SETUP fixt_digi_json_config
-  	RESOURCE_LOCK json_config_ParDb
-  )
 
   # --- Test run_tra_coll
   # --- Transport run with collision events, using run_tra_file.C
@@ -505,8 +476,7 @@ EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )
 #####################
 # ============================================================================
 
-Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_transport_json_config.C run_digi_json_config.C config.json
-              run_digi.C run_reco.C run_unpack_online.C run_unpack_tsa.C config_ci.json
+Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_digi.C run_reco.C run_unpack_online.C run_unpack_tsa.C
         DESTINATION share/cbmroot/macro/run
        )
 Install(PROGRAMS run_tests.sh

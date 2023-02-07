@@ -1,0 +1,168 @@
+{
+  "accessory": {
+    "batch": false,
+    "nEvents": "@production_macro_events@",
+    "jobName": "cbmsim",
+    "jobRange": "1",
+    "account": "cbm",
+    "ram": "4G",
+    "partition": "debug",
+    "time": "0:20:00",
+    "excludeNodes": "",
+    "logDir": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/log",
+    "cbmRoot": "@CMAKE_BINARY_DIR@/config.sh",
+    "jobScript": "@VMCWORKDIR@/macro/PWG/common/production/run_sim_reco_json.sh",
+    "transport": {
+      "run": true,
+      "plutoShift": 0,
+      "macro": "@VMCWORKDIR@/macro/PWG/common/production/run_transport_json_config.C"},
+    "digitization": {
+      "run": true,
+      "macro": "@VMCWORKDIR@/macro/PWG/common/production/run_digi_json_config.C"},
+    "reconstruction": {
+      "run": true,
+      "macro": "@VMCWORKDIR@/macro/PWG/common/production/run_reco_json_config.C"},
+    "AT": { 
+      "run": true,
+      "macro": "@VMCWORKDIR@/macro/PWG/common/production/run_analysis_tree_maker_json_config.C"}
+  },
+  "logScreenLevel": "INFO",
+  "logVerbosityLevel": "LOW",
+  "transport": {
+    "input": [
+      {"generator": "unigen",
+       "file": "@VMCWORKDIR@/input/urqmd.auau.10gev.centr.root"},
+      {"generator": "pluto",
+       "file": "@VMCWORKDIR@/input/pluto.auau.8gev.omega.mpmm.0001.root",
+       "plutoPdg": 0},
+      {"#generator": "beam",
+       "beamA": 197,
+       "beamZ": 79,
+       "beamQ": 79,
+       "beamP": 12.0,
+       "beamStartZ": -45.0}
+    ],
+    "output": { 
+      "path": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/tra/${taskId}/${taskId}",
+      "overwrite": true
+    },
+    "target": {
+      "material": "Gold",
+      "thickness": 0.025,
+      "diameter": 2.5,
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -44.0
+      },
+      "rotation.y": 0.0
+    },
+    "beam": {
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "zFocus": -44.0,
+        "sigmaX": 0.1,
+        "sigmaY": 0.1
+      },
+      "angle": {
+        "x": 0.0,
+        "y": 0.0,
+        "sigmaX": 0.001,
+        "sigmaY": 0.001
+      }
+    },
+    "randomRP": true,
+    "geantVersion": 4,
+    "geant4vmcSettings": {
+      "physicsLists": "QGSP_BERT_EMV+optical",
+      "specialProcesses": "stepLimiter",
+      "maxNsteps": 10000000,
+      "geant4commands": [""]
+    },
+    "geometry": {
+      "baseSetup": "sis100_electron",
+      "#magneticField": {
+        "tag": "v18a",
+        "scale": 1.0,
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 40.0
+        }
+      },
+      "subsystems": {
+        "magnet":   "v21a",
+        "pipe":     "v21d",
+	"mvd":      "v20d_tr",
+        "sts":      "v21e",
+        "rich":     "v21a",
+        "trd":      "v20b_1e",
+        "tof":      "v21a_1e",
+        "psd":      "v22a",
+        "platform": "v22b"
+      }
+    },
+    "stackFilter": {
+      "storeAllPrimaries": true,
+      "storeAllMothers": true,
+      "storeAllDecays": true
+    }
+  },
+  
+  "digitization": {
+    "generateRunInfo": false,
+    "eventMode": false,
+    "timeSliceLength": 1e5,
+    "storeAllTimeSlices": false,
+    "startTime": 1000,
+    "produceNoise": false,
+    "input": [
+      {"id": 0,
+       "path": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/tra/${taskId}/${taskId}",
+       "rate": "1.e7",
+       "treeAccessMode": "regular",
+       "parameterSource": false},
+      {"id": -1,
+       "path": "test_emb",
+       "embedToId": 0,
+       "treeAccessMode": "regular"},
+      {"id": -1,
+       "path": "test_beam",
+       "rate": "1.e9",
+       "treeAccessMode": "random"}
+    ],
+    "output": {
+      "path": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/raw/${taskId}/${taskId}",
+      "overwrite": true
+    },
+    "geometry": {
+      "deactivate": ["", ""],
+      "#deactivateAllBut": ""
+    }
+  },
+ 
+  "reconstruction": {
+    "rawFile": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/raw/${taskId}/${taskId}", 
+    "nTimeSlices": -1,
+    "firstTimeSlice": 0, 
+    "output": { 
+      "path": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/reco/${taskId}/${taskId}",
+      "overwrite": true
+    },
+    "sEvBuildRaw": "Ideal", 
+    "traFile": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/tra/${taskId}/${taskId}",
+    "isL1Matching": true,
+    "isL1EffQA": true 
+  },
+
+  "AT": {
+    "traFile": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/tra/${taskId}/${taskId}", 
+    "rawFile": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/raw/${taskId}/${taskId}", 
+    "recFile": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/reco/${taskId}/${taskId}", 
+    "unigenFile": "@VMCWORKDIR@/input/urqmd.auau.10gev.centr.root",
+    "output": {
+      "path": "@CMAKE_BINARY_DIR@/macro/PWG/common/production/data/AT/${taskId}/${taskId}",
+      "overwrite": true}
+  }
+}

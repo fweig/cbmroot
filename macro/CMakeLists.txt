@@ -14,9 +14,12 @@ If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)
   Message("Additional Nightly tests")
 EndIf()
 
+  add_subdirectory(PWG)
+
 #--- Additional tests for weekly builds
 If(${CBM_TEST_MODEL} MATCHES Weekly)
   add_subdirectory(KF)
+  add_subdirectory(PWG)
   Message("Additional long running Weekly tests")
 EndIf()
 
@@ -34,6 +37,17 @@ Install(PROGRAMS ${CBMROOT_SOURCE_DIR}/scripts/checklibs.sh
 Install(FILES ${CBMROOT_SOURCE_DIR}/scripts/loadlib.C
         DESTINATION share/cbmroot/macro/
        )
+
+Install(FILES ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_json.sh 
+              ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_sim_reco_json.sh
+              ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_transport_json_config.C
+              ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_digi_json_config.C
+              ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_reco_json_config.C
+              ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/run_analysis_tree_maker_json_config.C
+              ${CBMROOT_SOURCE_DIR}/macro/PWG/common/production/config.json
+        DESTINATION share/cbmroot/macro/PWG/common/production
+        )
+Install(CODE "FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/PWG/common/production)")
 
 Install(FILES KF/DecayConfig.C KF/registerGeantDecays.C KF/registerLightIons.C KF/registerPythiaDecays.C
               KF/kf_kfparticle.C KF/kf_thermal_signal_generator.C  KF/kf_transport.C

@@ -45,22 +45,6 @@ main () {
                 $log_file_name \
                 $check_string
 
-  log_file_name=data/run_tra_json.log
-  check_string="Macro finished successfully"
-
-  execute_macro "run_transport_json_config.C(\"config_ci.json\")" \
-                $log_file_name \
-                $check_string
- 
-  # Testing the digitization macros
-  log_file_name=data/run_digi_json.log
-  check_string="Macro finished successfully"
-
-  execute_macro "run_digi_json_config.C(\"config_ci.json\")" \
-                $log_file_name \
-                $check_string
-
-
   log_file_name=data/run_digi_eb.log
   check_string="Macro finished successfully"
   execute_macro "run_digi.C(\"data/${sname}_coll\", -1, \"data/${sname}_ev\", -1.)" \
