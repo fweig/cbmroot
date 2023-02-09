@@ -18,11 +18,16 @@ public:
 
   L1TrackParFit(const L1TrackPar& t) { SetTrack(t); }
 
-  L1TrackParFit(const double* T, const double* C) { SetTrack(T, C); }
-
-  void SetTrack(const double* T, const double* C)
+  template<typename T>
+  L1TrackParFit(const T* tr, const T* C)
   {
-    fTr.Set(T, C);
+    SetTrack(tr, C);
+  }
+
+  template<typename T>
+  void SetTrack(const T* tr, const T* C)
+  {
+    fTr.Set(tr, C);
     fQp0 = fTr.qp;
   }
 

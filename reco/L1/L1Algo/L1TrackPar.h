@@ -21,17 +21,22 @@ public:
 
   L1TrackPar() = default;
 
-  L1TrackPar(const double* T, const double* C) { Set(T, C); }
-
-  void Set(const double* T, const double* C)
+  template<typename T>
+  L1TrackPar(const T* tr, const T* C)
   {
-    x  = T[0];
-    y  = T[1];
-    tx = T[2];
-    ty = T[3];
-    qp = T[4];
-    z  = T[5];
-    t  = T[6];
+    Set(tr, C);
+  }
+
+  template<typename T>
+  void Set(const T* tr, const T* C)
+  {
+    x  = tr[0];
+    y  = tr[1];
+    tx = tr[2];
+    ty = tr[3];
+    qp = tr[4];
+    z  = tr[5];
+    t  = tr[6];
 
     chi2 = 0.;
     NDF  = 0.;
