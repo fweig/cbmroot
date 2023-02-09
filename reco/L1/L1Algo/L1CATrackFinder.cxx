@@ -25,15 +25,13 @@
 #include "L1Algo.h"
 #include "L1Assert.h"
 #include "L1Branch.h"
-#include "L1Extrapolation.h"
-#include "L1Filtration.h"
-#include "L1Fit.h"
 #include "L1Grid.h"
 #include "L1HitArea.h"
 #include "L1HitPoint.h"
 #include "L1Portion.h"
 #include "L1Track.h"
 #include "L1TrackPar.h"
+#include "L1TrackParFit.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -214,6 +212,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   const L1Station& fld1Sta2 = fParameters.GetStation(fld1Ista2);
 
   L1TrackParFit fit;
+  fit.SetParticleMass(GetDefaultParticleMass());
+
   fit.fQp0 = fvec(0.);
 
   if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
@@ -264,29 +264,31 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     // TODO: iteration parameter: "Starting NDF of track parameters"
     // NDF = number of track parameters (6: x, y, tx, ty, qp, time) - number of measured parameters (3: x, y, time) on station or (2: x, y) on target
-    // Alternative: Iteration can find tracks starting from target or from station: -> use a FLAG
 
-    T.tx = tx;
-    T.ty = ty;
-    T.t  = time;
+    T.x      = xl;
+    T.y      = yl;
+    T.z      = zl;
+    T.tx     = tx;
+    T.ty     = ty;
+    T.qp     = fvec(0.);
+    T.t      = time;
+    fit.fQp0 = fvec(0.);
 
-    T.qp  = fvec(0.);
     T.C20 = T.C21 = fvec(0.);
     T.C30 = T.C31 = T.C32 = fvec(0.);
     T.C40 = T.C41 = T.C42 = T.C43 = fvec(0.);
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = fvec(0.);
-    T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = fvec(10.);
-    // TODO: Why 9. and 10.?
 
+    T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
+
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = fvec(10.);
+
+    // TODO: Why 9. and 10.?
 
     T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
     T.C55 = timeEr2;
 
     {  // add the target constraint
-      T.x = xl;
-      T.y = yl;
-      T.z = zl;
 
       std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(du2_l[i1_V], dv2_l[i1_V]);
 
@@ -295,15 +297,10 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     fit.AddMsInMaterial(fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
 
-    //if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
-    //fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
-    //}
-
-    fvec dz = stam.fZ - zl;
-    L1ExtrapolateTime(T, dz, fvec::One());
-
     // extrapolate to the middle hit
-    L1Extrapolate0(T, stam.fZ, fld0);
+
+    fit.ExtrapolateLine(stam.fZ, fld1, fvec::One());
+
     T_1[i1_V] = T;
   }  // i1_V
 }
@@ -329,12 +326,16 @@ inline void L1Algo::findDoubletsStep0(
 
   n2 = 0;  // number of doublets
 
+  L1TrackParFit fit;
+  fit.SetParticleMass(GetDefaultParticleMass());
+
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
   {
     unsigned int Ndoublets = 0;
     const Tindex i1_V      = i1 / fvec::size();
     const Tindex i1_4      = i1 % fvec::size();
-    L1TrackPar& T1         = T_1[i1_V];
+    fit.fTr                = T_1[i1_V];
+    L1TrackPar& T1         = fit.fTr;
 
     // assert(T1.IsEntryConsistent(true, i1_4));
     // if (!T1.IsEntryConsistent(false, i1_4)) continue;
@@ -397,7 +398,8 @@ inline void L1Algo::findDoubletsStep0(
       //       if ( dt*dt > dt_est2 && dt < 0  ) continue;
 
       fvec y, C11;
-      L1ExtrapolateYC11Line(T1, zm, y, C11);
+      fit.ExtrapolateYC11Line(zm, y, C11);
+      //L1ExtrapolateYC11Line(T1, zm, y, C11);
 
       /// Covariation matrix of the hit
       auto [dxxScalMhit, dxyScalMhit, dyyScalMhit] = stam.FormXYCovarianceMatrix(hitm.dU2(), hitm.dV2());
@@ -412,7 +414,8 @@ inline void L1Algo::findDoubletsStep0(
 
       // check x-boundaries
       fvec x, C00;
-      L1ExtrapolateXC00Line(T1, zm, x, C00);
+      fit.ExtrapolateXC00Line(zm, x, C00);
+      //L1ExtrapolateXC00Line(T1, zm, x, C00);
 
       fscal dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxxScalMhit);
 
@@ -422,16 +425,18 @@ inline void L1Algo::findDoubletsStep0(
 
       // check chi2
       fvec C10;
-      L1ExtrapolateC10Line(T1, zm, C10);
+      fit.ExtrapolateC10Line(zm, C10);
+      //L1ExtrapolateC10Line(T1, zm, C10);
+
       fvec chi2 = T1.chi2;
 
-      L1FilterChi2XYC00C10C11(stam.frontInfo, x, y, C00, C10, C11, chi2, hitm.U(), hitm.dU2());
+      L1TrackParFit::FilterChi2XYC00C10C11(stam.frontInfo, x, y, C00, C10, C11, chi2, hitm.U(), hitm.dU2());
 
       if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
         if (chi2[i1_4] > fDoubletChi2Cut) continue;
       }
 
-      L1FilterChi2(stam.backInfo, x, y, C00, C10, C11, chi2, hitm.V(), hitm.dV2());
+      L1TrackParFit::FilterChi2(stam.backInfo, x, y, C00, C10, C11, chi2, hitm.V(), hitm.dV2());
 
       // FilterTime(T1, hitm.T(), hitm.dT2());
 
@@ -501,6 +506,8 @@ inline void L1Algo::findDoubletsStep0(
       }
     }  // loop over the hits in the area
 
+    T_1[i1_V] = fit.fTr;
+
   }  // for i1
 }
 
@@ -561,6 +568,8 @@ inline void L1Algo::findTripletsStep0(  // input
   for (Tindex i2 = 0; i2 < n2;) {
     L1TrackPar& T2 = fit.fTr;
     T2             = L1TrackPar_0;
+    fit.fQp0       = fvec(0.);
+
     L1FieldRegion f2;
     // pack the data
     fvec u_front_2 = 0.f;
@@ -608,20 +617,19 @@ inline void L1Algo::findTripletsStep0(  // input
 
     fit.Filter(stam.frontInfo, u_front_2, du2_2, fvec::One());
     fit.Filter(stam.backInfo, u_back_2, dv2_2, fvec::One());
-    //fit.FilterTime(t_2, dt2_2, fvec::One(), stam.timeInfo);
-    FilterTime(T2, t_2, dt2_2, stam.timeInfo);
+    fit.FilterTime(t_2, dt2_2, fvec::One(), stam.timeInfo);
 
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), isMomentumFitted ? T2.qp : fMaxInvMom,
+    fit.fQp0 = fit.fTr.qp;
+
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), isMomentumFitted ? fit.fQp0 : fMaxInvMom,
                         fvec::One());
+
 
     //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     // extrapolate to the right hit station
-    //fit.Extrapolate(star.fZ, T2.qp, f2,fvec::One());
 
-    fvec dz2 = star.fZ - T2.z;
-    L1ExtrapolateTime(T2, dz2, fvec::One());
-    L1Extrapolate(T2, star.fZ, T2.qp, f2);
+    fit.Extrapolate(star.fZ, fit.fQp0, f2, fvec::One());
 
     // assert(T2.IsConsistent(true, n2_4));
 
@@ -697,7 +705,8 @@ inline void L1Algo::findTripletsStep0(  // input
         // - check whether hit belong to the window ( track position +\- errors ) -
         // check lower boundary
         fvec y, C11;
-        L1ExtrapolateYC11Line(T2, zr, y, C11);
+        fit3.ExtrapolateYC11Line(zr, y, C11);
+        //L1ExtrapolateYC11Line(T2, zr, y, C11);
 
         /// Covariation matrix of the hit
         auto [dxxScalRhit, dxyScalRhit, dyyScalRhit] = star.FormXYCovarianceMatrix(hitr.dU2(), hitr.dV2());
@@ -710,8 +719,7 @@ inline void L1Algo::findTripletsStep0(  // input
         if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
         // check x-boundaries
         fvec x, C00;
-
-        L1ExtrapolateXC00Line(T2, zr, x, C00);
+        fit3.ExtrapolateXC00Line(zr, x, C00);
 
         fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxxScalRhit)));
 
@@ -719,15 +727,15 @@ inline void L1Algo::findTripletsStep0(  // input
         if (dX * dX > dx_est2) continue;
         // check chi2  // not effective
         fvec C10;
-        L1ExtrapolateC10Line(T2, zr, C10);
+        fit3.ExtrapolateC10Line(zr, C10);
+
         fvec chi2 = T2.chi2;
 
-        L1FilterChi2XYC00C10C11(star.frontInfo, x, y, C00, C10, C11, chi2, hitr.U(), hitr.dU2());
+        L1TrackParFit::FilterChi2XYC00C10C11(star.frontInfo, x, y, C00, C10, C11, chi2, hitr.U(), hitr.dU2());
 
-        L1FilterChi2(star.backInfo, x, y, C00, C10, C11, chi2, hitr.V(), hitr.dV2());
+        L1TrackParFit::FilterChi2(star.backInfo, x, y, C00, C10, C11, chi2, hitr.V(), hitr.dV2());
 
-        FilterTime(T_cur, hitr.T(), hitr.dT2(), star.timeInfo);
-
+        fit3.FilterTime(hitr.T(), hitr.dT2(), fvec::One(), star.timeInfo);
 
         if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
           if (chi2[i2_4] > fTripletChi2Cut || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0) {

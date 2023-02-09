@@ -370,7 +370,7 @@ public:
   void CATrackFinder();
 
   /// Track fitting procedures
-  void KFTrackFitter_simple();  // version, which use procedured used during the reconstruction
+
   void L1KFTrackFitter();       // version from SIMD-KF benchmark
 
 

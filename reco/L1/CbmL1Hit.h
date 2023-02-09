@@ -18,7 +18,7 @@ public:
 
   int hitId    = 0;    ///< index of L1Hit in fInputData::fvHits array. Should be equal to index of this in L1->vHits
   int extIndex = 0;    ///< index of hit in the TClonesArray array
-  int Det      = 0;    ///< station index
+  int Det      = 0;    ///< detector ID (mvd/sts/etc)
   float x      = 0.f;  ///< measured X coordinate
   float y      = 0.f;  ///< measured Y coordinate
   float t      = 0.f;  ///< measured time

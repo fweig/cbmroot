@@ -14,18 +14,23 @@
 class L1TrackParFit {
 
 public:
-  L1TrackPar fTr {};
-  fvec fQp0;
-
-  fvec fMass  = 0.10565800;     // muon mass
-  fvec fMass2 = fMass * fMass;  // mass squared
-
-  fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
-  fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:
-
   L1TrackParFit() = default;
 
-  L1TrackParFit(double* T, double* C) : fTr(T, C) {}
+  L1TrackParFit(const L1TrackPar& t) { SetTrack(t); }
+
+  L1TrackParFit(const double* T, const double* C) { SetTrack(T, C); }
+
+  void SetTrack(const double* T, const double* C)
+  {
+    fTr.Set(T, C);
+    fQp0 = fTr.qp;
+  }
+
+  void SetTrack(const L1TrackPar& t)
+  {
+    fTr  = t;
+    fQp0 = fTr.qp;
+  }
 
   void SetOneEntry(const int i0, const L1TrackParFit& T1, const int i1);
 
@@ -33,8 +38,11 @@ public:
 
   //Fit functionality
 
+  /// get target radiation thickness
+  fvec GetTargetRadThick() const { return fTargetRadThick; }
+
   /// set particle mass for the fit
-  void SetParticleMass(float mass)
+  void SetParticleMass(fvec mass)
   {
     fMass  = mass;
     fMass2 = mass * mass;
@@ -56,6 +64,7 @@ public:
   void ExtrapolateStep(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
   void ExtrapolateStepAnalytic(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
   void ExtrapolateLine(fvec z_out, const fvec& w);
+  void ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w);
 
 
   void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
@@ -74,8 +83,34 @@ public:
   void GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
                              fvec Jy[6]) const;
 
+  void ExtrapolateXC00Line(fvec z_out, fvec& x, fvec& C00) const;
+  void ExtrapolateYC11Line(fvec z_out, fvec& y, fvec& C11) const;
+  void ExtrapolateC10Line(fvec z_out, fvec& C10) const;
+
+
   void AddTargetToLine(const fvec& targX, const fvec& targY, const fvec& targZ, const L1XYMeasurementInfo& targXYInfo,
                        const L1FieldRegion& F);
+
+  static fvec ApproximateBetheBloch(const fvec& bg2);
+
+  static fvec ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const fvec& kp1, const fvec& kp2, const fvec& kp3,
+                                    const fvec& kp4);
+
+  static void FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fvec& y, fvec& C00, fvec& C10, fvec& C11,
+                                    fvec& chi2, const fvec& u, const fvec& du2);
+
+  static void FilterChi2(const L1UMeasurementInfo& info, const fvec& x, const fvec& y, const fvec& C00, const fvec& C10,
+                         const fvec& C11, fvec& chi2, const fvec& u, const fvec& du2);
+
+public:
+  L1TrackPar fTr {};
+  fvec fQp0;
+
+  fvec fMass  = 0.10565800;     // muon mass
+  fvec fMass2 = fMass * fMass;  // mass squared
+
+  fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
+  fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:
 
 } _fvecalignment;
 
@@ -90,4 +125,23 @@ inline void L1TrackParFit::SetOneEntry(const int i0, const L1TrackParFit& T1, co
   fQp0[i0] = T1.fQp0[i1];
 }
 
+inline void L1TrackParFit::ExtrapolateXC00Line(fvec z_out, fvec& x, fvec& C00) const
+{
+  const fvec dz = (z_out - fTr.z);
+  x             = fTr.x + fTr.tx * dz;
+  C00           = fTr.C00 + dz * (2 * fTr.C20 + dz * fTr.C22);
+}
+
+inline void L1TrackParFit::ExtrapolateYC11Line(fvec z_out, fvec& y, fvec& C11) const
+{
+  const fvec dz = (z_out - fTr.z);
+  y             = fTr.y + fTr.ty * dz;
+  C11           = fTr.C11 + dz * (2 * fTr.C31 + dz * fTr.C33);
+}
+
+inline void L1TrackParFit::ExtrapolateC10Line(fvec z_out, fvec& C10) const
+{
+  const fvec dz = (z_out - fTr.z);
+  C10           = fTr.C10 + dz * (fTr.C21 + fTr.C30 + dz * fTr.C32);
+}
 #endif

@@ -6,9 +6,6 @@
 
 #include "L1Algo.h"
 #include "L1Branch.h"
-#include "L1Extrapolation.h"
-#include "L1Filtration.h"
-#include "L1Fit.h"
 #include "L1HitArea.h"
 #include "L1HitPoint.h"
 #include "L1Track.h"
@@ -25,12 +22,15 @@ using std::endl;
 /// dir - 0 - forward, 1 - backward
 /// qp0 - momentum for extrapolation
 /// initialize - should be params ititialized. 1 - yes.
-void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, const fvec qp0, const bool initParams)
+void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool dir, const fvec qp0,
+                              const bool initParams)
 {
   L1_assert(t.NHits >= 3);
 
-  L1Fit fit;
+  L1TrackParFit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
+  fit.fTr       = Tout;
+  L1TrackPar& T = fit.fTr;
 
   // get hits of current track
   const L1Vector<L1HitIndex_t>& hits = t.fHits;  // array of indeses of hits of current track
@@ -77,6 +77,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
     T.ty = (y1 - y0) * dzi;
     T.qp = qp0;
   }
+  fit.fQp0 = qp0;
 
   T.z = z0;
   T.t = hit0.t;
@@ -93,7 +94,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
   T.C22 = T.C33 = vINF;
   T.C44         = 1.;
-  T.C55         = hit0.dt2;
+  T.C55         = sta0.timeInfo ? hit0.dt2 : vINF;
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
@@ -118,38 +119,24 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     const L1Station& sta = fParameters.GetStation(ista);
 
-    float z_sta = hit.z;
-
-    fvec dz = z_sta - T.z;
-
-    if (kMcbm == fTrackingMode) { L1ExtrapolateLine(T, hit.z); }
-    else {
-      L1Extrapolate(T, hit.z, qp0, fld);
-    }
-    L1ExtrapolateTime(T, dz);
-    fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec::One());
-    //if ((step * ista <= step * (fNstationsBeforePipe + (step + 1) / 2 - 1))
-    //  && (step * ista_prev >= step * (fNstationsBeforePipe + (step + 1) / 2 - 1 - step)))
-    //fit.L1AddPipeMaterial(T, qp0, 1);
-
-    fvec u = hit.u;
-    fvec v = hit.v;
-
-    L1Filter(T, sta.frontInfo, u, hit.du2, fvec::One());
-    L1Filter(T, sta.backInfo, v, hit.dv2, fvec::One());
-    FilterTime(T, hit.t, hit.dt2);
+    fit.Extrapolate(hit.z, fit.fQp0, fld, fvec::One());
+    fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
+    fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
+    fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, T.x, T.y), fit.fQp0, fvec::One());
 
     fldB0       = fldB1;
     fldB1       = fldB2;
     fldZ0       = fldZ1;
     fldZ1       = fldZ2;
-    auto [x, y] = sta.ConvUVtoXY<fvec>(u, v);
+    auto [x, y] = sta.ConvUVtoXY<fvec>(hit.u, hit.v);
     sta.fieldSlice.GetFieldValue(x, y, fldB2);
 
     fldZ2 = sta.fZ;
     fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
   }  // i
 
+  Tout = T;
 }  // void L1Algo::BranchFitterFast
 
 /// like BranchFitterFast but more precise
@@ -168,13 +155,16 @@ void L1Algo::BranchFitter(const L1Branch& t, L1TrackPar& T, const bool dir, cons
 /// dir - 0 - forward, 1 - backward
 /// qp0 - momentum for extrapolation
 /// initialize - should be params ititialized. 1 - yes.
-void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
+void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
                           const fvec qp0)  // TODO take into account pipe
 {
   L1Vector<L1HitIndex_t> newHits {"L1TrackExtender::newHits"};
   newHits.reserve(fParameters.GetNstationsActive());
-  L1Fit fit;
+
+  L1TrackParFit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
+  fit.fQp0 = qp0;
+  fit.fTr  = Tout;
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
@@ -226,22 +216,17 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     const L1Station& sta = fParameters.GetStation(ista);
 
-    fvec dz = sta.fZ - T.z;
-
-    if (kMcbm == fTrackingMode) { L1ExtrapolateLine(T, sta.fZ); }
-    else {
-      L1Extrapolate(T, sta.fZ, qp0, fld);
-    }
-    L1ExtrapolateTime(T, dz);
+    fit.Extrapolate(sta.fZ, fit.fQp0, fld, fvec::One());
 
     fscal r2_best = 1e8;  // best distance to hit
     int iHit_best = -1;   // index of the best hit
 
-    const fscal iz = 1.f / (T.z[0] - fParameters.GetTargetPositionZ()[0]);
+    const fscal iz = 1.f / (fit.fTr.z[0] - fParameters.GetTargetPositionZ()[0]);
 
-    L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,
-                       (sqrt(fPickGather * T.C00) + fMaxDx[ista] + fMaxDZ * abs(T.tx))[0] * iz,
-                       (sqrt(fPickGather * T.C11) + fMaxDy[ista] + fMaxDZ * abs(T.ty))[0] * iz, T.t[0], sqrt(T.C55[0]));
+    L1HitAreaTime area(vGridTime[ista], fit.fTr.x[0] * iz, fit.fTr.y[0] * iz,
+                       (sqrt(fPickGather * fit.fTr.C00) + fMaxDx[ista] + fMaxDZ * abs(fit.fTr.tx))[0] * iz,
+                       (sqrt(fPickGather * fit.fTr.C11) + fMaxDy[ista] + fMaxDZ * abs(fit.fTr.ty))[0] * iz,
+                       fit.fTr.t[0], sqrt(fit.fTr.C55[0]));
 
     for (L1HitIndex_t ih = -1; true;) {  // loop over the hits in the area
 
@@ -260,7 +245,10 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
       const L1Hit& hit = (*vHitsUnused)[globalInd];
 
-      if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt2) * 5) continue;
+      if (sta.timeInfo) {
+        fscal dt = hit.t - fit.fTr.t[0];
+        if (dt * dt > (fit.fTr.C55[0] + hit.dt2) * 25) continue;
+      }
 
       //if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
       //L1_SHOW(fvHitKeyFlags.size());
@@ -272,14 +260,14 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       GetHitCoor(hit, xh, yh, zh, sta);  // faster
 
       fvec y, C11;
-      L1ExtrapolateYC11Line(T, zh, y, C11);
+      fit.ExtrapolateYC11Line(zh, y, C11);
 
       //   fscal dym_est = ( fPickGather * sqrt(fabs(C11[0]+sta.XYInfo.C11[0])) );
       //   fscal y_minus_new = y[0] - dym_est;
       // if (yh < y_minus_new) continue;  // CHECKME take into account overlaping?
 
       fvec x, C00;
-      L1ExtrapolateXC00Line(T, zh, x, C00);
+      fit.ExtrapolateXC00Line(zh, x, C00);
 
       fscal d_x = xh - x[0];
       fscal d_y = yh - y[0];
@@ -297,21 +285,14 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     newHits.push_back((*RealIHitP)[iHit_best]);
 
     const L1Hit& hit = (*vHitsUnused)[iHit_best];
-    fvec u           = hit.u;
-    fvec v           = hit.v;
-    fvec z           = hit.z;
-    auto [x, y]      = sta.ConvUVtoXY<fvec>(u, v);
 
-    fvec dz1 = z - T.z;
+    auto [x, y] = sta.ConvUVtoXY<fvec>(hit.u, hit.v);
 
-    L1ExtrapolateTime(T, dz1);
-
-    L1ExtrapolateLine(T, z);
-    fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec::One());
-
-    L1Filter(T, sta.frontInfo, u, hit.du2, fvec::One());
-    L1Filter(T, sta.backInfo, v, hit.dv2, fvec::One());
-    FilterTime(T, hit.t, hit.dt2);
+    fit.Extrapolate(hit.z, fit.fQp0, fld, fvec::One());
+    fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
+    fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
+    fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, fit.fTr.x, fit.fTr.y), fit.fQp0, fvec::One());
 
     fldB0 = fldB1;
     fldB1 = fldB2;
@@ -341,6 +322,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       t.fHits[NOldHits + i] = (newHits[i]);
     }
   }
+
+  Tout = fit.fTr;
 
 }  // void L1Algo::FindMoreHits
 

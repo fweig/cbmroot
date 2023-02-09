@@ -38,13 +38,12 @@
 #include "KFParticleDatabase.h"
 #include "L1Algo.h"  // Also defines L1Parameters
 #include "L1Def.h"
-#include "L1Extrapolation.h"
 #include "L1Field.h"
-#include "L1Filtration.h"
-#include "L1Fit.h"
-#include "L1Material.h"
 #include "L1Station.h"
 #include "L1TrackPar.h"
+#include "L1TrackParFit.h"
+
+//typedef L1Fit1 L1Fit;
 
 using std::vector;
 
@@ -98,28 +97,29 @@ inline void CbmL1PFFitter::PFFieldRegion::getL1FieldRegion(L1FieldRegion& fld, i
 inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int i) { setFromL1FieldRegion(fld, i); }
 
 
-void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
+void FilterFirst(L1TrackParFit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
 {
-  track.C00 = dxx;
-  track.C10 = dxy;
-  track.C11 = dyy;
-  track.C20 = ZERO;
-  track.C21 = ZERO;
-  track.C22 = vINF;
-  track.C30 = ZERO;
-  track.C31 = ZERO;
-  track.C32 = ZERO;
-  track.C33 = vINF;
-  track.C40 = ZERO;
-  track.C41 = ZERO;
-  track.C42 = ZERO;
-  track.C43 = ZERO;
-  track.C44 = ONE;
+  L1TrackPar& tr = fit.fTr;
+  tr.C00         = dxx;
+  tr.C10         = dxy;
+  tr.C11         = dyy;
+  tr.C20         = ZERO;
+  tr.C21         = ZERO;
+  tr.C22         = vINF;
+  tr.C30         = ZERO;
+  tr.C31         = ZERO;
+  tr.C32         = ZERO;
+  tr.C33         = vINF;
+  tr.C40         = ZERO;
+  tr.C41         = ZERO;
+  tr.C42         = ZERO;
+  tr.C43         = ZERO;
+  tr.C44         = ONE;
 
-  track.x    = x;
-  track.y    = y;
-  track.NDF  = -3.0;
-  track.chi2 = ZERO;
+  tr.x    = x;
+  tr.y    = y;
+  tr.NDF  = -3.0;
+  tr.chi2 = ZERO;
 }
 
 void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
@@ -138,12 +138,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   static int nHits = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvec::size();
-  L1TrackPar T;  // fitting parametr coresponding to current track
 
-  L1Fit fit;
-  fit.SetParticleMass(0.000511f);  // muon
+  L1TrackParFit fit;
+  fit.SetParticleMass(CbmL1::Instance()->fpAlgo->GetDefaultParticleMass());
 
-  CbmStsTrack* t[fvec::size()] {nullptr};
+  L1TrackPar& T = fit.fTr;  // fitting parametr coresponding to current track
+
+  CbmStsTrack* tr[fvec::size()] {nullptr};
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -151,8 +152,10 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   fvec* x   = new fvec[nHits];
   fvec* u   = new fvec[nHits];
   fvec* v   = new fvec[nHits];
+  fvec* t   = new fvec[nHits];
   fvec* du2 = new fvec[nHits];
   fvec* dv2 = new fvec[nHits];
+  fvec* dt2 = new fvec[nHits];
   fvec* y   = new fvec[nHits];
   fvec* z   = new fvec[nHits];
   fvec* w   = new fvec[nHits];
@@ -178,28 +181,28 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
     for (i = 0; i < nTracks_SIMD; i++) {
-      t[i]     = &Tracks[itrack + i];  // current track
-      T.x[i]   = t[i]->GetParamFirst()->GetX();
-      T.y[i]   = t[i]->GetParamFirst()->GetY();
-      T.tx[i]  = t[i]->GetParamFirst()->GetTx();
-      T.ty[i]  = t[i]->GetParamFirst()->GetTy();
-      T.qp[i]  = t[i]->GetParamFirst()->GetQp();
-      T.z[i]   = t[i]->GetParamFirst()->GetZ();
-      T.C00[i] = t[i]->GetParamFirst()->GetCovariance(0, 0);
-      T.C10[i] = t[i]->GetParamFirst()->GetCovariance(1, 0);
-      T.C11[i] = t[i]->GetParamFirst()->GetCovariance(1, 1);
-      T.C20[i] = t[i]->GetParamFirst()->GetCovariance(2, 0);
-      T.C21[i] = t[i]->GetParamFirst()->GetCovariance(2, 1);
-      T.C22[i] = t[i]->GetParamFirst()->GetCovariance(2, 2);
-      T.C30[i] = t[i]->GetParamFirst()->GetCovariance(3, 0);
-      T.C31[i] = t[i]->GetParamFirst()->GetCovariance(3, 1);
-      T.C32[i] = t[i]->GetParamFirst()->GetCovariance(3, 2);
-      T.C33[i] = t[i]->GetParamFirst()->GetCovariance(3, 3);
-      T.C40[i] = t[i]->GetParamFirst()->GetCovariance(4, 0);
-      T.C41[i] = t[i]->GetParamFirst()->GetCovariance(4, 1);
-      T.C42[i] = t[i]->GetParamFirst()->GetCovariance(4, 1);
-      T.C43[i] = t[i]->GetParamFirst()->GetCovariance(4, 3);
-      T.C44[i] = t[i]->GetParamFirst()->GetCovariance(4, 4);
+      tr[i]    = &Tracks[itrack + i];  // current track
+      T.x[i]   = tr[i]->GetParamFirst()->GetX();
+      T.y[i]   = tr[i]->GetParamFirst()->GetY();
+      T.tx[i]  = tr[i]->GetParamFirst()->GetTx();
+      T.ty[i]  = tr[i]->GetParamFirst()->GetTy();
+      T.qp[i]  = tr[i]->GetParamFirst()->GetQp();
+      T.z[i]   = tr[i]->GetParamFirst()->GetZ();
+      T.C00[i] = tr[i]->GetParamFirst()->GetCovariance(0, 0);
+      T.C10[i] = tr[i]->GetParamFirst()->GetCovariance(1, 0);
+      T.C11[i] = tr[i]->GetParamFirst()->GetCovariance(1, 1);
+      T.C20[i] = tr[i]->GetParamFirst()->GetCovariance(2, 0);
+      T.C21[i] = tr[i]->GetParamFirst()->GetCovariance(2, 1);
+      T.C22[i] = tr[i]->GetParamFirst()->GetCovariance(2, 2);
+      T.C30[i] = tr[i]->GetParamFirst()->GetCovariance(3, 0);
+      T.C31[i] = tr[i]->GetParamFirst()->GetCovariance(3, 1);
+      T.C32[i] = tr[i]->GetParamFirst()->GetCovariance(3, 2);
+      T.C33[i] = tr[i]->GetParamFirst()->GetCovariance(3, 3);
+      T.C40[i] = tr[i]->GetParamFirst()->GetCovariance(4, 0);
+      T.C41[i] = tr[i]->GetParamFirst()->GetCovariance(4, 1);
+      T.C42[i] = tr[i]->GetParamFirst()->GetCovariance(4, 1);
+      T.C43[i] = tr[i]->GetParamFirst()->GetCovariance(4, 3);
+      T.C44[i] = tr[i]->GetParamFirst()->GetCovariance(4, 4);
 
       int pid = pidHypo[itrack + i];
       if (pid == -1) pid = 211;
@@ -215,35 +218,40 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
     }
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      int nHitsTrackMvd = t[iVec]->GetNofMvdHits();
-      int nHitsTrackSts = t[iVec]->GetNofStsHits();
+      int nHitsTrackMvd = tr[iVec]->GetNofMvdHits();
+      int nHitsTrackSts = tr[iVec]->GetNofStsHits();
       int nHitsTrack    = nHitsTrackMvd + nHitsTrackSts;
       for (i = 0; i < nHitsTrack; i++) {
-        float posx = 0.f, posy = 0.f, posz = 0.f;
+        float posx = 0.f, posy = 0.f, posz = 0.f, time = 0.;
 
         if (i < nHitsTrackMvd) {
           if (!listMvdHits) continue;
-          int hitIndex   = t[iVec]->GetMvdHitIndex(i);
+          int hitIndex   = tr[iVec]->GetMvdHitIndex(i);
           CbmMvdHit* hit = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(hitIndex));
 
           posx = hit->GetX();
           posy = hit->GetY();
           posz = hit->GetZ();
+          time = hit->GetTime();
+
           // ista = hit->GetStationNr();
           ista =
             CbmL1::Instance()->fpAlgo->GetParameters()->GetStationIndexActive(hit->GetStationNr(), L1DetectorID::kMvd);
           if (ista == -1) continue;
           du2[ista][iVec] = hit->GetDx() * hit->GetDx();
           dv2[ista][iVec] = hit->GetDy() * hit->GetDy();
+          dt2[ista][iVec] = hit->GetTimeError() * hit->GetTimeError();
         }
         else {
           if (!listStsHits) continue;
-          int hitIndex   = t[iVec]->GetHitIndex(i - nHitsTrackMvd);
+          int hitIndex   = tr[iVec]->GetHitIndex(i - nHitsTrackMvd);
           CbmStsHit* hit = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndex));
 
           posx = hit->GetX();
           posy = hit->GetY();
           posz = hit->GetZ();
+          time = hit->GetTime();
+
           //  ista = CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
           //       + NMvdStations;  //hit->GetStationNr() - 1 + NMvdStations;
           ista = CbmL1::Instance()->fpAlgo->GetParameters()->GetStationIndexActive(
@@ -251,6 +259,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           if (ista == -1) continue;
           du2[ista][iVec] = hit->GetDu() * hit->GetDu();
           dv2[ista][iVec] = hit->GetDv() * hit->GetDv();
+          dt2[ista][iVec] = hit->GetTimeError() * hit->GetTimeError();
         }
         w[ista][iVec] = 1.f;
 
@@ -259,6 +268,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         u[ista][iVec] = posx * sta[ista].frontInfo.cos_phi[0] + posy * sta[ista].frontInfo.sin_phi[0];
         v[ista][iVec] = posx * sta[ista].backInfo.cos_phi[0] + posy * sta[ista].backInfo.sin_phi[0];
         z[ista][iVec] = posz;
+        t[ista][iVec] = time;
 
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         fB[ista].x[iVec] = fB_temp.x[iVec];
@@ -291,10 +301,10 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
     // fit forward
     i = 0;
 
-    FilterFirst(T, x_first, y_first, fstC00, fstC10, fstC11);
+    FilterFirst(fit, x_first, y_first, fstC00, fstC10, fstC11);
+    fit.fQp0 = fit.fTr.qp;
 
-    fvec qp0 = T.qp;
-    z1       = z[i];
+    z1 = z[i];
     sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
     b1.Combine(fB[i], w[i]);
     z2 = z[i + 2];
@@ -313,16 +323,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec w1           = iif(initialised, w[i], fvec::Zero());
       fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-      L1Extrapolate(T, z[i], qp0, fld, &w1);
-      if (i == NMvdStations) {  // TODO: How a hit can be also a station? (S.Zharko)
-        fit.L1AddPipeMaterial(T, qp0, wIn);
-        fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
-      }
-      fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
-      fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0,
-                               -1, wIn);
-      L1Filter(T, sta[i].frontInfo, u[i], du2[i], w1);
-      L1Filter(T, sta[i].backInfo, v[i], dv2[i], w1);
+      fit.Extrapolate(z[i], fit.fQp0, fld, w1);
+      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.fTr.x, fit.fTr.y);
+      fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
+      fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
+      fit.FilterTime(t[i], dt2[i], w1, sta[i].timeInfo);
+      fit.AddMsInMaterial(radThick, fit.fQp0, wIn);
+      fit.EnergyLossCorrection(radThick, fit.fQp0, -fvec::One(), wIn);
 
       b2 = b1;
       z2 = z1;
@@ -355,15 +362,15 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       par.SetCovariance(4, 2, Tout.C42[iVec]);
       par.SetCovariance(4, 3, Tout.C43[iVec]);
       par.SetCovariance(4, 4, Tout.C44[iVec]);
-      t[iVec]->SetParamLast(&par);
+      tr[iVec]->SetParamLast(&par);
     }
 
     //fit backward
-    qp0 = T.qp;
+    fit.fQp0 = T.qp;
 
     i = nHits - 1;
 
-    FilterFirst(T, x_last, y_last, lstC00, lstC10, lstC11);
+    FilterFirst(fit, x_last, y_last, lstC00, lstC10, lstC11);
 
     z1 = z[i];
     sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
@@ -385,16 +392,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec w1           = iif(initialised, w[i], fvec::Zero());
       fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-      L1Extrapolate(T, z[i], qp0, fld, &w1);
-      if (i == NMvdStations - 1) {
-        fit.L1AddPipeMaterial(T, qp0, wIn);
-        fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
-      }
-      fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
-      fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, 1,
-                               wIn);
-      L1Filter(T, sta[i].frontInfo, u[i], du2[i], w1);
-      L1Filter(T, sta[i].backInfo, v[i], dv2[i], w1);
+      fit.Extrapolate(z[i], fit.fQp0, fld, w1);
+      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.fTr.x, fit.fTr.y);
+      fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
+      fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
+      fit.FilterTime(t[i], dt2[i], w1, sta[i].timeInfo);
+      fit.AddMsInMaterial(radThick, fit.fQp0, wIn);
+      fit.EnergyLossCorrection(radThick, fit.fQp0, fvec::One(), wIn);
 
       b2 = b1;
       z2 = z1;
@@ -426,10 +430,10 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       par.SetCovariance(4, 2, T.C42[iVec]);
       par.SetCovariance(4, 3, T.C43[iVec]);
       par.SetCovariance(4, 4, T.C44[iVec]);
-      t[iVec]->SetParamFirst(&par);
+      tr[iVec]->SetParamFirst(&par);
 
-      t[iVec]->SetChiSq(T.chi2[iVec]);
-      t[iVec]->SetNDF(static_cast<int>(T.NDF[iVec]));
+      tr[iVec]->SetChiSq(T.chi2[iVec]);
+      tr[iVec]->SetNDF(static_cast<int>(T.NDF[iVec]));
     }
   }
 
@@ -448,10 +452,11 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
   chiToVtx.reserve(Tracks.size());
 
   int nTracks_SIMD = fvec::size();
-  L1TrackPar T;  // fitting parametr coresponding to current track
-  L1Fit fit;
 
-  CbmStsTrack* t[fvec::size()] {nullptr};
+  L1TrackParFit fit;
+  L1TrackPar& T = fit.fTr;  // fitting parametr coresponding to current track
+
+  CbmStsTrack* tr[fvec::size()] {nullptr};
 
   int nStations        = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int NMvdStations     = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
@@ -478,39 +483,39 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
 
     fvec mass2;
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      t[iVec]     = &Tracks[itrack + iVec];  // current track
-      T.x[iVec]   = t[iVec]->GetParamFirst()->GetX();
-      T.y[iVec]   = t[iVec]->GetParamFirst()->GetY();
-      T.tx[iVec]  = t[iVec]->GetParamFirst()->GetTx();
-      T.ty[iVec]  = t[iVec]->GetParamFirst()->GetTy();
-      T.qp[iVec]  = t[iVec]->GetParamFirst()->GetQp();
-      T.z[iVec]   = t[iVec]->GetParamFirst()->GetZ();
-      T.C00[iVec] = t[iVec]->GetParamFirst()->GetCovariance(0, 0);
-      T.C10[iVec] = t[iVec]->GetParamFirst()->GetCovariance(1, 0);
-      T.C11[iVec] = t[iVec]->GetParamFirst()->GetCovariance(1, 1);
-      T.C20[iVec] = t[iVec]->GetParamFirst()->GetCovariance(2, 0);
-      T.C21[iVec] = t[iVec]->GetParamFirst()->GetCovariance(2, 1);
-      T.C22[iVec] = t[iVec]->GetParamFirst()->GetCovariance(2, 2);
-      T.C30[iVec] = t[iVec]->GetParamFirst()->GetCovariance(3, 0);
-      T.C31[iVec] = t[iVec]->GetParamFirst()->GetCovariance(3, 1);
-      T.C32[iVec] = t[iVec]->GetParamFirst()->GetCovariance(3, 2);
-      T.C33[iVec] = t[iVec]->GetParamFirst()->GetCovariance(3, 3);
-      T.C40[iVec] = t[iVec]->GetParamFirst()->GetCovariance(4, 0);
-      T.C41[iVec] = t[iVec]->GetParamFirst()->GetCovariance(4, 1);
-      T.C42[iVec] = t[iVec]->GetParamFirst()->GetCovariance(4, 1);
-      T.C43[iVec] = t[iVec]->GetParamFirst()->GetCovariance(4, 3);
-      T.C44[iVec] = t[iVec]->GetParamFirst()->GetCovariance(4, 4);
-      //      float mass = TDatabasePDG::Instance()->GetParticle(t[iVec]->GetPidHypo())->Mass();
-      const float mass = KFParticleDatabase::Instance()->GetMass(t[iVec]->GetPidHypo());
+      tr[iVec]    = &Tracks[itrack + iVec];  // current track
+      T.x[iVec]   = tr[iVec]->GetParamFirst()->GetX();
+      T.y[iVec]   = tr[iVec]->GetParamFirst()->GetY();
+      T.tx[iVec]  = tr[iVec]->GetParamFirst()->GetTx();
+      T.ty[iVec]  = tr[iVec]->GetParamFirst()->GetTy();
+      T.qp[iVec]  = tr[iVec]->GetParamFirst()->GetQp();
+      T.z[iVec]   = tr[iVec]->GetParamFirst()->GetZ();
+      T.C00[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(0, 0);
+      T.C10[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(1, 0);
+      T.C11[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(1, 1);
+      T.C20[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(2, 0);
+      T.C21[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(2, 1);
+      T.C22[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(2, 2);
+      T.C30[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(3, 0);
+      T.C31[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(3, 1);
+      T.C32[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(3, 2);
+      T.C33[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(3, 3);
+      T.C40[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(4, 0);
+      T.C41[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(4, 1);
+      T.C42[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(4, 1);
+      T.C43[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(4, 3);
+      T.C44[iVec] = tr[iVec]->GetParamFirst()->GetCovariance(4, 4);
+      //      float mass = TDatabasePDG::Instance()->GetParticle(tr[iVec]->GetPidHypo())->Mass();
+      const float mass = KFParticleDatabase::Instance()->GetMass(tr[iVec]->GetPidHypo());
       mass2[iVec]      = mass * mass;
 
-      int nHitsTrackMvd = t[iVec]->GetNofMvdHits();
+      int nHitsTrackMvd = tr[iVec]->GetNofMvdHits();
       for (int iH = 0; iH < 2; iH++) {
         float posx = 0.f, posy = 0.f, posz = 0.f;
 
         if (iH < nHitsTrackMvd) {
           if (!listMvdHits) continue;
-          int hitIndex   = t[iVec]->GetMvdHitIndex(iH);
+          int hitIndex   = tr[iVec]->GetMvdHitIndex(iH);
           CbmMvdHit* hit = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(hitIndex));
 
           posx = hit->GetX();
@@ -520,7 +525,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
         }
         else {
           if (!listStsHits) continue;
-          int hitIndex   = t[iVec]->GetHitIndex(iH - nHitsTrackMvd);
+          int hitIndex   = tr[iVec]->GetHitIndex(iH - nHitsTrackMvd);
           CbmStsHit* hit = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndex));
 
           posx = hit->GetX();
@@ -545,25 +550,20 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
       field.emplace_back(fld, i);
     }
 
+    fit.fQp0 = fit.fTr.qp;
+
     for (int iSt = nStations - 4; iSt >= 0; iSt--) {
 
       fvec w = iif(T.z > (zSta[iSt] + fvec(2.5)), fvec::One(), fvec::Zero());
 
-      L1Extrapolate(T, zSta[iSt], T.qp, fld, &w);
-      if (iSt == NMvdStations - 1) {
-        fit.L1AddPipeMaterial(T, T.qp, w);
-        fit.EnergyLossCorrection(T, fit.PipeRadThick, T.qp, fvec(1.f), w);
-      }
-      fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, T.x, T.y), T.qp, w);
-      fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, T.x, T.y), T.qp,
-                               fvec(1.f), w);
+      fit.Extrapolate(zSta[iSt], fit.fQp0, fld, w);
+      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, fit.fTr.x, fit.fTr.y);
+      fit.AddMsInMaterial(radThick, fit.fQp0, w);
+      fit.EnergyLossCorrection(radThick, fit.fQp0, fvec::One(), w);
     }
-    if (NMvdStations <= 0) {
-      fit.L1AddPipeMaterial(T, T.qp, ONE);
-      fit.EnergyLossCorrection(T, fit.PipeRadThick, T.qp, fvec(1.f), ONE);
-    }
-    L1Extrapolate(T, primVtx.GetRefZ(), T.qp, fld);
-    fit.L1AddTargetMaterial(T, T.qp, 1);
+    fit.Extrapolate(primVtx.GetRefZ(), fit.fQp0, fld, fvec::One());
+    fit.AddMsInMaterial(fit.GetTargetRadThick(), fit.fQp0, fvec::One());
+    fit.EnergyLossCorrection(fit.GetTargetRadThick(), fit.fQp0, fvec::One(), fvec::One());
 
     Double_t Cv[3] = {primVtx.GetCovMatrix()[0], primVtx.GetCovMatrix()[1], primVtx.GetCovMatrix()[2]};
 
@@ -607,7 +607,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
           par.SetCovariance(4, 2, T.C42[iVec]);
           par.SetCovariance(4, 3, T.C43[iVec]);
           par.SetCovariance(4, 4, T.C44[iVec]);
-          t[iVec]->SetParamFirst(&par);
+          tr[iVec]->SetParamFirst(&par);
         }
       }
     }
@@ -630,7 +630,7 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<PFF
   int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
-  CbmStsTrack* t[fvec::size()];
+  CbmStsTrack* tr[fvec::size()];
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -643,16 +643,16 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<PFF
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (int i = 0; i < nTracks_SIMD; i++)
-      t[i] = &Tracks[itrack + i];  // current track
+      tr[i] = &Tracks[itrack + i];  // current track
 
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      int nHitsTrackMvd = t[iVec]->GetNofMvdHits();
+      int nHitsTrackMvd = tr[iVec]->GetNofMvdHits();
       for (int iH = 0; iH < 2; iH++) {
         float posx = 0.f, posy = 0.f, posz = 0.f;
 
         if (iH < nHitsTrackMvd) {
           if (!listMvdHits) continue;
-          int hitIndex   = t[iVec]->GetMvdHitIndex(iH);
+          int hitIndex   = tr[iVec]->GetMvdHitIndex(iH);
           CbmMvdHit* hit = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(hitIndex));
 
           posx = hit->GetX();
@@ -662,7 +662,7 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<PFF
         }
         else {
           if (!listStsHits) continue;
-          int hitIndex   = t[iVec]->GetHitIndex(iH - nHitsTrackMvd);
+          int hitIndex   = tr[iVec]->GetHitIndex(iH - nHitsTrackMvd);
           CbmStsHit* hit = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndex));
 
           posx = hit->GetX();
@@ -704,7 +704,7 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
   int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
-  CbmStsTrack* t[fvec::size()];
+  CbmStsTrack* tr[fvec::size()];
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -717,19 +717,19 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (int i = 0; i < nTracks_SIMD; i++) {
-      t[i] = &Tracks[itrack + i];  // current track
+      tr[i] = &Tracks[itrack + i];  // current track
     }
 
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      int nHitsTrackMvd = t[iVec]->GetNofMvdHits();
-      int nHits         = t[iVec]->GetNofHits();
+      int nHitsTrackMvd = tr[iVec]->GetNofMvdHits();
+      int nHits         = tr[iVec]->GetNofHits();
       for (int iH = 0; iH < 3; iH++) {
         float posx = 0.f, posy = 0.f, posz = 0.f;
 
         int hitNumber = nHits - iH - 1;
         if (hitNumber < nHitsTrackMvd) {
           if (!listMvdHits) continue;
-          int hitIndex   = t[iVec]->GetMvdHitIndex(hitNumber);
+          int hitIndex   = tr[iVec]->GetMvdHitIndex(hitNumber);
           CbmMvdHit* hit = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(hitIndex));
 
           posx = hit->GetX();
@@ -739,7 +739,7 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
         }
         else {
           if (!listStsHits) continue;
-          int hitIndex   = t[iVec]->GetHitIndex(hitNumber - nHitsTrackMvd);
+          int hitIndex   = tr[iVec]->GetHitIndex(hitNumber - nHitsTrackMvd);
           CbmStsHit* hit = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndex));
 
           posx = hit->GetX();

@@ -56,9 +56,7 @@
 
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Def.h"
-#include "L1Algo/L1Extrapolation.h"  // for vertex pulls
-#include "L1Algo/L1Fit.h"            // for vertex pulls
-
+#include "L1Algo/L1TrackParFit.h"
 
 using std::cout;
 using std::endl;
@@ -1103,9 +1101,8 @@ void CbmL1::TrackFitPerformance()
 
   static bool first_call = 1;
 
-  L1Fit fit;
+  L1TrackParFit fit;
   fit.SetParticleMass(fpAlgo->GetDefaultParticleMass());
-
 
   if (first_call) {
     first_call = 0;
@@ -1231,16 +1228,19 @@ void CbmL1::TrackFitPerformance()
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
 
-      L1TrackPar trPar(it->T, it->C);
+      {
+        L1TrackPar trPar(it->T, it->C);
+        fit.fTr = trPar;
+      }
+      fit.fQp0             = fit.fTr.qp;
+      const L1TrackPar& tr = fit.fTr;
 
       L1FieldRegion fld _fvecalignment;
       fld.SetUseOriginalField();
 
       CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
 
-      L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
-
-      const L1TrackPar& tr = trPar;
+      fit.Extrapolate(mcP.zIn, fit.fQp0, fld, fvec::One());
 
       double dx = tr.x[0] - mcP.xIn;
       double dy = tr.y[0] - mcP.yIn;
@@ -1334,14 +1334,19 @@ void CbmL1::TrackFitPerformance()
       const int last_station = fvHitStore[it->Hits.back()].iStation;
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
-      L1TrackPar trPar(it->TLast, it->CLast);
+
       L1FieldRegion fld _fvecalignment;
       fld.SetUseOriginalField();
 
-      CbmL1MCPoint& mcP = fvMCPoints[iMC];
-      L1Extrapolate(trPar, mcP.zOut, trPar.qp, fld);
+      {
+        L1TrackPar trPar(it->TLast, it->CLast);
+        fit.fTr = trPar;
+      }
+      fit.fQp0             = fit.fTr.qp;
+      const L1TrackPar& tr = fit.fTr;
 
-      const L1TrackPar& tr = trPar;
+      CbmL1MCPoint& mcP = fvMCPoints[iMC];
+      fit.Extrapolate(mcP.zOut, fit.fQp0, fld, fvec::One());
 
       h_fitL[0]->Fill((tr.x[0] - mcP.xOut) * 1.e4);
       h_fitL[1]->Fill((tr.y[0] - mcP.yOut) * 1.e4);
@@ -1389,7 +1394,12 @@ void CbmL1::TrackFitPerformance()
 
     {  // vertex
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
-      L1TrackPar trPar(it->T, it->C);
+      {
+        L1TrackPar trTmp(it->T, it->C);
+        fit.fTr = trTmp;
+      }
+      fit.fQp0       = fit.fTr.qp;
+      L1TrackPar& tr = fit.fTr;
 
       //      if (mc.mother_ID != -1) {  // secondary
       if (!mc.IsPrimary()) {  // secondary
@@ -1397,7 +1407,7 @@ void CbmL1::TrackFitPerformance()
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
           fld.SetUseOriginalField();
-          L1Extrapolate(trPar, mc.z, trPar.qp, fld);
+          fit.Extrapolate(mc.z, fit.fQp0, fld, fvec::One());
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
           const int dir  = int((mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0])
@@ -1407,15 +1417,11 @@ void CbmL1::TrackFitPerformance()
                                          && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
             //           cout << iSta << " " << dir << endl;
-            fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp,
-                              fvec::One());
-
-            if (iSta + dir == fNMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
+            fit.AddMsInMaterial(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y), fit.fQp0,
+                                fvec::One());
           }
         }
-        if (mc.z != trPar.z[0]) continue;
-
-        const L1TrackPar& tr = trPar;
+        if (mc.z != tr.z[0]) continue;
 
         //       static int good = 0;
         //       static int bad = 0;
@@ -1463,21 +1469,16 @@ void CbmL1::TrackFitPerformance()
                                       && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
 
-            L1Extrapolate(trPar, fpAlgo->GetParameters()->GetStation(iSta).fZ[0], trPar.qp, fld);
-            fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp,
-                              1);
-            fit.EnergyLossCorrection(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y),
-                                     trPar.qp, fvec(1.), fvec(1.));
-            if (iSta + dir == fNMvdStations - 1) {
-              fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
-              fit.EnergyLossCorrection(trPar, fit.PipeRadThick, trPar.qp, fvec(1.f), fvec(1.f));
-            }
-          }
-          L1Extrapolate(trPar, mc.z, trPar.qp, fld);
-        }
-        if (mc.z != trPar.z[0]) continue;
+            fit.Extrapolate(fpAlgo->GetParameters()->GetStation(iSta).fZ, fit.fQp0, fld, fvec::One());
 
-        const L1TrackPar& tr = trPar;
+            fit.AddMsInMaterial(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y), fit.fQp0,
+                                fvec::One());
+            fit.EnergyLossCorrection(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y),
+                                     fit.fQp0, fvec::One(), fvec::One());
+          }
+          fit.Extrapolate(mc.z, fit.fQp0, fld, fvec::One());
+        }
+        if (mc.z != tr.z[0]) continue;
 
         double dx = tr.x[0] - mc.x;
         double dy = tr.y[0] - mc.y;

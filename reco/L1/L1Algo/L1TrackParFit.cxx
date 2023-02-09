@@ -4,11 +4,6 @@
 
 #include "L1TrackParFit.h"
 
-#include "L1Extrapolation.h"
-#include "L1Filtration.h"
-#include "L1Fit.h"
-
-
 #define cnst const fvec
 
 void L1TrackParFit::Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w)
@@ -927,6 +922,15 @@ void L1TrackParFit::
   //cout<<"Extrapolation ok"<<endl;
 }
 
+void L1TrackParFit::ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w)
+{
+  // extrapolate the track assuming fQp0 == 0
+  //
+  auto qp0 = fQp0;
+  fQp0     = fvec(0.);
+  Extrapolate(z_out, fQp0, F, w);
+  fQp0 = qp0;
+}
 
 void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
 {
@@ -1058,7 +1062,7 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
   const fvec p2   = fvec(1.) / qp02;
   const fvec E2   = fMass2 + p2;
 
-  const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2);
+  const fvec bethe = ApproximateBetheBloch(p2 / fMass2);
 
   fvec tr = sqrt(fvec(1.f) + fTr.tx * fTr.tx + fTr.ty * fTr.ty);
 
@@ -1093,7 +1097,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
-  const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
+  const fvec bethe = ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
 
   fvec tr = sqrt(fvec(1.f) + fTr.tx * fTr.tx + fTr.ty * fTr.ty);
 
@@ -1228,6 +1232,147 @@ void L1TrackParFit::AddTargetToLine(const fvec& targX, const fvec& targY, const 
   fvec eX, eY, Jx[6], Jy[6];
   GetExtrapolatedXYline(targZ, F, eX, eY, Jx, Jy);
   FilterExtrapolatedXY(targX, targY, targXYInfo, eX, eY, Jx, Jy);
+}
+
+fvec L1TrackParFit::ApproximateBetheBloch(const fvec& bg2)
+{
+  //
+  // This is the parameterization of the Bethe-Bloch formula inspired by Geant.
+  //
+  // bg2  - (beta*gamma)^2
+  // kp0 - density [g/cm^3]
+  // kp1 - density effect first junction point
+  // kp2 - density effect second junction point
+  // kp3 - mean excitation energy [GeV]
+  // kp4 - mean Z/A
+  //
+  // The default values for the kp* parameters are for silicon.
+  // The returned value is in [GeV/(g/cm^2)].
+  //
+
+  const fvec kp0 = 2.33f;
+  const fvec kp1 = 0.20f;
+  const fvec kp2 = 3.00f;
+  const fvec kp3 = 173e-9f;
+  const fvec kp4 = 0.49848f;
+
+  constexpr float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
+  constexpr float _2me = 1.022e-3f;     // [GeV/c^2]
+  const fvec rho       = kp0;
+  const fvec x0        = kp1 * 2.303f;
+  const fvec x1        = kp2 * 2.303f;
+  const fvec mI        = kp3;
+  const fvec mZA       = kp4;
+  const fvec maxT      = _2me * bg2;  // neglecting the electron mass
+
+  //*** Density effect
+  fvec d2(0.f);
+  const fvec x    = 0.5f * log(bg2);
+  const fvec lhwI = log(28.816f * 1e-9f * sqrt(rho * mZA) / mI);
+
+  fmask init   = x > x1;
+  d2           = iif(init, lhwI + x - 0.5f, fvec::Zero());
+  const fvec r = (x1 - x) / (x1 - x0);
+  init         = (x > x0) & (x1 > x);
+  d2           = iif(init, lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r, d2);
+
+  return mK * mZA * (fvec(1.f) + bg2) / bg2
+         * (0.5f * log(_2me * bg2 * maxT / (mI * mI)) - bg2 / (fvec(1.f) + bg2) - d2);
+}
+
+fvec L1TrackParFit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const fvec& kp1, const fvec& kp2,
+                                          const fvec& kp3, const fvec& kp4)
+{
+  //
+  // This is the parameterization of the Bethe-Bloch formula inspired by Geant.
+  //
+  // bg2  - (beta*gamma)^2
+  // kp0 - density [g/cm^3]
+  // kp1 - density effect first junction point
+  // kp2 - density effect second junction point
+  // kp3 - mean excitation energy [GeV]
+  // kp4 - mean Z/A
+  //
+  // The default values for the kp* parameters are for silicon.
+  // The returned value is in [GeV/(g/cm^2)].
+  //
+
+  //   const fvec &kp0 = 2.33f;
+  //   const fvec &kp1 = 0.20f;
+  //   const fvec &kp2 = 3.00f;
+  //   const fvec &kp3 = 173e-9f;
+  //   const fvec &kp4 = 0.49848f;
+
+  constexpr float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
+  constexpr float _2me = 1.022e-3f;     // [GeV/c^2]
+  const fvec& rho      = kp0;
+  const fvec x0        = kp1 * 2.303f;
+  const fvec x1        = kp2 * 2.303f;
+  const fvec& mI       = kp3;
+  const fvec& mZA      = kp4;
+  const fvec maxT      = _2me * bg2;  // neglecting the electron mass
+
+  //*** Density effect
+  fvec d2(0.f);
+  const fvec x    = 0.5f * log(bg2);
+  const fvec lhwI = log(28.816f * 1e-9f * sqrt(rho * mZA) / mI);
+
+  fmask init   = x > x1;
+  d2           = iif(init, lhwI + x - 0.5f, fvec::Zero());
+  const fvec r = (x1 - x) / (x1 - x0);
+  init         = (x > x0) & (x1 > x);
+  d2           = iif(init, lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r, d2);
+
+  return mK * mZA * (fvec(1.f) + bg2) / bg2
+         * (0.5f * log(_2me * bg2 * maxT / (mI * mI)) - bg2 / (fvec(1.f) + bg2) - d2);
+}
+
+
+void L1TrackParFit::FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fvec& y, fvec& C00, fvec& C10,
+                                          fvec& C11, fvec& chi2, const fvec& u, const fvec& du2)
+{
+  fvec wi, zeta, zetawi, HCH;
+  fvec F0, F1;
+  fvec K1;
+
+  zeta = info.cos_phi * x + info.sin_phi * y - u;
+
+  // F = CH'
+  F0 = info.cos_phi * C00 + info.sin_phi * C10;
+  F1 = info.cos_phi * C10 + info.sin_phi * C11;
+
+  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
+
+  wi     = fvec(1.) / (du2 + HCH);
+  zetawi = zeta * wi;
+  chi2 += zeta * zetawi;
+
+  K1 = F1 * wi;
+
+  x -= F0 * zetawi;
+  y -= F1 * zetawi;
+
+  C00 -= F0 * F0 * wi;
+  C10 -= K1 * F0;
+  C11 -= K1 * F1;
+}
+
+
+void L1TrackParFit::FilterChi2(const L1UMeasurementInfo& info, const fvec& x, const fvec& y, const fvec& C00,
+                               const fvec& C10, const fvec& C11, fvec& chi2, const fvec& u, const fvec& du2)
+{
+  fvec zeta, HCH;
+  fvec F0, F1;
+
+  zeta = info.cos_phi * x + info.sin_phi * y - u;
+
+  // F = CH'
+  F0 = info.cos_phi * C00 + info.sin_phi * C10;
+  F1 = info.cos_phi * C10 + info.sin_phi * C11;
+
+  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
+
+  chi2 += zeta * zeta / (du2 + HCH);
 }
 
 #undef cnst

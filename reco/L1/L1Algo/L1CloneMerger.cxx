@@ -12,9 +12,9 @@
 #include <iostream>
 
 #include "L1Algo.h"
-#include "L1Extrapolation.h"
 #include "L1Parameters.h"
 #include "L1Track.h"
+#include "L1TrackParFit.h"
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -76,8 +76,16 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
     isDownstreamNeighbour[iTr] = false;
   }
 
-  L1TrackPar Tb;
-  L1TrackPar Tf;
+  L1TrackParFit fitB;
+  fitB.SetParticleMass(frAlgo.GetDefaultParticleMass());
+  fitB.fQp0 = fvec(0.);
+
+  L1TrackParFit fitF;
+  fitF.SetParticleMass(frAlgo.GetDefaultParticleMass());
+  fitF.fQp0 = fvec(0.);
+
+  L1TrackPar& Tb = fitB.fTr;
+  L1TrackPar& Tf = fitF.fTr;
   L1FieldValue fBm, fBb, fBf _fvecalignment;
   L1FieldRegion fld _fvecalignment;
 
@@ -125,6 +133,8 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       Tb.C54 = extTracks[iTr].CFirst[19];
       Tb.C55 = extTracks[iTr].CFirst[20];
 
+      fitB.fQp0 = fitB.fTr.qp;
+
       unsigned short staf = lastStation[jTr];
 
       Tf.x   = extTracks[jTr].TLast[0];
@@ -156,6 +166,7 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       Tf.C54 = extTracks[jTr].CLast[19];
       Tf.C55 = extTracks[jTr].CLast[20];
 
+      fitF.fQp0 = fitF.fTr.qp;
 
       if (fabs(Tf.t[0] - Tb.t[0]) > 3 * sqrt(Tf.C55[0] + Tb.C55[0])) continue;
       unsigned short stam;
@@ -177,8 +188,8 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
       fvec zMiddle = fvec(0.5) * (Tb.z + Tf.z);
 
-      L1Extrapolate(Tf, zMiddle, Tf.qp, fld);
-      L1Extrapolate(Tb, zMiddle, Tb.qp, fld);
+      fitF.Extrapolate(zMiddle, fitF.fQp0, fld, fvec::One());
+      fitB.Extrapolate(zMiddle, fitB.fQp0, fld, fvec::One());
 
       fvec Chi2Tracks(0.);
       FilterTracks(&(Tf.x), &(Tf.C00), &(Tb.x), &(Tb.C00), 0, 0, &Chi2Tracks);
