@@ -48,9 +48,6 @@ set(SRCS
   L1Algo/L1Station.cxx
   L1Algo/L1TrackParFit.cxx
   L1Algo/L1MCEvent.cxx
-  L1Algo/L1Fit.cxx
-  L1Algo/L1FitMaterial.cxx
-  L1Algo/L1Extrapolation.cxx
   CbmL1MCTrack.cxx
   L1Algo/L1Material.cxx
   L1Algo/L1UMeasurementInfo.cxx
