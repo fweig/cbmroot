@@ -480,7 +480,10 @@ Bool_t mcbm_event(std::string infile,
   evBuildRaw->ChangeMuchBeamtimeDigiFlag();
 
   // Enable DigiEvent output if requested
-  if (bDigiEvtsOutput) evBuildRaw->SetDigiEventOutput();
+  if (bDigiEvtsOutput) {
+    evBuildRaw->SetDigiEventOutput();
+    evBuildRaw->SetDigiEventExclusiveTrdExtraction();
+  }
 
   evBuildRaw->SetOutFilename(histosfilename);
   // evBuildRaw->SetOutputBranchPersistent("CbmEvent", kFALSE);

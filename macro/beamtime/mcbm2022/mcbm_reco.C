@@ -544,13 +544,15 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
     TString tofGeoTag;
     if (geoSetup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";
-      // parFile = parFile + "/parameters/tof/tof_matbudget_v21d_mcbm.root";
-      std::cout << "Using material budget file " << parFile << std::endl;
+      //parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";";
+      //std::cout << "Using material budget file " << parFile << std::endl;
+      // FIXME
+      parFile = parFile + "/parameters/tof/tof_matbudget_v21d_mcbm.root";
+      std::cout << "FIXME: Using material budget file tof_matbudget_v21d_mcbm as right one not in repo!!!" << std::endl;
       l1->SetTofMaterialBudgetFileName(parFile.Data());
     }
 
-
+    /// PAL, 08/02/2023: Is the following comment still valid with the current master?
     //   Workaround to get it running:
     //    1) Change fUseGlobal  in line 129 of CbmStsParSetModule.h to
     //         Bool_t fUseGlobal = kTRUE;
