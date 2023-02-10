@@ -1417,8 +1417,9 @@ void CbmL1::TrackFitPerformance()
                                          && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
             //           cout << iSta << " " << dir << endl;
-            fit.AddMsInMaterial(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y), fit.fQp0,
-                                fvec::One());
+            auto radThick = fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y);
+            fit.AddMsInMaterial(radThick, fvec::One());
+            fit.EnergyLossCorrection(radThick, fvec::One(), fvec::One());
           }
         }
         if (mc.z != tr.z[0]) continue;
@@ -1471,10 +1472,9 @@ void CbmL1::TrackFitPerformance()
 
             fit.Extrapolate(fpAlgo->GetParameters()->GetStation(iSta).fZ, fld, fvec::One());
 
-            fit.AddMsInMaterial(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y), fit.fQp0,
-                                fvec::One());
+            fit.AddMsInMaterial(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y), fvec::One());
             fit.EnergyLossCorrection(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y),
-                                     fit.fQp0, fvec::One(), fvec::One());
+                                     fvec::One(), fvec::One());
           }
           fit.Extrapolate(mc.z, fld, fvec::One());
         }

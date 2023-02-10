@@ -993,7 +993,7 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
 }
 
 
-void L1TrackParFit::AddMsInMaterial(const fvec& radThick, fvec qp0, fvec w)
+void L1TrackParFit::AddMsInMaterial(const fvec& radThick, fvec w)
 {
   cnst ONE = 1.;
 
@@ -1005,20 +1005,20 @@ void L1TrackParFit::AddMsInMaterial(const fvec& radThick, fvec qp0, fvec w)
   fvec h     = txtx + tyty;
   fvec t     = sqrt(txtx1 + tyty);
   fvec h2    = h * h;
-  fvec qp0t  = qp0 * t;
+  fvec qp0t  = fQp0 * t;
 
   cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
 
   fvec s0 = (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*radThick*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * radThick * s0 * s0);
+  fvec a = ((t + fMass2 * fQp0 * qp0t) * radThick * s0 * s0);
 
   fTr.C22 += w * txtx1 * a;
   fTr.C32 += w * tx * ty * a;
   fTr.C33 += w * (ONE + tyty) * a;
 }
 
-void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream)
+void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec w, fvec thickness, bool fDownstream)
 {
   cnst ONE = 1.;
 
@@ -1030,14 +1030,14 @@ void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec qp0, fvec w, fvec t
   fvec h     = txtx + tyty;
   fvec t     = sqrt(txtx1 + tyty);
   fvec h2    = h * h;
-  fvec qp0t  = qp0 * t;
+  fvec qp0t  = fQp0 * t;
 
   cnst c1(0.0136), c2 = c1 * fvec(0.038), c3 = c2 * fvec(0.5), c4 = -c3 / fvec(2.0), c5 = c3 / fvec(3.0),
                    c6 = -c3 / fvec(4.0);
 
   fvec s0 = (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*radThick*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * radThick * s0 * s0);
+  fvec a = ((t + fMass2 * fQp0 * qp0t) * radThick * s0 * s0);
 
   fvec D   = (fDownstream) ? fvec(1.) : fvec(-1.);
   fvec T23 = (thickness * thickness) / fvec(3.0);
@@ -1058,10 +1058,10 @@ void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec qp0, fvec w, fvec t
 }
 
 
-void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
+void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec upstreamDirection, fvec w)
 {
   const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut
-  const fvec qp02 = max(qp0 * qp0, qp2cut);
+  const fvec qp02 = max(fQp0 * fQp0, qp2cut);
   const fvec p2   = fvec(1.) / qp02;
   const fvec E2   = fMass2 + p2;
 
@@ -1071,12 +1071,14 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
 
   const fvec dE = bethe * radThick * tr * 2.33f * 9.34961f;
 
-  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
-  fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
-  fmask ok               = (corr == corr) & (fvec::Zero() < w);
-  corr                   = iif(ok, corr, fvec::One());
+  const fvec ECorrected  = sqrt(E2) + upstreamDirection * dE;
+  const fvec E2Corrected = ECorrected * ECorrected;
 
-  qp0 *= corr;
+  fvec corr = sqrt(p2 / (E2Corrected - fMass2));
+  fmask ok  = (corr == corr) & (fvec::Zero() < w);
+  corr      = iif(ok, corr, fvec::One());
+
+  fQp0 *= corr;
   fTr.qp *= corr;
   fTr.C40 *= corr;
   fTr.C41 *= corr;
@@ -1087,11 +1089,11 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
 }
 
 template<int atomicZ>
-void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec& qp0,
-                                         fvec direction, fvec w)
+void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec direction,
+                                         fvec w)
 {
   const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut
-  const fvec qp02 = max(qp0 * qp0, qp2cut);
+  const fvec qp02 = max(fQp0 * fQp0, qp2cut);
   const fvec p2   = fvec(1.) / qp02;
   const fvec E2   = fMass2 + p2;
 
@@ -1111,7 +1113,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
   fmask ok               = (corr == corr) & (fvec::Zero() < w);
   corr                   = iif(ok, corr, fvec::One());
 
-  qp0 *= corr;
+  fQp0 *= corr;
   fTr.qp *= corr;
 
   fvec P(sqrt(p2));  // GeV
@@ -1151,32 +1153,32 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
 }
 
 
-void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
+void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec direction, fvec w)
 {
   constexpr int atomicZ   = 26;
   constexpr float atomicA = 55.845f;
   constexpr float rho     = 7.87;
   constexpr float radLen  = 1.758f;
-  EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, qp0, direction, w);
+  EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, direction, w);
 }
 
 
-void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
+void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec direction, fvec w)
 {
   constexpr int atomicZ   = 6;
   constexpr float atomicA = 12.011f;
   constexpr float rho     = 2.265;
   constexpr float radLen  = 18.76f;
-  EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, qp0, direction, w);
+  EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, direction, w);
 }
 
-void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
+void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec direction, fvec w)
 {
   constexpr int atomicZ   = 13;
   constexpr float atomicA = 26.981f;
   constexpr float rho     = 2.70f;
   constexpr float radLen  = 2.265f;
-  EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, qp0, direction, w);
+  EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, direction, w);
 }
 
 void L1TrackParFit::GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],

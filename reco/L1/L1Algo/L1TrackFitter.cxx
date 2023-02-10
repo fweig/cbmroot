@@ -258,14 +258,10 @@ void L1Algo::L1KFTrackFitter()
         fld1 = fld;
 
         fit.Extrapolate(z[ista], fld1, wExtr);
-
-        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, wExtr);
-
-        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, fvec(1.f), wExtr);
-
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), wExtr);
+        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fvec(1.f), wExtr);
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
         fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
-
         fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);
 
 
@@ -406,10 +402,8 @@ void L1Algo::L1KFTrackFitter()
         fvec wExtr        = iif(initialised, fvec::One(), fvec::Zero());
 
         fit.Extrapolate(z[ista], fld, w1);
-
-        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, wExtr);
-        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, fvec(-1.f), wExtr);
-
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), wExtr);
+        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fvec(-1.f), wExtr);
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
         fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
         fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);

@@ -123,7 +123,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
     fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
     fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
     fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, T.x, T.y), fit.fQp0, fvec::One());
+    auto radThick = fParameters.GetMaterialThickness(ista, T.x, T.y);
+    fit.AddMsInMaterial(radThick, fvec::One());
+    fit.EnergyLossCorrection(radThick, fvec(-1.f), fvec::One());
 
     fldB0       = fldB1;
     fldB1       = fldB2;
@@ -292,7 +294,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
     fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
     fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
     fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, fit.fTr.x, fit.fTr.y), fit.fQp0, fvec::One());
+    auto radThick = fParameters.GetMaterialThickness(ista, fit.fTr.x, fit.fTr.y);
+    fit.AddMsInMaterial(radThick, fvec::One());
+    fit.EnergyLossCorrection(radThick, dir ? fvec(1.f) : fvec(-1.f), fvec::One());
 
     fldB0 = fldB1;
     fldB1 = fldB2;

@@ -72,19 +72,18 @@ public:
   void ExtrapolateLine(fvec z_out, const fvec& w);
   void ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w);
 
-
-  void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
+  void EnergyLossCorrection(const fvec& radThick, fvec upstreamDirection, fvec w);
 
   template<int atomicZ>
-  void EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec& qp0, fvec direction,
-                            fvec w);
+  void EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec direction, fvec w);
 
-  void EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
-  void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
-  void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
+  void EnergyLossCorrectionIron(const fvec& radThick, fvec direction, fvec w);
+  void EnergyLossCorrectionCarbon(const fvec& radThick, fvec direction, fvec w);
+  void EnergyLossCorrectionAl(const fvec& radThick, fvec direction, fvec w);
 
-  void AddMsInMaterial(const fvec& radThick, fvec qp0, fvec w);
-  void AddMsInThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
+  void AddMsInMaterial(const fvec& radThick, fvec w);
+
+  void AddMsInThickMaterial(fvec radThick, fvec w, fvec thickness, bool fDownstream);
 
   void GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
                              fvec Jy[6]) const;

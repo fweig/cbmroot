@@ -214,7 +214,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   L1TrackParFit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  fit.fQp0 = fvec(0.);
+  fit.fQp0 = fMaxInvMom;
 
   if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
   else {
@@ -265,14 +265,13 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     // TODO: iteration parameter: "Starting NDF of track parameters"
     // NDF = number of track parameters (6: x, y, tx, ty, qp, time) - number of measured parameters (3: x, y, time) on station or (2: x, y) on target
 
-    T.x      = xl;
-    T.y      = yl;
-    T.z      = zl;
-    T.tx     = tx;
-    T.ty     = ty;
-    T.qp     = fvec(0.);
-    T.t      = time;
-    fit.fQp0 = fvec(0.);
+    T.x  = xl;
+    T.y  = yl;
+    T.z  = zl;
+    T.tx = tx;
+    T.ty = ty;
+    T.qp = fvec(0.);
+    T.t  = time;
 
     T.C20 = T.C21 = fvec(0.);
     T.C30 = T.C31 = T.C32 = fvec(0.);
@@ -295,7 +294,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
       fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fld0);
     }
 
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(istal, T.x, T.y), fvec::One());
 
     // extrapolate to the middle hit
 
@@ -617,13 +616,11 @@ inline void L1Algo::findTripletsStep0(  // input
     fit.Filter(stam.backInfo, u_back_2, dv2_2, fvec::One());
     fit.FilterTime(t_2, dt2_2, fvec::One(), stam.timeInfo);
 
+    fit.fQp0 = isMomentumFitted ? fit.fTr.qp : fMaxInvMom;
+
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fvec::One());
+
     fit.fQp0 = fit.fTr.qp;
-
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), isMomentumFitted ? fit.fQp0 : fMaxInvMom,
-                        fvec::One());
-
-
-    //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     // extrapolate to the right hit station
 
@@ -958,7 +955,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
         for (int ih = 1; ih < NHits; ++ih) {
           fit.Extrapolate(z[ih], fld, fvec::One());
-          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), fit.fQp0, fvec::One());
+          auto radThick = fParameters.GetMaterialThickness(ista[ih], T.x, T.y);
+          fit.AddMsInMaterial(radThick, fvec::One());
+          fit.EnergyLossCorrection(radThick, fvec(-1.f), fvec::One());
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
           fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
@@ -990,7 +989,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
           fit.Extrapolate(z[ih], fld, fvec::One());
-          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), fit.fQp0, fvec::One());
+          auto radThick = fParameters.GetMaterialThickness(ista[ih], T.x, T.y);
+          fit.AddMsInMaterial(radThick, fvec::One());
+          fit.EnergyLossCorrection(radThick, fvec(1.f), fvec::One());
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
           fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
