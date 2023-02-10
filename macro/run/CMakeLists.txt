@@ -272,7 +272,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   SET( RAW_DATA_UNPACK_TO 700) # Nightly mode on run4: 298 for run 1588, 525 for 2391, 601 for 2488
   SET( RAW_DATA_CHECK_TO  600) # Nightly mode on run4: 562 for run 1588
   SET( RAW_DATA_BUILD_TO  250) # Nightly mode on run4: 155 for 2391, 190 for 2488
-  SET( RAW_DATA_RECO_TO 2000) # 300 for 1 TS in 2391 and 2488
+  SET( RAW_DATA_RECO_TO 2600) # 300 for 1 TS in 2391 and 2488
   if(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
     Message( STATUS "Profiling model detected, increasing timeout for mCBM 2021 tests with coverage." )
     SET( RAW_DATA_UNPACK_TO 800) # Coverage mode: 716 for run 1588 on run4
@@ -396,23 +396,21 @@ If(DEFINED ENV{RAW_DATA_PATH} )
 
       ### Raw analysis tests: (event building and) reconstruction => need calibration files!!
       ### => L1 needs around 2000 seconds to complete 1 TS (mostly in GlobalFindTracksEvents) with trigger 4
-      if(${CBM_TEST_MODEL} MATCHES Weekly)
-        Set(testname mcbm_reco_l1tr_2022_${RUN})
-        Set(fixture_reco_l1tr_${RUN} fixture_done_${testname})
-        Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_reco.sh ${RUN} ${RECO_EVNTS_NB}
-              \"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
-              -1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kFALSE kFALSE kTRUE kTRUE kFALSE
-              \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_${EVT_BUILD_TRIG}.events.root\" false
-              \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\"
-              )
-        Set_Tests_Properties(${testname} PROPERTIES
-              TIMEOUT ${RAW_DATA_RECO_TO}
-              FAIL_REGULAR_EXPRESSION "segmentation violation"
-              PASS_REGULAR_EXPRESSION "Macro finished successfully"
-              FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_reco_toftr_${RUN}}"
-              FIXTURES_SETUP ${fixture_reco_l1tr_${RUN}}
-              )
-      endif()
+      Set(testname mcbm_reco_l1tr_2022_${RUN})
+      Set(fixture_reco_l1tr_${RUN} fixture_done_${testname})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_reco.sh ${RUN} ${RECO_EVNTS_NB}
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
+            -1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kFALSE kFALSE kTRUE kTRUE kFALSE
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_${EVT_BUILD_TRIG}.events.root\" false
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" # For CbmTimeslice object
+            )
+      Set_Tests_Properties(${testname} PROPERTIES
+            TIMEOUT ${RAW_DATA_RECO_TO}
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully"
+            FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_reco_toftr_${RUN}}"
+            FIXTURES_SETUP ${fixture_reco_l1tr_${RUN}}
+            )
 
       ### Raw data analysis tests: event building and reconstruction => need calibration files!!
       Set(testname mcbm_digievent_2022_${RUN})
@@ -448,22 +446,21 @@ If(DEFINED ENV{RAW_DATA_PATH} )
 
       ### Raw analysis tests: reconstruction  from digievent => need calibration files!!
       ### => L1 needs around 2000 seconds to complete 1 TS (mostly in GlobalFindTracksEvents) with trigger 4
-      if(${CBM_TEST_MODEL} MATCHES Weekly)
-        Set(testname mcbm_reco_l1tr_digievent_2022_${RUN})
-        Set(fixture_reco_l1tr_digievent_${RUN} fixture_done_${testname})
-        Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_reco.sh ${RUN} ${RECO_EVNTS_NB}
-              \"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
-              -1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kFALSE kFALSE kTRUE kTRUE kFALSE
-              \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_${EVT_BUILD_TRIG}.digievents.root\" true
-              )
-        Set_Tests_Properties(${testname} PROPERTIES
-              TIMEOUT ${RAW_DATA_RECO_TO}
-              FAIL_REGULAR_EXPRESSION "segmentation violation"
-              PASS_REGULAR_EXPRESSION "Macro finished successfully"
-              FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_reco_toftr_digievent_${RUN}}"
-              FIXTURES_SETUP ${fixture_reco_l1tr_digievent_${RUN}}
-              )
-      endif()
+      Set(testname mcbm_reco_l1tr_digievent_2022_${RUN})
+      Set(fixture_reco_l1tr_digievent_${RUN} fixture_done_${testname})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_reco.sh ${RUN} ${RECO_EVNTS_NB}
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
+            -1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kFALSE kFALSE kTRUE kTRUE kFALSE
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_${EVT_BUILD_TRIG}.digievents.root\" true
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" # For CbmTimeslice object
+            )
+      Set_Tests_Properties(${testname} PROPERTIES
+            TIMEOUT ${RAW_DATA_RECO_TO}
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully"
+            FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_reco_toftr_digievent_${RUN}}"
+            FIXTURES_SETUP ${fixture_reco_l1tr_digievent_${RUN}}
+            )
 
     EndIf() # If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa))
   EndForEach() # ForEach(RUN 2391 2488 )
