@@ -140,11 +140,19 @@ InitStatus CbmTaskBuildRawEvents::Init()
     fDigiEvents = new std::vector<CbmDigiEvent>();
     ioman->RegisterAny("DigiEvent", fDigiEvents, kTRUE);
     if (!fDigiEvents) LOG(fatal) << "Output branch was not created";
+    LOG(info) << "DigiEvent out instead of CbmEvent, you will need an instance of CbmTaskMakeRecoEvents in reco macro";
+    if (fbExclusiveTrdExtraction) {  //
+      LOG(info) << "Exclusive TRD extraction, DigiEvents will be comparable to CbmEvents but slower";
+    }
+    else {
+      LOG(info) << "Inclusive TRD extraction, faster but DigiEvents will noy be comparable to CbmEvents (extra digis)";
+    }
   }
   else {
     fEvents = new TClonesArray("CbmEvent", 100);
     ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
     if (!fEvents) LOG(fatal) << "Output branch was not created";
+    LOG(info) << "CbmEvent oupput, you will need an instance of CbmTaskEventsCloneInToOut in reco macro to update them";
   }
 
   // Set timeslice meta data
@@ -540,11 +548,6 @@ void CbmTaskBuildRawEvents::ExtractSelectedData(std::vector<CbmEvent*> vEvents)
     selEvent.fTime   = event->GetStartTime();
     selEvent.fNumber = event->GetNumber();
 
-    /// FIXME: for pure digi based event, we select "continuous slices of digis"
-    ///        => Copy block of [First Digi index, last digi index] with assign(it_start, it_stop)
-    /// FIXME: Keep TRD1D + TRD2D support, may lead to holes in the digi sequence!
-    ///        => Would need to keep the loop
-
     /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
     /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
     event->SortIndices();
@@ -581,10 +584,25 @@ void CbmTaskBuildRawEvents::ExtractSelectedData(std::vector<CbmEvent*> vEvents)
     /// ==> TRD + TRD2D
     uNbDigis = (0 < event->GetNofData(ECbmDataType::kTrdDigi) ? event->GetNofData(ECbmDataType::kTrdDigi) : 0);
     if (0 < uNbDigis) {
-      auto startIt = fTrdDigis->begin() + event->GetIndex(ECbmDataType::kTrdDigi, 0);
-      auto stopIt  = fTrdDigis->begin() + event->GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
-      ++stopIt;
-      selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+      if (fbExclusiveTrdExtraction) {
+        for (uint32_t uDigiInEvt = 0; uDigiInEvt < uNbDigis; ++uDigiInEvt) {
+          /// Copy each digi in the event by itself to make sure we skip ones outside their own selection window but
+          /// inside the selection window of the other TRD subsystem, effectively enforcing differetn windows:
+          /// [t, t+dt](TRD) = [t, t+dt](TRD1D) + [t, t+dt](TRD2D)
+          /// => Exclusive but slower
+          selEvent.fData.fTrd.fDigis.push_back(fTrdDigis->at(event->GetIndex(ECbmDataType::kTrdDigi, uDigiInEvt)));
+        }
+      }
+      else {
+        /// Block copy of all TRD digis, has feature that it may include digis which are not matching the selection
+        /// window of a given TRD subsystem, effectively making a larger selection window:
+        /// [t, t+dt](TRD) = [t, t+dt](TRD1D) U [t, t+dt](TRD2D)
+        /// => Faster but inclusive, will lead to more TRD hits and tracks than expected
+        auto startIt = fTrdDigis->begin() + event->GetIndex(ECbmDataType::kTrdDigi, 0);
+        auto stopIt  = fTrdDigis->begin() + event->GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
+        ++stopIt;
+        selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+      }
     }
 
     /// ==> TOF

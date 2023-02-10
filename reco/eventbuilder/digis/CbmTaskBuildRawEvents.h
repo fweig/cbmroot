@@ -139,6 +139,7 @@ public:
   void SetSeedTimeWindow(Double_t beg, Double_t end) { fpAlgo->SetSeedTimeWindow(beg, end); }
 
   void SetDigiEventOutput(Bool_t bFlagIn = kTRUE) { fbDigiEvtOut = bFlagIn; }
+  void SetDigiEventExclusiveTrdExtraction(Bool_t bFlagIn = kTRUE) { fbExclusiveTrdExtraction = bFlagIn; }
 
 private:
   /** Read digis from input, call seed finder, then build events **/
@@ -191,6 +192,7 @@ private:
   CbmAlgoBuildRawEvents* fpAlgo = nullptr;
 
   Bool_t fbDigiEvtOut                    = kFALSE;
+  Bool_t fbExclusiveTrdExtraction        = kFALSE;   //! Enable/disabled loop based extraction of TRD digis due to 1D/2D
   TClonesArray* fEvents                  = nullptr;  //! output container of CbmEvents
   std::vector<CbmDigiEvent>* fDigiEvents = nullptr;  //! output container of CbmEvents
 
