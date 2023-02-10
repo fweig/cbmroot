@@ -144,7 +144,7 @@ protected:
   bool fbDupliWithoutAdc = true;
 
   /** @brief Enables firmware binning (some implementations ignore this) */
-  bool fbUseFwBinning = false;
+  bool fbUseFwBinning = true;
 
   /// Temporary storage of user parameters
   std::vector<FebChanMaskReco> fvChanMasks = {};

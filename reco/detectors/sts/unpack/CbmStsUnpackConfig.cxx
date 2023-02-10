@@ -50,7 +50,7 @@ void CbmStsUnpackConfig::InitAlgo()
   if (fMonitor) { fAlgo->SetMonitor(fMonitor); }
 
   // Set firmware binning (only relevant for legacy mode)
-  if (fbUseFwBinning) { fAlgo->SetFwBinning(true); }
+  fAlgo->SetFwBinning(fbUseFwBinning);
 
   // Now we have all information required to initialise the algorithm
   fAlgo->Init();
