@@ -33,6 +33,8 @@ void addCustomOptions(bpo::options_description& options)
 
   options.add_options()("DigiEventInput", bpo::value<bool>()->default_value(false),
                         "Enable the input of CbmDigiEvents instead of raw data + CbmEvents if true");
+  options.add_options()("ExclusiveTrdExtract", bpo::value<bool>()->default_value(true),
+                        "Enable loop based extraction of TRD digis to handle different 1D/2D sel windows if true");
 
   options.add_options()("FillHistos", bpo::value<bool>()->default_value(false),
                         "Fill histograms and send them to histo server if true");

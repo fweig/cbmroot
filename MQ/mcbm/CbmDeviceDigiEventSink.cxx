@@ -75,6 +75,7 @@ try {
   fbDisableCompression  = fConfig->GetValue<bool>("DisableCompression");
   fiTreeFileMaxSize     = fConfig->GetValue<int64_t>("TreeFileMaxSize");
   fbDigiEventInput      = fConfig->GetValue<bool>("DigiEventInput");
+  fbExclusiveTrdExtract = fConfig->GetValue<bool>("ExclusiveTrdExtract");
 
   fbFillHistos             = fConfig->GetValue<bool>("FillHistos");
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
@@ -623,7 +624,7 @@ void CbmDeviceDigiEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
 
   /// Extract CbmEvent vector from input message
   // FU, 29.06.22 Remove std::move to allow copy ellision
-  (*fEventsSel) = unpTs.GetSelectedData();
+  (*fEventsSel) = unpTs.GetSelectedData(fbExclusiveTrdExtract);
   if (kTRUE == fbFillHistos) {
     /// Accumulated counts, will show rise + plateau pattern in spill
     fulProcessedEvents += fEventsSel->size();
@@ -966,7 +967,7 @@ CbmEventTimeslice::~CbmEventTimeslice()
   fvDigiEvents.clear();
 }
 
-void CbmEventTimeslice::ExtractSelectedData()
+void CbmEventTimeslice::ExtractSelectedData(bool bExclusiveTrdExtract)
 {
   fvDigiEvents.reserve(fvEvents.size());
 
@@ -979,8 +980,8 @@ void CbmEventTimeslice::ExtractSelectedData()
     /// For pure digi based event, we select "continuous slices of digis"
     ///        => Copy block of [First Digi index, last digi index] with assign(it_start, it_stop)
     ///        => No data increase for most detectors as we use time window selection
-    /// FIXME: Keep TRD1D + TRD2D support as single det, otherwise may lead to holes in the digi sequence!
-    ///        => Would need to keep the loop to avoid adding extra digis
+    /// Keep TRD1D + TRD2D support as single det, otherwise may lead to holes in the digi sequence!
+    ///        => Need option to keep the loop to avoid adding extra digis if comparison to CbmEvents wanted
 
     /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
     /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
@@ -1018,10 +1019,25 @@ void CbmEventTimeslice::ExtractSelectedData()
     /// ==> TRD + TRD2D
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kTrdDigi) ? event.GetNofData(ECbmDataType::kTrdDigi) : 0);
     if (uNbDigis) {
-      auto startIt = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, 0);
-      auto stopIt  = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
-      ++stopIt;
-      selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+      if (bExclusiveTrdExtract) {
+        for (uint32_t uDigiInEvt = 0; uDigiInEvt < uNbDigis; ++uDigiInEvt) {
+          /// Copy each digi in the event by itself to make sure we skip ones outside their own selection window but
+          /// inside the selection window of the other TRD subsystem, effectively enforcing differetn windows:
+          /// [t, t+dt](TRD) = [t, t+dt](TRD1D) + [t, t+dt](TRD2D)
+          /// => Exclusive but slower
+          selEvent.fData.fTrd.fDigis.push_back(fvDigiTrd[event.GetIndex(ECbmDataType::kTrdDigi, uDigiInEvt)]);
+        }
+      }
+      else {
+        /// Block copy of all TRD digis, has feature that it may include digis which are not matching the selection
+        /// window of a given TRD subsystem, effectively making a larger selection window:
+        /// [t, t+dt](TRD) = [t, t+dt](TRD1D) U [t, t+dt](TRD2D)
+        /// => Faster but inclusive, will lead to more TRD hits and tracks than expected
+        auto startIt = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, 0);
+        auto stopIt  = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
+        ++stopIt;
+        selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+      }
     }
 
     /// ==> TOF

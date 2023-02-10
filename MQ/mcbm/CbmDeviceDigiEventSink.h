@@ -56,10 +56,10 @@ public:
   CbmEventTimeslice(FairMQParts& parts, bool bDigiEvtInput = false);
   ~CbmEventTimeslice();
 
-  void ExtractSelectedData();
-  std::vector<CbmDigiEvent>& GetSelectedData()
+  void ExtractSelectedData(bool bExclusiveTrdExtract = true);
+  std::vector<CbmDigiEvent>& GetSelectedData(bool bExclusiveTrdExtract = true)
   {
-    if (!fbDigiEvtInput) ExtractSelectedData();
+    if (!fbDigiEvtInput) ExtractSelectedData(bExclusiveTrdExtract);
     return fvDigiEvents;
   }
 
@@ -104,6 +104,7 @@ private:
   bool fbWriteMissingTs      = false;  //! Switch ON/OFF writing of empty TS to file for the missing ones (if no bypass)
   bool fbDisableCompression  = false;  //! Switch ON/OFF the ROOT file compression
   bool fbDigiEventInput      = false;  //! Switch ON/OFF the input of CbmDigiEvents instead of raw data + CbmEvents
+  bool fbExclusiveTrdExtract = true;   //! Switch ON/OFF loop based extraction of TRD digis due to 1D/2D
   bool fbFillHistos          = false;  //! Switch ON/OFF filling of histograms
   bool fbInitDone            = false;  //! Keep track of whether the Init was already fully completed
   bool fbFinishDone          = false;  //! Keep track of whether the Finish was already called
