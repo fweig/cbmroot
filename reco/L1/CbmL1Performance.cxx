@@ -1240,7 +1240,7 @@ void CbmL1::TrackFitPerformance()
 
       CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
 
-      fit.Extrapolate(mcP.zIn, fit.fQp0, fld, fvec::One());
+      fit.Extrapolate(mcP.zIn, fld, fvec::One());
 
       double dx = tr.x[0] - mcP.xIn;
       double dy = tr.y[0] - mcP.yIn;
@@ -1346,7 +1346,7 @@ void CbmL1::TrackFitPerformance()
       const L1TrackPar& tr = fit.fTr;
 
       CbmL1MCPoint& mcP = fvMCPoints[iMC];
-      fit.Extrapolate(mcP.zOut, fit.fQp0, fld, fvec::One());
+      fit.Extrapolate(mcP.zOut, fld, fvec::One());
 
       h_fitL[0]->Fill((tr.x[0] - mcP.xOut) * 1.e4);
       h_fitL[1]->Fill((tr.y[0] - mcP.yOut) * 1.e4);
@@ -1407,7 +1407,7 @@ void CbmL1::TrackFitPerformance()
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
           fld.SetUseOriginalField();
-          fit.Extrapolate(mc.z, fit.fQp0, fld, fvec::One());
+          fit.Extrapolate(mc.z, fld, fvec::One());
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
           const int dir  = int((mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0])
@@ -1469,14 +1469,14 @@ void CbmL1::TrackFitPerformance()
                                       && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
 
-            fit.Extrapolate(fpAlgo->GetParameters()->GetStation(iSta).fZ, fit.fQp0, fld, fvec::One());
+            fit.Extrapolate(fpAlgo->GetParameters()->GetStation(iSta).fZ, fld, fvec::One());
 
             fit.AddMsInMaterial(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y), fit.fQp0,
                                 fvec::One());
             fit.EnergyLossCorrection(fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.fTr.x, fit.fTr.y),
                                      fit.fQp0, fvec::One(), fvec::One());
           }
-          fit.Extrapolate(mc.z, fit.fQp0, fld, fvec::One());
+          fit.Extrapolate(mc.z, fld, fvec::One());
         }
         if (mc.z != tr.z[0]) continue;
 

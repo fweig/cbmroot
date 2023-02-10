@@ -188,8 +188,8 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
       fvec zMiddle = fvec(0.5) * (Tb.z + Tf.z);
 
-      fitF.Extrapolate(zMiddle, fitF.fQp0, fld, fvec::One());
-      fitB.Extrapolate(zMiddle, fitB.fQp0, fld, fvec::One());
+      fitF.Extrapolate(zMiddle, fld, fvec::One());
+      fitB.Extrapolate(zMiddle, fld, fvec::One());
 
       fvec Chi2Tracks(0.);
       FilterTracks(&(Tf.x), &(Tf.C00), &(Tb.x), &(Tb.C00), 0, 0, &Chi2Tracks);

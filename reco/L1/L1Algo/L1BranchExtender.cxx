@@ -119,7 +119,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
 
     const L1Station& sta = fParameters.GetStation(ista);
 
-    fit.Extrapolate(hit.z, fit.fQp0, fld, fvec::One());
+    fit.Extrapolate(hit.z, fld, fvec::One());
     fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
     fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
     fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);
@@ -216,7 +216,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
 
     const L1Station& sta = fParameters.GetStation(ista);
 
-    fit.Extrapolate(sta.fZ, fit.fQp0, fld, fvec::One());
+    fit.Extrapolate(sta.fZ, fld, fvec::One());
 
     fscal r2_best = 1e8;  // best distance to hit
     int iHit_best = -1;   // index of the best hit
@@ -288,7 +288,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
 
     auto [x, y] = sta.ConvUVtoXY<fvec>(hit.u, hit.v);
 
-    fit.Extrapolate(hit.z, fit.fQp0, fld, fvec::One());
+    fit.Extrapolate(hit.z, fld, fvec::One());
     fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
     fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
     fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);

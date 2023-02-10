@@ -219,7 +219,7 @@ void L1Algo::L1KFTrackFitter()
 
     for (int iter = 0; iter < 2; iter++) {  // 1.5 iterations
 
-      fvec qp01 = tr.qp;
+      fit.fQp0 = tr.qp;
 
       // fit backward
 
@@ -257,16 +257,11 @@ void L1Algo::L1KFTrackFitter()
 
         fld1 = fld;
 
-        fit.Extrapolate(z[ista], qp01, fld1, wExtr);
+        fit.Extrapolate(z[ista], fld1, wExtr);
 
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, wExtr);
 
-        //if (ista == fNstationsBeforePipe - 1) {
-        //fit.AddPipeMaterial(qp01, wExtr);
-        //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(1.f), wExtr);
-        //}
-        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
-
-        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(1.f), wExtr);
+        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, fvec(1.f), wExtr);
 
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
         fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
@@ -293,19 +288,18 @@ void L1Algo::L1KFTrackFitter()
         vtxInfoY.sin_phi = 1.;
 
         if (kGlobal == fTrackingMode) {
-          fvec qp00 = tr.qp;
           for (int vtxIter = 0; vtxIter < 2; vtxIter++) {
-            fitpv        = fit;
-            fitpv.fTr.qp = qp00;
-            fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fitpv.fTr.qp, fld, fvec(1.));
+            fitpv.fQp0   = fitpv.fTr.qp;
+            fitpv.fTr    = fit.fTr;
+            fitpv.fTr.qp = fitpv.fQp0;
+            fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld, fvec(1.));
             fitpv.Filter(vtxInfoX, fParameters.GetTargetPositionX(), fvec(1.e-8), fvec::One());
             fitpv.Filter(vtxInfoY, fParameters.GetTargetPositionY(), fvec(1.e-8), fvec::One());
-            qp00 = fitpv.fTr.qp;
           }
         }
         else {
-          fitpv = fit;
-          fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fitpv.fTr.qp, fld, fvec(1.));
+          fitpv.fQp0 = fitpv.fTr.qp;
+          fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld, fvec(1.));
         }
       }
 
@@ -387,7 +381,7 @@ void L1Algo::L1KFTrackFitter()
 
       FilterFirst(fit, x_first, y_first, time_first, dt2_first, d_xx_fst, d_yy_fst, d_xy_fst);
 
-      qp01 = tr.qp;
+      fit.fQp0 = tr.qp;
 
       fldZ1 = z[ista];
       sta[ista].fieldSlice.GetFieldValue(tr.x, tr.y, fldB1);
@@ -411,14 +405,10 @@ void L1Algo::L1KFTrackFitter()
         fvec w1_time      = iif(initialised, w_time[ista], fvec::Zero());
         fvec wExtr        = iif(initialised, fvec::One(), fvec::Zero());
 
-        fit.Extrapolate(z[ista], qp01, fld, w1);
+        fit.Extrapolate(z[ista], fld, w1);
 
-        //if (ista == fNstationsBeforePipe) {
-        //fit.AddPipeMaterial(qp01, wExtr);
-        //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(-1.f), wExtr);
-        //}
-        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
-        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(-1.f), wExtr);
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, wExtr);
+        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fit.fQp0, fvec(-1.f), wExtr);
 
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
         fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);

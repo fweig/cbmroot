@@ -323,7 +323,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec w1           = iif(initialised, w[i], fvec::Zero());
       fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-      fit.Extrapolate(z[i], fit.fQp0, fld, w1);
+      fit.Extrapolate(z[i], fld, w1);
       auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.fTr.x, fit.fTr.y);
       fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
       fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
@@ -392,7 +392,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec w1           = iif(initialised, w[i], fvec::Zero());
       fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-      fit.Extrapolate(z[i], fit.fQp0, fld, w1);
+      fit.Extrapolate(z[i], fld, w1);
       auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.fTr.x, fit.fTr.y);
       fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
       fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
@@ -556,12 +556,12 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
 
       fvec w = iif(T.z > (zSta[iSt] + fvec(2.5)), fvec::One(), fvec::Zero());
 
-      fit.Extrapolate(zSta[iSt], fit.fQp0, fld, w);
+      fit.Extrapolate(zSta[iSt], fld, w);
       auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, fit.fTr.x, fit.fTr.y);
       fit.AddMsInMaterial(radThick, fit.fQp0, w);
       fit.EnergyLossCorrection(radThick, fit.fQp0, fvec::One(), w);
     }
-    fit.Extrapolate(primVtx.GetRefZ(), fit.fQp0, fld, fvec::One());
+    fit.Extrapolate(primVtx.GetRefZ(), fld, fvec::One());
     fit.AddMsInMaterial(fit.GetTargetRadThick(), fit.fQp0, fvec::One());
     fit.EnergyLossCorrection(fit.GetTargetRadThick(), fit.fQp0, fvec::One(), fvec::One());
 

@@ -415,7 +415,6 @@ inline void L1Algo::findDoubletsStep0(
       // check x-boundaries
       fvec x, C00;
       fit.ExtrapolateXC00Line(zm, x, C00);
-      //L1ExtrapolateXC00Line(T1, zm, x, C00);
 
       fscal dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxxScalMhit);
 
@@ -426,7 +425,6 @@ inline void L1Algo::findDoubletsStep0(
       // check chi2
       fvec C10;
       fit.ExtrapolateC10Line(zm, C10);
-      //L1ExtrapolateC10Line(T1, zm, C10);
 
       fvec chi2 = T1.chi2;
 
@@ -629,7 +627,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // extrapolate to the right hit station
 
-    fit.Extrapolate(star.fZ, fit.fQp0, f2, fvec::One());
+    fit.Extrapolate(star.fZ, f2, fvec::One());
 
     // assert(T2.IsConsistent(true, n2_4));
 
@@ -706,7 +704,6 @@ inline void L1Algo::findTripletsStep0(  // input
         // check lower boundary
         fvec y, C11;
         fit3.ExtrapolateYC11Line(zr, y, C11);
-        //L1ExtrapolateYC11Line(T2, zr, y, C11);
 
         /// Covariation matrix of the hit
         auto [dxxScalRhit, dxyScalRhit, dyyScalRhit] = star.FormXYCovarianceMatrix(hitr.dU2(), hitr.dV2());
@@ -936,9 +933,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     for (int iiter = 0; iiter < nIterations; ++iiter) {
       // fit forward
       {
-        fvec qp0 = T.qp;
-        if (qp0[0] > GetMaxInvMom()) { qp0 = GetMaxInvMom(); }
-        if (qp0[0] < -GetMaxInvMom()) { qp0 = -GetMaxInvMom(); }
+        fit.fQp0 = T.qp;
+        if (fit.fQp0[0] > GetMaxInvMom()) { fit.fQp0 = GetMaxInvMom(); }
+        if (fit.fQp0[0] < -GetMaxInvMom()) { fit.fQp0 = -GetMaxInvMom(); }
 
         T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
         //T.ResetErrors(200., 200., 10., 10., 100., 1.e4);
@@ -960,9 +957,8 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fldTarget);
 
         for (int ih = 1; ih < NHits; ++ih) {
-          fit.Extrapolate(z[ih], qp0, fld, fvec::One());
-          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
-          //if (ista[ih] == fNstationsBeforePipe) { fit.AddPipeMaterial(qp0, fvec::One()); }
+          fit.Extrapolate(z[ih], fld, fvec::One());
+          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), fit.fQp0, fvec::One());
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
           fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
@@ -973,9 +969,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
       // fit backward
       {
-        fvec qp0 = T.qp;
-        if (qp0[0] > GetMaxInvMom()) { qp0 = GetMaxInvMom(); }
-        if (qp0[0] < -GetMaxInvMom()) { qp0 = -GetMaxInvMom(); }
+        fit.fQp0 = T.qp;
+        if (fit.fQp0[0] > GetMaxInvMom()) { fit.fQp0 = GetMaxInvMom(); }
+        if (fit.fQp0[0] < -GetMaxInvMom()) { fit.fQp0 = -GetMaxInvMom(); }
 
         T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
         T.NDF   = ndf;
@@ -990,15 +986,14 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
         fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
         fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
-        //fit.FilterTime(t[ih0], dt[ih0], fvec::One(), sta[ih0].timeInfo);
+        fit.FilterTime(t[ih0], dt2[ih0], fvec::One(), sta[ih0].timeInfo);
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
-          fit.Extrapolate(z[ih], qp0, fld, fvec::One());
-          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
-          //if (ista[ih] == fNstationsBeforePipe - 1) { fit.AddPipeMaterial(qp0, fvec::One()); }
+          fit.Extrapolate(z[ih], fld, fvec::One());
+          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), fit.fQp0, fvec::One());
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
-          //fit.FilterTime(t[ih], dt[ih], fvec::One(), sta[ih].timeInfo);
+          fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
         }
       }
     }  // for iiter

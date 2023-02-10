@@ -305,23 +305,25 @@ void L1TrackParFit::FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1X
 
 void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
   (fvec z_out,                   // extrapolate to this z position
-   fvec qp0,                     // use Q/p linearisation at this value
    const L1FieldRegion& F, const fvec& w)
 {
+  // use Q/p linearisation at fQp0
+
   fvec sgn = iif(fTr.z < z_out, fvec(1.), fvec(-1.));
   while (!(w * abs(z_out - fTr.z) <= fvec(1.e-6)).isFull()) {
     fvec zNew                              = fTr.z + sgn * fvec(50.);  // max. 50 cm step
     zNew(sgn * (z_out - zNew) <= fvec(0.)) = z_out;
-    ExtrapolateStep(zNew, qp0, F, w);
+    ExtrapolateStep(zNew, F, w);
   }
 }
 
 void
   L1TrackParFit::ExtrapolateStep  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
   (fvec z_out,                    // extrapolate to this z position
-   fvec qp0,                      // use Q/p linearisation at this value
    const L1FieldRegion& F, const fvec& w)
 {
+  // use Q/p linearisation at fQp0
+
   //
   // Forth-order Runge-Kutta method for solution of the equation
   // of motion of a particle with parameter qp = Q /P
@@ -407,7 +409,7 @@ void
       fvec L2i   = fvec(1.) / L2;
       fvec L     = sqrt(L2);
       fvec cL    = c_light * L;
-      fvec cLqp0 = cL * qp0;
+      fvec cLqp0 = cL * fQp0;
 
       f0[step] = tx;
       f1[step] = ty;
@@ -425,11 +427,11 @@ void
       f3_qp[step] = cL * f3tmp;
 
       fvec m2     = fMass2;
-      fvec vi     = sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f);
+      fvec vi     = sqrt(fvec(1.) + m2 * fQp0 * fQp0) / fvec(29.9792458f);
       f4[step]    = vi * L;
       f4_tx[step] = vi * tx / L;
       f4_ty[step] = vi * ty / L;
-      f4_qp[step] = (m2 * qp0) * (L / sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f));
+      f4_qp[step] = (m2 * fQp0) * (L / sqrt(fvec(1.) + m2 * fQp0 * fQp0) / fvec(29.9792458f));
 
       k[step + 1][0] = f0[step];
       k[step + 1][1] = f1[step];
@@ -519,7 +521,7 @@ void
   fvec Jt[5] = {0., 0., 0., 0., 1.};  // D new { x,y,tx,ty,t } / D old t
 
   {  // update parameters
-    fvec dqp = qp_in - qp0;
+    fvec dqp = qp_in - fQp0;
     fTr.x += Jqp[0] * dqp;
     fTr.y += Jqp[1] * dqp;
     fTr.tx += Jqp[2] * dqp;
@@ -658,12 +660,12 @@ void
 void L1TrackParFit::
   ExtrapolateStepAnalytic  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
   (fvec z_out,             // extrapolate to this z position
-   fvec qp0,               // use Q/p linearisation at this value
    const L1FieldRegion& F, const fvec& w)
 {
   //
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
+  //  use Q/p linearisation at fQp0
 
   // TODO: the time parameter is not extrapolated!
 
@@ -714,7 +716,7 @@ void L1TrackParFit::
 
   const fvec t2 = c1 + xx + yy;
   const fvec t  = sqrt(t2);
-  const fvec h  = qp0 * c_light;
+  const fvec h  = fQp0 * c_light;
   const fvec ht = h * t;
 
   // get field integrals
@@ -847,7 +849,7 @@ void L1TrackParFit::
   const fvec ctdz  = c_light * t * dz;
   const fvec ctdz2 = c_light * t * dz2;
 
-  const fvec dqp  = qp - qp0;
+  const fvec dqp  = qp - fQp0;
   const fvec t2i  = c1 / t2;
   const fvec xt2i = x * t2i;
   const fvec yt2i = y * t2i;
@@ -925,10 +927,11 @@ void L1TrackParFit::
 void L1TrackParFit::ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w)
 {
   // extrapolate the track assuming fQp0 == 0
+  // TODO: write special simplified procedure
   //
   auto qp0 = fQp0;
   fQp0     = fvec(0.);
-  Extrapolate(z_out, fQp0, F, w);
+  Extrapolate(z_out, F, w);
   fQp0 = qp0;
 }
 

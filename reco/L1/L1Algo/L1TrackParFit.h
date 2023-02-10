@@ -65,9 +65,10 @@ public:
   void FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1XYMeasurementInfo& info, const fvec& extrX,
                             const fvec& extrY, const fvec Jx[6], const fvec Jy[6]);
 
-  void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
-  void ExtrapolateStep(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
-  void ExtrapolateStepAnalytic(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
+  void Extrapolate(fvec z_out, const L1FieldRegion& F, const fvec& w);
+
+  void ExtrapolateStep(fvec z_out, const L1FieldRegion& F, const fvec& w);
+  void ExtrapolateStepAnalytic(fvec z_out, const L1FieldRegion& F, const fvec& w);
   void ExtrapolateLine(fvec z_out, const fvec& w);
   void ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w);
 
