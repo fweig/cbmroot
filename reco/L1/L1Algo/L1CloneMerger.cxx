@@ -12,9 +12,9 @@
 #include <iostream>
 
 #include "L1Algo.h"
+#include "L1Fit.h"
 #include "L1Parameters.h"
 #include "L1Track.h"
-#include "L1TrackParFit.h"
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -76,11 +76,11 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
     isDownstreamNeighbour[iTr] = false;
   }
 
-  L1TrackParFit fitB;
+  L1Fit fitB;
   fitB.SetParticleMass(frAlgo.GetDefaultParticleMass());
   fitB.fQp0 = fvec(0.);
 
-  L1TrackParFit fitF;
+  L1Fit fitF;
   fitF.SetParticleMass(frAlgo.GetDefaultParticleMass());
   fitF.fQp0 = fvec(0.);
 

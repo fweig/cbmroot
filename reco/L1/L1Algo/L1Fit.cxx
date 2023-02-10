@@ -2,11 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Maksym Zyzak [committer], Valentina Akishina */
 
-#include "L1TrackParFit.h"
+#include "L1Fit.h"
 
 #define cnst const fvec
 
-void L1TrackParFit::Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w)
+void L1Fit::Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w)
 {
   fvec zeta, HCH;
   fvec F0, F1, F2, F3, F4, F5;
@@ -75,7 +75,7 @@ void L1TrackParFit::Filter(const L1UMeasurementInfo& info, const fvec& u, const 
 }
 
 
-void L1TrackParFit::FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo)
+void L1Fit::FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo)
 {
   // filter track with a time measurement
 
@@ -142,7 +142,7 @@ void L1TrackParFit::FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo)
 }
 
 
-void L1TrackParFit::FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y)
+void L1Fit::FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y)
 {
   cnst TWO(2.);
 
@@ -222,8 +222,8 @@ void L1TrackParFit::FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y)
   fTr.C55 -= K50 * F50 + K51 * F51;
 }
 
-void L1TrackParFit::FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1XYMeasurementInfo& info,
-                                         const fvec& extrX, const fvec& extrY, const fvec Jx[6], const fvec Jy[6])
+void L1Fit::FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1XYMeasurementInfo& info, const fvec& extrX,
+                                 const fvec& extrY, const fvec Jx[6], const fvec Jy[6])
 {
   // add a 2-D measurenent (x,y) at some z, that differs from fTr.z
   // extrX, extrY are extrapolated track parameters at z, Jx, Jy are derivatives of the extrapolation
@@ -303,8 +303,8 @@ void L1TrackParFit::FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1X
 }
 
 
-void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
-  (fvec z_out,                   // extrapolate to this z position
+void L1Fit::Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (fvec z_out,           // extrapolate to this z position
    const L1FieldRegion& F, const fvec& w)
 {
   // use Q/p linearisation at fQp0
@@ -317,9 +317,8 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   }
 }
 
-void
-  L1TrackParFit::ExtrapolateStep  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
-  (fvec z_out,                    // extrapolate to this z position
+void L1Fit::ExtrapolateStep  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (fvec z_out,               // extrapolate to this z position
    const L1FieldRegion& F, const fvec& w)
 {
   // use Q/p linearisation at fQp0
@@ -657,9 +656,9 @@ void
   }
 }
 
-void L1TrackParFit::
-  ExtrapolateStepAnalytic  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
-  (fvec z_out,             // extrapolate to this z position
+void
+  L1Fit::ExtrapolateStepAnalytic  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (fvec z_out,                    // extrapolate to this z position
    const L1FieldRegion& F, const fvec& w)
 {
   //
@@ -924,7 +923,7 @@ void L1TrackParFit::
   //cout<<"Extrapolation ok"<<endl;
 }
 
-void L1TrackParFit::ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w)
+void L1Fit::ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fvec& w)
 {
   // extrapolate the track assuming fQp0 == 0
   // TODO: write special simplified procedure
@@ -935,7 +934,7 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, const L1FieldRegion& F, const fv
   fQp0 = qp0;
 }
 
-void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
+void L1Fit::ExtrapolateLine(fvec z_out, const fvec& w)
 {
   // extrapolate the track assuming fQp0 == 0
   //
@@ -993,7 +992,7 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
 }
 
 
-void L1TrackParFit::AddMsInMaterial(const fvec& radThick, fvec w)
+void L1Fit::AddMsInMaterial(const fvec& radThick, fvec w)
 {
   cnst ONE = 1.;
 
@@ -1018,7 +1017,7 @@ void L1TrackParFit::AddMsInMaterial(const fvec& radThick, fvec w)
   fTr.C33 += w * (ONE + tyty) * a;
 }
 
-void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec w, fvec thickness, bool fDownstream)
+void L1Fit::AddMsInThickMaterial(fvec radThick, fvec w, fvec thickness, bool fDownstream)
 {
   cnst ONE = 1.;
 
@@ -1058,7 +1057,7 @@ void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec w, fvec thickness, 
 }
 
 
-void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec upstreamDirection, fvec w)
+void L1Fit::EnergyLossCorrection(const fvec& radThick, fvec upstreamDirection, fvec w)
 {
   const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut
   const fvec qp02 = max(fQp0 * fQp0, qp2cut);
@@ -1089,8 +1088,7 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec upstreamDire
 }
 
 template<int atomicZ>
-void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec direction,
-                                         fvec w)
+void L1Fit::EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec direction, fvec w)
 {
   const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut
   const fvec qp02 = max(fQp0 * fQp0, qp2cut);
@@ -1153,7 +1151,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
 }
 
 
-void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec direction, fvec w)
+void L1Fit::EnergyLossCorrectionIron(const fvec& radThick, fvec direction, fvec w)
 {
   constexpr int atomicZ   = 26;
   constexpr float atomicA = 55.845f;
@@ -1163,7 +1161,7 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec directio
 }
 
 
-void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec direction, fvec w)
+void L1Fit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec direction, fvec w)
 {
   constexpr int atomicZ   = 6;
   constexpr float atomicA = 12.011f;
@@ -1172,7 +1170,7 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec direct
   EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, direction, w);
 }
 
-void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec direction, fvec w)
+void L1Fit::EnergyLossCorrectionAl(const fvec& radThick, fvec direction, fvec w)
 {
   constexpr int atomicZ   = 13;
   constexpr float atomicA = 26.981f;
@@ -1181,8 +1179,8 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec direction,
   EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, direction, w);
 }
 
-void L1TrackParFit::GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
-                                          fvec Jy[6]) const
+void L1Fit::GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
+                                  fvec Jy[6]) const
 {
   // extrapolate track assuming it is straight (qp==0)
   // return the extrapolated X, Y and the derivatives of the extrapolated X and Y
@@ -1229,8 +1227,8 @@ void L1TrackParFit::GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F,
 }
 
 
-void L1TrackParFit::AddTargetToLine(const fvec& targX, const fvec& targY, const fvec& targZ,
-                                    const L1XYMeasurementInfo& targXYInfo, const L1FieldRegion& F)
+void L1Fit::AddTargetToLine(const fvec& targX, const fvec& targY, const fvec& targZ,
+                            const L1XYMeasurementInfo& targXYInfo, const L1FieldRegion& F)
 {
   // Add the target constraint to a straight line track
 
@@ -1239,7 +1237,7 @@ void L1TrackParFit::AddTargetToLine(const fvec& targX, const fvec& targY, const 
   FilterExtrapolatedXY(targX, targY, targXYInfo, eX, eY, Jx, Jy);
 }
 
-fvec L1TrackParFit::ApproximateBetheBloch(const fvec& bg2)
+fvec L1Fit::ApproximateBetheBloch(const fvec& bg2)
 {
   //
   // This is the parameterization of the Bethe-Bloch formula inspired by Geant.
@@ -1285,8 +1283,8 @@ fvec L1TrackParFit::ApproximateBetheBloch(const fvec& bg2)
          * (0.5f * log(_2me * bg2 * maxT / (mI * mI)) - bg2 / (fvec(1.f) + bg2) - d2);
 }
 
-fvec L1TrackParFit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const fvec& kp1, const fvec& kp2,
-                                          const fvec& kp3, const fvec& kp4)
+fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const fvec& kp1, const fvec& kp2, const fvec& kp3,
+                                  const fvec& kp4)
 {
   //
   // This is the parameterization of the Bethe-Bloch formula inspired by Geant.
@@ -1333,8 +1331,8 @@ fvec L1TrackParFit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, cons
 }
 
 
-void L1TrackParFit::FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fvec& y, fvec& C00, fvec& C10,
-                                          fvec& C11, fvec& chi2, const fvec& u, const fvec& du2)
+void L1Fit::FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fvec& y, fvec& C00, fvec& C10, fvec& C11,
+                                  fvec& chi2, const fvec& u, const fvec& du2)
 {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1;
@@ -1363,8 +1361,8 @@ void L1TrackParFit::FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& 
 }
 
 
-void L1TrackParFit::FilterChi2(const L1UMeasurementInfo& info, const fvec& x, const fvec& y, const fvec& C00,
-                               const fvec& C10, const fvec& C11, fvec& chi2, const fvec& u, const fvec& du2)
+void L1Fit::FilterChi2(const L1UMeasurementInfo& info, const fvec& x, const fvec& y, const fvec& C00, const fvec& C10,
+                       const fvec& C11, fvec& chi2, const fvec& u, const fvec& du2)
 {
   fvec zeta, HCH;
   fvec F0, F1;

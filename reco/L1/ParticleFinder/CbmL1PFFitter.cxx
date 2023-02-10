@@ -39,9 +39,9 @@
 #include "L1Algo.h"  // Also defines L1Parameters
 #include "L1Def.h"
 #include "L1Field.h"
+#include "L1Fit.h"
 #include "L1Station.h"
 #include "L1TrackPar.h"
-#include "L1TrackParFit.h"
 
 //typedef L1Fit1 L1Fit;
 
@@ -97,7 +97,7 @@ inline void CbmL1PFFitter::PFFieldRegion::getL1FieldRegion(L1FieldRegion& fld, i
 inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int i) { setFromL1FieldRegion(fld, i); }
 
 
-void FilterFirst(L1TrackParFit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
+void FilterFirst(L1Fit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
 {
   L1TrackPar& tr = fit.fTr;
   tr.C00         = dxx;
@@ -139,7 +139,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvec::size();
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(CbmL1::Instance()->fpAlgo->GetDefaultParticleMass());
 
   L1TrackPar& T = fit.fTr;  // fitting parametr coresponding to current track
@@ -453,7 +453,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
 
   int nTracks_SIMD = fvec::size();
 
-  L1TrackParFit fit;
+  L1Fit fit;
   L1TrackPar& T = fit.fTr;  // fitting parametr coresponding to current track
 
   CbmStsTrack* tr[fvec::size()] {nullptr};

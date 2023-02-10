@@ -27,7 +27,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
 {
   L1_assert(t.NHits >= 3);
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
   fit.fTr       = Tout;
   L1TrackPar& T = fit.fTr;
@@ -163,7 +163,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
   L1Vector<L1HitIndex_t> newHits {"L1TrackExtender::newHits"};
   newHits.reserve(fParameters.GetNstationsActive());
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
   fit.fQp0 = qp0;
   fit.fTr  = Tout;

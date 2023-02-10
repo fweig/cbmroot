@@ -25,13 +25,13 @@
 #include "L1Algo.h"
 #include "L1Assert.h"
 #include "L1Branch.h"
+#include "L1Fit.h"
 #include "L1Grid.h"
 #include "L1HitArea.h"
 #include "L1HitPoint.h"
 #include "L1Portion.h"
 #include "L1Track.h"
 #include "L1TrackPar.h"
-#include "L1TrackParFit.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -211,7 +211,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   const L1Station& fld1Sta1 = fParameters.GetStation(fld1Ista1);
   const L1Station& fld1Sta2 = fParameters.GetStation(fld1Ista2);
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
   fit.fQp0 = fMaxInvMom;
@@ -325,7 +325,7 @@ inline void L1Algo::findDoubletsStep0(
 
   n2 = 0;  // number of doublets
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
@@ -427,13 +427,13 @@ inline void L1Algo::findDoubletsStep0(
 
       fvec chi2 = T1.chi2;
 
-      L1TrackParFit::FilterChi2XYC00C10C11(stam.frontInfo, x, y, C00, C10, C11, chi2, hitm.U(), hitm.dU2());
+      L1Fit::FilterChi2XYC00C10C11(stam.frontInfo, x, y, C00, C10, C11, chi2, hitm.U(), hitm.dU2());
 
       if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
         if (chi2[i1_4] > fDoubletChi2Cut) continue;
       }
 
-      L1TrackParFit::FilterChi2(stam.backInfo, x, y, C00, C10, C11, chi2, hitm.V(), hitm.dV2());
+      L1Fit::FilterChi2(stam.backInfo, x, y, C00, C10, C11, chi2, hitm.V(), hitm.dV2());
 
       // FilterTime(T1, hitm.T(), hitm.dT2());
 
@@ -540,7 +540,7 @@ inline void L1Algo::findTripletsStep0(  // input
   bool isMomentumFitted = (fIsTargetField || (stal.fieldStatus != 0) || (stam.fieldStatus != 0));
   //bool isTimeFitted     = ((stal.timeInfo != 0) || (stam.timeInfo != 0));
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
   fit.fQp0 = fvec(0.);
 
@@ -681,7 +681,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
         auto [xr, yr] = star.ConvUVtoXY<fscal>(hitr.U(), hitr.V());
 
-        L1TrackParFit fit3;
+        L1Fit fit3;
         fit3.SetParticleMass(fDefaultMass);
         fit3.fQp0 = T2.qp;
 
@@ -725,9 +725,9 @@ inline void L1Algo::findTripletsStep0(  // input
 
         fvec chi2 = T2.chi2;
 
-        L1TrackParFit::FilterChi2XYC00C10C11(star.frontInfo, x, y, C00, C10, C11, chi2, hitr.U(), hitr.dU2());
+        L1Fit::FilterChi2XYC00C10C11(star.frontInfo, x, y, C00, C10, C11, chi2, hitr.U(), hitr.dU2());
 
-        L1TrackParFit::FilterChi2(star.backInfo, x, y, C00, C10, C11, chi2, hitr.V(), hitr.dV2());
+        L1Fit::FilterChi2(star.backInfo, x, y, C00, C10, C11, chi2, hitr.V(), hitr.dV2());
 
         fit3.FilterTime(hitr.T(), hitr.dT2(), fvec::One(), star.timeInfo);
 
@@ -807,7 +807,7 @@ inline void L1Algo::findTripletsStep1(  // input
   //                L1TrackPar *T_3
   L1Vector<L1TrackPar>& T_3)
 {
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
 
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
@@ -838,7 +838,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
   ca::tools::Debugger::Instance().AddNtuple("triplets", "ev:mc:sta:p:vx:vy:vz:chi2:ndf");
 
-  L1TrackParFit fit;
+  L1Fit fit;
 
   if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
   else {

@@ -2,8 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Maksym Zyzak [committer], Sergey Gorbunov */
 
-#ifndef L1TrackParFit_h
-#define L1TrackParFit_h
+#ifndef L1Fit_h
+#define L1Fit_h
 
 #include "L1Def.h"
 #include "L1Field.h"
@@ -11,15 +11,15 @@
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
 
-class L1TrackParFit {
+class L1Fit {
 
 public:
-  L1TrackParFit() = default;
+  L1Fit() = default;
 
-  L1TrackParFit(const L1TrackPar& t) { SetTrack(t); }
+  L1Fit(const L1TrackPar& t) { SetTrack(t); }
 
   template<typename T>
-  L1TrackParFit(const T* tr, const T* C)
+  L1Fit(const T* tr, const T* C)
   {
     SetTrack(tr, C);
   }
@@ -37,7 +37,7 @@ public:
     fQp0 = fTr.qp;
   }
 
-  void SetOneEntry(const int i0, const L1TrackParFit& T1, const int i1);
+  void SetOneEntry(const int i0, const L1Fit& T1, const int i1);
 
   void Print(int i = -1);
 
@@ -121,30 +121,30 @@ public:
 
 // =============================================================================================
 
-inline void L1TrackParFit::Print(int i) { fTr.Print(i); }
+inline void L1Fit::Print(int i) { fTr.Print(i); }
 
 
-inline void L1TrackParFit::SetOneEntry(const int i0, const L1TrackParFit& T1, const int i1)
+inline void L1Fit::SetOneEntry(const int i0, const L1Fit& T1, const int i1)
 {
   fTr.SetOneEntry(i0, T1.fTr, i1);
   fQp0[i0] = T1.fQp0[i1];
 }
 
-inline void L1TrackParFit::ExtrapolateXC00Line(fvec z_out, fvec& x, fvec& C00) const
+inline void L1Fit::ExtrapolateXC00Line(fvec z_out, fvec& x, fvec& C00) const
 {
   const fvec dz = (z_out - fTr.z);
   x             = fTr.x + fTr.tx * dz;
   C00           = fTr.C00 + dz * (2 * fTr.C20 + dz * fTr.C22);
 }
 
-inline void L1TrackParFit::ExtrapolateYC11Line(fvec z_out, fvec& y, fvec& C11) const
+inline void L1Fit::ExtrapolateYC11Line(fvec z_out, fvec& y, fvec& C11) const
 {
   const fvec dz = (z_out - fTr.z);
   y             = fTr.y + fTr.ty * dz;
   C11           = fTr.C11 + dz * (2 * fTr.C31 + dz * fTr.C33);
 }
 
-inline void L1TrackParFit::ExtrapolateC10Line(fvec z_out, fvec& C10) const
+inline void L1Fit::ExtrapolateC10Line(fvec z_out, fvec& C10) const
 {
   const fvec dz = (z_out - fTr.z);
   C10           = fTr.C10 + dz * (fTr.C21 + fTr.C30 + dz * fTr.C32);

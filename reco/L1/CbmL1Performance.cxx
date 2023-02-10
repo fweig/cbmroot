@@ -56,7 +56,7 @@
 
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Def.h"
-#include "L1Algo/L1TrackParFit.h"
+#include "L1Algo/L1Fit.h"
 
 using std::cout;
 using std::endl;
@@ -1101,7 +1101,7 @@ void CbmL1::TrackFitPerformance()
 
   static bool first_call = 1;
 
-  L1TrackParFit fit;
+  L1Fit fit;
   fit.SetParticleMass(fpAlgo->GetDefaultParticleMass());
 
   if (first_call) {

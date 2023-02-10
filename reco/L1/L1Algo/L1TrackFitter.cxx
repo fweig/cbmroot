@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "L1Algo.h"
+#include "L1Fit.h"
 #include "L1TrackPar.h"
-#include "L1TrackParFit.h"
 
 using std::cout;
 using std::endl;
@@ -41,7 +41,7 @@ void L1Algo::L1KFTrackFitter()
   const int nStations = fParameters.GetNstationsActive();
   int nTracks_SIMD    = fvec::size();
 
-  L1TrackParFit fit;  // fitting parametr coresponding to current track
+  L1Fit fit;  // fitting parametr coresponding to current track
   L1TrackPar& tr = fit.fTr;
 
   fit.SetParticleMass(GetDefaultParticleMass());
@@ -273,7 +273,7 @@ void L1Algo::L1KFTrackFitter()
 
       // extrapolate to the PV region
 
-      L1TrackParFit fitpv = fit;
+      L1Fit fitpv = fit;
       {
         L1UMeasurementInfo vtxInfoX;
         vtxInfoX.cos_phi = 1.;
@@ -452,7 +452,7 @@ void L1Algo::L1KFTrackFitter()
     }  // iter
   }
 }
-void L1Algo::GuessVecNoField(L1TrackParFit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
+void L1Algo::GuessVecNoField(L1Fit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
                              fvec& z_2last, fvec& time_last, fvec* /*w_time*/, fvec& dt2_last)
 {
   fvec dzi = fvec(1.) / (z_end - z_2last);
@@ -543,8 +543,8 @@ void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fve
   t.z  = z0;
 }
 
-void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur,
-                      fvec* timeV, fvec* w_time)
+void L1Algo::GuessVec(L1Fit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur, fvec* timeV,
+                      fvec* w_time)
 // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
 {
   fvec A0, A1 = ZERO, A2 = ZERO, A3 = ZERO, A4 = ZERO, A5 = ZERO, a0, a1 = ZERO, a2 = ZERO, b0, b1 = ZERO, b2 = ZERO;
@@ -628,7 +628,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
 }
 
 
-void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& d_xx, fvec& d_yy, fvec& d_xy)
+void L1Algo::FilterFirst(L1Fit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& d_xx, fvec& d_yy, fvec& d_xy)
 {
   track.fTr.C00 = d_xx;
   track.fTr.C10 = d_xy;

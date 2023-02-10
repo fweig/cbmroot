@@ -46,7 +46,7 @@ set(SRCS
   CbmL1ReadEvent.cxx
   CbmCaPerformance.cxx
   L1Algo/L1Station.cxx
-  L1Algo/L1TrackParFit.cxx
+  L1Algo/L1Fit.cxx
   L1Algo/L1MCEvent.cxx
   CbmL1MCTrack.cxx
   L1Algo/L1Material.cxx
