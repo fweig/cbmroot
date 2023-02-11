@@ -281,10 +281,6 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
 
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = fvec(10.);
-
-    // TODO: Why 9. and 10.?
-
     T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
     T.C55 = timeEr2;
 

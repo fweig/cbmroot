@@ -732,6 +732,11 @@ InitStatus CbmL1::Init()
       trackingIterAllPrimJump.SetExtendTracksFlag(false);
       trackingIterAllSec.SetExtendTracksFlag(false);
 
+      trackingIterFastPrim.SetMaxSlopePV(9.5);
+      trackingIterAllPrim.SetMaxSlopePV(9.5);
+      trackingIterAllPrimJump.SetMaxSlopePV(9.5);
+      trackingIterAllSec.SetMaxSlopePV(9.5);
+
       fInitManager.SetCAIterationsNumberCrosscheck(4);
       // Initialize CA track finder iterations sequence
       fInitManager.PushBackCAIteration(trackingIterFastPrim);
@@ -754,7 +759,7 @@ InitStatus CbmL1::Init()
         it.SetPickGather(3.0f);
         it.SetTripletLinkChi2(16.0);
         it.SetMaxQp(1.0 / 0.1);  //(1.0 / 0.5);
-        it.SetMaxSlopePV(.1f);
+        it.SetMaxSlopePV(9.5);
         it.SetMaxSlope(.5f);
         it.SetMaxDZ(0.05);
         it.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
@@ -774,7 +779,7 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetPickGather(3.0f);
       trd2dIter2.SetTripletLinkChi2(16.);
       trd2dIter2.SetMaxQp(1.0 / 0.05);  //(1.0 / 0.5);
-      trd2dIter2.SetMaxSlopePV(.5f);
+      trd2dIter2.SetMaxSlopePV(9.5f);
       trd2dIter2.SetMaxSlope(.5f);
       trd2dIter2.SetMaxDZ(0.05);
       trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
@@ -791,7 +796,7 @@ InitStatus CbmL1::Init()
       trd2dIter3.SetPickGather(3.0f);
       trd2dIter3.SetTripletLinkChi2(200.);
       trd2dIter3.SetMaxQp(1.0 / 0.1);  //(1.0 / 0.5);
-      trd2dIter3.SetMaxSlopePV(.01);
+      trd2dIter3.SetMaxSlopePV(9.5);
       trd2dIter3.SetMaxSlope(.4);  //.5f);
       trd2dIter3.SetMaxDZ(0.05);
       trd2dIter3.SetTargetPosSigmaXY(7 * 10, 6 * 10);  //(1, 1);
