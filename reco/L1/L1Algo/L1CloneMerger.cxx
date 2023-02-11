@@ -78,10 +78,12 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
   L1Fit fitB;
   fitB.SetParticleMass(frAlgo.GetDefaultParticleMass());
+  fitB.SetMask(fmask::One());
   fitB.SetQp0(fvec(0.));
 
   L1Fit fitF;
   fitF.SetParticleMass(frAlgo.GetDefaultParticleMass());
+  fitF.SetMask(fmask::One());
   fitF.SetQp0(fvec(0.));
 
   L1TrackPar& Tb = fitB.Tr();
@@ -188,8 +190,8 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
       fvec zMiddle = fvec(0.5) * (Tb.z + Tf.z);
 
-      fitF.Extrapolate(zMiddle, fld, fvec::One());
-      fitB.Extrapolate(zMiddle, fld, fvec::One());
+      fitF.Extrapolate(zMiddle, fld);
+      fitB.Extrapolate(zMiddle, fld);
 
       fvec Chi2Tracks(0.);
       FilterTracks(&(Tf.x), &(Tf.C00), &(Tb.x), &(Tb.C00), 0, 0, &Chi2Tracks);

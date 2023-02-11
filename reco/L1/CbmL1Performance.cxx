@@ -1103,6 +1103,7 @@ void CbmL1::TrackFitPerformance()
 
   L1Fit fit;
   fit.SetParticleMass(fpAlgo->GetDefaultParticleMass());
+  fit.SetMask(fmask::One());
 
   if (first_call) {
     first_call = 0;
@@ -1236,7 +1237,7 @@ void CbmL1::TrackFitPerformance()
 
       CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
 
-      fit.Extrapolate(mcP.zIn, fld, fvec::One());
+      fit.Extrapolate(mcP.zIn, fld);
 
       double dx = tr.x[0] - mcP.xIn;
       double dy = tr.y[0] - mcP.yIn;
@@ -1338,7 +1339,7 @@ void CbmL1::TrackFitPerformance()
       const L1TrackPar& tr = fit.Tr();
 
       CbmL1MCPoint& mcP = fvMCPoints[iMC];
-      fit.Extrapolate(mcP.zOut, fld, fvec::One());
+      fit.Extrapolate(mcP.zOut, fld);
 
       h_fitL[0]->Fill((tr.x[0] - mcP.xOut) * 1.e4);
       h_fitL[1]->Fill((tr.y[0] - mcP.yOut) * 1.e4);
@@ -1395,7 +1396,7 @@ void CbmL1::TrackFitPerformance()
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
           fld.SetUseOriginalField();
-          fit.Extrapolate(mc.z, fld, fvec::One());
+          fit.Extrapolate(mc.z, fld);
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
           const int dir  = int((mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0])
@@ -1406,8 +1407,8 @@ void CbmL1::TrackFitPerformance()
                iSta += dir) {
             //           cout << iSta << " " << dir << endl;
             auto radThick = fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.Tr().x, fit.Tr().y);
-            fit.AddMsInMaterial(radThick, fvec::One());
-            fit.EnergyLossCorrection(radThick, fvec::One(), fvec::One());
+            fit.AddMsInMaterial(radThick);
+            fit.EnergyLossCorrection(radThick, fvec::One());
           }
         }
         if (mc.z != tr.z[0]) continue;
@@ -1458,12 +1459,12 @@ void CbmL1::TrackFitPerformance()
                                       && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
 
-            fit.Extrapolate(fpAlgo->GetParameters()->GetStation(iSta).fZ, fld, fvec::One());
+            fit.Extrapolate(fpAlgo->GetParameters()->GetStation(iSta).fZ, fld);
             auto radThick = fpAlgo->GetParameters()->GetMaterialThickness(iSta, fit.Tr().x, fit.Tr().y);
-            fit.AddMsInMaterial(radThick, fvec::One());
-            fit.EnergyLossCorrection(radThick, fvec::One(), fvec::One());
+            fit.AddMsInMaterial(radThick);
+            fit.EnergyLossCorrection(radThick, fvec::One());
           }
-          fit.Extrapolate(mc.z, fld, fvec::One());
+          fit.Extrapolate(mc.z, fld);
         }
         if (mc.z != tr.z[0]) continue;
 

@@ -159,7 +159,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   fvec* dt2 = new fvec[nHits];
   fvec* y   = new fvec[nHits];
   fvec* z   = new fvec[nHits];
-  fvec* w   = new fvec[nHits];
+  fmask* w  = new fmask[nHits];
+
   //  fvec y_temp;
   fvec x_first, y_first, x_last, y_last;
   fvec fstC00, fstC10, fstC11;
@@ -214,7 +215,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
     // get hits of current track
     for (i = 0; i < nHits; i++) {
-      w[i] = ZERO;
+      w[i] = fmask::Zero();
       z[i] = sta[i].fZ;
     }
 
@@ -262,7 +263,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           dv2[ista][iVec] = hit->GetDv() * hit->GetDv();
           dt2[ista][iVec] = hit->GetTimeError() * hit->GetTimeError();
         }
-        w[ista][iVec] = 1.f;
+        w[ista][iVec] = true;
 
         x[ista][iVec] = posx;
         y[ista][iVec] = posy;
@@ -321,16 +322,17 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fld.Set(b0, z0, b1, z1, b2, z2);
 
       fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
-      fvec w1           = iif(initialised, w[i], fvec::Zero());
-      fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-      fit.Extrapolate(z[i], fld, w1);
+      fit.SetMask(initialised);
+      fit.Extrapolate(z[i], fld);
       auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.Tr().x, fit.Tr().y);
-      fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
-      fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
-      fit.FilterTime(t[i], dt2[i], w1, sta[i].timeInfo);
-      fit.AddMsInMaterial(radThick, wIn);
-      fit.EnergyLossCorrection(radThick, -fvec::One(), wIn);
+      fit.AddMsInMaterial(radThick);
+      fit.EnergyLossCorrection(radThick, -fvec::One());
+
+      fit.SetMask(initialised && w[i]);
+      fit.Filter(sta[i].frontInfo, u[i], du2[i]);
+      fit.Filter(sta[i].backInfo, v[i], dv2[i]);
+      fit.FilterTime(t[i], dt2[i], sta[i].timeInfo);
 
       b2 = b1;
       z2 = z1;
@@ -390,16 +392,17 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fld.Set(b0, z0, b1, z1, b2, z2);
 
       fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
-      fvec w1           = iif(initialised, w[i], fvec::Zero());
-      fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-      fit.Extrapolate(z[i], fld, w1);
+      fit.SetMask(initialised);
+      fit.Extrapolate(z[i], fld);
       auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.Tr().x, fit.Tr().y);
-      fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
-      fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
-      fit.FilterTime(t[i], dt2[i], w1, sta[i].timeInfo);
-      fit.AddMsInMaterial(radThick, wIn);
-      fit.EnergyLossCorrection(radThick, fvec::One(), wIn);
+      fit.AddMsInMaterial(radThick);
+      fit.EnergyLossCorrection(radThick, fvec::One());
+
+      fit.SetMask(initialised && w[i]);
+      fit.Filter(sta[i].frontInfo, u[i], du2[i]);
+      fit.Filter(sta[i].backInfo, v[i], dv2[i]);
+      fit.FilterTime(t[i], dt2[i], sta[i].timeInfo);
 
       b2 = b1;
       z2 = z1;
@@ -554,17 +557,16 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
     fit.SetQp0(fit.Tr().qp);
 
     for (int iSt = nStations - 4; iSt >= 0; iSt--) {
-
-      fvec w = iif(T.z > (zSta[iSt] + fvec(2.5)), fvec::One(), fvec::Zero());
-
-      fit.Extrapolate(zSta[iSt], fld, w);
+      fit.SetMask(T.z > zSta[iSt] + fvec(2.5));
+      fit.Extrapolate(zSta[iSt], fld);
       auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, fit.Tr().x, fit.Tr().y);
-      fit.AddMsInMaterial(radThick, w);
-      fit.EnergyLossCorrection(radThick, fvec::One(), w);
+      fit.AddMsInMaterial(radThick);
+      fit.EnergyLossCorrection(radThick, fvec::One());
     }
-    fit.Extrapolate(primVtx.GetRefZ(), fld, fvec::One());
-    fit.AddMsInMaterial(fit.GetTargetRadThick(), fvec::One());
-    fit.EnergyLossCorrection(fit.GetTargetRadThick(), fvec::One(), fvec::One());
+    fit.SetMask(fmask::One());
+    fit.Extrapolate(primVtx.GetRefZ(), fld);
+    fit.AddMsInMaterial(fit.GetTargetRadThick());
+    fit.EnergyLossCorrection(fit.GetTargetRadThick(), fvec::One());
 
     Double_t Cv[3] = {primVtx.GetCovMatrix()[0], primVtx.GetCovMatrix()[1], primVtx.GetCovMatrix()[2]};
 

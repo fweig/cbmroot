@@ -88,8 +88,9 @@ void L1Algo::L1KFTrackFitter()
   //  fvec dt2_lst;  /// TODO: Why are there two different variables for the time error on the last station?
 
   fvec Sy[L1Constants::size::kMaxNstations];
-  fvec w[L1Constants::size::kMaxNstations];
-  fvec w_time[L1Constants::size::kMaxNstations];  // !!!
+  fmask w[L1Constants::size::kMaxNstations];
+  fmask w_time[L1Constants::size::kMaxNstations];  // !!!
+
   fvec y_temp;
   fvec x_temp;
   fvec fldZ0;
@@ -123,8 +124,8 @@ void L1Algo::L1KFTrackFitter()
 
     // get hits of current track
     for (int ista = 0; ista < nStations; ista++) {
-      w[ista]      = ZERO;
-      w_time[ista] = ZERO;
+      w[ista]      = fmask::Zero();
+      w_time[ista] = fmask::Zero();
       z[ista]      = ZSta[ista];
     }
 
@@ -143,8 +144,8 @@ void L1Algo::L1KFTrackFitter()
         //if (sta[ista].fieldStatus) { isFieldPresent[iVec] = true; }
 
         iSta[ih]      = ista;
-        w[ista][iVec] = 1.;
-        if (sta[ista].timeInfo) { w_time[ista][iVec] = 1.; }
+        w[ista][iVec] = true;
+        if (sta[ista].timeInfo) { w_time[ista][iVec] = true; }
 
         u[ista][iVec]            = hit.u;
         v[ista][iVec]            = hit.v;
@@ -208,10 +209,9 @@ void L1Algo::L1KFTrackFitter()
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       GuessVecNoField(fit, x_last, x_2last, y_last, y_2last, z_end, z_2last, time_last, w_time, dt2_last);
     }
-
-    else
-
+    else {
       GuessVec(fit, x, y, z, Sy, w, nStations, &z_end, time, w_time);
+    }
 
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { tr.qp = fvec(1. / 1.1); }
 
@@ -225,8 +225,8 @@ void L1Algo::L1KFTrackFitter()
 
       int ista = nStations - 1;
 
-      time_last = iif(w_time[ista] > fvec::Zero(), time_last, fvec::Zero());
-      dt2_last  = iif(w_time[ista] > fvec::Zero(), dt2_last, fvec(1.e6));
+      time_last = iif(w_time[ista], time_last, fvec::Zero());
+      dt2_last  = iif(w_time[ista], dt2_last, fvec(1.e6));
 
       FilterFirst(fit, x_last, y_last, time_last, dt2_last, d_xx_lst, d_yy_lst, d_xy_lst);
 
@@ -251,18 +251,18 @@ void L1Algo::L1KFTrackFitter()
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fmask initialised = (z[ista] < z_end) & (z_start <= z[ista]);
-        fvec w1           = iif(initialised, w[ista], fvec::Zero());
-        fvec wExtr        = iif(initialised, fvec::One(), fvec::Zero());
-        fvec w1_time      = iif(initialised, w_time[ista], fvec::Zero());
 
         fld1 = fld;
 
-        fit.Extrapolate(z[ista], fld1, wExtr);
-        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), wExtr);
-        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fvec(1.f), wExtr);
-        fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
-        fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
-        fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);
+        fit.SetMask(initialised);
+        fit.Extrapolate(z[ista], fld1);
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y));
+        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fvec(1.f));
+
+        fit.SetMask(initialised && w[ista]);
+        fit.Filter(sta[ista].frontInfo, u[ista], du2[ista]);
+        fit.Filter(sta[ista].backInfo, v[ista], dv2[ista]);
+        fit.FilterTime(time[ista], dt2[ista], sta[ista].timeInfo);
 
 
         fldB2 = fldB1;
@@ -275,6 +275,8 @@ void L1Algo::L1KFTrackFitter()
 
       L1Fit fitpv = fit;
       {
+        fitpv.SetMask(fmask::One());
+
         L1UMeasurementInfo vtxInfoX;
         vtxInfoX.cos_phi = 1.;
         vtxInfoX.sin_phi = 0.;
@@ -288,14 +290,14 @@ void L1Algo::L1KFTrackFitter()
             fitpv.SetQp0(fitpv.Tr().qp);
             fitpv.Tr()    = fit.Tr();
             fitpv.Tr().qp = fitpv.Qp0();
-            fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld, fvec(1.));
-            fitpv.Filter(vtxInfoX, fParameters.GetTargetPositionX(), fvec(1.e-8), fvec::One());
-            fitpv.Filter(vtxInfoY, fParameters.GetTargetPositionY(), fvec(1.e-8), fvec::One());
+            fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld);
+            fitpv.Filter(vtxInfoX, fParameters.GetTargetPositionX(), fvec(1.e-8));
+            fitpv.Filter(vtxInfoY, fParameters.GetTargetPositionY(), fvec(1.e-8));
           }
         }
         else {
           fitpv.SetQp0(fitpv.Tr().qp);
-          fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld, fvec(1.));
+          fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld);
         }
       }
 
@@ -397,16 +399,15 @@ void L1Algo::L1KFTrackFitter()
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fmask initialised = (z[ista] <= z_end) & (z_start < z[ista]);
-        fvec w1           = iif(initialised, w[ista], fvec::Zero());
-        fvec w1_time      = iif(initialised, w_time[ista], fvec::Zero());
-        fvec wExtr        = iif(initialised, fvec::One(), fvec::Zero());
 
-        fit.Extrapolate(z[ista], fld, w1);
-        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), wExtr);
-        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fvec(-1.f), wExtr);
-        fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
-        fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
-        fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);
+        fit.SetMask(initialised);
+        fit.Extrapolate(z[ista], fld);
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y));
+        fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), fvec(-1.f));
+        fit.SetMask(initialised && w[ista]);
+        fit.Filter(sta[ista].frontInfo, u[ista], du2[ista]);
+        fit.Filter(sta[ista].backInfo, v[ista], dv2[ista]);
+        fit.FilterTime(time[ista], dt2[ista], sta[ista].timeInfo);
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
@@ -453,7 +454,7 @@ void L1Algo::L1KFTrackFitter()
   }
 }
 void L1Algo::GuessVecNoField(L1Fit& track, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
-                             fvec& z_2last, fvec& time_last, fvec* /*w_time*/, fvec& dt2_last)
+                             fvec& z_2last, fvec& time_last, fmask* /*w_time*/, fvec& dt2_last)
 {
   L1TrackPar& tr = track.Tr();
 
@@ -478,7 +479,7 @@ void L1Algo::GuessVecNoField(L1Fit& track, fvec& x_last, fvec& x_2last, fvec& y_
 }
 
 
-void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur)
+void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmask* wV, int NHits, fvec* zCur)
 // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
 {
 
@@ -489,14 +490,14 @@ void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fv
   if (zCur) z0 = *zCur;
   else
     z0 = zV[i];
-  w  = wV[i];
+  w  = iif(wV[i], fvec::One(), fvec::Zero());
   A0 = w;
   a0 = w * xV[i];
   b0 = w * yV[i];
   for (i = 0; i < NHits; i++) {
     x  = xV[i];
     y  = yV[i];
-    w  = wV[i];
+    w  = iif(wV[i], fvec::One(), fvec::Zero());
     z  = zV[i] - z0;
     S  = Sy[i];
     wz = w * z;
@@ -546,8 +547,8 @@ void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fv
   tr.z  = z0;
 }
 
-void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur,
-                      fvec* timeV, fvec* w_time)
+void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmask* wV, int NHits, fvec* zCur,
+                      fvec* timeV, fmask* w_time)
 // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
 {
   L1TrackPar& tr = track.Tr();
@@ -563,7 +564,7 @@ void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec
     z0 = zV[i];
   }
 
-  w  = wV[i];
+  w  = iif(wV[i], fvec::One(), fvec::Zero());
   A0 = w;
   a0 = w * xV[i];
   b0 = w * yV[i];
@@ -572,8 +573,9 @@ void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec
   for (i = 0; i < NHits; i++) {
     x = xV[i];
     y = yV[i];
-    w = wV[i];
-    if (timeV) nhits = nhits + w_time[i];
+    w = iif(wV[i], fvec::One(), fvec::Zero());
+    ;
+    if (timeV) nhits(w_time[i]) += fvec::One();
     z = zV[i] - z0;
     S = Sy[i];
 
@@ -596,7 +598,7 @@ void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec
       fvec dx = xV[i] - fParameters.GetTargetPositionX();
       fvec dy = yV[i] - fParameters.GetTargetPositionY();
       fvec dz = zV[i] - fParameters.GetTargetPositionZ();
-      time += w_time[i] * (timeV[i] - sqrt(dx * dx + dy * dy + dz * dz) / fvec(30.));
+      time(w_time[i]) += (timeV[i] - sqrt(dx * dx + dy * dy + dz * dz) / fvec(30.));
     }
   }
 

@@ -19,8 +19,10 @@ public:
 
   /// Combines the magnetic field with another field value object using weight
   /// \param B  other field value to combine with
-  /// \param w  weight from 0 to 1 // TODO: Do we need any checks here? (S.Zharko)
-  void Combine(L1FieldValue& B, fvec w);  // TODO: Shouldn't the B parameter be const? (S.Zharko)
+  /// \param w  weight from 0 to 1
+  void Combine(const L1FieldValue& B, const fvec& w);
+
+  void Combine(const L1FieldValue& B, const fmask& w);
 
   /// Consistency checker
   void CheckConsistency() const;
@@ -43,11 +45,18 @@ public:
   }
 } _fvecalignment;
 
-[[gnu::always_inline]] inline void L1FieldValue::Combine(L1FieldValue& B, fvec w)
+[[gnu::always_inline]] inline void L1FieldValue::Combine(const L1FieldValue& B, const fvec& w)
 {
   x += w * (B.x - x);
   y += w * (B.y - y);
   z += w * (B.z - z);
+}
+
+[[gnu::always_inline]] inline void L1FieldValue::Combine(const L1FieldValue& B, const fmask& w)
+{
+  x(w) = B.x;
+  y(w) = B.y;
+  z(w) = B.z;
 }
 
 /// Class represents a set of magnetic field approximation coefficients

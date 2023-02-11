@@ -213,7 +213,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
-
+  fit.SetMask(fmask::One());
   fit.SetQp0(fMaxInvMom);
 
   if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
@@ -295,11 +295,11 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
       fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fld0);
     }
 
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(istal, T.x, T.y), fvec::One());
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(istal, T.x, T.y));
 
     // extrapolate to the middle hit
 
-    fit.ExtrapolateLine(stam.fZ, fld1, fvec::One());
+    fit.ExtrapolateLine(stam.fZ, fld1);
 
     T_1[i1_V] = T;
   }  // i1_V
@@ -544,6 +544,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
   L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
+  fit.SetMask(fmask::One());
   fit.SetQp0(fvec(0.));
 
   n3          = 0;
@@ -612,21 +613,21 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // add the middle hit
 
-    fit.ExtrapolateLine(zPos_2, fvec::One());
+    fit.ExtrapolateLine(zPos_2);
 
-    fit.Filter(stam.frontInfo, u_front_2, du2_2, fvec::One());
-    fit.Filter(stam.backInfo, u_back_2, dv2_2, fvec::One());
-    fit.FilterTime(t_2, dt2_2, fvec::One(), stam.timeInfo);
+    fit.Filter(stam.frontInfo, u_front_2, du2_2);
+    fit.Filter(stam.backInfo, u_back_2, dv2_2);
+    fit.FilterTime(t_2, dt2_2, stam.timeInfo);
 
     fit.SetQp0(isMomentumFitted ? fit.Tr().qp : fMaxInvMom);
 
-    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fvec::One());
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y));
 
     fit.SetQp0(fit.Tr().qp);
 
     // extrapolate to the right hit station
 
-    fit.Extrapolate(star.fZ, f2, fvec::One());
+    fit.Extrapolate(star.fZ, f2);
 
     // assert(T2.IsConsistent(true, n2_4));
 
@@ -685,10 +686,11 @@ inline void L1Algo::findTripletsStep0(  // input
 
         L1Fit fit3;
         fit3.SetParticleMass(fDefaultMass);
+        fit3.SetMask(fmask::One());
         fit3.SetTrack(T2);
         L1TrackPar& T_cur = fit3.Tr();
 
-        fit3.ExtrapolateLine(zr, fvec::One());
+        fit3.ExtrapolateLine(zr);
 
         if ((star.timeInfo) && (stam.timeInfo))
           if (fabs(T_cur.t[i2_4] - hitr.T()) > sqrt(T_cur.C55[i2_4] + hitr.dT2()) * 5) continue;
@@ -729,7 +731,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
         L1Fit::FilterChi2(star.backInfo, x, y, C00, C10, C11, chi2, hitr.V(), hitr.dV2());
 
-        fit3.FilterTime(hitr.T(), hitr.dT2(), fvec::One(), star.timeInfo);
+        fit3.FilterTime(hitr.T(), hitr.dT2(), star.timeInfo);
 
         if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
           if (chi2[i2_4] > fTripletChi2Cut || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0) {
@@ -809,13 +811,13 @@ inline void L1Algo::findTripletsStep1(  // input
 {
   L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
-
+  fit.SetMask(fmask::One());
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
     fit.SetTrack(T_3[i3_V]);
-    fit.ExtrapolateLine(z_Pos[i3_V], fvec::One());
-    fit.Filter(star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
-    fit.Filter(star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
-    if (kMcbm != fTrackingMode) { fit.FilterTime(t_3[i3_V], dt2_3[i3_V], fvec::One(), star.timeInfo); }
+    fit.ExtrapolateLine(z_Pos[i3_V]);
+    fit.Filter(star.frontInfo, u_front_[i3_V], du2_3[i3_V]);
+    fit.Filter(star.backInfo, u_back_[i3_V], dv2_3[i3_V]);
+    if (kMcbm != fTrackingMode) { fit.FilterTime(t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
     T_3[i3_V] = fit.Tr();
   }
 }
@@ -833,6 +835,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
   ca::tools::Debugger::Instance().AddNtuple("triplets", "ev:mc:sta:p:vx:vy:vz:chi2:ndf");
 
   L1Fit fit;
+  fit.SetMask(fmask::One());
 
   if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
   else {
@@ -940,21 +943,21 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
         //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
 
-        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
-        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
-        fit.FilterTime(t[ih0], dt2[ih0], fvec::One(), sta[ih0].timeInfo);
+        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0]);
+        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0]);
+        fit.FilterTime(t[ih0], dt2[ih0], sta[ih0].timeInfo);
 
         //  add the target constraint
         fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fldTarget);
 
         for (int ih = 1; ih < NHits; ++ih) {
-          fit.Extrapolate(z[ih], fld, fvec::One());
+          fit.Extrapolate(z[ih], fld);
           auto radThick = fParameters.GetMaterialThickness(ista[ih], T.x, T.y);
-          fit.AddMsInMaterial(radThick, fvec::One());
-          fit.EnergyLossCorrection(radThick, fvec(-1.f), fvec::One());
-          fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
-          fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
-          fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
+          fit.AddMsInMaterial(radThick);
+          fit.EnergyLossCorrection(radThick, fvec(-1.f));
+          fit.Filter(sta[ih].frontInfo, u[ih], du2[ih]);
+          fit.Filter(sta[ih].backInfo, v[ih], dv2[ih]);
+          fit.FilterTime(t[ih], dt2[ih], sta[ih].timeInfo);
         }
       }
 
@@ -977,18 +980,18 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         T.C55   = dt2[ih0];
 
         //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
-        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
-        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
-        fit.FilterTime(t[ih0], dt2[ih0], fvec::One(), sta[ih0].timeInfo);
+        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0]);
+        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0]);
+        fit.FilterTime(t[ih0], dt2[ih0], sta[ih0].timeInfo);
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
-          fit.Extrapolate(z[ih], fld, fvec::One());
+          fit.Extrapolate(z[ih], fld);
           auto radThick = fParameters.GetMaterialThickness(ista[ih], T.x, T.y);
-          fit.AddMsInMaterial(radThick, fvec::One());
-          fit.EnergyLossCorrection(radThick, fvec(1.f), fvec::One());
-          fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
-          fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
-          fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
+          fit.AddMsInMaterial(radThick);
+          fit.EnergyLossCorrection(radThick, fvec(1.f));
+          fit.Filter(sta[ih].frontInfo, u[ih], du2[ih]);
+          fit.Filter(sta[ih].backInfo, v[ih], dv2[ih]);
+          fit.FilterTime(t[ih], dt2[ih], sta[ih].timeInfo);
         }
       }
     }  // for iiter
