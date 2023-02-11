@@ -377,7 +377,7 @@ void L1Fit::ExtrapolateStep  // extrapolates track parameters and returns jacobi
   fvec f2_ty[4], f3_ty[4], f4_ty[4];  // df* / dty
   fvec f2_qp[4], f3_qp[4], f4_qp[4];  // df* / dqp
 
-  fvec k[5][5] = {0., 0., 0., 0., 0.};
+  fvec k[5][5] {{0.}};
 
   //   Runge-Kutta steps for track parameters
   //

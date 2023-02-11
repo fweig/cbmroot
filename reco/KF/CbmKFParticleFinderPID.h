@@ -28,7 +28,7 @@ public:
     Double_t fTrackLengthMax {1.e10};
     Double_t fTrackTofTimeMin {0.};
     Double_t fTrackTofTimeMax {1.e10};
-    Double_t fSP[7][5] {0};  // ?
+    Double_t fSP[7][5] {{0}};  // ?
   };
 
   // Constructors/Destructors ---------

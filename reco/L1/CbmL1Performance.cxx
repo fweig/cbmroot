@@ -54,6 +54,9 @@
 #include <map>
 #include <vector>
 
+#include <cmath>
+#include <math.h>
+
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Def.h"
 #include "L1Algo/L1Fit.h"
@@ -1388,7 +1391,7 @@ void CbmL1::TrackFitPerformance()
     {  // vertex
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       fit.SetTrack(it->T, it->C);
-      L1TrackPar& tr = fit.Tr();
+      const L1TrackPar& tr = fit.Tr();
 
       //      if (mc.mother_ID != -1) {  // secondary
       if (!mc.IsPrimary()) {  // secondary
@@ -1430,7 +1433,7 @@ void CbmL1::TrackFitPerformance()
         h_fitSV[2]->Fill((tr.tx[0] - mc.px / mc.pz) * 1.e3);
         h_fitSV[3]->Fill((tr.ty[0] - mc.py / mc.pz) * 1.e3);
         h_fitSV[4]->Fill(100. * (fabs(1. / tr.qp[0]) / mc.p - 1.));
-        if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitSV[5]->Fill((tr.x[0] - mc.x) / sqrt(tr.C00[0]));
+        if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) { h_fitSV[5]->Fill((tr.x[0] - mc.x) / sqrt(tr.C00[0])); }
         if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitSV[6]->Fill((tr.y[0] - mc.y) / sqrt(tr.C11[0]));
         if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fitSV[7]->Fill((tr.tx[0] - mc.px / mc.pz) / sqrt(tr.C22[0]));
         if (std::isfinite(tr.C33[0]) && tr.C33[0] > 0) h_fitSV[8]->Fill((tr.ty[0] - mc.py / mc.pz) / sqrt(tr.C33[0]));
