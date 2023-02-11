@@ -42,7 +42,7 @@ void L1Algo::L1KFTrackFitter()
   int nTracks_SIMD    = fvec::size();
 
   L1Fit fit;  // fitting parametr coresponding to current track
-  L1TrackPar& tr = fit.fTr;
+  L1TrackPar& tr = fit.Tr();
 
   fit.SetParticleMass(GetDefaultParticleMass());
 
@@ -219,7 +219,7 @@ void L1Algo::L1KFTrackFitter()
 
     for (int iter = 0; iter < 2; iter++) {  // 1.5 iterations
 
-      fit.fQp0 = tr.qp;
+      fit.SetQp0(tr.qp);
 
       // fit backward
 
@@ -285,21 +285,21 @@ void L1Algo::L1KFTrackFitter()
 
         if (kGlobal == fTrackingMode) {
           for (int vtxIter = 0; vtxIter < 2; vtxIter++) {
-            fitpv.fQp0   = fitpv.fTr.qp;
-            fitpv.fTr    = fit.fTr;
-            fitpv.fTr.qp = fitpv.fQp0;
+            fitpv.SetQp0(fitpv.Tr().qp);
+            fitpv.Tr()    = fit.Tr();
+            fitpv.Tr().qp = fitpv.Qp0();
             fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld, fvec(1.));
             fitpv.Filter(vtxInfoX, fParameters.GetTargetPositionX(), fvec(1.e-8), fvec::One());
             fitpv.Filter(vtxInfoY, fParameters.GetTargetPositionY(), fvec(1.e-8), fvec::One());
           }
         }
         else {
-          fitpv.fQp0 = fitpv.fTr.qp;
+          fitpv.SetQp0(fitpv.Tr().qp);
           fitpv.Extrapolate(fParameters.GetTargetPositionZ(), fld, fvec(1.));
         }
       }
 
-      const L1TrackPar& Tf = fit.fTr;
+      const L1TrackPar& Tf = fit.Tr();
 
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
         t[iVec]->TFirst[0] = Tf.x[iVec];
@@ -307,7 +307,7 @@ void L1Algo::L1KFTrackFitter()
         t[iVec]->TFirst[2] = Tf.tx[iVec];
         t[iVec]->TFirst[3] = Tf.ty[iVec];
         t[iVec]->TFirst[4] = Tf.qp[iVec];
-        if (kGlobal == fTrackingMode) { t[iVec]->TFirst[4] = fitpv.fTr.qp[iVec]; }
+        if (kGlobal == fTrackingMode) { t[iVec]->TFirst[4] = fitpv.Tr().qp[iVec]; }
         t[iVec]->TFirst[5] = Tf.z[iVec];
         t[iVec]->TFirst[6] = Tf.t[iVec];
 
@@ -338,35 +338,35 @@ void L1Algo::L1KFTrackFitter()
       }
 
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->Tpv[0] = fitpv.fTr.x[iVec];
-        t[iVec]->Tpv[1] = fitpv.fTr.y[iVec];
-        t[iVec]->Tpv[2] = fitpv.fTr.tx[iVec];
-        t[iVec]->Tpv[3] = fitpv.fTr.ty[iVec];
-        t[iVec]->Tpv[4] = fitpv.fTr.qp[iVec];
-        t[iVec]->Tpv[5] = fitpv.fTr.z[iVec];
-        t[iVec]->Tpv[6] = fitpv.fTr.t[iVec];
+        t[iVec]->Tpv[0] = fitpv.Tr().x[iVec];
+        t[iVec]->Tpv[1] = fitpv.Tr().y[iVec];
+        t[iVec]->Tpv[2] = fitpv.Tr().tx[iVec];
+        t[iVec]->Tpv[3] = fitpv.Tr().ty[iVec];
+        t[iVec]->Tpv[4] = fitpv.Tr().qp[iVec];
+        t[iVec]->Tpv[5] = fitpv.Tr().z[iVec];
+        t[iVec]->Tpv[6] = fitpv.Tr().t[iVec];
 
-        t[iVec]->Cpv[0]  = fitpv.fTr.C00[iVec];
-        t[iVec]->Cpv[1]  = fitpv.fTr.C10[iVec];
-        t[iVec]->Cpv[2]  = fitpv.fTr.C11[iVec];
-        t[iVec]->Cpv[3]  = fitpv.fTr.C20[iVec];
-        t[iVec]->Cpv[4]  = fitpv.fTr.C21[iVec];
-        t[iVec]->Cpv[5]  = fitpv.fTr.C22[iVec];
-        t[iVec]->Cpv[6]  = fitpv.fTr.C30[iVec];
-        t[iVec]->Cpv[7]  = fitpv.fTr.C31[iVec];
-        t[iVec]->Cpv[8]  = fitpv.fTr.C32[iVec];
-        t[iVec]->Cpv[9]  = fitpv.fTr.C33[iVec];
-        t[iVec]->Cpv[10] = fitpv.fTr.C40[iVec];
-        t[iVec]->Cpv[11] = fitpv.fTr.C41[iVec];
-        t[iVec]->Cpv[12] = fitpv.fTr.C42[iVec];
-        t[iVec]->Cpv[13] = fitpv.fTr.C43[iVec];
-        t[iVec]->Cpv[14] = fitpv.fTr.C44[iVec];
-        t[iVec]->Cpv[15] = fitpv.fTr.C50[iVec];
-        t[iVec]->Cpv[16] = fitpv.fTr.C51[iVec];
-        t[iVec]->Cpv[17] = fitpv.fTr.C52[iVec];
-        t[iVec]->Cpv[18] = fitpv.fTr.C53[iVec];
-        t[iVec]->Cpv[19] = fitpv.fTr.C54[iVec];
-        t[iVec]->Cpv[20] = fitpv.fTr.C55[iVec];
+        t[iVec]->Cpv[0]  = fitpv.Tr().C00[iVec];
+        t[iVec]->Cpv[1]  = fitpv.Tr().C10[iVec];
+        t[iVec]->Cpv[2]  = fitpv.Tr().C11[iVec];
+        t[iVec]->Cpv[3]  = fitpv.Tr().C20[iVec];
+        t[iVec]->Cpv[4]  = fitpv.Tr().C21[iVec];
+        t[iVec]->Cpv[5]  = fitpv.Tr().C22[iVec];
+        t[iVec]->Cpv[6]  = fitpv.Tr().C30[iVec];
+        t[iVec]->Cpv[7]  = fitpv.Tr().C31[iVec];
+        t[iVec]->Cpv[8]  = fitpv.Tr().C32[iVec];
+        t[iVec]->Cpv[9]  = fitpv.Tr().C33[iVec];
+        t[iVec]->Cpv[10] = fitpv.Tr().C40[iVec];
+        t[iVec]->Cpv[11] = fitpv.Tr().C41[iVec];
+        t[iVec]->Cpv[12] = fitpv.Tr().C42[iVec];
+        t[iVec]->Cpv[13] = fitpv.Tr().C43[iVec];
+        t[iVec]->Cpv[14] = fitpv.Tr().C44[iVec];
+        t[iVec]->Cpv[15] = fitpv.Tr().C50[iVec];
+        t[iVec]->Cpv[16] = fitpv.Tr().C51[iVec];
+        t[iVec]->Cpv[17] = fitpv.Tr().C52[iVec];
+        t[iVec]->Cpv[18] = fitpv.Tr().C53[iVec];
+        t[iVec]->Cpv[19] = fitpv.Tr().C54[iVec];
+        t[iVec]->Cpv[20] = fitpv.Tr().C55[iVec];
       }
 
       if (iter == 1) continue;  // only 1.5 iterations
@@ -377,7 +377,7 @@ void L1Algo::L1KFTrackFitter()
 
       FilterFirst(fit, x_first, y_first, time_first, dt2_first, d_xx_fst, d_yy_fst, d_xy_fst);
 
-      fit.fQp0 = tr.qp;
+      fit.SetQp0(tr.qp);
 
       fldZ1 = z[ista];
       sta[ista].fieldSlice.GetFieldValue(tr.x, tr.y, fldB1);
@@ -420,7 +420,7 @@ void L1Algo::L1KFTrackFitter()
         t[iVec]->TLast[2] = tr.tx[iVec];
         t[iVec]->TLast[3] = tr.ty[iVec];
         t[iVec]->TLast[4] = tr.qp[iVec];
-        if (kGlobal == fTrackingMode) { t[iVec]->TLast[4] = fitpv.fTr.qp[iVec]; }
+        if (kGlobal == fTrackingMode) { t[iVec]->TLast[4] = fitpv.Tr().qp[iVec]; }
         t[iVec]->TLast[5] = tr.z[iVec];
         t[iVec]->TLast[6] = tr.t[iVec];
 
@@ -452,33 +452,36 @@ void L1Algo::L1KFTrackFitter()
     }  // iter
   }
 }
-void L1Algo::GuessVecNoField(L1Fit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
+void L1Algo::GuessVecNoField(L1Fit& track, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
                              fvec& z_2last, fvec& time_last, fvec* /*w_time*/, fvec& dt2_last)
 {
+  L1TrackPar& tr = track.Tr();
+
   fvec dzi = fvec(1.) / (z_end - z_2last);
 
-  t.fTr.x    = x_last;
-  t.fTr.y    = y_last;
-  t.fTr.tx   = (x_last - x_2last) * dzi;
-  t.fTr.ty   = (y_last - y_2last) * dzi;
-  t.fTr.t    = time_last;
-  t.fTr.z    = z_end;
-  t.fTr.chi2 = fvec(0.);
-  t.fTr.NDF  = fvec(2.);
+  tr.x    = x_last;
+  tr.y    = y_last;
+  tr.tx   = (x_last - x_2last) * dzi;
+  tr.ty   = (y_last - y_2last) * dzi;
+  tr.t    = time_last;
+  tr.z    = z_end;
+  tr.chi2 = fvec(0.);
+  tr.NDF  = fvec(2.);
 
-  t.fTr.C20 = t.fTr.C21 = fvec(0.);
-  t.fTr.C30 = t.fTr.C31 = t.fTr.C32 = fvec(0.);
-  t.fTr.C40 = t.fTr.C41 = t.fTr.C42 = t.fTr.C43 = fvec(0.);
-  t.fTr.C50 = t.fTr.C51 = t.fTr.C52 = t.fTr.C53 = t.fTr.C54 = fvec(0.);
-  t.fTr.C22 = t.fTr.C33 = vINF;
-  t.fTr.C44             = fvec(1.);
-  t.fTr.C55             = fvec(dt2_last);
+  tr.C20 = tr.C21 = fvec(0.);
+  tr.C30 = tr.C31 = tr.C32 = fvec(0.);
+  tr.C40 = tr.C41 = tr.C42 = tr.C43 = fvec(0.);
+  tr.C50 = tr.C51 = tr.C52 = tr.C53 = tr.C54 = fvec(0.);
+  tr.C22 = tr.C33 = vINF;
+  tr.C44          = fvec(1.);
+  tr.C55          = fvec(dt2_last);
 }
 
 
-void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur)
+void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur)
 // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
 {
+
   fvec A0, A1 = ZERO, A2 = ZERO, A3 = ZERO, A4 = ZERO, A5 = ZERO, a0, a1 = ZERO, a2 = ZERO, b0, b1 = ZERO, b2 = ZERO;
   fvec z0, x, y, z, S, w, wz, wS;
 
@@ -527,26 +530,28 @@ void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fve
   fvec Ai5 = (-A1 * A1 + A0 * A2);
 
   fvec L, L1;
-  t.x        = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
-  t.tx       = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
-  fvec txtx1 = fvec(1.) + t.tx * t.tx;
+  tr.x       = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
+  tr.tx      = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
+  fvec txtx1 = fvec(1.) + tr.tx * tr.tx;
   L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
-  L1         = L * t.tx;
+  L1         = L * tr.tx;
   A1         = A1 + A3 * L1;
   A2         = A2 + (A4 + A4 + A5 * L1) * L1;
   b1 += b2 * L1;
   det = fvec::One() / (-A1 * A1 + A0 * A2);
 
-  t.y  = (A2 * b0 - A1 * b1) * det;
-  t.ty = (-A1 * b0 + A0 * b1) * det;
-  t.qp = -L * c_light_i / sqrt(txtx1 + t.ty * t.ty);
-  t.z  = z0;
+  tr.y  = (A2 * b0 - A1 * b1) * det;
+  tr.ty = (-A1 * b0 + A0 * b1) * det;
+  tr.qp = -L * c_light_i / sqrt(txtx1 + tr.ty * tr.ty);
+  tr.z  = z0;
 }
 
-void L1Algo::GuessVec(L1Fit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur, fvec* timeV,
-                      fvec* w_time)
+void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur,
+                      fvec* timeV, fvec* w_time)
 // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
 {
+  L1TrackPar& tr = track.Tr();
+
   fvec A0, A1 = ZERO, A2 = ZERO, A3 = ZERO, A4 = ZERO, A5 = ZERO, a0, a1 = ZERO, a2 = ZERO, b0, b1 = ZERO, b2 = ZERO;
   fvec z0, x, y, z, S, w, wz, wS, time;
 
@@ -610,51 +615,53 @@ void L1Algo::GuessVec(L1Fit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV
   fvec Ai5 = (-A1 * A1 + A0 * A2);
 
   fvec L, L1;
-  t.fTr.x    = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
-  t.fTr.tx   = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
-  fvec txtx1 = fvec(1.) + t.fTr.tx * t.fTr.tx;
+  tr.x       = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
+  tr.tx      = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
+  fvec txtx1 = fvec(1.) + tr.tx * tr.tx;
   L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
-  L1         = L * t.fTr.tx;
+  L1         = L * tr.tx;
   A1         = A1 + A3 * L1;
   A2         = A2 + (A4 + A4 + A5 * L1) * L1;
   b1 += b2 * L1;
-  det      = fvec::One() / (-A1 * A1 + A0 * A2);
-  t.fTr.y  = (A2 * b0 - A1 * b1) * det;
-  t.fTr.ty = (-A1 * b0 + A0 * b1) * det;
-  t.fTr.qp = -L * c_light_i / sqrt(txtx1 + t.fTr.ty * t.fTr.ty);
-  if (timeV) { t.fTr.t = iif(nhits > fvec::Zero(), time / nhits, fvec::Zero()); }
+  det   = fvec::One() / (-A1 * A1 + A0 * A2);
+  tr.y  = (A2 * b0 - A1 * b1) * det;
+  tr.ty = (-A1 * b0 + A0 * b1) * det;
+  tr.qp = -L * c_light_i / sqrt(txtx1 + tr.ty * tr.ty);
+  if (timeV) { tr.t = iif(nhits > fvec::Zero(), time / nhits, fvec::Zero()); }
 
-  t.fTr.z = z0;
+  tr.z = z0;
 }
 
 
 void L1Algo::FilterFirst(L1Fit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& d_xx, fvec& d_yy, fvec& d_xy)
 {
-  track.fTr.C00 = d_xx;
-  track.fTr.C10 = d_xy;
-  track.fTr.C11 = d_yy;
-  track.fTr.C20 = ZERO;
-  track.fTr.C21 = ZERO;
-  track.fTr.C22 = vINF;
-  track.fTr.C30 = ZERO;
-  track.fTr.C31 = ZERO;
-  track.fTr.C32 = ZERO;
-  track.fTr.C33 = vINF;
-  track.fTr.C40 = ZERO;
-  track.fTr.C41 = ZERO;
-  track.fTr.C42 = ZERO;
-  track.fTr.C43 = ZERO;
-  track.fTr.C44 = ONE;
-  track.fTr.C50 = ZERO;
-  track.fTr.C51 = ZERO;
-  track.fTr.C52 = ZERO;
-  track.fTr.C53 = ZERO;
-  track.fTr.C54 = ZERO;
-  track.fTr.C55 = dt2;
+  L1TrackPar& tr = track.Tr();
 
-  track.fTr.x    = x;
-  track.fTr.y    = y;
-  track.fTr.t    = t;
-  track.fTr.NDF  = -3.0;
-  track.fTr.chi2 = ZERO;
+  tr.C00 = d_xx;
+  tr.C10 = d_xy;
+  tr.C11 = d_yy;
+  tr.C20 = ZERO;
+  tr.C21 = ZERO;
+  tr.C22 = vINF;
+  tr.C30 = ZERO;
+  tr.C31 = ZERO;
+  tr.C32 = ZERO;
+  tr.C33 = vINF;
+  tr.C40 = ZERO;
+  tr.C41 = ZERO;
+  tr.C42 = ZERO;
+  tr.C43 = ZERO;
+  tr.C44 = ONE;
+  tr.C50 = ZERO;
+  tr.C51 = ZERO;
+  tr.C52 = ZERO;
+  tr.C53 = ZERO;
+  tr.C54 = ZERO;
+  tr.C55 = dt2;
+
+  tr.x    = x;
+  tr.y    = y;
+  tr.t    = t;
+  tr.NDF  = -3.0;
+  tr.chi2 = ZERO;
 }

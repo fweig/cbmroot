@@ -29,8 +29,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
 
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
-  fit.fTr       = Tout;
-  L1TrackPar& T = fit.fTr;
+
+  fit.SetTrack(Tout);
+  L1TrackPar& T = fit.Tr();
 
   // get hits of current track
   const L1Vector<L1HitIndex_t>& hits = t.fHits;  // array of indeses of hits of current track
@@ -77,7 +78,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
     T.ty = (y1 - y0) * dzi;
     T.qp = qp0;
   }
-  fit.fQp0 = qp0;
+  fit.SetQp0(qp0);
 
   T.z = z0;
   T.t = hit0.t;
@@ -165,8 +166,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
 
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
-  fit.fQp0 = qp0;
-  fit.fTr  = Tout;
+  fit.SetTrack(Tout);
+  fit.SetQp0(qp0);
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
@@ -223,12 +224,14 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
     fscal r2_best = 1e8;  // best distance to hit
     int iHit_best = -1;   // index of the best hit
 
-    const fscal iz = 1.f / (fit.fTr.z[0] - fParameters.GetTargetPositionZ()[0]);
+    L1TrackPar& tr = fit.Tr();
 
-    L1HitAreaTime area(vGridTime[ista], fit.fTr.x[0] * iz, fit.fTr.y[0] * iz,
-                       (sqrt(fPickGather * fit.fTr.C00) + fMaxDx[ista] + fMaxDZ * abs(fit.fTr.tx))[0] * iz,
-                       (sqrt(fPickGather * fit.fTr.C11) + fMaxDy[ista] + fMaxDZ * abs(fit.fTr.ty))[0] * iz,
-                       fit.fTr.t[0], sqrt(fit.fTr.C55[0]));
+    const fscal iz = 1.f / (tr.z[0] - fParameters.GetTargetPositionZ()[0]);
+
+    L1HitAreaTime area(vGridTime[ista], tr.x[0] * iz, tr.y[0] * iz,
+                       (sqrt(fPickGather * tr.C00) + fMaxDx[ista] + fMaxDZ * abs(tr.tx))[0] * iz,
+                       (sqrt(fPickGather * tr.C11) + fMaxDy[ista] + fMaxDZ * abs(tr.ty))[0] * iz, tr.t[0],
+                       sqrt(tr.C55[0]));
 
     for (L1HitIndex_t ih = -1; true;) {  // loop over the hits in the area
 
@@ -248,8 +251,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
       const L1Hit& hit = (*vHitsUnused)[globalInd];
 
       if (sta.timeInfo) {
-        fscal dt = hit.t - fit.fTr.t[0];
-        if (dt * dt > (fit.fTr.C55[0] + hit.dt2) * 25) continue;
+        fscal dt = hit.t - tr.t[0];
+        if (dt * dt > (tr.C55[0] + hit.dt2) * 25) continue;
       }
 
       //if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
@@ -294,7 +297,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
     fit.Filter(sta.frontInfo, hit.u, hit.du2, fvec::One());
     fit.Filter(sta.backInfo, hit.v, hit.dv2, fvec::One());
     fit.FilterTime(hit.t, hit.dt2, fvec::One(), sta.timeInfo);
-    auto radThick = fParameters.GetMaterialThickness(ista, fit.fTr.x, fit.fTr.y);
+    auto radThick = fParameters.GetMaterialThickness(ista, tr.x, tr.y);
     fit.AddMsInMaterial(radThick, fvec::One());
     fit.EnergyLossCorrection(radThick, dir ? fvec(1.f) : fvec(-1.f), fvec::One());
 
@@ -327,7 +330,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
     }
   }
 
-  Tout = fit.fTr;
+  Tout = fit.Tr();
 
 }  // void L1Algo::FindMoreHits
 

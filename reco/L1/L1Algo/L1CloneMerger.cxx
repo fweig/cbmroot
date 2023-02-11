@@ -78,14 +78,14 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
   L1Fit fitB;
   fitB.SetParticleMass(frAlgo.GetDefaultParticleMass());
-  fitB.fQp0 = fvec(0.);
+  fitB.SetQp0(fvec(0.));
 
   L1Fit fitF;
   fitF.SetParticleMass(frAlgo.GetDefaultParticleMass());
-  fitF.fQp0 = fvec(0.);
+  fitF.SetQp0(fvec(0.));
 
-  L1TrackPar& Tb = fitB.fTr;
-  L1TrackPar& Tf = fitF.fTr;
+  L1TrackPar& Tb = fitB.Tr();
+  L1TrackPar& Tf = fitF.Tr();
   L1FieldValue fBm, fBb, fBf _fvecalignment;
   L1FieldRegion fld _fvecalignment;
 
@@ -133,7 +133,7 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       Tb.C54 = extTracks[iTr].CFirst[19];
       Tb.C55 = extTracks[iTr].CFirst[20];
 
-      fitB.fQp0 = fitB.fTr.qp;
+      fitB.SetQp0(fitB.Tr().qp);
 
       unsigned short staf = lastStation[jTr];
 
@@ -166,7 +166,7 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       Tf.C54 = extTracks[jTr].CLast[19];
       Tf.C55 = extTracks[jTr].CLast[20];
 
-      fitF.fQp0 = fitF.fTr.qp;
+      fitF.SetQp0(fitF.Tr().qp);
 
       if (fabs(Tf.t[0] - Tb.t[0]) > 3 * sqrt(Tf.C55[0] + Tb.C55[0])) continue;
       unsigned short stam;

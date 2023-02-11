@@ -1,6 +1,12 @@
 /* Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maksym Zyzak [committer], Sergey Gorbunov */
+   Authors: Sergey Gorbunov [committer], Maksym Zyzak */
+
+
+/// \file L1Fit.h
+/// \brief Kalman filter fitter for L1 tracking
+/// \since 10.02.2023
+/// \author S.Gorbunov
 
 #ifndef L1Fit_h
 #define L1Fit_h
@@ -11,6 +17,8 @@
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
 
+/// Kalman filter fitter for L1 tracking
+///
 class L1Fit {
 
 public:
@@ -36,6 +44,12 @@ public:
     fTr  = t;
     fQp0 = fTr.qp;
   }
+
+  void SetQp0(const fvec& qp0) { fQp0 = qp0; }
+
+  L1TrackPar& Tr() { return fTr; }
+
+  fvec& Qp0() { return fQp0; }
 
   void SetOneEntry(const int i0, const L1Fit& T1, const int i1);
 
@@ -107,12 +121,12 @@ public:
   static void FilterChi2(const L1UMeasurementInfo& info, const fvec& x, const fvec& y, const fvec& C00, const fvec& C10,
                          const fvec& C11, fvec& chi2, const fvec& u, const fvec& du2);
 
-public:
+private:
   L1TrackPar fTr {};
-  fvec fQp0;
+  fvec fQp0 {0.};
 
-  fvec fMass  = 0.10565800;     // muon mass
-  fvec fMass2 = fMass * fMass;  // mass squared
+  fvec fMass {0.10565800};      // muon mass
+  fvec fMass2 {fMass * fMass};  // mass squared
 
   fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
   fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:

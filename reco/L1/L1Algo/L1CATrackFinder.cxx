@@ -214,7 +214,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  fit.fQp0 = fMaxInvMom;
+  fit.SetQp0(fMaxInvMom);
 
   if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
   else {
@@ -222,7 +222,6 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   }
 
   for (int i1_V = 0; i1_V < n1_V; i1_V++) {
-    L1TrackPar& T = fit.fTr;
 
     // field made by  the left hit, the target and the station istac in-between.
     // is used for extrapolation to the target and to the middle hit
@@ -258,6 +257,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     fld0.Set(fTargB, fTargZ, b00, fld0Sta0.fZ, b01, fld0Sta1.fZ);
     fld1.Set(b10, fld1Sta0.fZ, b11, fld1Sta1.fZ, b12, fld1Sta2.fZ);
+
+    L1TrackPar& T = fit.Tr();
 
     T.chi2 = 0.;
     T.NDF  = (fpCurrentIteration->GetPrimaryFlag()) ? fvec(2.) : fvec(0.);
@@ -333,8 +334,9 @@ inline void L1Algo::findDoubletsStep0(
     unsigned int Ndoublets = 0;
     const Tindex i1_V      = i1 / fvec::size();
     const Tindex i1_4      = i1 % fvec::size();
-    fit.fTr                = T_1[i1_V];
-    L1TrackPar& T1         = fit.fTr;
+
+    fit.SetTrack(T_1[i1_V]);
+    L1TrackPar& T1 = fit.Tr();
 
     // assert(T1.IsEntryConsistent(true, i1_4));
     // if (!T1.IsEntryConsistent(false, i1_4)) continue;
@@ -503,7 +505,7 @@ inline void L1Algo::findDoubletsStep0(
       }
     }  // loop over the hits in the area
 
-    T_1[i1_V] = fit.fTr;
+    T_1[i1_V] = fit.Tr();
 
   }  // for i1
 }
@@ -542,7 +544,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
   L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
-  fit.fQp0 = fvec(0.);
+  fit.SetQp0(fvec(0.));
 
   n3          = 0;
   Tindex n3_V = 0, n3_4 = 0;
@@ -563,9 +565,9 @@ inline void L1Algo::findTripletsStep0(  // input
   // ---- Add the middle hits to parameters estimation. Propagate to right station. ----
 
   for (Tindex i2 = 0; i2 < n2;) {
-    L1TrackPar& T2 = fit.fTr;
-    T2             = L1TrackPar_0;
-    fit.fQp0       = fvec(0.);
+    fit.SetTrack(L1TrackPar_0);
+    fit.SetQp0(fvec(0.));
+    L1TrackPar& T2 = fit.Tr();
 
     L1FieldRegion f2;
     // pack the data
@@ -616,11 +618,11 @@ inline void L1Algo::findTripletsStep0(  // input
     fit.Filter(stam.backInfo, u_back_2, dv2_2, fvec::One());
     fit.FilterTime(t_2, dt2_2, fvec::One(), stam.timeInfo);
 
-    fit.fQp0 = isMomentumFitted ? fit.fTr.qp : fMaxInvMom;
+    fit.SetQp0(isMomentumFitted ? fit.Tr().qp : fMaxInvMom);
 
     fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fvec::One());
 
-    fit.fQp0 = fit.fTr.qp;
+    fit.SetQp0(fit.Tr().qp);
 
     // extrapolate to the right hit station
 
@@ -683,10 +685,8 @@ inline void L1Algo::findTripletsStep0(  // input
 
         L1Fit fit3;
         fit3.SetParticleMass(fDefaultMass);
-        fit3.fQp0 = T2.qp;
-
-        L1TrackPar& T_cur = fit3.fTr;
-        T_cur             = T2;
+        fit3.SetTrack(T2);
+        L1TrackPar& T_cur = fit3.Tr();
 
         fit3.ExtrapolateLine(zr, fvec::One());
 
@@ -811,18 +811,12 @@ inline void L1Algo::findTripletsStep1(  // input
   fit.SetParticleMass(fDefaultMass);
 
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
-
-    L1TrackPar& T3 = fit.fTr;
-    T3             = T_3[i3_V];
-    fit.fQp0       = fit.fTr.qp;
-
+    fit.SetTrack(T_3[i3_V]);
     fit.ExtrapolateLine(z_Pos[i3_V], fvec::One());
-
     fit.Filter(star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
     fit.Filter(star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
-
     if (kMcbm != fTrackingMode) { fit.FilterTime(t_3[i3_V], dt2_3[i3_V], fvec::One(), star.timeInfo); }
-    T_3[i3_V] = T3;
+    T_3[i3_V] = fit.Tr();
   }
 }
 
@@ -916,7 +910,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     fld.Set(B[0], sta[0].fZ, B[1], sta[1].fZ, B[2], sta[2].fZ);
     fldTarget.Set(fTargB, fTargZ, B[0], sta[0].fZ, B[1], sta[1].fZ);
 
-    L1TrackPar& T = fit.fTr;
+    L1TrackPar& T = fit.Tr();
 
     // initial parameters
     {
@@ -930,9 +924,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     for (int iiter = 0; iiter < nIterations; ++iiter) {
       // fit forward
       {
-        fit.fQp0 = T.qp;
-        if (fit.fQp0[0] > GetMaxInvMom()) { fit.fQp0 = GetMaxInvMom(); }
-        if (fit.fQp0[0] < -GetMaxInvMom()) { fit.fQp0 = -GetMaxInvMom(); }
+        fit.SetQp0(T.qp);
+        fit.Qp0()(fit.Qp0() > GetMaxInvMom())  = GetMaxInvMom();
+        fit.Qp0()(fit.Qp0() < -GetMaxInvMom()) = -GetMaxInvMom();
 
         T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
         //T.ResetErrors(200., 200., 10., 10., 100., 1.e4);
@@ -968,9 +962,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
       // fit backward
       {
-        fit.fQp0 = T.qp;
-        if (fit.fQp0[0] > GetMaxInvMom()) { fit.fQp0 = GetMaxInvMom(); }
-        if (fit.fQp0[0] < -GetMaxInvMom()) { fit.fQp0 = -GetMaxInvMom(); }
+        fit.SetQp0(T.qp);
+        fit.Qp0()(fit.Qp0() > GetMaxInvMom())  = GetMaxInvMom();
+        fit.Qp0()(fit.Qp0() < -GetMaxInvMom()) = -GetMaxInvMom();
 
         T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
         T.NDF   = ndf;

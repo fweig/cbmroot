@@ -99,22 +99,23 @@ inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int
 
 void FilterFirst(L1Fit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
 {
-  L1TrackPar& tr = fit.fTr;
-  tr.C00         = dxx;
-  tr.C10         = dxy;
-  tr.C11         = dyy;
-  tr.C20         = ZERO;
-  tr.C21         = ZERO;
-  tr.C22         = vINF;
-  tr.C30         = ZERO;
-  tr.C31         = ZERO;
-  tr.C32         = ZERO;
-  tr.C33         = vINF;
-  tr.C40         = ZERO;
-  tr.C41         = ZERO;
-  tr.C42         = ZERO;
-  tr.C43         = ZERO;
-  tr.C44         = ONE;
+  L1TrackPar& tr = fit.Tr();
+
+  tr.C00 = dxx;
+  tr.C10 = dxy;
+  tr.C11 = dyy;
+  tr.C20 = ZERO;
+  tr.C21 = ZERO;
+  tr.C22 = vINF;
+  tr.C30 = ZERO;
+  tr.C31 = ZERO;
+  tr.C32 = ZERO;
+  tr.C33 = vINF;
+  tr.C40 = ZERO;
+  tr.C41 = ZERO;
+  tr.C42 = ZERO;
+  tr.C43 = ZERO;
+  tr.C44 = ONE;
 
   tr.x    = x;
   tr.y    = y;
@@ -142,7 +143,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   L1Fit fit;
   fit.SetParticleMass(CbmL1::Instance()->fpAlgo->GetDefaultParticleMass());
 
-  L1TrackPar& T = fit.fTr;  // fitting parametr coresponding to current track
+  L1TrackPar& T = fit.Tr();  // fitting parametr coresponding to current track
 
   CbmStsTrack* tr[fvec::size()] {nullptr};
 
@@ -302,7 +303,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
     i = 0;
 
     FilterFirst(fit, x_first, y_first, fstC00, fstC10, fstC11);
-    fit.fQp0 = fit.fTr.qp;
+    fit.SetQp0(fit.Tr().qp);
 
     z1 = z[i];
     sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
@@ -324,7 +325,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
       fit.Extrapolate(z[i], fld, w1);
-      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.fTr.x, fit.fTr.y);
+      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.Tr().x, fit.Tr().y);
       fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
       fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
       fit.FilterTime(t[i], dt2[i], w1, sta[i].timeInfo);
@@ -366,7 +367,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
     }
 
     //fit backward
-    fit.fQp0 = T.qp;
+    fit.SetQp0(T.qp);
 
     i = nHits - 1;
 
@@ -393,7 +394,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
       fit.Extrapolate(z[i], fld, w1);
-      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.fTr.x, fit.fTr.y);
+      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, fit.Tr().x, fit.Tr().y);
       fit.Filter(sta[i].frontInfo, u[i], du2[i], w1);
       fit.Filter(sta[i].backInfo, v[i], dv2[i], w1);
       fit.FilterTime(t[i], dt2[i], w1, sta[i].timeInfo);
@@ -454,7 +455,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
   int nTracks_SIMD = fvec::size();
 
   L1Fit fit;
-  L1TrackPar& T = fit.fTr;  // fitting parametr coresponding to current track
+  L1TrackPar& T = fit.Tr();  // fitting parametr coresponding to current track
 
   CbmStsTrack* tr[fvec::size()] {nullptr};
 
@@ -550,14 +551,14 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
       field.emplace_back(fld, i);
     }
 
-    fit.fQp0 = fit.fTr.qp;
+    fit.SetQp0(fit.Tr().qp);
 
     for (int iSt = nStations - 4; iSt >= 0; iSt--) {
 
       fvec w = iif(T.z > (zSta[iSt] + fvec(2.5)), fvec::One(), fvec::Zero());
 
       fit.Extrapolate(zSta[iSt], fld, w);
-      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, fit.fTr.x, fit.fTr.y);
+      auto radThick = CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(iSt, fit.Tr().x, fit.Tr().y);
       fit.AddMsInMaterial(radThick, w);
       fit.EnergyLossCorrection(radThick, fvec::One(), w);
     }
