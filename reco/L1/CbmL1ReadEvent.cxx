@@ -1407,6 +1407,8 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   Int_t mcID    = -1;
   Double_t time = 0.f;
 
+  double eventTime = fpEventList->GetEventTime(event, file);
+
   if (MVD == 1) {
     CbmMvdPoint* pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(fpMvdPoints->Get(file, event, iPoint));  // file, event, object
     //CbmMvdPoint *pt = L1_DYNAMIC_CAST<CbmMvdPoint*> (Point);
@@ -1417,7 +1419,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     pt->PositionOut(xyzO);
     pt->MomentumOut(PO);
     mcID = pt->GetTrackID();
-    time = pt->GetTime();
+    time = eventTime + pt->GetTime();
   }
   if (MVD == 0) {
     CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fpStsPoints->Get(file, event, iPoint));  // file, event, object
@@ -1425,7 +1427,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     if (!fLegacyEventMode) {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
-      Double_t Time_MC_point = pt->GetTime() + fpEventList->GetEventTime(event, file);
+      Double_t Time_MC_point = eventTime + pt->GetTime();
 
       if (StartTime > 0)
         if (Time_MC_point < StartTime) return 1;
@@ -1439,7 +1441,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     pt->PositionOut(xyzO);
     pt->MomentumOut(PO);
     mcID = pt->GetTrackID();
-    time = pt->GetTime();
+    time = eventTime + pt->GetTime();
   }
 
 
@@ -1449,7 +1451,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     if (!fLegacyEventMode) {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
-      Double_t Time_MC_point = pt->GetTime() + fpEventList->GetEventTime(event, file);
+      Double_t Time_MC_point = eventTime + pt->GetTime();
 
       if (StartTime > 0)
         if (Time_MC_point < StartTime) return 1;
@@ -1463,7 +1465,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     pt->PositionOut(xyzO);
     pt->Momentum(PO);
     mcID = pt->GetTrackID();
-    time = pt->GetTime();
+    time = eventTime + pt->GetTime();
   }
 
 
@@ -1474,7 +1476,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     if (!fLegacyEventMode) {
       Double_t StartTime     = fTimeSlice->GetStartTime();                              // not used
       Double_t EndTime       = fTimeSlice->GetEndTime();                                // not used
-      Double_t Time_MC_point = pt->GetTime() + fpEventList->GetEventTime(event, file);  // not used
+      Double_t Time_MC_point = eventTime + pt->GetTime();                               // not used
 
       if (StartTime > 0)
         if (Time_MC_point < StartTime) return 1;
@@ -1489,7 +1491,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     pt->MomentumOut(PO);
     mcID = pt->GetTrackID();
 
-    time = pt->GetTime();
+    time = eventTime + pt->GetTime();
   }
 
   if (MVD == 4) {
@@ -1498,7 +1500,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     if (!fLegacyEventMode) {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
-      Double_t Time_MC_point = pt->GetTime() + fpEventList->GetEventTime(event, file);
+      Double_t Time_MC_point = eventTime + pt->GetTime();
 
       if (StartTime > 0)
         if (Time_MC_point < StartTime) return 1;
@@ -1512,7 +1514,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     pt->Position(xyzO);
     pt->Momentum(PO);
     mcID = pt->GetTrackID();
-    time = pt->GetTime();
+    time = eventTime + pt->GetTime();
   }
 
   TVector3 xyz = .5 * (xyzI + xyzO);
@@ -1558,11 +1560,8 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 
   return 0;
 }
-//
-//--------------------------------------------------------------------------------------------------
-//
-bool CbmL1::ReadMCPoint(CbmL1MCPoint* /*MC*/, int /*iPoint*/, int /*MVD*/) { return 0; }
-//
+
+
 //--------------------------------------------------------------------------------------------------
 
 // TODO: Duplicated code (from CbmL1::ReadEvent)

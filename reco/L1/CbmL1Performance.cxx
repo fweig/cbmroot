@@ -53,7 +53,6 @@
 #include <list>
 #include <map>
 #include <vector>
-#include <cmath>
 
 #include <cmath>
 #include <math.h>
@@ -1087,21 +1086,21 @@ void CbmL1::TrackFitPerformance()
 
   static TH2F *PRes2D, *PRes2DPrim, *PRes2DSec;
 
-  static TH2F* pion_res_pt_fstt;
-  static TH2F* kaon_res_pt_fstt;
-  static TH2F* pton_res_pt_fstt;
+  static TH2F* pion_res_pt_fstDca;
+  static TH2F* kaon_res_pt_fstDca;
+  static TH2F* pton_res_pt_fstDca;
 
-  static TH2F* pion_res_pt_vtxt;
-  static TH2F* kaon_res_pt_vtxt;
-  static TH2F* pton_res_pt_vtxt;
+  static TH2F* pion_res_pt_vtxDca;
+  static TH2F* kaon_res_pt_vtxDca;
+  static TH2F* pton_res_pt_vtxDca;
 
-  static TH2F* pion_res_p_fstt;
-  static TH2F* kaon_res_p_fstt;
-  static TH2F* pton_res_p_fstt;
+  static TH2F* pion_res_p_fstDca;
+  static TH2F* kaon_res_p_fstDca;
+  static TH2F* pton_res_p_fstDca;
 
-  static TH2F* pion_res_p_vtxt;
-  static TH2F* kaon_res_p_vtxt;
-  static TH2F* pton_res_p_vtxt;
+  static TH2F* pion_res_p_vtxDca;
+  static TH2F* kaon_res_p_vtxDca;
+  static TH2F* pton_res_p_vtxDca;
 
   static bool first_call = 1;
 
@@ -1120,21 +1119,21 @@ void CbmL1::TrackFitPerformance()
       PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P [%] vs P", 100, 0., 20., 100, -15., 15.);
       PRes2DSec  = new TH2F("PRes2DSec", "Resolution P [%] vs P", 100, 0., 20., 100, -15., 15.);
 
-      pion_res_pt_fstt = new TH2F("pion_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
-      kaon_res_pt_fstt = new TH2F("kaon_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
-      pton_res_pt_fstt = new TH2F("pton_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
+      pion_res_pt_fstDca = new TH2F("pion_res_pt_fstDca", "", 100, 0, 10, 1000, -500, 500);
+      kaon_res_pt_fstDca = new TH2F("kaon_res_pt_fstDca", "", 100, 0, 10, 1000, -500, 500);
+      pton_res_pt_fstDca = new TH2F("pton_res_pt_fstDca", "", 100, 0, 10, 1000, -500, 500);
 
-      pion_res_pt_vtxt = new TH2F("pion_res_pt_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
-      kaon_res_pt_vtxt = new TH2F("kaon_res_pt_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
-      pton_res_pt_vtxt = new TH2F("pton_res_pt_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
+      pion_res_pt_vtxDca = new TH2F("pion_res_pt_vtxDca", "", 100, 0, 10, 1000, -5000, 5000);
+      kaon_res_pt_vtxDca = new TH2F("kaon_res_pt_vtxDca", "", 100, 0, 10, 1000, -5000, 5000);
+      pton_res_pt_vtxDca = new TH2F("pton_res_pt_vtxDca", "", 100, 0, 10, 1000, -5000, 5000);
 
-      pion_res_p_fstt = new TH2F("pion_res_p_fstt", "", 100, 0, 10, 1000, -500, 500);
-      kaon_res_p_fstt = new TH2F("kaon_res_p_fstt", "", 100, 0, 10, 1000, -500, 500);
-      pton_res_p_fstt = new TH2F("pton_res_p_fstt", "", 100, 0, 10, 1000, -500, 500);
+      pion_res_p_fstDca = new TH2F("pion_res_p_fstDca", "", 100, 0, 10, 1000, -500, 500);
+      kaon_res_p_fstDca = new TH2F("kaon_res_p_fstDca", "", 100, 0, 10, 1000, -500, 500);
+      pton_res_p_fstDca = new TH2F("pton_res_p_fstDca", "", 100, 0, 10, 1000, -500, 500);
 
-      pion_res_p_vtxt = new TH2F("pion_res_p_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
-      kaon_res_p_vtxt = new TH2F("kaon_res_p_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
-      pton_res_p_vtxt = new TH2F("pton_res_p_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
+      pion_res_p_vtxDca = new TH2F("pion_res_p_vtxDca", "", 100, 0, 10, 1000, -5000, 5000);
+      kaon_res_p_vtxDca = new TH2F("kaon_res_p_vtxDca", "", 100, 0, 10, 1000, -5000, 5000);
+      pton_res_p_vtxDca = new TH2F("pton_res_p_vtxDca", "", 100, 0, 10, 1000, -5000, 5000);
 
       struct {
         const char* name;
@@ -1157,8 +1156,8 @@ void CbmL1::TrackFitPerformance()
                          {"pQP", "Pull Q/P [residual/estimated_error]", 100, -6., 6.},
                          {"QPreco", "Reco Q/P ", 100, -10., 10.},
                          {"QPmc", "MC Q/P ", 100, -10., 10.},
-                         {"t", "Residual T [ns]", 100, -6., 6.},
-                         {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
+                         {"time", "Residual Time [ns]", 100, -10., 10.},
+                         {"ptime", "Pull Time [residual/estimated_error]", 100, -10., 10.}};
 
       if (L1Algo::kGlobal == fpAlgo->fTrackingMode) {
         Table[4].l = -1.;
@@ -1225,61 +1224,67 @@ void CbmL1::TrackFitPerformance()
 
     if (it->IsGhost()) continue;
 
-    {  // first hit
-#define L1FSTPARAMEXTRAPOLATE
-#ifdef L1FSTPARAMEXTRAPOLATE
+    const int isTimeFitted = (fvHitStore[it->Hits.back()].iStation > fNMvdStations);
 
-      const int last_station = fvHitStore[it->Hits.back()].iStation;
+    do {  // first hit
 
-      CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
+      if (it->GetNMCTracks() < 1) { break; }
+
+      const CbmL1MCTrack& mcTrack = *(it->GetMCTracks()[0]);
+
+      int imcPoint = fvHitPointIndexes[it->Hits.front()];
+
+      // extrapolate to the first mc point of the mc track !
+
+      imcPoint = mcTrack.Points[0];
+
+      if (imcPoint < 0) break;
+
+      const CbmL1MCPoint& mcP = fvMCPoints[imcPoint];
 
       fit.SetTrack(it->T, it->C);
       const L1TrackPar& tr = fit.Tr();
 
       L1FieldRegion fld _fvecalignment;
       fld.SetUseOriginalField();
-
-      CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
-
       fit.Extrapolate(mcP.zIn, fld);
 
-      double dx = tr.x[0] - mcP.xIn;
-      double dy = tr.y[0] - mcP.yIn;
-      double dt = sqrt(dx * dx + dy * dy);
-      // make dt distance negative for the half of the tracks to ease the gaussian fit and the rms calculation
-      if (mc.ID % 2) dt = -dt;
+      double dx  = tr.x[0] - mcP.xIn;
+      double dy  = tr.y[0] - mcP.yIn;
+      double dca = sqrt(dx * dx + dy * dy);
+      // make dca distance negative for the half of the tracks to ease the gaussian fit and the rms calculation
+      if (mcTrack.ID % 2) dca = -dca;
       double pt = sqrt(mcP.px * mcP.px + mcP.py * mcP.py);
       h_fit[0]->Fill(dx * 1.e4);
       h_fit[1]->Fill(dy * 1.e4);
       h_fit[2]->Fill((tr.tx[0] - mcP.pxIn / mcP.pzIn) * 1.e3);
       h_fit[3]->Fill((tr.ty[0] - mcP.pyIn / mcP.pzIn) * 1.e3);
 
-      CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
+      double dP = (fabs(1. / tr.qp[0]) - mcP.p) / mcP.p;
 
-      if (L1Algo::kGlobal != fpAlgo->fTrackingMode || mcTrack.IsPrimary()) {
-        h_fit[4]->Fill(100. * (fabs(1. / tr.qp[0]) / mcP.p - 1.));
-      }
-      PRes2D->Fill(mcP.p, 100. * (fabs(1. / tr.qp[0]) - mcP.p) / mcP.p);
-
+      PRes2D->Fill(mcP.p, 100. * dP);
 
       if (mcTrack.IsPrimary()) {
-        PRes2DPrim->Fill(mcP.p, 100. * (fabs(1. / tr.qp[0]) - mcP.p) / mcP.p);
+
+        h_fit[4]->Fill(100. * dP);
+
+        PRes2DPrim->Fill(mcP.p, 100. * dP);
 
         if (abs(mcTrack.pdg) == 211) {
-          pion_res_p_fstt->Fill(mcP.p, dt * 1.e4);
-          pion_res_pt_fstt->Fill(pt, dt * 1.e4);
+          pion_res_p_fstDca->Fill(mcP.p, dca * 1.e4);
+          pion_res_pt_fstDca->Fill(pt, dca * 1.e4);
         }
         if (abs(mcTrack.pdg) == 321) {
-          kaon_res_p_fstt->Fill(mcP.p, dt * 1.e4);
-          kaon_res_pt_fstt->Fill(pt, dt * 1.e4);
+          kaon_res_p_fstDca->Fill(mcP.p, dca * 1.e4);
+          kaon_res_pt_fstDca->Fill(pt, dca * 1.e4);
         }
         if (abs(mcTrack.pdg) == 2212) {
-          pton_res_p_fstt->Fill(mcP.p, dt * 1.e4);
-          pton_res_pt_fstt->Fill(pt, dt * 1.e4);
+          pton_res_p_fstDca->Fill(mcP.p, dca * 1.e4);
+          pton_res_pt_fstDca->Fill(pt, dca * 1.e4);
         }
       }
       else {
-        PRes2DSec->Fill(mcP.p, 100. * (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
+        PRes2DSec->Fill(mcP.p, 100. * dP);
       }
 
       if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fit[5]->Fill((tr.x[0] - mcP.xIn) / sqrt(tr.C00[0]));
@@ -1289,40 +1294,11 @@ void CbmL1::TrackFitPerformance()
       if (std::isfinite(tr.C44[0]) && tr.C44[0] > 0) h_fit[9]->Fill((tr.qp[0] - mcP.q / mcP.p) / sqrt(tr.C44[0]));
       h_fit[10]->Fill(tr.qp[0]);
       h_fit[11]->Fill(mcP.q / mcP.p);
-      if (last_station > fNMvdStations) h_fit[12]->Fill(tr.t[0] - mcP.time);
-      if (last_station > fNMvdStations)
-        if (std::isfinite(tr.C55[0]) && tr.C55[0] > 0) h_fit[13]->Fill((tr.t[0] - mcP.time) / sqrt(tr.C55[0]));
-
-#else
-      int iMC = fvHitPointIndexes[it->Hits.front()];  // TODO2: adapt to linking
-      if (iMC < 0) continue;
-      CbmL1MCPoint& mc = fvMCPoints[iMC];
-      //      if( !( mc.pdg == -11 && mc.mother_ID == -1 ) ) continue; // electrons only
-      h_fit[0]->Fill((mc.x - it->T[0]) * 1.e4);
-      h_fit[1]->Fill((mc.y - it->T[1]) * 1.e4);
-      h_fit[2]->Fill((mc.px / mc.pz - it->T[2]) * 1.e3);
-      h_fit[3]->Fill((mc.py / mc.pz - it->T[3]) * 1.e3);
-      h_fit[4]->Fill(100. * (it->T[4] / mc.q * mc.p - 1.));
-
-      PRes2D->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
-
-      CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
-      if (mcTrack.IsPrimary()) { PRes2DPrim->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.); }
-      else {
-        PRes2DSec->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
+      if (isTimeFitted) {
+        h_fit[12]->Fill(tr.t[0] - mcP.time);
+        if (std::isfinite(tr.C55[0]) && tr.C55[0] > 0.) { h_fit[13]->Fill((tr.t[0] - mcP.time) / sqrt(tr.C55[0])); }
       }
-
-      if (std::isfinite(it->C[0]) && it->C[0] > 0) h_fit[5]->Fill((mc.x - it->T[0]) / sqrt(it->C[0]));
-      if (std::isfinite(it->C[2]) && it->C[2] > 0) h_fit[6]->Fill((mc.y - it->T[1]) / sqrt(it->C[2]));
-      if (std::isfinite(it->C[5]) && it->C[5] > 0) h_fit[7]->Fill((mc.px / mc.pz - it->T[2]) / sqrt(it->C[5]));
-      if (std::isfinite(it->C[9]) && it->C[9] > 0) h_fit[8]->Fill((mc.py / mc.pz - it->T[3]) / sqrt(it->C[9]));
-      if (std::isfinite(it->C[14]) && it->C[14] > 0) h_fit[9]->Fill((mc.q / mc.p - it->T[4]) / sqrt(it->C[14]));
-      h_fit[10]->Fill(it->T[4]);
-      h_fit[11]->Fill(mc.q / mc.p);
-      h_fit[12]->Fill(mc.time - it->T[6]);
-      if (std::isfinite(it->C[20]) && it->C[20] > 0) h_fit[13]->Fill((mc.time - it->T[6]) / sqrt(it->C[20]));
-#endif
-    }
+    } while (0);
 
 
     {                                                // last hit
@@ -1481,16 +1457,16 @@ void CbmL1::TrackFitPerformance()
         double pt = sqrt(mc.px * mc.px + mc.py * mc.py);
 
         if (abs(mc.pdg) == 211) {
-          pion_res_p_vtxt->Fill(mc.p, dt * 1.e4);
-          pion_res_pt_vtxt->Fill(pt, dt * 1.e4);
+          pion_res_p_vtxDca->Fill(mc.p, dt * 1.e4);
+          pion_res_pt_vtxDca->Fill(pt, dt * 1.e4);
         }
         if (abs(mc.pdg) == 321) {
-          kaon_res_p_vtxt->Fill(mc.p, dt * 1.e4);
-          kaon_res_pt_vtxt->Fill(pt, dt * 1.e4);
+          kaon_res_p_vtxDca->Fill(mc.p, dt * 1.e4);
+          kaon_res_pt_vtxDca->Fill(pt, dt * 1.e4);
         }
         if (abs(mc.pdg) == 2212) {
-          pton_res_p_vtxt->Fill(mc.p, dt * 1.e4);
-          pton_res_pt_vtxt->Fill(pt, dt * 1.e4);
+          pton_res_p_vtxDca->Fill(mc.p, dt * 1.e4);
+          pton_res_pt_vtxDca->Fill(pt, dt * 1.e4);
         }
 
         // calculate pulls

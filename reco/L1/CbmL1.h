@@ -367,13 +367,6 @@ private:
   void ReadEvent(float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs, bool& areDataLeft,
                  CbmEvent* event = NULL);
 
-  /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint (dummy method)
-  /// \param   MC       Pointer to a target CbmL1MCPoint object
-  /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
-  /// \param   MVD      Index of the detector subsystem
-  /// \return  flag: false - success, true - some errors occurred
-  bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int MVD);  // help procedure
-
   /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint
   /// \param   MC       Pointer to a target CbmL1MCPoint object
   /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
