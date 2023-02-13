@@ -100,27 +100,13 @@ inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int
 void FilterFirst(L1Fit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
 {
   L1TrackPar& tr = fit.Tr();
-
-  tr.C00 = dxx;
+  tr.ResetErrors(dxx, dyy, vINF, vINF, 1., 1.e6, 1.e2);
   tr.C10 = dxy;
-  tr.C11 = dyy;
-  tr.C20 = ZERO;
-  tr.C21 = ZERO;
-  tr.C22 = vINF;
-  tr.C30 = ZERO;
-  tr.C31 = ZERO;
-  tr.C32 = ZERO;
-  tr.C33 = vINF;
-  tr.C40 = ZERO;
-  tr.C41 = ZERO;
-  tr.C42 = ZERO;
-  tr.C43 = ZERO;
-  tr.C44 = ONE;
-
-  tr.x    = x;
-  tr.y    = y;
-  tr.NDF  = -3.0;
-  tr.chi2 = ZERO;
+  tr.x   = x;
+  tr.y   = y;
+  tr.t   = 0.;
+  tr.vi  = 0.;
+  tr.NDF = -3.0;
 }
 
 void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
@@ -181,6 +167,10 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
 
+    T.t  = 0.;
+    T.vi = 0.;
+    T.ResetErrors(1.e2, 1.e2, 1.e4, 1.e4, 1.e4, 1.e6, 1.e2);
+
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
     for (i = 0; i < nTracks_SIMD; i++) {
       tr[i]    = &Tracks[itrack + i];  // current track
@@ -211,6 +201,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       //       mass[i] = TDatabasePDG::Instance()->GetParticle(pid)->Mass();
       mass[i] = KFParticleDatabase::Instance()->GetMass(pid);
     }
+
     fit.SetParticleMass(mass);
 
     // get hits of current track

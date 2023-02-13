@@ -260,12 +260,6 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     L1TrackPar& T = fit.Tr();
 
-    T.chi2 = 0.;
-    T.NDF  = (fpCurrentIteration->GetPrimaryFlag()) ? fvec(2.) : fvec(0.);
-
-    // TODO: iteration parameter: "Starting NDF of track parameters"
-    // NDF = number of track parameters (6: x, y, tx, ty, qp, time) - number of measured parameters (3: x, y, time) on station or (2: x, y) on target
-
     T.x  = xl;
     T.y  = yl;
     T.z  = zl;
@@ -273,16 +267,18 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.ty = ty;
     T.qp = fvec(0.);
     T.t  = time;
+    T.vi = fvec(0.);
 
-    T.C20 = T.C21 = fvec(0.);
-    T.C30 = T.C31 = T.C32 = fvec(0.);
-    T.C40 = T.C41 = T.C42 = T.C43 = fvec(0.);
-    T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = fvec(0.);
+    fvec txErr2 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
+    fvec qpErr2 = fMaxInvMom * fMaxInvMom / fvec(9.);
 
-    T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
+    T.ResetErrors(1., 1., txErr2, txErr2, qpErr2, timeEr2, 1.e2);
 
-    T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
-    T.C55 = timeEr2;
+    T.chi2 = 0.;
+    T.NDF  = (fpCurrentIteration->GetPrimaryFlag()) ? fvec(2.) : fvec(0.);
+
+    // TODO: iteration parameter: "Starting NDF of track parameters"
+    // NDF = number of track parameters (6: x, y, tx, ty, qp, time) - number of measured parameters (3: x, y, time) on station or (2: x, y) on target
 
     {  // add the target constraint
 
@@ -609,7 +605,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // add the middle hit
 
-    fit.ExtrapolateLine(zPos_2);
+    fit.ExtrapolateLineNoField(zPos_2);
 
     fit.Filter(stam.frontInfo, u_front_2, du2_2);
     fit.Filter(stam.backInfo, u_back_2, dv2_2);
@@ -686,14 +682,17 @@ inline void L1Algo::findTripletsStep0(  // input
         fit3.SetTrack(T2);
         L1TrackPar& T_cur = fit3.Tr();
 
-        fit3.ExtrapolateLine(zr);
+        fit3.ExtrapolateLineNoField(zr);
 
-        if ((star.timeInfo) && (stam.timeInfo))
-          if (fabs(T_cur.t[i2_4] - hitr.T()) > sqrt(T_cur.C55[i2_4] + hitr.dT2()) * 5) continue;
+        if ((star.timeInfo) && (stam.timeInfo)) {
+          auto dt = T_cur.t[i2_4] - hitr.T();
+          if (dt > (T_cur.C55[i2_4] + hitr.dT2()) * 5) continue;
+        }
 
         // TODO: SG: hardcoded cut of 30 ns
-        if ((star.timeInfo) && (stam.timeInfo))
+        if ((star.timeInfo) && (stam.timeInfo)) {
           if (fabs(T_cur.t[i2_4] - hitr.T()) > 30) continue;
+        }
 
         // - check whether hit belong to the window ( track position +\- errors ) -
         // check lower boundary
@@ -709,6 +708,7 @@ inline void L1Algo::findTripletsStep0(  // input
         const fscal dY2 = dY * dY;
 
         if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
+
         // check x-boundaries
         fvec x, C00;
         fit3.ExtrapolateXC00Line(zr, x, C00);
@@ -810,7 +810,7 @@ inline void L1Algo::findTripletsStep1(  // input
   fit.SetMask(fmask::One());
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
     fit.SetTrack(T_3[i3_V]);
-    fit.ExtrapolateLine(z_Pos[i3_V]);
+    fit.ExtrapolateLineNoField(z_Pos[i3_V]);
     fit.Filter(star.frontInfo, u_front_[i3_V], du2_3[i3_V]);
     fit.Filter(star.backInfo, u_back_[i3_V], dv2_3[i3_V]);
     if (kMcbm != fTrackingMode) { fit.FilterTime(t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
@@ -917,6 +917,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
       T.tx      = (x[1] - x[0]) * dz01;
       T.ty      = (y[1] - y[0]) * dz01;
       T.qp      = 0.;  //(fscal) T3.qp[i3_4];
+      T.vi      = 0.;
     }
 
     // repeat several times in order to improve the precision
@@ -927,21 +928,18 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         fit.Qp0()(fit.Qp0() > GetMaxInvMom())  = GetMaxInvMom();
         fit.Qp0()(fit.Qp0() < -GetMaxInvMom()) = -GetMaxInvMom();
 
-        T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
-        //T.ResetErrors(200., 200., 10., 10., 100., 1.e4);
-        T.NDF   = ndf;
         T.qp    = 0.;
+        T.vi    = 0.;
         int ih0 = 0;
         T.x     = x[ih0];
         T.y     = y[ih0];
         T.z     = z[ih0];
         T.t     = t[ih0];
 
-        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
+        T.ResetErrors(1., 1., 1., 1., 100., (sta[ih0].timeInfo ? dt2[ih0] : 1.e6), 1.e2);
+        std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
 
-        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0]);
-        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0]);
-        fit.FilterTime(t[ih0], dt2[ih0], sta[ih0].timeInfo);
+        T.NDF = ndf;
 
         //  add the target constraint
         fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fldTarget);
@@ -965,20 +963,19 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         fit.Qp0()(fit.Qp0() > GetMaxInvMom())  = GetMaxInvMom();
         fit.Qp0()(fit.Qp0() < -GetMaxInvMom()) = -GetMaxInvMom();
 
-        T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
         T.NDF   = ndf;
         T.qp    = 0.;
+        T.vi    = 0.;
         int ih0 = NHits - 1;
         T.x     = x[ih0];
         T.y     = y[ih0];
         T.z     = z[ih0];
         T.t     = t[ih0];
-        T.C55   = dt2[ih0];
 
-        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
-        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0]);
-        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0]);
-        fit.FilterTime(t[ih0], dt2[ih0], sta[ih0].timeInfo);
+        T.ResetErrors(1., 1., 1., 1., 100., (sta[ih0].timeInfo ? dt2[ih0] : 1.e6), 1.e2);
+        std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
+
+        T.NDF = ndf;
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
           fit.Extrapolate(z[ih], fld);

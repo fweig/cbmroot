@@ -9,8 +9,8 @@
 void L1Fit::Filter(const L1UMeasurementInfo& info, cnst& u, cnst& sigma2)
 {
   fvec zeta, HCH;
-  fvec F0, F1, F2, F3, F4, F5;
-  fvec K1, K2, K3, K4, K5;
+  fvec F0, F1, F2, F3, F4, F5, F6;
+  fvec K1, K2, K3, K4, K5, K6;
 
   zeta = info.cos_phi * fTr.x + info.sin_phi * fTr.y - u;
 
@@ -24,6 +24,7 @@ void L1Fit::Filter(const L1UMeasurementInfo& info, cnst& u, cnst& sigma2)
   F3 = info.cos_phi * fTr.C30 + info.sin_phi * fTr.C31;
   F4 = info.cos_phi * fTr.C40 + info.sin_phi * fTr.C41;
   F5 = info.cos_phi * fTr.C50 + info.sin_phi * fTr.C51;
+  F6 = info.cos_phi * fTr.C60 + info.sin_phi * fTr.C61;
 
   const fmask maskDoFilter = (HCH < sigma2 * 16.f);
   //cnst maskDoFilter = _f32vec4_true;
@@ -43,6 +44,7 @@ void L1Fit::Filter(const L1UMeasurementInfo& info, cnst& u, cnst& sigma2)
   K3 = F3 * wi;
   K4 = F4 * wi;
   K5 = F5 * wi;
+  K6 = F6 * wi;
 
   fTr.x -= F0 * zetawi;
   fTr.y -= F1 * zetawi;
@@ -50,6 +52,7 @@ void L1Fit::Filter(const L1UMeasurementInfo& info, cnst& u, cnst& sigma2)
   fTr.ty -= F3 * zetawi;
   fTr.qp -= F4 * zetawi;
   fTr.t -= F5 * zetawi;
+  fTr.vi -= F6 * zetawi;
 
   fTr.C00 -= F0 * F0 * wi;
   fTr.C10 -= K1 * F0;
@@ -72,6 +75,13 @@ void L1Fit::Filter(const L1UMeasurementInfo& info, cnst& u, cnst& sigma2)
   fTr.C53 -= K5 * F3;
   fTr.C54 -= K5 * F4;
   fTr.C55 -= K5 * F5;
+  fTr.C60 -= K6 * F0;
+  fTr.C61 -= K6 * F1;
+  fTr.C62 -= K6 * F2;
+  fTr.C63 -= K6 * F3;
+  fTr.C64 -= K6 * F4;
+  fTr.C65 -= K6 * F5;
+  fTr.C66 -= K6 * F6;
 }
 
 
@@ -86,6 +96,7 @@ void L1Fit::FilterTime(cnst& t, cnst& dt2, cnst& timeInfo)
   fvec F3 = fTr.C53;
   fvec F4 = fTr.C54;
   fvec F5 = fTr.C55;
+  fvec F6 = fTr.C65;
 
   fvec HCH = fTr.C55;
 
@@ -112,6 +123,7 @@ void L1Fit::FilterTime(cnst& t, cnst& dt2, cnst& timeInfo)
   fvec K3 = F3 * wi;
   fvec K4 = F4 * wi;
   fvec K5 = F5 * wi;
+  fvec K6 = F6 * wi;
 
   fTr.x -= F0 * zetawi;
   fTr.y -= F1 * zetawi;
@@ -119,6 +131,7 @@ void L1Fit::FilterTime(cnst& t, cnst& dt2, cnst& timeInfo)
   fTr.ty -= F3 * zetawi;
   fTr.qp -= F4 * zetawi;
   fTr.t -= F5 * zetawi;
+  fTr.vi -= F6 * zetawi;
 
   fTr.C00 -= F0 * F0 * wi;
   fTr.C10 -= K1 * F0;
@@ -141,6 +154,13 @@ void L1Fit::FilterTime(cnst& t, cnst& dt2, cnst& timeInfo)
   fTr.C53 -= K5 * F3;
   fTr.C54 -= K5 * F4;
   fTr.C55 -= K5 * F5;
+  fTr.C60 -= K6 * F0;
+  fTr.C61 -= K6 * F1;
+  fTr.C62 -= K6 * F2;
+  fTr.C63 -= K6 * F3;
+  fTr.C64 -= K6 * F4;
+  fTr.C65 -= K6 * F5;
+  fTr.C66 -= K6 * F6;
 }
 
 
@@ -149,8 +169,10 @@ void L1Fit::FilterXY(const L1XYMeasurementInfo& info, cnst& x, cnst& y)
   cnst TWO(2.);
 
   fvec zeta0, zeta1, S00, S10, S11, si;
-  fvec F00, F10, F20, F30, F40, F50, F01, F11, F21, F31, F41, F51;
-  fvec K00, K10, K20, K30, K40, K50, K01, K11, K21, K31, K41, K51;
+  fvec F00, F10, F20, F30, F40, F50, F60;
+  fvec F01, F11, F21, F31, F41, F51, F61;
+  fvec K00, K10, K20, K30, K40, K50, K60;
+  fvec K01, K11, K21, K31, K41, K51, K61;
 
   zeta0 = fTr.x - x;
   zeta1 = fTr.y - y;
@@ -162,12 +184,15 @@ void L1Fit::FilterXY(const L1XYMeasurementInfo& info, cnst& x, cnst& y)
   F30 = fTr.C30;
   F40 = fTr.C40;
   F50 = fTr.C50;
+  F60 = fTr.C60;
+
   F01 = fTr.C10;
   F11 = fTr.C11;
   F21 = fTr.C21;
   F31 = fTr.C31;
   F41 = fTr.C41;
   F51 = fTr.C51;
+  F61 = fTr.C61;
 
   S00 = F00 + info.C00;
   S10 = F10 + info.C10;
@@ -194,34 +219,51 @@ void L1Fit::FilterXY(const L1XYMeasurementInfo& info, cnst& x, cnst& y)
   K41 = F40 * S10 + F41 * S11;
   K50 = F50 * S00 + F51 * S10;
   K51 = F50 * S10 + F51 * S11;
+  K60 = F60 * S00 + F61 * S10;
+  K61 = F60 * S10 + F61 * S11;
 
   fTr.x -= K00 * zeta0 + K01 * zeta1;
   fTr.y -= K10 * zeta0 + K11 * zeta1;
   fTr.tx -= K20 * zeta0 + K21 * zeta1;
   fTr.ty -= K30 * zeta0 + K31 * zeta1;
   fTr.qp -= K40 * zeta0 + K41 * zeta1;
+  fTr.t -= K50 * zeta0 + K51 * zeta1;
+  fTr.vi -= K60 * zeta0 + K61 * zeta1;
 
   fTr.C00 -= K00 * F00 + K01 * F01;
+
   fTr.C10 -= K10 * F00 + K11 * F01;
   fTr.C11 -= K10 * F10 + K11 * F11;
+
   fTr.C20 -= K20 * F00 + K21 * F01;
   fTr.C21 -= K20 * F10 + K21 * F11;
   fTr.C22 -= K20 * F20 + K21 * F21;
+
   fTr.C30 -= K30 * F00 + K31 * F01;
   fTr.C31 -= K30 * F10 + K31 * F11;
   fTr.C32 -= K30 * F20 + K31 * F21;
   fTr.C33 -= K30 * F30 + K31 * F31;
+
   fTr.C40 -= K40 * F00 + K41 * F01;
   fTr.C41 -= K40 * F10 + K41 * F11;
   fTr.C42 -= K40 * F20 + K41 * F21;
   fTr.C43 -= K40 * F30 + K41 * F31;
   fTr.C44 -= K40 * F40 + K41 * F41;
+
   fTr.C50 -= K50 * F00 + K51 * F01;
   fTr.C51 -= K50 * F10 + K51 * F11;
   fTr.C52 -= K50 * F20 + K51 * F21;
   fTr.C53 -= K50 * F30 + K51 * F31;
   fTr.C54 -= K50 * F40 + K51 * F41;
   fTr.C55 -= K50 * F50 + K51 * F51;
+
+  fTr.C60 -= K60 * F00 + K61 * F01;
+  fTr.C61 -= K60 * F10 + K61 * F11;
+  fTr.C62 -= K60 * F20 + K61 * F21;
+  fTr.C63 -= K60 * F30 + K61 * F31;
+  fTr.C64 -= K60 * F40 + K61 * F41;
+  fTr.C65 -= K60 * F50 + K61 * F51;
+  fTr.C66 -= K60 * F60 + K61 * F61;
 }
 
 void L1Fit::FilterExtrapolatedXY(cnst& x, cnst& y, const L1XYMeasurementInfo& info, cnst& extrX, cnst& extrY,
@@ -315,9 +357,312 @@ void L1Fit::Extrapolate  // extrapolates track parameters and returns jacobian f
   while (!(fMaskF * abs(z_out - fTr.z) <= fvec(1.e-6)).isFull()) {
     fvec zNew                              = fTr.z + sgn * fvec(50.);  // max. 50 cm step
     zNew(sgn * (z_out - zNew) <= fvec(0.)) = z_out;
-    ExtrapolateStep(zNew, F);
+    ExtrapolateStepFull(zNew, F);
   }
 }
+
+void L1Fit::ExtrapolateStepFull  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (cnst& zOut,                   // extrapolate to this z position
+   const L1FieldRegion& F)
+{
+  // use Q/p linearisation at fQp0
+  // implementation of the Runge-Kutta method without optimization
+  //
+
+  //
+  // Forth-order Runge-Kutta method for solution of the equation
+  // of motion of a particle with parameter qp = Q /P
+  //              in the magnetic field B()
+  //
+  //   ( x )            tx
+  //   ( y )            ty
+  //   ( tx)        c_light * qp * L * (     tx*ty * Bx - (1+tx*tx) * By + ty * Bz  )
+  // d ( ty) / dz = c_light * qp * L * ( (1+ty*ty) * Bx     - tx*ty * By - tx * Bz  )  ,
+  //   ( qp)             0.
+  //   ( t )         L * vi
+  //   ( vi)             0.
+  //
+  //   where  L = sqrt ( 1 + tx*tx + ty*ty ) .
+  //   c_light = 0.000299792458 [(GeV/c)/kG/cm]
+  //   c_light_ns =  29.9792458 [cm/ns]
+  //
+  //  In the following for RK step :
+  //   r[7] = {x, y, tx, ty, qp, t, vi}
+  //   dr(z)/dz = f(z,r)
+  //
+  //
+  //========================================================================
+  //
+  //  NIM A395 (1997) 169-184; NIM A426 (1999) 268-282.
+  //
+  //  the routine is based on LHC(b) utility code
+  //
+  //========================================================================
+
+
+  cnst c_light = 0.000299792458;
+
+  //----------------------------------------------------------------
+
+  cnst zMasked = iif(fMask, zOut, fTr.z);
+
+  fvec qp_in = fTr.qp;
+  cnst h     = (zMasked - fTr.z);
+
+  cnst a[4] = {0., h * fvec(0.5), h * fvec(0.5), h};
+  cnst c[4] = {h / fvec(6.), h / fvec(3.), h / fvec(3.), h / fvec(6.)};
+
+  fvec f0[4] = {{0.}};  // ( dx/dz  )[step]
+  fvec f1[4] = {{0.}};  // ( dy/dz  )[step]
+  fvec f2[4] = {{0.}};  // ( dtx/dz )[step]
+  fvec f3[4] = {{0.}};  // ( dty/dz )[step]
+  fvec f4[4] = {{0.}};  // ( dqp/dz )[step]
+  fvec f5[4] = {{0.}};  // ( dt/dz  )[step]
+  fvec f6[4] = {{0.}};  // ( dvi/dz )[step]
+
+  //fvec df0[4][7] = {{0.}};  // df0[step] / d {x,y,tx,ty,qp,t,vi}
+  //fvec df1[4][7] = {{0.}};  // df1[step] / d {x,y,tx,ty,qp,t,vi}
+  fvec df2[4][7] = {{0.}};  // df2[step] / d {x,y,tx,ty,qp,t,vi}
+  fvec df3[4][7] = {{0.}};  // df3[step] / d {x,y,tx,ty,qp,t,vi}
+  //fvec df4[4][7] = {{0.}};  // df4[step] / d {x,y,tx,ty,qp,t,vi}
+  fvec df5[4][7] = {{0.}};  // df5[step] / d {x,y,tx,ty,qp,t,vi}
+  //fvec df6[4][7] = {{0.}};  // df6[step] / d {x,y,tx,ty,qp,t,vi}
+
+  fvec k[5][7] = {{0.}};  // [ step-1 ] [ {x,y,tx,ty,qp,t,vi} ]
+
+  //   Runge-Kutta steps for track parameters
+  //
+  {
+    fvec r0[7] = {fTr.x, fTr.y, fTr.tx, fTr.ty, fTr.qp, fTr.t, fTr.vi};
+
+    for (int step = 0; step < 4; ++step) {
+      fvec z = fTr.z + a[step];
+      fvec r[7];
+      for (int i = 0; i < 7; ++i) {
+        r[i] = r0[i] + a[step] * k[step][i];
+      }
+
+      fvec B[3];
+      cnst& Bx = B[0];
+      cnst& By = B[1];
+      cnst& Bz = B[2];
+
+      F.Get(r[0], r[1], z, B);
+
+      fvec tx    = r[2];
+      fvec ty    = r[3];
+      fvec tx2   = tx * tx;
+      fvec ty2   = ty * ty;
+      fvec txty  = tx * ty;
+      fvec L2    = fvec(1.) + tx2 + ty2;
+      fvec L2i   = fvec(1.) / L2;
+      fvec L     = sqrt(L2);
+      fvec cL    = c_light * L;
+      fvec cLqp0 = cL * fQp0;
+
+      f0[step] = tx;
+      f1[step] = ty;
+
+      fvec f2tmp   = (txty * Bx + ty * Bz) - (fvec(1.) + tx2) * By;
+      f2[step]     = cLqp0 * f2tmp;
+      df2[step][2] = cLqp0 * (tx * f2tmp * L2i + ty * Bx - fvec(2.) * tx * By);
+      df2[step][3] = cLqp0 * (ty * f2tmp * L2i + tx * Bx + Bz);
+      df2[step][4] = cL * f2tmp;
+
+      fvec f3tmp   = -txty * By - tx * Bz + (fvec(1.) + ty2) * Bx;
+      f3[step]     = cLqp0 * f3tmp;
+      df3[step][2] = cLqp0 * (tx * f3tmp * L2i - ty * By - Bz);
+      df3[step][3] = cLqp0 * (ty * f3tmp * L2i + fvec(2.) * ty * Bx - tx * By);
+      df3[step][4] = cL * f3tmp;
+
+      fvec vi = r[6];
+      fvec m2 = fMass2;
+      if (!fDoFitVelocity) { vi = sqrt(fvec(1.) + m2 * fQp0 * fQp0) / fvec(29.9792458f); }
+
+      f5[step]     = vi * L;
+      df5[step][2] = vi * tx / L;
+      df5[step][3] = vi * ty / L;
+      df5[step][4] = 0.;
+      df5[step][5] = 0.;
+      df5[step][6] = L;
+
+      if (!fDoFitVelocity) {
+        df5[step][4] = (m2 * fQp0) * (L / sqrt(fvec(1.) + m2 * fQp0 * fQp0) / fvec(29.9792458f));
+        df5[step][6] = 0.;
+      }
+
+      k[step + 1][0] = f0[step];
+      k[step + 1][1] = f1[step];
+      k[step + 1][2] = f2[step];
+      k[step + 1][3] = f3[step];
+      k[step + 1][4] = f4[step];  // == 0
+      k[step + 1][5] = f5[step];
+      k[step + 1][6] = f6[step];  // == 0
+
+    }  // end of Runge-Kutta step
+
+    fTr.x  = r0[0] + (c[0] * k[1][0] + c[1] * k[2][0] + c[2] * k[3][0] + c[3] * k[4][0]);
+    fTr.y  = r0[1] + (c[0] * k[1][1] + c[1] * k[2][1] + c[2] * k[3][1] + c[3] * k[4][1]);
+    fTr.tx = r0[2] + (c[0] * k[1][2] + c[1] * k[2][2] + c[2] * k[3][2] + c[3] * k[4][2]);
+    fTr.ty = r0[3] + (c[0] * k[1][3] + c[1] * k[2][3] + c[2] * k[3][3] + c[3] * k[4][3]);
+    //fTr.qp = r0[4] + (c[0] * k[1][4] + c[1] * k[2][4] + c[2] * k[3][4] + c[3] * k[4][4]);
+    fTr.t = r0[5] + (c[0] * k[1][5] + c[1] * k[2][5] + c[2] * k[3][5] + c[3] * k[4][5]);
+    //fTr.vi  = r0[6] + (c[0] * k[1][6] + c[1] * k[2][6] + c[2] * k[3][6] + c[3] * k[4][6]);
+
+    fTr.z = zMasked;
+  }
+
+
+  // Jacobian of extrapolation
+
+  //
+  //    derivatives d/dx and d/dy
+  //
+  fvec Jx[7] = {1., 0., 0., 0., 0., 0., 0.};  // D new { x,y,tx,ty,qp,t,vi } / D old x
+  fvec Jy[7] = {0., 1., 0., 0., 0., 0., 0.};  // D new { x,y,tx,ty,qp,t,vi } / D old y
+
+  //
+  //   Runge-Kutta steps for derivatives d/dtx
+  //
+  fvec Jtx[7] = {0., 0., 1., 0., 0., 0., 0.};  // D new { x,y,tx,ty,qp,t,vi } / D old tx
+  {
+    for (int step = 0; step < 4; ++step) {
+      fvec r2        = Jtx[2] + a[step] * k[step][2];  // dtx[step]/dtx0
+      fvec r3        = Jtx[3] + a[step] * k[step][3];  // dty[step]/dtx0
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = df2[step][2] * r2 + df2[step][3] * r3;
+      k[step + 1][3] = df3[step][2] * r2 + df3[step][3] * r3;
+      k[step + 1][4] = 0.;
+      k[step + 1][5] = df5[step][2] * r2 + df5[step][3] * r3;
+      k[step + 1][6] = 0.;
+    }
+    for (int i = 0; i < 7; ++i) {
+      Jtx[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
+    }
+  }
+
+  //
+  //   Runge-Kutta steps for derivatives d/dty
+  //
+  fvec Jty[7] = {0., 0., 0., 1., 0., 0., 0.};  // D new { x,y,tx,ty,qp,t,vi } / D old ty
+  {
+    for (int step = 0; step < 4; ++step) {
+      fvec r2        = Jty[2] + a[step] * k[step][2];  // dtx[step]/dty0
+      fvec r3        = Jty[3] + a[step] * k[step][3];  // dty[step]/dty0
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = df2[step][2] * r2 + df2[step][3] * r3;
+      k[step + 1][3] = df3[step][2] * r2 + df3[step][3] * r3;
+      k[step + 1][4] = 0.;
+      k[step + 1][5] = df5[step][2] * r2 + df5[step][3] * r3;
+      k[step + 1][6] = 0.;
+    }
+    for (int i = 0; i < 7; ++i) {
+      Jty[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
+    }
+  }
+
+  //
+  //   Runge-Kutta steps for derivatives d/dqp
+  //
+  fvec Jqp[7] = {0., 0., 0., 0., 1., 0., 0.};  // D new { x,y,tx,ty,qp,t,vi } / D old qp
+  {
+    for (int step = 0; step < 4; ++step) {
+      fvec r2        = Jqp[2] + a[step] * k[step][2];  // dtx/dqp
+      fvec r3        = Jqp[3] + a[step] * k[step][3];  // dty/dqp;
+      fvec r4        = Jqp[4] + a[step] * k[step][4];  // dqp/dqp == 1
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = df2[step][2] * r2 + df2[step][3] * r3 + df2[step][4] * r4;
+      k[step + 1][3] = df3[step][2] * r2 + df3[step][3] * r3 + df3[step][4] * r4;
+      k[step + 1][4] = 0.;
+      k[step + 1][5] = df5[step][2] * r2 + df5[step][3] * r3 + df5[step][4] * r4;
+      k[step + 1][6] = 0.;
+    }
+    for (int i = 0; i < 7; ++i) {
+      Jqp[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
+    }
+  }
+
+
+  //
+  //    derivatives d/dt
+  //
+  fvec Jt[7] = {0., 0., 0., 0., 0., 1., 0.};  // D new { x,y,tx,ty,qp,t,vi } / D old t
+
+  //
+  //    derivatives d/dvi
+  //
+  fvec Jvi[7] = {0., 0., 0., 0., 0., 0., 1.};  // D new { x,y,tx,ty,qp,t,vi } / D old vi
+  {
+    for (int step = 0; step < 4; ++step) {
+      fvec r2        = Jvi[2] + a[step] * k[step][2];  // dtx/dvi
+      fvec r3        = Jvi[3] + a[step] * k[step][3];  // dty/dvi;
+      fvec r6        = Jvi[6] + a[step] * k[step][6];  //(dvi/dvi == 1)
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = df2[step][2] * r2 + df2[step][3] * r3;
+      k[step + 1][3] = df3[step][2] * r2 + df3[step][3] * r3;
+      k[step + 1][4] = 0.;
+      k[step + 1][5] = df5[step][2] * r2 + df5[step][3] * r3 + df5[step][6] * r6;
+      k[step + 1][6] = 0.;
+    }
+    for (int i = 0; i < 7; ++i) {
+      Jvi[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
+    }
+  }
+
+
+  {  // update parameters
+    fvec dqp = qp_in - fQp0;
+    fTr.x += Jqp[0] * dqp;
+    fTr.y += Jqp[1] * dqp;
+    fTr.tx += Jqp[2] * dqp;
+    fTr.ty += Jqp[3] * dqp;
+    fTr.t += Jqp[5] * dqp;
+  }
+
+  //          covariance matrix transport
+
+  fvec J[7][7];
+  for (int i = 0; i < 7; i++) {
+    J[i][0] = Jx[i];   // d {x,y,tx,ty,qp,t,vi} / dx
+    J[i][1] = Jy[i];   // d * / dy
+    J[i][2] = Jtx[i];  // d * / dtx
+    J[i][3] = Jty[i];  // d * / dty
+    J[i][4] = Jqp[i];  // d * / dqp
+    J[i][5] = Jt[i];   // d * / dt
+    J[i][6] = Jvi[i];  // d * / dvi
+  }
+
+  fvec C[7][7];
+  for (int i = 0; i < 7; i++) {
+    for (int j = 0; j < 7; j++) {
+      C[i][j] = fTr.C(i, j);
+    }
+  }
+
+  fvec JC[7][7];
+  for (int i = 0; i < 7; i++) {
+    for (int j = 0; j < 7; j++) {
+      JC[i][j] = 0.;
+      for (int m = 0; m < 7; m++) {
+        JC[i][j] += J[i][m] * C[m][j];
+      }
+    }
+  }
+  for (int i = 0; i < 7; i++) {
+    for (int j = 0; j < 7; j++) {
+      fvec Cij = 0.;
+      for (int m = 0; m < 7; m++) {
+        Cij += JC[i][m] * J[j][m];
+      }
+      fTr.C(i, j) = Cij;
+    }
+  }
+}
+
 
 void L1Fit::ExtrapolateStep  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
   (cnst& zOut,               // extrapolate to this z position
@@ -377,7 +722,7 @@ void L1Fit::ExtrapolateStep  // extrapolates track parameters and returns jacobi
   fvec f2_ty[4], f3_ty[4], f4_ty[4];  // df* / dty
   fvec f2_qp[4], f3_qp[4], f4_qp[4];  // df* / dqp
 
-  fvec k[5][5] {{0.}};
+  fvec k[5][5] = {0., 0., 0., 0., 0.};
 
   //   Runge-Kutta steps for track parameters
   //
@@ -936,13 +1281,14 @@ void L1Fit::ExtrapolateLine(cnst& z_out, const L1FieldRegion& F)
   fQp0 = qp0;
 }
 
-void L1Fit::ExtrapolateLine(cnst& z_out)
+void L1Fit::ExtrapolateLineNoField(cnst& z_out)
 {
-  // extrapolate the track assuming fQp0 == 0
+  // extrapolate the track assuming no field
   //
   // it is a copy of a sequence two routines
   //  L1ExtrapolateTime() and L1ExtrapolateLine()
   // TODO: make it right
+  //
 
   cnst c_light(29.9792458);
   fvec dz = (z_out - fTr.z);

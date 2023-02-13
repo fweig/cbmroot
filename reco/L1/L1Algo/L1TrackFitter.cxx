@@ -17,9 +17,6 @@ using std::vector;
 namespace NS_L1TrackFitter
 {
   const fvec c_light(0.000299792458), c_light_i(fvec(1.) / c_light);
-  const fvec ZERO(0.);
-  const fvec ONE(1.);
-  const fvec vINF(0.1);
 }  // namespace NS_L1TrackFitter
 using namespace NS_L1TrackFitter;
 
@@ -45,6 +42,7 @@ void L1Algo::L1KFTrackFitter()
   L1TrackPar& tr = fit.Tr();
 
   fit.SetParticleMass(GetDefaultParticleMass());
+  fit.SetDoFitVelocity(false);
 
   L1Track* t[fvec::size()] {nullptr};
 
@@ -228,7 +226,13 @@ void L1Algo::L1KFTrackFitter()
       time_last = iif(w_time[ista], time_last, fvec::Zero());
       dt2_last  = iif(w_time[ista], dt2_last, fvec(1.e6));
 
-      FilterFirst(fit, x_last, y_last, time_last, dt2_last, d_xx_lst, d_yy_lst, d_xy_lst);
+      tr.ResetErrors(d_xx_lst, d_yy_lst, 0.1, 0.1, 1.0, dt2_last, 1.e2);
+      tr.C10 = d_xy_lst;
+      tr.x   = x_last;
+      tr.y   = y_last;
+      tr.t   = time_last;
+      tr.NDF = -3.0;
+
 
       fldZ1 = z[ista];
 
@@ -301,74 +305,17 @@ void L1Algo::L1KFTrackFitter()
         }
       }
 
-      const L1TrackPar& Tf = fit.Tr();
+      L1TrackPar Tf = fit.Tr();
+      if (kGlobal == fTrackingMode) { Tf.qp = fitpv.Tr().qp; }
 
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->TFirst[0] = Tf.x[iVec];
-        t[iVec]->TFirst[1] = Tf.y[iVec];
-        t[iVec]->TFirst[2] = Tf.tx[iVec];
-        t[iVec]->TFirst[3] = Tf.ty[iVec];
-        t[iVec]->TFirst[4] = Tf.qp[iVec];
-        if (kGlobal == fTrackingMode) { t[iVec]->TFirst[4] = fitpv.Tr().qp[iVec]; }
-        t[iVec]->TFirst[5] = Tf.z[iVec];
-        t[iVec]->TFirst[6] = Tf.t[iVec];
-
-        t[iVec]->CFirst[0]  = Tf.C00[iVec];
-        t[iVec]->CFirst[1]  = Tf.C10[iVec];
-        t[iVec]->CFirst[2]  = Tf.C11[iVec];
-        t[iVec]->CFirst[3]  = Tf.C20[iVec];
-        t[iVec]->CFirst[4]  = Tf.C21[iVec];
-        t[iVec]->CFirst[5]  = Tf.C22[iVec];
-        t[iVec]->CFirst[6]  = Tf.C30[iVec];
-        t[iVec]->CFirst[7]  = Tf.C31[iVec];
-        t[iVec]->CFirst[8]  = Tf.C32[iVec];
-        t[iVec]->CFirst[9]  = Tf.C33[iVec];
-        t[iVec]->CFirst[10] = Tf.C40[iVec];
-        t[iVec]->CFirst[11] = Tf.C41[iVec];
-        t[iVec]->CFirst[12] = Tf.C42[iVec];
-        t[iVec]->CFirst[13] = Tf.C43[iVec];
-        t[iVec]->CFirst[14] = Tf.C44[iVec];
-        t[iVec]->CFirst[15] = Tf.C50[iVec];
-        t[iVec]->CFirst[16] = Tf.C51[iVec];
-        t[iVec]->CFirst[17] = Tf.C52[iVec];
-        t[iVec]->CFirst[18] = Tf.C53[iVec];
-        t[iVec]->CFirst[19] = Tf.C54[iVec];
-        t[iVec]->CFirst[20] = Tf.C55[iVec];
-
+        Tf.copyToArrays(iVec, t[iVec]->TFirst, t[iVec]->CFirst);
         t[iVec]->chi2 = Tf.chi2[iVec];
         t[iVec]->NDF  = (int) Tf.NDF[iVec];
       }
 
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->Tpv[0] = fitpv.Tr().x[iVec];
-        t[iVec]->Tpv[1] = fitpv.Tr().y[iVec];
-        t[iVec]->Tpv[2] = fitpv.Tr().tx[iVec];
-        t[iVec]->Tpv[3] = fitpv.Tr().ty[iVec];
-        t[iVec]->Tpv[4] = fitpv.Tr().qp[iVec];
-        t[iVec]->Tpv[5] = fitpv.Tr().z[iVec];
-        t[iVec]->Tpv[6] = fitpv.Tr().t[iVec];
-
-        t[iVec]->Cpv[0]  = fitpv.Tr().C00[iVec];
-        t[iVec]->Cpv[1]  = fitpv.Tr().C10[iVec];
-        t[iVec]->Cpv[2]  = fitpv.Tr().C11[iVec];
-        t[iVec]->Cpv[3]  = fitpv.Tr().C20[iVec];
-        t[iVec]->Cpv[4]  = fitpv.Tr().C21[iVec];
-        t[iVec]->Cpv[5]  = fitpv.Tr().C22[iVec];
-        t[iVec]->Cpv[6]  = fitpv.Tr().C30[iVec];
-        t[iVec]->Cpv[7]  = fitpv.Tr().C31[iVec];
-        t[iVec]->Cpv[8]  = fitpv.Tr().C32[iVec];
-        t[iVec]->Cpv[9]  = fitpv.Tr().C33[iVec];
-        t[iVec]->Cpv[10] = fitpv.Tr().C40[iVec];
-        t[iVec]->Cpv[11] = fitpv.Tr().C41[iVec];
-        t[iVec]->Cpv[12] = fitpv.Tr().C42[iVec];
-        t[iVec]->Cpv[13] = fitpv.Tr().C43[iVec];
-        t[iVec]->Cpv[14] = fitpv.Tr().C44[iVec];
-        t[iVec]->Cpv[15] = fitpv.Tr().C50[iVec];
-        t[iVec]->Cpv[16] = fitpv.Tr().C51[iVec];
-        t[iVec]->Cpv[17] = fitpv.Tr().C52[iVec];
-        t[iVec]->Cpv[18] = fitpv.Tr().C53[iVec];
-        t[iVec]->Cpv[19] = fitpv.Tr().C54[iVec];
-        t[iVec]->Cpv[20] = fitpv.Tr().C55[iVec];
+        fitpv.Tr().copyToArrays(iVec, t[iVec]->Tpv, t[iVec]->Cpv);
       }
 
       if (iter == 1) continue;  // only 1.5 iterations
@@ -415,41 +362,15 @@ void L1Algo::L1KFTrackFitter()
         fldZ1 = fldZ0;
       }
 
+      L1TrackPar Tl = fit.Tr();
+      if (kGlobal == fTrackingMode) { Tl.qp = fitpv.Tr().qp; }
+
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->TLast[0] = tr.x[iVec];
-        t[iVec]->TLast[1] = tr.y[iVec];
-        t[iVec]->TLast[2] = tr.tx[iVec];
-        t[iVec]->TLast[3] = tr.ty[iVec];
-        t[iVec]->TLast[4] = tr.qp[iVec];
-        if (kGlobal == fTrackingMode) { t[iVec]->TLast[4] = fitpv.Tr().qp[iVec]; }
-        t[iVec]->TLast[5] = tr.z[iVec];
-        t[iVec]->TLast[6] = tr.t[iVec];
-
-        t[iVec]->CLast[0]  = tr.C00[iVec];
-        t[iVec]->CLast[1]  = tr.C10[iVec];
-        t[iVec]->CLast[2]  = tr.C11[iVec];
-        t[iVec]->CLast[3]  = tr.C20[iVec];
-        t[iVec]->CLast[4]  = tr.C21[iVec];
-        t[iVec]->CLast[5]  = tr.C22[iVec];
-        t[iVec]->CLast[6]  = tr.C30[iVec];
-        t[iVec]->CLast[7]  = tr.C31[iVec];
-        t[iVec]->CLast[8]  = tr.C32[iVec];
-        t[iVec]->CLast[9]  = tr.C33[iVec];
-        t[iVec]->CLast[10] = tr.C40[iVec];
-        t[iVec]->CLast[11] = tr.C41[iVec];
-        t[iVec]->CLast[12] = tr.C42[iVec];
-        t[iVec]->CLast[13] = tr.C43[iVec];
-        t[iVec]->CLast[14] = tr.C44[iVec];
-        t[iVec]->CLast[15] = tr.C50[iVec];
-        t[iVec]->CLast[16] = tr.C51[iVec];
-        t[iVec]->CLast[17] = tr.C52[iVec];
-        t[iVec]->CLast[18] = tr.C53[iVec];
-        t[iVec]->CLast[19] = tr.C54[iVec];
-        t[iVec]->CLast[20] = tr.C55[iVec];
-
-        t[iVec]->chi2 = tr.chi2[iVec];
-        t[iVec]->NDF  = (int) tr.NDF[iVec];
+        Tl.copyToArrays(iVec, t[iVec]->TLast, t[iVec]->CLast);
+        t[iVec]->chi2 = Tl.chi2[iVec];
+        t[iVec]->NDF  = (int) Tl.NDF[iVec];
       }
+
     }  // iter
   }
 }
@@ -460,22 +381,15 @@ void L1Algo::GuessVecNoField(L1Fit& track, fvec& x_last, fvec& x_2last, fvec& y_
 
   fvec dzi = fvec(1.) / (z_end - z_2last);
 
-  tr.x    = x_last;
-  tr.y    = y_last;
-  tr.tx   = (x_last - x_2last) * dzi;
-  tr.ty   = (y_last - y_2last) * dzi;
-  tr.t    = time_last;
-  tr.z    = z_end;
-  tr.chi2 = fvec(0.);
-  tr.NDF  = fvec(2.);
+  tr.x  = x_last;
+  tr.y  = y_last;
+  tr.tx = (x_last - x_2last) * dzi;
+  tr.ty = (y_last - y_2last) * dzi;
+  tr.t  = time_last;
+  tr.z  = z_end;
 
-  tr.C20 = tr.C21 = fvec(0.);
-  tr.C30 = tr.C31 = tr.C32 = fvec(0.);
-  tr.C40 = tr.C41 = tr.C42 = tr.C43 = fvec(0.);
-  tr.C50 = tr.C51 = tr.C52 = tr.C53 = tr.C54 = fvec(0.);
-  tr.C22 = tr.C33 = vINF;
-  tr.C44          = fvec(1.);
-  tr.C55          = fvec(dt2_last);
+  tr.ResetErrors(1., 1., 1., 1., 1., dt2_last, 1.e2);
+  tr.NDF = fvec(2.);
 }
 
 
@@ -483,7 +397,7 @@ void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fm
 // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
 {
 
-  fvec A0, A1 = ZERO, A2 = ZERO, A3 = ZERO, A4 = ZERO, A5 = ZERO, a0, a1 = ZERO, a2 = ZERO, b0, b1 = ZERO, b2 = ZERO;
+  fvec A0, A1 = 0., A2 = 0., A3 = 0., A4 = 0., A5 = 0., a0, a1 = 0., a2 = 0., b0, b1 = 0., b2 = 0.;
   fvec z0, x, y, z, S, w, wz, wS;
 
   int i = NHits - 1;
@@ -553,7 +467,7 @@ void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmas
 {
   L1TrackPar& tr = track.Tr();
 
-  fvec A0, A1 = ZERO, A2 = ZERO, A3 = ZERO, A4 = ZERO, A5 = ZERO, a0, a1 = ZERO, a2 = ZERO, b0, b1 = ZERO, b2 = ZERO;
+  fvec A0, A1 = 0., A2 = 0., A3 = 0., A4 = 0., A5 = 0., a0, a1 = 0., a2 = 0., b0, b1 = 0., b2 = 0.;
   fvec z0, x, y, z, S, w, wz, wS, time;
 
   time = fvec(0.);
@@ -639,31 +553,11 @@ void L1Algo::FilterFirst(L1Fit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fve
 {
   L1TrackPar& tr = track.Tr();
 
-  tr.C00 = d_xx;
+  tr.ResetErrors(d_xx, d_yy, 0.1, 0.1, 1., dt2, 1.e2);
   tr.C10 = d_xy;
-  tr.C11 = d_yy;
-  tr.C20 = ZERO;
-  tr.C21 = ZERO;
-  tr.C22 = vINF;
-  tr.C30 = ZERO;
-  tr.C31 = ZERO;
-  tr.C32 = ZERO;
-  tr.C33 = vINF;
-  tr.C40 = ZERO;
-  tr.C41 = ZERO;
-  tr.C42 = ZERO;
-  tr.C43 = ZERO;
-  tr.C44 = ONE;
-  tr.C50 = ZERO;
-  tr.C51 = ZERO;
-  tr.C52 = ZERO;
-  tr.C53 = ZERO;
-  tr.C54 = ZERO;
-  tr.C55 = dt2;
 
-  tr.x    = x;
-  tr.y    = y;
-  tr.t    = t;
-  tr.NDF  = -3.0;
-  tr.chi2 = ZERO;
+  tr.x   = x;
+  tr.y   = y;
+  tr.t   = t;
+  tr.NDF = -3.0;
 }

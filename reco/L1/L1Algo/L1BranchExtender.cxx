@@ -70,7 +70,6 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
 
   fvec dzi = fvec(1.) / (z1 - z0);
 
-  const fvec vINF = fvec(.1);
   T.x             = x0;
   T.y             = y0;
   if (initParams) {
@@ -80,22 +79,14 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
   }
   fit.SetQp0(qp0);
 
-  T.z = z0;
-  T.t = hit0.t;
+  T.z  = z0;
+  T.t  = hit0.t;
+  T.vi = 0.;
 
-  // T.t[0]=(hit0.t+hit1.t+hit2.t)/3;
-  T.chi2 = fvec(0.);
-  T.NDF  = fvec(2.);
+  T.ResetErrors(1., 1., .1, .1, 1., (sta0.timeInfo ? hit0.dt2 : 1.e6), 1.e6);
+  T.NDF = fvec(2.);
 
   std::tie(T.C00, T.C10, T.C11) = sta0.FormXYCovarianceMatrix(hit0.du2, hit0.dv2);
-
-  T.C20 = T.C21 = 0;
-  T.C30 = T.C31 = T.C32 = 0;
-  T.C40 = T.C41 = T.C42 = T.C43 = 0;
-  T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
-  T.C22 = T.C33 = vINF;
-  T.C44         = 1.;
-  T.C55         = sta0.timeInfo ? hit0.dt2 : vINF;
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;

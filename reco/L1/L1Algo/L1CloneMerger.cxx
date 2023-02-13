@@ -106,68 +106,12 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
       unsigned short stab = firstStation[iTr];
 
-      Tb.x   = extTracks[iTr].TFirst[0];
-      Tb.y   = extTracks[iTr].TFirst[1];
-      Tb.tx  = extTracks[iTr].TFirst[2];
-      Tb.ty  = extTracks[iTr].TFirst[3];
-      Tb.qp  = extTracks[iTr].TFirst[4];
-      Tb.z   = extTracks[iTr].TFirst[5];
-      Tb.t   = extTracks[iTr].TFirst[6];
-      Tb.C00 = extTracks[iTr].CFirst[0];
-      Tb.C10 = extTracks[iTr].CFirst[1];
-      Tb.C11 = extTracks[iTr].CFirst[2];
-      Tb.C20 = extTracks[iTr].CFirst[3];
-      Tb.C21 = extTracks[iTr].CFirst[4];
-      Tb.C22 = extTracks[iTr].CFirst[5];
-      Tb.C30 = extTracks[iTr].CFirst[6];
-      Tb.C31 = extTracks[iTr].CFirst[7];
-      Tb.C32 = extTracks[iTr].CFirst[8];
-      Tb.C33 = extTracks[iTr].CFirst[9];
-      Tb.C40 = extTracks[iTr].CFirst[10];
-      Tb.C41 = extTracks[iTr].CFirst[11];
-      Tb.C42 = extTracks[iTr].CFirst[12];
-      Tb.C43 = extTracks[iTr].CFirst[13];
-      Tb.C44 = extTracks[iTr].CFirst[14];
-      Tb.C50 = extTracks[iTr].CFirst[15];
-      Tb.C51 = extTracks[iTr].CFirst[16];
-      Tb.C52 = extTracks[iTr].CFirst[17];
-      Tb.C53 = extTracks[iTr].CFirst[18];
-      Tb.C54 = extTracks[iTr].CFirst[19];
-      Tb.C55 = extTracks[iTr].CFirst[20];
-
+      Tb.copyFromArrays(extTracks[iTr].TFirst, extTracks[iTr].CFirst);
       fitB.SetQp0(fitB.Tr().qp);
 
       unsigned short staf = lastStation[jTr];
 
-      Tf.x   = extTracks[jTr].TLast[0];
-      Tf.y   = extTracks[jTr].TLast[1];
-      Tf.tx  = extTracks[jTr].TLast[2];
-      Tf.ty  = extTracks[jTr].TLast[3];
-      Tf.qp  = extTracks[jTr].TLast[4];
-      Tf.z   = extTracks[jTr].TLast[5];
-      Tf.t   = extTracks[jTr].TLast[6];
-      Tf.C00 = extTracks[jTr].CLast[0];
-      Tf.C10 = extTracks[jTr].CLast[1];
-      Tf.C11 = extTracks[jTr].CLast[2];
-      Tf.C20 = extTracks[jTr].CLast[3];
-      Tf.C21 = extTracks[jTr].CLast[4];
-      Tf.C22 = extTracks[jTr].CLast[5];
-      Tf.C30 = extTracks[jTr].CLast[6];
-      Tf.C31 = extTracks[jTr].CLast[7];
-      Tf.C32 = extTracks[jTr].CLast[8];
-      Tf.C33 = extTracks[jTr].CLast[9];
-      Tf.C40 = extTracks[jTr].CLast[10];
-      Tf.C41 = extTracks[jTr].CLast[11];
-      Tf.C42 = extTracks[jTr].CLast[12];
-      Tf.C43 = extTracks[jTr].CLast[13];
-      Tf.C44 = extTracks[jTr].CLast[14];
-      Tf.C50 = extTracks[jTr].CLast[15];
-      Tf.C51 = extTracks[jTr].CLast[16];
-      Tf.C52 = extTracks[jTr].CLast[17];
-      Tf.C53 = extTracks[jTr].CLast[18];
-      Tf.C54 = extTracks[jTr].CLast[19];
-      Tf.C55 = extTracks[jTr].CLast[20];
-
+      Tf.copyFromArrays(extTracks[jTr].TLast, extTracks[jTr].CLast);
       fitF.SetQp0(fitF.Tr().qp);
 
       if (fabs(Tf.t[0] - Tb.t[0]) > 3 * sqrt(Tf.C55[0] + Tb.C55[0])) continue;

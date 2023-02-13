@@ -41,9 +41,9 @@ public:
   }
 
   template<typename T>
-  void SetTrack(const T* tr, const T* C)
+  void SetTrack(const T p[7], const T c[28])
   {
-    fTr.Set(tr, C);
+    fTr.copyFromArrays(p, c);
     fQp0 = fTr.qp;
   }
 
@@ -58,6 +58,8 @@ public:
   L1TrackPar& Tr() { return fTr; }
 
   fvec& Qp0() { return fQp0; }
+
+  void SetDoFitVelocity(bool v) { fDoFitVelocity = v; }
 
   void SetOneEntry(const int i0, const L1Fit& T1, const int i1);
 
@@ -90,8 +92,9 @@ public:
   void Extrapolate(cnst& z_out, const L1FieldRegion& F);
 
   void ExtrapolateStep(cnst& z_out, const L1FieldRegion& F);
+  void ExtrapolateStepFull(cnst& z_out, const L1FieldRegion& F);
   void ExtrapolateStepAnalytic(cnst& z_out, const L1FieldRegion& F);
-  void ExtrapolateLine(cnst& z_out);
+  void ExtrapolateLineNoField(cnst& z_out);
   void ExtrapolateLine(cnst& z_out, const L1FieldRegion& F);
 
   void EnergyLossCorrection(cnst& radThick, cnst& upstreamDirection);
@@ -139,6 +142,9 @@ private:
 
   fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
   fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:
+
+  bool fDoFitVelocity {0};  // should the track velocity be fitted as an independent parameter
+
 } _fvecalignment;
 
 // =============================================================================================

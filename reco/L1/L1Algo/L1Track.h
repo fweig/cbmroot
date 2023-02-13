@@ -35,12 +35,12 @@ public:
   unsigned char n;          ///< TODO: ??
   float Momentum {kNaN};    ///< TODO: ??
   float fTrackTime {kNaN};  ///< Track time
-  fscal TFirst[7] {kNaN};   ///< Track parameters on the first station
-  fscal CFirst[21] {kNaN};  ///< Track parameter covariation matrix elements on the first station
-  fscal TLast[7] {kNaN};    ///< Track parameters on the last station
-  fscal CLast[21] {kNaN};   ///< Track parameter covariation matrix elements on the second station
-  fscal Tpv[7] {kNaN};      ///< Track parameters in the primary vertex
-  fscal Cpv[21] {kNaN};     ///< Track parameter covariation matrix elements in the primary vertex
+  fscal TFirst[8] {kNaN};   ///< Track parameters on the first station
+  fscal CFirst[28] {kNaN};  ///< Track parameter covariation matrix elements on the first station
+  fscal TLast[8] {kNaN};    ///< Track parameters on the last station
+  fscal CLast[28] {kNaN};   ///< Track parameter covariation matrix elements on the second station
+  fscal Tpv[8] {kNaN};      ///< Track parameters in the primary vertex
+  fscal Cpv[28] {kNaN};     ///< Track parameter covariation matrix elements in the primary vertex
   fscal chi2 {kNaN};        ///< Track fit chi-square value
   short int NDF;            ///< Track fit NDF value
 
@@ -66,11 +66,5 @@ public:
   static bool compare(const L1Track& a, const L1Track& b) { return (a.Cpv[20] <= b.Cpv[20]); }
 };
 
-// #include "cmath"
-//   bool operator==(const L1Track &other) const {
-//     cout<<int(NHits)<<" NHits"<<endl;
-//      if ((other.NHits==NHits)&&(fabs(other.Momentum-Momentum)<1.e-6)) return true;
-//      else return false;
-//   }
 
 #endif  // L1Track_H
