@@ -134,8 +134,7 @@ bool CbmCaInputQaTof::Check()
     pEffTable->SetColWidth(20);
 
     for (int iSt = 0; iSt < nSt; ++iSt) {
-      auto pEff  = std::unique_ptr<CbmQaEff>(fvpe_reco_eff_vs_r[iSt]->Integral(fEffRange[0], fEffRange[1]));
-      double eff = pEff->GetEfficiency(1);
+      auto [eff, effEL, effEU] = fvpe_reco_eff_vs_r[iSt]->GetTotalEfficiency();
       pEffTable->SetCell(iSt, 0, iSt);
       pEffTable->SetCell(iSt, 1, eff);
       res = CheckRange("Hit finder efficiency in station " + std::to_string(iSt), eff, fEffThrsh, 1.000);
@@ -908,27 +907,15 @@ InitStatus CbmCaInputQaTof::InitCanvases()
     pc_reco_eff_vs_r->Divide2D(nSt);
     for (int iSt = 0; iSt < nSt; ++iSt) {
       pc_reco_eff_vs_r->cd(iSt + 1);
-      fvpe_reco_eff_vs_r[iSt]->Paint("AP");
-      auto* pGr = dynamic_cast<TGraphAsymmErrors*>(fvpe_reco_eff_vs_r[iSt]->GetPaintedGraph());
-      if (!pGr) {
-        LOG(error) << fName << ": unable to get painted graph from efficiency " << fvpe_reco_eff_vs_xy[iSt]->GetName();
-        continue;
-      }
-      pGr->DrawClone("AP");
+      fvpe_reco_eff_vs_r[iSt]->SetMarkerStyle(20);
+      fvpe_reco_eff_vs_r[iSt]->DrawCopy("AP", "");
     }
 
     auto* pc_reco_eff_vs_xy = MakeCanvas<CbmQaCanvas>("reco_eff_vs_xy", "Hit efficiencies wrt x and y", 1600, 800);
     pc_reco_eff_vs_xy->Divide2D(nSt);
     for (int iSt = 0; iSt < nSt; ++iSt) {
       pc_reco_eff_vs_xy->cd(iSt + 1);
-      fvpe_reco_eff_vs_xy[iSt]->Paint("colz");
-      auto* pH2 = dynamic_cast<TH2F*>(fvpe_reco_eff_vs_xy[iSt]->GetPaintedHistogram());
-      if (!pH2) {
-        LOG(error) << fName << ": unable to get painted histogram from efficiency "
-                   << fvpe_reco_eff_vs_xy[iSt]->GetName();
-        continue;
-      }
-      pH2->DrawCopy("colz", "");
+      fvpe_reco_eff_vs_xy[iSt]->DrawCopy("colz", "");
     }
   }
 

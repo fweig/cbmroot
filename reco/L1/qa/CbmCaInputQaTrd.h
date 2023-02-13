@@ -108,9 +108,9 @@ private:
   static constexpr double kRHitDy[2] = {-.05, .005};  ///< Range for hit y coordinate [cm]
   static constexpr double kRHitDt[2] = {-10., 10.};   ///< Range for hit time [ns]
 
-  static constexpr double kRResX[2] = {-.4, .4};  ///< Range for residual of x coordinate [cm]
-  static constexpr double kRResY[2] = {-.4, .4};  ///< Range for residual of y coordinate [cm]
-  static constexpr double kRResT[2] = {-5., 5.};  ///< Range for residual of time [ns]
+  static constexpr double kRResX[2] = {-2., 2.};    ///< Range for residual of x coordinate [cm]
+  static constexpr double kRResY[2] = {-2., 2.};    ///< Range for residual of y coordinate [cm]
+  static constexpr double kRResT[2] = {-20., 20.};  ///< Range for residual of time [ns]
 
   static constexpr double kRPullX[2] = {-10., 10.};  ///< Range for pull of x coordinate
   static constexpr double kRPullY[2] = {-10., 10.};  ///< Range for pull of y coordinate

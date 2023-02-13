@@ -102,8 +102,7 @@ set(HEADERS
   L1Algo/L1Undef.h
   catools/CaToolsWindowFinder.h
   catools/CaToolsLinkKey.h
-  qa/CbmCaQaCuts.h
-  
+  qa/CbmCaInputQaBase.h
 )
 
 
@@ -206,6 +205,7 @@ install(FILES CbmL1Counters.h
               L1Algo/L1SimdSerializer.h
               L1Algo/L1TrackPar.h
               L1Algo/L1Track.h
+              qa/CbmCaInputQaBase.h
         DESTINATION include
        )
 

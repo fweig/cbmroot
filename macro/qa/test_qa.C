@@ -37,10 +37,11 @@
 #include <TStopwatch.h>
 #endif
 
-void run_reco_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "data/sis100_muon_jpsi_test",
-                 TString dataReco = "data/sis100_muon_jpsi_test", TString dataPar = "data/sis100_muon_jpsi_test",
-                 TString dataSink = "data/sis100_muon_jpsi_test", TString setup = "sis100_muon_jpsi",
-                 Int_t nEvents = -1, TString dataTra2 = "", TString dataTra3 = "")
+// TODO: split into functions for reco, digitization and transport QAs
+void test_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "data/sis100_muon_jpsi_test",
+             TString dataReco = "data/sis100_muon_jpsi_test", TString dataPar = "data/sis100_muon_jpsi_test",
+             TString dataSink = "data/sis100_muon_jpsi_test", TString setup = "sis100_muon_jpsi", Int_t nEvents = -1,
+             TString dataTra2 = "", TString dataTra3 = "")
 {
 
   gROOT->SetBatch(kTRUE);
