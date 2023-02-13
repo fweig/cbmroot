@@ -269,24 +269,14 @@ If(DEFINED ENV{RAW_DATA_PATH} )
 
   ## Run only if raw data files present: 2021
   # =====>   Set the timeouts depending on test model (profiling = slow)
-  SET( RAW_DATA_UNPACK_TO 700) # Nightly mode on run4: 298 for run 1588, 525 for 2391, 601 for 2488
+  SET( RAW_DATA_UNPACK_TO 500) # Nightly mode on run4: 298 for run 1588
   SET( RAW_DATA_CHECK_TO  600) # Nightly mode on run4: 562 for run 1588
-  SET( RAW_DATA_BUILD_TO  250) # Nightly mode on run4: 155 for 2391, 190 for 2488
-  SET( RAW_DATA_RECO_TO 2600) # 300 for 1 TS in 2391 and 2488
   if(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
     Message( STATUS "Profiling model detected, increasing timeout for mCBM 2021 tests with coverage." )
     SET( RAW_DATA_UNPACK_TO 800) # Coverage mode: 716 for run 1588 on run4
     SET( RAW_DATA_CHECK_TO  800) # Coverage mode: 654 for run 1588 on run4
   endif()
   # ====================================================================
-  # SET( EVT_BUILD_TRIG 4) # Default mCBM 22 Lambda analysis trigger, but too long runtime for L1 and Lambda CI tests
-  SET( EVT_BUILD_TRIG 15) # Default mCBM 22 Lambda trigger + TRD1D and TRD2D to reduce evt nb and combinatorics
-  SET( RECO_EVNTS_NB 20)
-  if(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous )
-    Message( STATUS "MR or Continuous model detected, decreasing event nb for mCBM 2022 reco tests to single one." )
-    SET( RECO_EVNTS_NB 1)
-    SET( RAW_DATA_RECO_TO 900) # ~380 for 1 TS in 2391 and ~500 in 2488 on run4
-  endif()
 
   ForEach(RUN 1588 )
     Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
@@ -321,17 +311,33 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   EndForEach() # ForEach(RUN 1588 )
 
   ## Run only if raw data files present: 2022
-  # =====>   Set the timeouts depending on test model (profiling = slow)
-  if(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
-    Message( STATUS "Profiling model detected, increasing timeout for mCBM 2022 tests with coverage." )
-    SET( RAW_DATA_UNPACK_TO 2200)  # Coverage mode: 1669 for run 2391, 2085 for run 2488
-    SET( RAW_DATA_CHECK_TO   300)  # Coverage mode:  171 for run 2391,  213 for run 2488
+  # =====>   Set the timeouts and data range depending on test model (profiling = slow)
+  # SET( EVT_BUILD_TRIG 4) # Default mCBM 22 Lambda analysis trigger, but too long runtime for L1 and Lambda CI tests
+  SET( EVT_BUILD_TRIG 15) # Default mCBM 22 Lambda trigger + TRD1D and TRD2D to reduce evt nb and combinatorics
+  if(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous )
+    Message( STATUS "MR or Continuous model detected, decreasing event nb for mCBM 2022 reco tests to single one." )
+    SET( RECO_EVNTS_NB 1)
+    SET( RAW_DATA_UNPACK_TO 700) # MR mode on run4: 525 for 2391, 601 for 2488
+    SET( RAW_DATA_BUILD_TO  600) # MR mode on run4: 60-70 for 2391, 10-120 for 2488
+    SET( RAW_DATA_RECO_TO 1800)  # MR mode on run4: for 1 TS + L1, ~750 in 2391 and ~1600 in 2488 (TOFtr: ~200 and ~550)
+    List(APPEND mcbm_2022_runs 2391)  # Run CI only on 2391 until way to start at TS 5 of run 2488 found
+  elseif(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
+    Message( STATUS "Profiling model detected, increasing timeout and event nb for mCBM 2022 tests with coverage." )
+    SET( RECO_EVNTS_NB 20)
+    SET( RAW_DATA_UNPACK_TO 2200) # Coverage mode: 1669 for run 2391, 2085 for run 2488
+    SET( RAW_DATA_BUILD_TO   300) # Coverage mode:  171 for run 2391,  213 for run 2488
+    SET( RAW_DATA_RECO_TO 7200)   # Coverage mode: ~380 for 1 TS in 2391 and ~500 in 2488 on run4
+    List(APPEND mcbm_2022_runs 2391 2488)  # Run CI only on 2391 until way to start at TS 5 of run 2488 found
+  else()
+    SET( RECO_EVNTS_NB 3)
+    SET( RAW_DATA_UNPACK_TO 700) # Nightly mode on run4: 525 for 2391, 601 for 2488
+    SET( RAW_DATA_BUILD_TO  600) # Nightly mode on run4: 155 for 2391, 190 for 2488
+    SET( RAW_DATA_RECO_TO 2600)  # Nightly mode on run4: 140 for 1 TS in 2391 and 2488
+    List(APPEND mcbm_2022_runs 2391 2488)  # Run CI only on 2391 until way to start at TS 5 of run 2488 found
   endif()
 
-
-
   # ====================================================================
-  ForEach(RUN 2391 2488 )
+  ForEach(RUN IN LISTS mcbm_2022_runs)
     Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
     If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa)
       Message( STATUS "Raw data file found, tests will be performed for mCBM run ${RUN}" )
@@ -352,7 +358,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(testname mcbm_unpack_${RUN})
       Set(fixture_unpacked_${RUN} fixture_done_${testname})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\"
-            ${RUN}
+            ${RUN} \"\" ${RECO_EVNTS_NB}
             )
       Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT ${RAW_DATA_UNPACK_TO}
@@ -366,11 +372,12 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(testname mcbm_event_2022_${RUN})
       Set(fixture_event_${RUN} fixture_done_${testname})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh
-            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG} -1 false
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG}
+            ${RECO_EVNTS_NB} false
             \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
             )
       Set_Tests_Properties(${testname} PROPERTIES
-            TIMEOUT ${RAW_DATA_CHECK_TO}
+            TIMEOUT ${RAW_DATA_BUILD_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
             PASS_REGULAR_EXPRESSION "Macro finished successfully"
             FIXTURES_REQUIRED ${fixture_unpacked_${RUN}}
@@ -416,11 +423,12 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(testname mcbm_digievent_2022_${RUN})
       Set(fixture_digievent_${RUN} fixture_done_${testname})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh
-            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG} -1 true
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG}
+            ${RECO_EVNTS_NB} true
             \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
             )
       Set_Tests_Properties(${testname} PROPERTIES
-            TIMEOUT ${RAW_DATA_CHECK_TO}
+            TIMEOUT ${RAW_DATA_BUILD_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
             PASS_REGULAR_EXPRESSION "Macro finished successfully"
             FIXTURES_REQUIRED ${fixture_event_${RUN}}
