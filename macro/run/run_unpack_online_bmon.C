@@ -65,8 +65,8 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
 
 
   // -----   CbmSetup   -----------------------------------------------------
-  /// Do automatic mapping only if not overridden by user
-  if (defaultSetupName == setupName) {
+  /// Do automatic mapping only if not overridden by user or empty
+  if (defaultSetupName == setupName || "" == setupName) {
     cbm::mcbm::ToForceLibLoad dummy;  /// Needed to trigger loading of the library as no fct dict in ROOT6 and CLING
     try {
       setupName = cbm::mcbm::GetSetupFromRunId(runid);
