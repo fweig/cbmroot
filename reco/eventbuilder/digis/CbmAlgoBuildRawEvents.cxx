@@ -29,6 +29,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <THttpServer.h>
+#include <TProfile.h>
 #include <TStopwatch.h>
 
 template<>
@@ -962,6 +963,21 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
   outFolder->Add(fhCpuTimePerTsHist);
   outFolder->Add(fhRealTimePerTsHist);
 
+  if (EOverlapModeRaw::AllowOverlap == fOverMode) {
+    fhOverEventShare   = new TH1I("fhOverEventShare", "Share of overlap evt; Overlap? []; Events", 2, -0.5, 1.5);
+    fhOverEventShareTs = new TProfile(
+      "fhOverEventShareTs", "Share of overlap evt per TS; TS index []; Overlap Events prop. []", 2500, 0, 2500);
+    fhOverEventSizeTs =
+      new TH2I("fhOverEventSizeTs", "Size of overlap of evt per TS; TS index []; Size of overlap between events [ns]",
+               2500, 0, 2500, 200, 0, 1000);
+    AddHistoToVector(fhOverEventShare, "evtbuild");
+    AddHistoToVector(fhOverEventShareTs, "evtbuild");
+    AddHistoToVector(fhOverEventSizeTs, "evtbuild");
+    outFolder->Add(fhOverEventShare);
+    outFolder->Add(fhOverEventShareTs);
+    outFolder->Add(fhOverEventSizeTs);
+  }
+
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     /// In case name not provided, do not create the histo to avoid name conflicts!
@@ -1181,7 +1197,26 @@ void CbmAlgoBuildRawEvents::FillHistos()
   Double_t dPreEvtTime = -1.0;
   for (CbmEvent* evt : fEventVector) {
     fhEventTime->Fill(evt->GetStartTime() * 1e-9);
-    if (0.0 <= dPreEvtTime) { fhEventDt->Fill((evt->GetStartTime() - dPreEvtTime) * 1e-9); }
+    if (0.0 <= dPreEvtTime) {
+      fhEventDt->Fill((evt->GetStartTime() - dPreEvtTime) * 1e-9);
+
+      if (EOverlapModeRaw::AllowOverlap == fOverMode) {
+        if (evt->GetStartTime() - dPreEvtTime < fdWidestTimeWinRange) {
+          fhOverEventShare->Fill(1);
+          fhOverEventShareTs->Fill(fuNrTs, 1);
+          fhOverEventSizeTs->Fill(fuNrTs, fdWidestTimeWinRange - (evt->GetStartTime() - dPreEvtTime));
+        }
+        else {
+          fhOverEventShare->Fill(0);
+          fhOverEventShareTs->Fill(fuNrTs, 0);
+        }
+      }
+    }
+    else if (EOverlapModeRaw::AllowOverlap == fOverMode) {
+      /// First event cannot be in overlap
+      fhOverEventShare->Fill(0);
+      fhOverEventShareTs->Fill(fuNrTs, 0);
+    }
 
     fhEventSize->Fill(evt->GetNofData());
     fhNbDigiPerEvtTime->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData());

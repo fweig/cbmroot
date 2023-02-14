@@ -35,6 +35,7 @@ class CbmBmonDigi;
 class TClonesArray;
 class TH1;
 class TH2;
+class TProfile;
 class TNamed;
 class TStopwatch;
 class TCanvas;
@@ -352,6 +353,10 @@ private:
   std::vector<TH1*> fvhInpRatioPerTsSz = {};       /// ratio of input digi size in total input size vs TS in run
   std::vector<TH1*> fvhOutRatioPerTsSz = {};       /// ratio of selected digi size in total event size vs TS in run
   TH1* fhSizeReductionPerTs            = nullptr;  /// ratio of total selected size to input size selected vs TS in run
+
+  TH1* fhOverEventShare        = nullptr;  //! histogram with proportion of overlap evt, AllowOverlap only
+  TProfile* fhOverEventShareTs = nullptr;  //! histogram with proportion of overlap evt vs TS index, AllowOverlap only
+  TH2* fhOverEventSizeTs       = nullptr;  //! histogram with size of overlap between evt vs TS index, AllowOverlap only
 
   /// Internal state variables
   UInt_t fuCurEv            = 0;   //! Event Counter
