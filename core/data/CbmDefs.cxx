@@ -17,13 +17,13 @@
 // the values 11-15 are reserved for future detectors.
 // The ids of the passive modules are only relevant at run time so they can
 // be shifted easily
-// The opeartor takes care about the non continuous values for the enum
+// The operator takes care about the non continuous values for the enum
 // When it reaches the last detector it automatically continuous with the
 // first passive module
 ECbmModuleId& operator++(ECbmModuleId& e)
 {
   if (e == ECbmModuleId::kLastModule) { throw std::out_of_range("for ECbmModuleId& operator ++ (ECbmModuleId&)"); }
-  else if (e == ECbmModuleId::kT0) {
+  else if (e == ECbmModuleId::kNofSystems) {  // jump over gap between end of detectors and begin of passives
     e = ECbmModuleId::kMagnet;
   }
   else {
