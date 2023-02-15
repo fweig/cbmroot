@@ -54,9 +54,6 @@
 #include <map>
 #include <vector>
 
-#include <cmath>
-#include <math.h>
-
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Def.h"
 #include "L1Algo/L1Fit.h"

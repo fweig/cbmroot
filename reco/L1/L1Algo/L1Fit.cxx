@@ -1725,4 +1725,133 @@ void L1Fit::FilterChi2(const L1UMeasurementInfo& info, cnst& x, cnst& y, cnst& C
   chi2 += zeta * zeta / (du2 + HCH);
 }
 
+
+void L1Fit::GuessTrack(const fvec& trackZ, const fvec hitX[], const fvec hitY[], const fvec hitZ[], const fvec hitT[],
+                       const fvec By[], const fmask hitW[], const fmask hitWtime[], int NHits)
+{
+  // gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
+
+  const fvec c_light(0.000299792458), c_light_i(fvec(1.) / c_light);
+
+  fvec A0 = 0., A1 = 0., A2 = 0., A3 = 0., A4 = 0., A5 = 0.;
+  fvec a0 = 0., a1 = 0., a2 = 0.;
+  fvec b0 = 0., b1 = 0., b2 = 0.;
+
+  fvec time       = 0.;
+  fmask isTimeSet = fmask::Zero();
+
+  fvec prevZ = 0.;
+  fvec sy = 0., Sy = 0.;  // field integrals
+
+  for (int i = 0; i < NHits; i++) {
+
+    fvec w = iif(hitW[i], fvec::One(), fvec::Zero());
+
+    fmask setTime = (!isTimeSet) && hitWtime[i] && hitW[i];
+    time(setTime) = hitT[i];
+    isTimeSet     = isTimeSet || setTime;
+
+    fvec x = hitX[i];
+    fvec y = hitY[i];
+    fvec z = hitZ[i] - trackZ;
+
+    {
+      fvec dZ = z - prevZ;
+      Sy(hitW[i]) += dZ * sy + fvec(0.5) * dZ * dZ * By[i];
+      sy(hitW[i]) += dZ * By[i];
+      prevZ(hitW[i]) = z;
+    }
+
+    fvec S = Sy;
+
+    fvec wz = w * z;
+    fvec wS = w * S;
+
+    A0 += w;
+    A1 += wz;
+    A2 += wz * z;
+    A3 += wS;
+    A4 += wS * z;
+    A5 += wS * S;
+
+    a0 += w * x;
+    a1 += wz * x;
+    a2 += wS * x;
+
+    b0 += w * y;
+    b1 += wz * y;
+    b2 += wS * y;
+  }
+
+  fvec m00 = A0;
+  fvec m01 = A1;
+  fvec m02 = A3;
+
+  fvec m11 = A2;
+  fvec m12 = A4;
+
+  fvec m22 = A5;
+
+  fvec m21 = m12;
+
+  // { m00 m01 m02 }       ( a0 )
+  // { m01 m11 m12 } = x * ( a1 )
+  // { m02 m21 m22 }       ( a2 )
+
+  {  // triangulation row 0
+    m11 = m00 * m11 - m01 * m01;
+    m12 = m00 * m12 - m01 * m02;
+    a1  = m00 * a1 - m01 * a0;
+
+    m21 = m00 * m21 - m02 * m01;
+    m22 = m00 * m22 - m02 * m02;
+    a2  = m00 * a2 - m02 * a0;
+  }
+
+  {  // triangulation step row 1
+    m22 = m11 * m22 - m21 * m12;
+    a2  = m11 * a2 - m21 * a1;
+  }
+
+  fvec L = 0.;
+  {  // diagonalization row 2
+    L(abs(m22) > fvec(1.e-4)) = a2 / m22;
+    a1 -= L * m12;
+    a0 -= L * m02;
+  }
+
+  {  // diagonalization row 1
+    fTr.tx = a1 / m11;
+    a0 -= fTr.tx * m01;
+  }
+
+  {  // diagonalization row 0
+    fTr.x = a0 / m00;
+  }
+
+  fvec txtx1 = fvec(1.) + fTr.tx * fTr.tx;
+  L          = L / txtx1;
+  fvec L1    = L * fTr.tx;
+
+  A1 = A1 + A3 * L1;
+  A2 = A2 + (A4 + A4 + A5 * L1) * L1;
+  b1 += b2 * L1;
+
+  // { A0 A1 } = x * ( b0 )
+  // { A1 A2 }       ( b1 )
+
+  A2 = A0 * A2 - A1 * A1;
+  b1 = A0 * b1 - A1 * b0;
+
+  fTr.ty = b1 / A2;
+  fTr.y  = (b0 - A1 * fTr.ty) / A0;
+
+  fTr.qp = -L * c_light_i / sqrt(txtx1 + fTr.ty * fTr.ty);
+  fTr.t  = time;
+  fTr.z  = trackZ;
+  fTr.vi = 0.;
+  fQp0   = fTr.qp;
+}
+
+
 #undef cnst

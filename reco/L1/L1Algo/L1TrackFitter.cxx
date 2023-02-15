@@ -75,8 +75,8 @@ void L1Algo::L1KFTrackFitter()
   fvec time_first;
   fvec dt2_first;
 
-  fvec x_last, x_2last;
-  fvec y_last, y_2last;
+  fvec x_last;
+  fvec y_last;
   fvec d_xx_lst;
   fvec d_yy_lst;
   fvec d_xy_lst;
@@ -85,7 +85,7 @@ void L1Algo::L1KFTrackFitter()
   fvec dt2_last;
   //  fvec dt2_lst;  /// TODO: Why are there two different variables for the time error on the last station?
 
-  fvec Sy[L1Constants::size::kMaxNstations];
+  fvec By[L1Constants::size::kMaxNstations];
   fmask w[L1Constants::size::kMaxNstations];
   fmask w_time[L1Constants::size::kMaxNstations];  // !!!
 
@@ -95,7 +95,7 @@ void L1Algo::L1KFTrackFitter()
   fvec fldZ1;
   fvec fldZ2;
   fvec z_start;
-  fvec z_end, z_2last;
+  fvec z_end;
 
   L1FieldValue fB[L1Constants::size::kMaxNstations], fB_temp _fvecalignment;
 
@@ -182,34 +182,16 @@ void L1Algo::L1KFTrackFitter()
           time_last[iVec] = time[ista][iVec];
           dt2_last[iVec]  = dt2[ista][iVec];
         }
-        else if (ih == nHitsTrack - 2) {
-          z_2last[iVec] = z[ista][iVec];
-          x_2last[iVec] = x[ista][iVec];
-          y_2last[iVec] = y[ista][iVec];
-        }
       }
 
-      fscal prevZ = z_end[iVec];
-      fscal cursy = 0., curSy = 0.;
       for (int ih = nHitsTrack - 1; ih >= 0; ih--) {
         const int ista      = iSta[ih];
         const L1Station& st = fParameters.GetStation(ista);
-        const fscal curZ    = z[ista][iVec];
-        fscal dZ            = curZ - prevZ;
-        fscal By            = st.fieldSlice.cy[0][0];
-        curSy += dZ * cursy + dZ * dZ * By / 2.;
-        cursy += dZ * By;
-        Sy[ista][iVec] = curSy;
-        prevZ          = curZ;
+        By[ista][iVec]      = st.fieldSlice.cy[0][0];
       }
     }
 
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-      GuessVecNoField(fit, x_last, x_2last, y_last, y_2last, z_end, z_2last, time_last, w_time, dt2_last);
-    }
-    else {
-      GuessVec(fit, x, y, z, Sy, w, nStations, &z_end, time, w_time);
-    }
+    fit.GuessTrack(z_end, x, y, z, time, By, w, w_time, nStations);
 
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { tr.qp = fvec(1. / 1.1); }
 
@@ -232,7 +214,6 @@ void L1Algo::L1KFTrackFitter()
       tr.y   = y_last;
       tr.t   = time_last;
       tr.NDF = -3.0;
-
 
       fldZ1 = z[ista];
 
@@ -324,7 +305,13 @@ void L1Algo::L1KFTrackFitter()
 
       ista = 0;
 
-      FilterFirst(fit, x_first, y_first, time_first, dt2_first, d_xx_fst, d_yy_fst, d_xy_fst);
+      tr.ResetErrors(d_xx_fst, d_yy_fst, 0.1, 0.1, 1., dt2_first, 1.e2);
+      tr.C10 = d_xy_fst;
+
+      tr.x   = x_first;
+      tr.y   = y_first;
+      tr.t   = time_first;
+      tr.NDF = -3.0;
 
       fit.SetQp0(tr.qp);
 
@@ -373,191 +360,4 @@ void L1Algo::L1KFTrackFitter()
 
     }  // iter
   }
-}
-void L1Algo::GuessVecNoField(L1Fit& track, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end,
-                             fvec& z_2last, fvec& time_last, fmask* /*w_time*/, fvec& dt2_last)
-{
-  L1TrackPar& tr = track.Tr();
-
-  fvec dzi = fvec(1.) / (z_end - z_2last);
-
-  tr.x  = x_last;
-  tr.y  = y_last;
-  tr.tx = (x_last - x_2last) * dzi;
-  tr.ty = (y_last - y_2last) * dzi;
-  tr.t  = time_last;
-  tr.z  = z_end;
-
-  tr.ResetErrors(1., 1., 1., 1., 1., dt2_last, 1.e2);
-  tr.NDF = fvec(2.);
-}
-
-
-void L1Algo::GuessVec(L1TrackPar& tr, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmask* wV, int NHits, fvec* zCur)
-// gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
-{
-
-  fvec A0, A1 = 0., A2 = 0., A3 = 0., A4 = 0., A5 = 0., a0, a1 = 0., a2 = 0., b0, b1 = 0., b2 = 0.;
-  fvec z0, x, y, z, S, w, wz, wS;
-
-  int i = NHits - 1;
-  if (zCur) z0 = *zCur;
-  else
-    z0 = zV[i];
-  w  = iif(wV[i], fvec::One(), fvec::Zero());
-  A0 = w;
-  a0 = w * xV[i];
-  b0 = w * yV[i];
-  for (i = 0; i < NHits; i++) {
-    x  = xV[i];
-    y  = yV[i];
-    w  = iif(wV[i], fvec::One(), fvec::Zero());
-    z  = zV[i] - z0;
-    S  = Sy[i];
-    wz = w * z;
-    wS = w * S;
-    A0 += w;
-    A1 += wz;
-    A2 += wz * z;
-    A3 += wS;
-    A4 += wS * z;
-    A5 += wS * S;
-    a0 += w * x;
-    a1 += wz * x;
-    a2 += wS * x;
-    b0 += w * y;
-    b1 += wz * y;
-    b2 += wS * y;
-  }
-
-  fvec A3A3 = A3 * A3;
-  fvec A3A4 = A3 * A4;
-  fvec A1A5 = A1 * A5;
-  fvec A2A5 = A2 * A5;
-  fvec A4A4 = A4 * A4;
-
-  fvec det = fvec::One() / (-A2 * A3A3 + A1 * (A3A4 + A3A4 - A1A5) + A0 * (A2A5 - A4A4));
-  fvec Ai0 = (-A4A4 + A2A5);
-  fvec Ai1 = (A3A4 - A1A5);
-  fvec Ai2 = (-A3A3 + A0 * A5);
-  fvec Ai3 = (-A2 * A3 + A1 * A4);
-  fvec Ai4 = (A1 * A3 - A0 * A4);
-  fvec Ai5 = (-A1 * A1 + A0 * A2);
-
-  fvec L, L1;
-  tr.x       = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
-  tr.tx      = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
-  fvec txtx1 = fvec(1.) + tr.tx * tr.tx;
-  L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
-  L1         = L * tr.tx;
-  A1         = A1 + A3 * L1;
-  A2         = A2 + (A4 + A4 + A5 * L1) * L1;
-  b1 += b2 * L1;
-  det = fvec::One() / (-A1 * A1 + A0 * A2);
-
-  tr.y  = (A2 * b0 - A1 * b1) * det;
-  tr.ty = (-A1 * b0 + A0 * b1) * det;
-  tr.qp = -L * c_light_i / sqrt(txtx1 + tr.ty * tr.ty);
-  tr.z  = z0;
-}
-
-void L1Algo::GuessVec(L1Fit& track, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmask* wV, int NHits, fvec* zCur,
-                      fvec* timeV, fmask* w_time)
-// gives nice initial approximation for x,y,tx,ty - almost same as KF fit. qp - is shifted by 4%, resid_ual - ~3.5% (KF fit resid_ual - 1%).
-{
-  L1TrackPar& tr = track.Tr();
-
-  fvec A0, A1 = 0., A2 = 0., A3 = 0., A4 = 0., A5 = 0., a0, a1 = 0., a2 = 0., b0, b1 = 0., b2 = 0.;
-  fvec z0, x, y, z, S, w, wz, wS, time;
-
-  time = fvec(0.);
-
-  int i = NHits - 1;
-  if (zCur) { z0 = *zCur; }
-  else {
-    z0 = zV[i];
-  }
-
-  w  = iif(wV[i], fvec::One(), fvec::Zero());
-  A0 = w;
-  a0 = w * xV[i];
-  b0 = w * yV[i];
-
-  fvec nhits = 0;
-  for (i = 0; i < NHits; i++) {
-    x = xV[i];
-    y = yV[i];
-    w = iif(wV[i], fvec::One(), fvec::Zero());
-    ;
-    if (timeV) nhits(w_time[i]) += fvec::One();
-    z = zV[i] - z0;
-    S = Sy[i];
-
-    wz = w * z;
-    wS = w * S;
-
-    A0 += w;
-    A1 += wz;
-    A2 += wz * z;
-    A3 += wS;
-    A4 += wS * z;
-    A5 += wS * S;
-    a0 += w * x;
-    a1 += wz * x;
-    a2 += wS * x;
-    b0 += w * y;
-    b1 += wz * y;
-    b2 += wS * y;
-    if (timeV) {
-      fvec dx = xV[i] - fParameters.GetTargetPositionX();
-      fvec dy = yV[i] - fParameters.GetTargetPositionY();
-      fvec dz = zV[i] - fParameters.GetTargetPositionZ();
-      time(w_time[i]) += (timeV[i] - sqrt(dx * dx + dy * dy + dz * dz) / fvec(30.));
-    }
-  }
-
-  fvec A3A3 = A3 * A3;
-  fvec A3A4 = A3 * A4;
-  fvec A1A5 = A1 * A5;
-  fvec A2A5 = A2 * A5;
-  fvec A4A4 = A4 * A4;
-
-  fvec det = fvec::One() / (-A2 * A3A3 + A1 * (A3A4 + A3A4 - A1A5) + A0 * (A2A5 - A4A4));
-  fvec Ai0 = (-A4A4 + A2A5);
-  fvec Ai1 = (A3A4 - A1A5);
-  fvec Ai2 = (-A3A3 + A0 * A5);
-  fvec Ai3 = (-A2 * A3 + A1 * A4);
-  fvec Ai4 = (A1 * A3 - A0 * A4);
-  fvec Ai5 = (-A1 * A1 + A0 * A2);
-
-  fvec L, L1;
-  tr.x       = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
-  tr.tx      = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
-  fvec txtx1 = fvec(1.) + tr.tx * tr.tx;
-  L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
-  L1         = L * tr.tx;
-  A1         = A1 + A3 * L1;
-  A2         = A2 + (A4 + A4 + A5 * L1) * L1;
-  b1 += b2 * L1;
-  det   = fvec::One() / (-A1 * A1 + A0 * A2);
-  tr.y  = (A2 * b0 - A1 * b1) * det;
-  tr.ty = (-A1 * b0 + A0 * b1) * det;
-  tr.qp = -L * c_light_i / sqrt(txtx1 + tr.ty * tr.ty);
-  if (timeV) { tr.t = iif(nhits > fvec::Zero(), time / nhits, fvec::Zero()); }
-
-  tr.z = z0;
-}
-
-
-void L1Algo::FilterFirst(L1Fit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& d_xx, fvec& d_yy, fvec& d_xy)
-{
-  L1TrackPar& tr = track.Tr();
-
-  tr.ResetErrors(d_xx, d_yy, 0.1, 0.1, 1., dt2, 1.e2);
-  tr.C10 = d_xy;
-
-  tr.x   = x;
-  tr.y   = y;
-  tr.t   = t;
-  tr.NDF = -3.0;
 }

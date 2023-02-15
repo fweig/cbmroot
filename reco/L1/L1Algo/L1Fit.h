@@ -130,6 +130,9 @@ public:
   static void FilterChi2(const L1UMeasurementInfo& info, cnst& x, cnst& y, cnst& C00, cnst& C10, cnst& C11, fvec& chi2,
                          cnst& u, cnst& du2);
 
+  void GuessTrack(const fvec& trackZ, const fvec hitX[], const fvec hitY[], const fvec hitZ[], const fvec hitT[],
+                  const fvec By[], const fmask hitW[], const fmask hitWtime[], int NHits);
+
 private:
   fmask fMask {fmask::One()};  // mask of active elements in simd vectors
   fvec fMaskF {fvec::One()};   // floating point representation of fMask

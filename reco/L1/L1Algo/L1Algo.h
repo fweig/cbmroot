@@ -336,18 +336,6 @@ public:
     int istal, int istam, int istar, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex& n_2,
     L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2);
 
-
-  ///  ------ Subroutines used by L1Algo::KFTrackFitter()  ------
-
-  void GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmask* wV, int NHits, fvec* zCur = 0);
-  void GuessVec(L1Fit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fmask* wV, int NHits, fvec* zCur = 0, fvec* timeV = 0,
-                fmask* w_time = 0);
-  void GuessVecNoField(L1Fit& t, fvec& x_last, fvec& x_2last, fvec& y_last, fvec& y_2last, fvec& z_end, fvec& z_2last,
-                       fvec& time_last, fmask* w_time, fvec& dt2_last);
-
-  void FilterFirst(L1Fit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& dx2, fvec& dy2, fvec& dxy);
-
-
 #ifdef DRAW
   L1AlgoDraw* draw {nullptr};
   void DrawRecoTracksTime(const L1Vector<CbmL1Track>& tracks);
