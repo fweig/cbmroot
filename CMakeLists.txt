@@ -54,7 +54,6 @@ include(CbmGenerateConfig)
 include(CbmMacros)
 include(CbmTargets)
 include(CbmCompilerSettings)
-include(ROOTMacros)
 
 include(FairMacros)
 include(WriteConfigFile)
