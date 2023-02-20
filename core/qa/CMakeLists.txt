@@ -1,4 +1,5 @@
 set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}/checker
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
@@ -10,6 +11,13 @@ set(SRCS
   CbmQaTable.cxx
   CbmQaTask.cxx
   CbmQaIO.cxx
+  checker/CbmQaCheckerCore.cxx
+  checker/CbmQaCheckerFileHandler.cxx
+  checker/CbmQaCheckerHist1DHandler.cxx
+  checker/CbmQaCheckerHist2DHandler.cxx
+  checker/CbmQaCheckerObjectHandler.cxx
+  checker/CbmQaCheckerProfile1DHandler.cxx
+  checker/CbmQaCheckerObjectDB.cxx
   )
 
 set(HEADERS
@@ -27,12 +35,17 @@ set(PUBLIC_DEPENDENCIES
   ROOT::Hist
   )
 
+set(PRIVATE_DEPENDENCIES
+  external::yaml-cpp
+  )
+
 set(INTERFACE_DEPENDENCIES
   ROOT::Graf
   )
 
 generate_cbm_library()
 
-Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h CbmQaConstants.h CbmQaCmpDrawer.h
+Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h CbmQaConstants.h CbmQaCmpDrawer.h checker/CbmQaCheckerTypedefs.h
         DESTINATION include
-       )
+        )
+

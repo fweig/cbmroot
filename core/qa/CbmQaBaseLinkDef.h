@@ -25,5 +25,12 @@
 #pragma link C++ class CbmQaHist < TProfile2D> + ;
 #pragma link C++ class CbmQaTable + ;
 #pragma link C++ class CbmQaTask + ;
+#pragma link C++ class cbm::qa::checker::Core + ;
+#pragma link C++ class cbm::qa::checker::FileHandler + ;
+#pragma link C++ class cbm::qa::checker::Hist1DHandler + ;
+#pragma link C++ class cbm::qa::checker::Hist2DHandler + ;
+#pragma link C++ class cbm::qa::checker::Profile1DHandler + ;
+#pragma link C++ class cbm::qa::checker::ObjectHandler + ;
+#pragma link C++ class cbm::qa::checker::ObjectDB + ;
 
 #endif
