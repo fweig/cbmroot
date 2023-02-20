@@ -273,8 +273,8 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   SET( RAW_DATA_CHECK_TO  600) # Nightly mode on run4: 562 for run 1588
   if(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
     Message( STATUS "Profiling model detected, increasing timeout for mCBM 2021 tests with coverage." )
-    SET( RAW_DATA_UNPACK_TO 800) # Coverage mode: 716 for run 1588 on run4
-    SET( RAW_DATA_CHECK_TO  800) # Coverage mode: 654 for run 1588 on run4
+    SET( RAW_DATA_UNPACK_TO 1600) # Coverage mode: 716 for run 1588 on run4
+    SET( RAW_DATA_CHECK_TO  1000) # Coverage mode: 654 for run 1588 on run4
   endif()
   # ====================================================================
 
@@ -324,8 +324,8 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   elseif(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
     Message( STATUS "Profiling model detected, increasing timeout and event nb for mCBM 2022 tests with coverage." )
     SET( RECO_EVNTS_NB 20)
-    SET( RAW_DATA_UNPACK_TO 2200) # Coverage mode: 1669 for run 2391, 2085 for run 2488
-    SET( RAW_DATA_BUILD_TO   300) # Coverage mode:  171 for run 2391,  213 for run 2488
+    SET( RAW_DATA_UNPACK_TO 4000) # Coverage mode: 1669 for run 2391, 2085 for run 2488
+    SET( RAW_DATA_BUILD_TO   600) # Coverage mode:  171 for run 2391,  213 for run 2488
     SET( RAW_DATA_RECO_TO 7200)   # Coverage mode: ~380 for 1 TS in 2391 and ~500 in 2488 on run4
     List(APPEND mcbm_2022_runs 2391 2488)  # Run CI only on 2391 until way to start at TS 5 of run 2488 found
   else()
