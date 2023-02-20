@@ -41,6 +41,7 @@ private:
   int istart_time_ {AnalysisTree::UndefValueInt};
   int iend_time_ {AnalysisTree::UndefValueInt};
   int imatch_weight_ {AnalysisTree::UndefValueInt};
+  int iT0_ {AnalysisTree::UndefValueInt};
 
   ClassDef(CbmRecEventHeaderConverter, 1)
 };

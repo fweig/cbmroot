@@ -6,6 +6,7 @@
 #define ANALYSIS_TREE_SIMEVENTHEADERCONVERTER_H_
 
 #include "CbmConverterTask.h"
+#include "CbmMCEventList.h"
 
 #include "AnalysisTree/EventHeader.hpp"
 
@@ -29,6 +30,7 @@ private:
   FairMCEventHeader* cbm_header_ {nullptr};
   CbmMCDataManager* cbm_mc_manager_ {nullptr};
   CbmMCDataObject* cbm_header_obj_ {nullptr};
+  CbmMCEventList* cbm_mc_event_list_ {nullptr};
 
   int ipsi_RP_ {AnalysisTree::UndefValueInt};
   int ib_ {AnalysisTree::UndefValueInt};
@@ -36,6 +38,7 @@ private:
   int iend_time_ {AnalysisTree::UndefValueInt};
   int irun_id_ {AnalysisTree::UndefValueInt};
   int ievent_id_ {AnalysisTree::UndefValueInt};
+  int iT0_ {AnalysisTree::UndefValueInt};
 
   ClassDef(CbmSimEventHeaderConverter, 1)
 };

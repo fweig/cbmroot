@@ -38,6 +38,7 @@ void CbmRecEventHeaderConverter::Init()
   RecEventHeaderBranch.AddField<float>("start_time", "Start time of the event, ns");
   RecEventHeaderBranch.AddField<float>("end_time", "End time of the event, ns");
   RecEventHeaderBranch.AddField<float>("match_weight", "");
+  RecEventHeaderBranch.AddField<float>("T0", "Reconstructed T0, ns");
 
   ivtx_chi2_     = RecEventHeaderBranch.GetFieldId("vtx_chi2");
   iEpsd_         = RecEventHeaderBranch.GetFieldId("Epsd");
@@ -46,6 +47,7 @@ void CbmRecEventHeaderConverter::Init()
   istart_time_   = RecEventHeaderBranch.GetFieldId("start_time");
   iend_time_     = RecEventHeaderBranch.GetFieldId("end_time");
   imatch_weight_ = RecEventHeaderBranch.GetFieldId("match_weight");
+  iT0_           = RecEventHeaderBranch.GetFieldId("T0");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(rec_event_header_, RecEventHeaderBranch);
@@ -66,11 +68,12 @@ void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
   rec_event_header_->SetField(GetPsdEnergy(event), iEpsd_);
 
   int evt_id;
-  float match_weight, start_time, end_time;
+  float match_weight, start_time, end_time, T0;
   if (event) {
     evt_id     = event->GetUniqueID();
     start_time = event->GetStartTime();
     end_time   = event->GetEndTime();
+    T0         = event->GetTzero();
     if (event->GetMatch()) match_weight = float(event->GetMatch()->GetMatchedLink().GetWeight());
     else
       match_weight = 0.;
@@ -79,11 +82,13 @@ void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
     evt_id       = cbm_header_->GetEventID();
     start_time   = cbm_header_->GetT();
     end_time     = cbm_header_->GetT();
+    T0           = -999999.;
     match_weight = 1.;
   }
   rec_event_header_->SetField(evt_id, ievt_id_);
   rec_event_header_->SetField(start_time, istart_time_);
   rec_event_header_->SetField(end_time, iend_time_);
+  rec_event_header_->SetField(T0, iT0_);
   rec_event_header_->SetField(match_weight, imatch_weight_);
 }
 

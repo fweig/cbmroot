@@ -120,8 +120,8 @@ void CbmTofHitsConverter::ProcessData(CbmEvent* event)
     const Int_t q      = param_last.GetQp() > 0 ? 1 : -1;
     const Float_t l    = globalTrack->GetLength();  // l is calculated by global tracking
     const Float_t time = tofHit->GetTime();
-    const Float_t beta = l / (time * 29.9792458);
-    const Float_t m2   = p * p * (1. / (beta * beta) - 1.);
+    const Float_t beta = event ? l / ((time - event->GetTzero()) * 29.9792458) : 0;
+    const Float_t m2   = event ? p * p * (1. / (beta * beta) - 1.) : -1.;
 
     const Float_t hitX = tofHit->GetX();
     const Float_t hitY = tofHit->GetY();
