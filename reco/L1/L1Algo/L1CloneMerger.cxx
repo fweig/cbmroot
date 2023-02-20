@@ -114,7 +114,10 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       Tf.copyFromArrays(extTracks[jTr].TLast, extTracks[jTr].CLast);
       fitF.SetQp0(fitF.Tr().qp);
 
-      if (fabs(Tf.t[0] - Tb.t[0]) > 3 * sqrt(Tf.C55[0] + Tb.C55[0])) continue;
+      if (Tf.nTimeMeasurements[0] > 0 && Tb.nTimeMeasurements[0] > 0) {
+        if (fabs(Tf.t[0] - Tb.t[0]) > 3 * sqrt(Tf.C55[0] + Tb.C55[0])) continue;
+      }
+
       unsigned short stam;
 
       frAlgo.GetParameters()->GetStation(staf).fieldSlice.GetFieldValue(Tf.x, Tf.y, fBf);

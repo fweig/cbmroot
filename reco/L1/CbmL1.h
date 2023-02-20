@@ -420,6 +420,8 @@ private:
   /// \note Should be called only after CbmL1::Performance()
   void TrackFitPerformance();
 
+  void FillFitHistos(L1TrackPar& tr, const CbmL1MCPoint& mc, bool isTimeFitted, TH1F* h[]);
+
   /// Fills performance histograms
   void HistoPerformance();
 
@@ -485,7 +487,7 @@ public:
   L1InitManager fInitManager;      ///< Tracking parameters data manager
   L1IODataManager fIODataManager;  ///< Input-output data manager
 
-  bool fMissingHits  = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup
+  bool fMissingHits = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup
 
   L1Algo::TrackingMode fTrackingMode = L1Algo::TrackingMode::kSts;  ///< Tracking mode: kSts, kMcbm or kGlobal
 

@@ -88,7 +88,7 @@ struct TmpHit {
   double ty;            ///< MC slopes of the mc point
   int iMC;              ///< index of MCPoint in the fvMCPoints array
   double time = 0.;     ///< time of the hit [ns]
-  double dt   = 1.e10;  ///< time error of the hit [ns]
+  double dt   = 1.e4;   ///< time error of the hit [ns]
   int Det;
   int id;  ///< index of hit before hits sorting
   int track;
@@ -1358,6 +1358,8 @@ void CbmL1::Fill_vMCTracks()
     auto header = dynamic_cast<FairMCEventHeader*>(fpMcEventHeader->Get(iFile, iEvent));
     assert(header);
 
+    double eventTime = fpEventList->GetEventTime(iEvent, iFile);
+
     Int_t nMCTrack = fpMCTracks->Size(iFile, iEvent);
     /* Loop over MC tracks */
     for (Int_t iMCTrack = 0; iMCTrack < nMCTrack; iMCTrack++) {
@@ -1385,7 +1387,7 @@ void CbmL1::Fill_vMCTracks()
       Int_t iTrack = fvMCTracks.size();  //or iMCTrack?
       CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg, processID);
       //        CbmL1MCTrack T(mass, q, vr, vp, iMCTrack, mother_ID, pdg);
-      T.time   = MCTrack->GetStartT();
+      T.time   = eventTime + MCTrack->GetStartT();
       T.iFile  = iFile;
       T.iEvent = iEvent;
       // signal: primary tracks, displaced from the primary vertex
@@ -1474,9 +1476,9 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 
     if (!pt) return 1;
     if (!fLegacyEventMode) {
-      Double_t StartTime     = fTimeSlice->GetStartTime();                              // not used
-      Double_t EndTime       = fTimeSlice->GetEndTime();                                // not used
-      Double_t Time_MC_point = eventTime + pt->GetTime();                               // not used
+      Double_t StartTime     = fTimeSlice->GetStartTime();  // not used
+      Double_t EndTime       = fTimeSlice->GetEndTime();    // not used
+      Double_t Time_MC_point = eventTime + pt->GetTime();   // not used
 
       if (StartTime > 0)
         if (Time_MC_point < StartTime) return 1;

@@ -70,8 +70,8 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& Tout, const bool di
 
   fvec dzi = fvec(1.) / (z1 - z0);
 
-  T.x             = x0;
-  T.y             = y0;
+  T.x = x0;
+  T.y = y0;
   if (initParams) {
     T.tx = (x1 - x0) * dzi;
     T.ty = (y1 - y0) * dzi;
@@ -242,7 +242,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
 
       const L1Hit& hit = (*vHitsUnused)[globalInd];
 
-      if (sta.timeInfo) {
+      if (sta.timeInfo && tr.nTimeMeasurements[0] > 0) {
         fscal dt = hit.t - tr.t[0];
         if (dt * dt > (tr.C55[0] + hit.dt2) * 25) continue;
       }

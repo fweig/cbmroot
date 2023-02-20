@@ -335,13 +335,11 @@ InitStatus CbmL1::Init()
       if (nullptr == fpStsPoints) LOG(fatal) << GetName() << ": No StsPoint data!";
     }
 
-    if (!fUseTRD) {
-      fpTrdPoints     = 0;
-      fpTrdHitMatches = 0;
-    }
+    fpTrdPoints = mcManager->InitBranch("TrdPoint");
+
+    if (!fUseTRD) { fpTrdHitMatches = 0; }
     else {
       fpTrdHitMatches = (TClonesArray*) fairManager->GetObject("TrdHitMatch");
-      fpTrdPoints     = mcManager->InitBranch("TrdPoint");
     }
 
     if (!fUseMUCH) {
@@ -349,7 +347,6 @@ InitStatus CbmL1::Init()
       fpMuchHitMatches = 0;
     }
     else {
-
       fpMuchDigis       = (TClonesArray*) fairManager->GetObject("MuchDigi");
       fpMuchDigiMatches = (TClonesArray*) fairManager->GetObject("MuchDigiMatch");
       fpMuchClusters    = (TClonesArray*) fairManager->GetObject("MuchCluster");
@@ -357,12 +354,10 @@ InitStatus CbmL1::Init()
       fpMuchHitMatches  = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MuchPixelHitMatch"));
     }
 
-    if (!fUseTOF) {
-      fpTofPoints     = 0;
-      fpTofHitMatches = 0;
-    }
+    fpTofPoints = mcManager->InitBranch("TofPoint");
+
+    if (!fUseTOF) { fpTofHitMatches = 0; }
     else {
-      fpTofPoints     = mcManager->InitBranch("TofPoint");
       fpTofHitMatches = static_cast<TClonesArray*>(fairManager->GetObject("TofHitMatch"));
     }
   }
@@ -1040,18 +1035,19 @@ void CbmL1::Reconstruct(CbmEvent* event)
     for (L1Vector<L1Track>::iterator it = fpAlgo->fTracks.begin(); it != fpAlgo->fTracks.end(); it++) {
 
       CbmL1Track t;
-      for (int i = 0; i < 7; i++)
-        t.T[i] = it->TFirst[i];
-      for (int i = 0; i < 21; i++)
-        t.C[i] = it->CFirst[i];
-      for (int i = 0; i < 7; i++)
+
+      for (int i = 0; i < L1TrackPar::kNparTr; i++) {
+        t.T[i]     = it->TFirst[i];
         t.TLast[i] = it->TLast[i];
-      for (int i = 0; i < 21; i++)
+        t.Tpv[i]   = it->Tpv[i];
+      }
+
+      for (int i = 0; i < L1TrackPar::kNparCov; i++) {
+        t.C[i]     = it->CFirst[i];
         t.CLast[i] = it->CLast[i];
-      for (int k = 0; k < 7; k++)
-        t.Tpv[k] = it->Tpv[k];
-      for (int k = 0; k < 21; k++)
-        t.Cpv[k] = it->Cpv[k];
+        t.Cpv[i]   = it->Cpv[i];
+      }
+
       t.chi2 = it->chi2;
       t.NDF  = it->NDF;
       //t.T[4] = it->Momentum;

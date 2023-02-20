@@ -13,6 +13,9 @@ using namespace cbm::algo::ca;
 class L1TrackPar {
 
 public:
+  static constexpr int kNparTr {8};
+  static constexpr int kNparCov {28};
+
   fvec x {0.}, y {0.}, tx {0.}, ty {0.}, qp {0.}, z {0.}, t {0.}, vi {0.};
 
   fvec C00 {0.},
@@ -30,6 +33,8 @@ public:
     C60 {0.}, C61 {0.}, C62 {0.}, C63 {0.}, C64 {0.}, C65 {0.}, C66 {0.};
 
   fvec chi2 {0.}, NDF {0.};
+
+  fvec nTimeMeasurements {0.};
 
   L1TrackPar() = default;
 
@@ -58,7 +63,6 @@ public:
     return c[ind];
   }
 
-
   void ResetErrors(fvec c00, fvec c11, fvec c22, fvec c33, fvec c44, fvec c55, fvec c66);
 
   void Print(int i = -1) const;
@@ -70,20 +74,29 @@ public:
   bool IsConsistent(bool printWhenWrong, int nFilled) const;
 
   template<typename T>
-  void copyToArrays(const int iVec, T p[7], T c[28]) const;
+  void copyToArrays(const int iVec, T p[kNparTr], T c[kNparCov]) const;
 
   template<typename T>
-  void copyFromArrays(const int iVec, const T p[7], const T c[28]);
+  void copyFromArrays(const int iVec, const T p[kNparTr], const T c[kNparCov]);
 
   template<typename T>
-  void copyFromArrays(const T p[7], const T c[28]);
+  void copyFromArrays(const T p[kNparTr], const T c[kNparCov]);
+
+  void InitVelocityRange(fscal minP);
+
+  static constexpr float kClightNs {29.9792458};          // the speed of light cm/ns
+  static constexpr float kClightNsInv {1. / 29.9792458};  // inverse speed of light
+  static constexpr float kProtonMass   = 0.93827208816;
+  static constexpr float kPionMass     = 0.1395703918;
+  static constexpr float kMuonMass     = 0.105658375523;
+  static constexpr float kElectronMass = 0.0005109989500015;
 
 } _fvecalignment;
 
 // =============================================================================================
 
 template<typename T>
-inline void L1TrackPar::copyToArrays(const int iVec, T p[7], T c[28]) const
+inline void L1TrackPar::copyToArrays(const int iVec, T p[kNparTr], T c[kNparCov]) const
 {
   p[0] = x[iVec];
   p[1] = y[iVec];
@@ -95,13 +108,13 @@ inline void L1TrackPar::copyToArrays(const int iVec, T p[7], T c[28]) const
   p[7] = vi[iVec];
 
   const fvec* tC = &(C00);
-  for (int i = 0; i < 28; i++) {
+  for (int i = 0; i < kNparCov; i++) {
     c[i] = tC[i][iVec];
   }
 }
 
 template<typename T>
-inline void L1TrackPar::copyFromArrays(const int iVec, const T p[7], const T c[28])
+inline void L1TrackPar::copyFromArrays(const int iVec, const T p[kNparTr], const T c[kNparCov])
 {
   x[iVec]  = p[0];
   y[iVec]  = p[1];
@@ -113,7 +126,7 @@ inline void L1TrackPar::copyFromArrays(const int iVec, const T p[7], const T c[2
   vi[iVec] = p[7];
 
   fvec* tC = &(C00);
-  for (int i = 0; i < 28; i++) {
+  for (int i = 0; i < kNparCov; i++) {
     tC[i][iVec] = c[i];
   }
 
@@ -122,7 +135,7 @@ inline void L1TrackPar::copyFromArrays(const int iVec, const T p[7], const T c[2
 }
 
 template<typename T>
-inline void L1TrackPar::copyFromArrays(const T p[7], const T c[28])
+inline void L1TrackPar::copyFromArrays(const T p[kNparTr], const T c[kNparCov])
 {
   x  = p[0];
   y  = p[1];
@@ -134,7 +147,7 @@ inline void L1TrackPar::copyFromArrays(const T p[7], const T c[28])
   vi = p[7];
 
   fvec* tC = &(C00);
-  for (int i = 0; i < 28; i++) {
+  for (int i = 0; i < kNparCov; i++) {
     tC[i] = c[i];
   }
 
@@ -196,15 +209,29 @@ inline void L1TrackPar::ResetErrors(fvec c00, fvec c11, fvec c22, fvec c33, fvec
   C50 = C51 = C52 = C53 = C54 = 0.;
   C60 = C61 = C62 = C63 = C64 = C65 = 0.;
 
-  C00  = c00;
-  C11  = c11;
-  C22  = c22;
-  C33  = c33;
-  C44  = c44;
-  C55  = c55;
-  C66  = c66;
+  C00 = c00;
+  C11 = c11;
+  C22 = c22;
+  C33 = c33;
+  C44 = c44;
+  C55 = c55;
+  C66 = c66;
+
   chi2 = 0.;
   NDF  = -6.;
+  nTimeMeasurements = 0.;
+}
+
+inline void L1TrackPar::InitVelocityRange(fscal minP)
+{
+  // initialise the velocity range with respect to the minimal momentum minP {GeV/c}
+
+  fscal maxVi = sqrt(1. + (kProtonMass / minP) * (kProtonMass / minP)) * kClightNsInv;
+  fscal minVi = kClightNsInv;
+  fscal vmean = minVi + 0.4 * (maxVi - minVi);
+  fscal dvi   = (maxVi - vmean) / 3.;
+  vi          = vmean;
+  C66         = dvi * dvi;
 }
 
 #endif

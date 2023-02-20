@@ -1,11 +1,13 @@
 /* Copyright (C) 2006-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Denis Bertini [committer] */
+   Authors: Sergey Gorbunov [committer] */
 
 #ifndef CbmL1TrackPar_H
 #define CbmL1TrackPar_H
 
 #include "CbmKFTrackInterface.h"
+
+#include "L1TrackPar.h"
 
 struct CbmL1TrackPar : public CbmKFTrackInterface {
 public:
@@ -17,7 +19,7 @@ public:
   double GetMass() { return mass; }
   bool IsElectron() { return is_electron; }
 
-  double T[7], C[21], chi2;
+  double T[L1TrackPar::kNparTr], C[L1TrackPar::kNparCov], chi2;
   int NDF;
   double mass;  // mass hypothesis
   bool is_electron;

@@ -38,11 +38,10 @@ void L1Algo::L1KFTrackFitter()
   const int nStations = fParameters.GetNstationsActive();
   int nTracks_SIMD    = fvec::size();
 
-  L1Fit fit;  // fitting parametr coresponding to current track
+  L1Fit fit;  // fit parameters coresponding to the current track
   L1TrackPar& tr = fit.Tr();
-
   fit.SetParticleMass(GetDefaultParticleMass());
-  fit.SetDoFitVelocity(false);
+  fit.SetDoFitVelocity(true);
 
   L1Track* t[fvec::size()] {nullptr};
 
@@ -73,6 +72,7 @@ void L1Algo::L1KFTrackFitter()
   fvec d_xy_fst;
 
   fvec time_first;
+  fvec wtime_first;
   fvec dt2_first;
 
   fvec x_last;
@@ -82,6 +82,7 @@ void L1Algo::L1KFTrackFitter()
   fvec d_xy_lst;
 
   fvec time_last;
+  fvec wtime_last;
   fvec dt2_last;
   //  fvec dt2_lst;  /// TODO: Why are there two different variables for the time error on the last station?
 
@@ -154,7 +155,8 @@ void L1Algo::L1KFTrackFitter()
         y[ista][iVec]            = y_temp[iVec];
         time[ista][iVec]         = hit.t;
         dt2[ista][iVec]          = hit.dt2;
-        z[ista][iVec]            = hit.z;
+        if (!sta[ista].timeInfo) { dt2[ista][iVec] = 1.e4; }
+        z[ista][iVec] = hit.z;
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(du2[ista], dv2[ista]);
 
@@ -162,25 +164,27 @@ void L1Algo::L1KFTrackFitter()
         fB[ista].y[iVec] = fB_temp.y[iVec];
         fB[ista].z[iVec] = fB_temp.z[iVec];
         if (ih == 0) {
-          z_start[iVec]    = z[ista][iVec];
-          x_first[iVec]    = x[ista][iVec];
-          y_first[iVec]    = y[ista][iVec];
-          time_first[iVec] = time[ista][iVec];
-          dt2_first[iVec]  = dt2[ista][iVec];
-          d_xx_fst[iVec]   = d_xx[ista][iVec];
-          d_yy_fst[iVec]   = d_yy[ista][iVec];
-          d_xy_fst[iVec]   = d_xy[ista][iVec];
+          z_start[iVec]     = z[ista][iVec];
+          x_first[iVec]     = x[ista][iVec];
+          y_first[iVec]     = y[ista][iVec];
+          time_first[iVec]  = time[ista][iVec];
+          wtime_first[iVec] = sta[ista].timeInfo ? 1. : 0.;
+          dt2_first[iVec]   = dt2[ista][iVec];
+          d_xx_fst[iVec]    = d_xx[ista][iVec];
+          d_yy_fst[iVec]    = d_yy[ista][iVec];
+          d_xy_fst[iVec]    = d_xy[ista][iVec];
         }
 
         else if (ih == nHitsTrack - 1) {
-          z_end[iVec]     = z[ista][iVec];
-          x_last[iVec]    = x[ista][iVec];
-          y_last[iVec]    = y[ista][iVec];
-          d_xx_lst[iVec]  = d_xx[ista][iVec];
-          d_yy_lst[iVec]  = d_yy[ista][iVec];
-          d_xy_lst[iVec]  = d_xy[ista][iVec];
-          time_last[iVec] = time[ista][iVec];
-          dt2_last[iVec]  = dt2[ista][iVec];
+          z_end[iVec]      = z[ista][iVec];
+          x_last[iVec]     = x[ista][iVec];
+          y_last[iVec]     = y[ista][iVec];
+          d_xx_lst[iVec]   = d_xx[ista][iVec];
+          d_yy_lst[iVec]   = d_yy[ista][iVec];
+          d_xy_lst[iVec]   = d_xy[ista][iVec];
+          time_last[iVec]  = time[ista][iVec];
+          dt2_last[iVec]   = dt2[ista][iVec];
+          wtime_last[iVec] = sta[ista].timeInfo ? 1. : 0.;
         }
       }
 
@@ -208,12 +212,16 @@ void L1Algo::L1KFTrackFitter()
       time_last = iif(w_time[ista], time_last, fvec::Zero());
       dt2_last  = iif(w_time[ista], dt2_last, fvec(1.e6));
 
-      tr.ResetErrors(d_xx_lst, d_yy_lst, 0.1, 0.1, 1.0, dt2_last, 1.e2);
+      tr.ResetErrors(d_xx_lst, d_yy_lst, 0.1, 0.1, 1.0, dt2_last, 1.e-2);
       tr.C10 = d_xy_lst;
       tr.x   = x_last;
       tr.y   = y_last;
       tr.t   = time_last;
+      tr.vi  = L1TrackPar::kClightNsInv;
+      tr.InitVelocityRange(0.5);
       tr.NDF = -3.0;
+
+      tr.nTimeMeasurements = wtime_last;
 
       fldZ1 = z[ista];
 
@@ -286,6 +294,11 @@ void L1Algo::L1KFTrackFitter()
         }
       }
 
+      //fit.SetQp0(tr.qp);
+      //fit.SetMask(fmask::One());
+      //fit.MeasureVelocityWithQp();
+      //fit.FilterVi(L1TrackPar::kClightNsInv);
+
       L1TrackPar Tf = fit.Tr();
       if (kGlobal == fTrackingMode) { Tf.qp = fitpv.Tr().qp; }
 
@@ -299,19 +312,24 @@ void L1Algo::L1KFTrackFitter()
         fitpv.Tr().copyToArrays(iVec, t[iVec]->Tpv, t[iVec]->Cpv);
       }
 
-      if (iter == 1) continue;  // only 1.5 iterations
+      if (iter == 1) { break; }  // only 1.5 iterations
 
       // fit forward
 
       ista = 0;
 
-      tr.ResetErrors(d_xx_fst, d_yy_fst, 0.1, 0.1, 1., dt2_first, 1.e2);
+      tr.ResetErrors(d_xx_fst, d_yy_fst, 0.1, 0.1, 1., dt2_first, 1.e-2);
       tr.C10 = d_xy_fst;
 
-      tr.x   = x_first;
-      tr.y   = y_first;
-      tr.t   = time_first;
+      tr.x  = x_first;
+      tr.y  = y_first;
+      tr.t  = time_first;
+      tr.vi = L1TrackPar::kClightNsInv;
+      tr.InitVelocityRange(0.5);
+
       tr.NDF = -3.0;
+
+      tr.nTimeMeasurements = wtime_first;
 
       fit.SetQp0(tr.qp);
 
@@ -348,6 +366,11 @@ void L1Algo::L1KFTrackFitter()
         fldB1 = fldB0;
         fldZ1 = fldZ0;
       }
+
+      //fit.SetQp0(tr.qp);
+      //fit.SetMask(fmask::One());
+      //fit.MeasureVelocityWithQp();
+      //fit.FilterVi(L1TrackPar::kClightNsInv);
 
       L1TrackPar Tl = fit.Tr();
       if (kGlobal == fTrackingMode) { Tl.qp = fitpv.Tr().qp; }

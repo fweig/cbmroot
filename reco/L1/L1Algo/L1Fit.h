@@ -83,11 +83,21 @@ public:
   /// get the particle mass squared
   fvec GetParticleMass2() const { return fMass2; }
 
+  /// set max extrapolation step [cm]
+  void SetMaxExtrapolationStep(fscal step) { fMaxExtraplationStep = fvec(step); }
+
+  /// get the particle mass
+  fvec GetMaxExtrapolationStep() const { return fMaxExtraplationStep; }
+
+
   void Filter(const L1UMeasurementInfo& info, cnst& u, cnst& sigma2);
   void FilterXY(const L1XYMeasurementInfo& info, cnst& x, cnst& y);
   void FilterTime(cnst& t, cnst& dt2, cnst& timeInfo);
   void FilterExtrapolatedXY(cnst& x, cnst& y, const L1XYMeasurementInfo& info, cnst& extrX, cnst& extrY, cnst Jx[6],
                             cnst Jy[6]);
+  void FilterVi(fvec vi);
+
+  void MeasureVelocityWithQp();
 
   void Extrapolate(cnst& z_out, const L1FieldRegion& F);
 
@@ -142,6 +152,8 @@ private:
 
   fvec fMass {0.10565800};      // muon mass
   fvec fMass2 {fMass * fMass};  // mass squared
+
+  fvec fMaxExtraplationStep {50.};  // max extrapolation step [cm]
 
   fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
   fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:

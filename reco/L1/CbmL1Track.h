@@ -51,10 +51,10 @@ public:
   static bool comparePChi2(const CbmL1Track* a, const CbmL1Track* b) { return (a->chi2 < b->chi2); }
 
 
-  double Tpv[7], Cpv[21];
+  double Tpv[L1TrackPar::kNparTr], Cpv[L1TrackPar::kNparCov];
 
 
-  double TLast[7], CLast[21];
+  double TLast[L1TrackPar::kNparTr], CLast[L1TrackPar::kNparCov];
   vector<int> Hits;
   int nStations;
   int index;
