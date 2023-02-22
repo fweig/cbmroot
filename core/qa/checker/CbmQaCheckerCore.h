@@ -84,8 +84,7 @@ namespace cbm::qa::checker
     /// @brief  Sets default version label
     /// @param  defaultLabel  Name of default label
     ///
-    /// If the default version is not provided as well as the provided, the first version will be used as the
-    /// default one.
+    /// If the default version is not provided, the first version will be used as the default one.
     void SetDefaultVersion(const char* defaultLabel) { fpObjDB->SetDefaultLabel(defaultLabel); }
 
     /// @brief Sets checker configuration from YAML file

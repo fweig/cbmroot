@@ -60,6 +60,7 @@ void Core::Process(Option_t* opt)
   int nDatasets = fpObjDB->GetNofDatasets();
   std::vector<TFolder*> vDSFolders(nDatasets, nullptr);
 
+
   for (int iDS = 0; iDS < nDatasets; ++iDS) {
     // Create a new folder for dataset (/dataset)
     auto* pDSDir = fpOutFile->mkdir(fpObjDB->GetDataset(iDS).data());

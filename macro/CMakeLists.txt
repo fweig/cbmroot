@@ -1,5 +1,6 @@
 #--- Tests for continuous builds
 add_subdirectory(run)
+add_subdirectory(qa)
 add_subdirectory(mcbm)
 add_subdirectory(mvd)
 add_subdirectory(much)

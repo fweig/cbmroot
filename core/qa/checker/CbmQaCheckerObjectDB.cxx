@@ -73,7 +73,7 @@ void ObjectDB::Init()
 {
   // ----- Check consistency of input values
   LOG_IF(fatal, !GetNofObjects()) << "ObjectDB: No objects were passed to the checker";
-  LOG_IF(fatal, GetNofDatasets() < 1) << "ObjectDB: No datasets were founde, at least one dataset should be provided";
+  LOG_IF(fatal, GetNofDatasets() < 1) << "ObjectDB: No datasets were found, at least one dataset should be provided";
   LOG_IF(fatal, GetNofVersions() < 2) << "ObjectDB: File handler should have at least two versions to compare ("
                                       << GetNofVersions() << " were provided)";
 
@@ -96,6 +96,7 @@ void ObjectDB::Init()
     LOG(warn) << "ObjectDB: default version was not registered. Using the first version as the default one (\""
               << fvVersionLabels[fDefVersionID] << "\")";
   }
+  LOG(info) << this->ToString();
 
   // ----- Reserve space for object comparison results
   fvCmpResults.resize(fvVersionLabels.size() * fvObjects.size() * fvDatasets.size());
@@ -117,7 +118,7 @@ void ObjectDB::ReadFromYAML(const char* configName)
   try {
     config = YAML::LoadFile(configName)["checker"];
   }
-  catch (const YAML::BadFile* exc) {
+  catch (const YAML::BadFile& exc) {
     LOG(fatal) << "ObjectDB: configuration file " << configName << " does not exist";
   }
   catch (const YAML::ParserException& exc) {
@@ -168,10 +169,9 @@ void ObjectDB::ReadFromYAML(const char* configName)
 
   // ----- Define dataset names
   if (config["datasets"]) {
-    if (fvDatasets.size()) {
-      LOG(warn) << "ObjectDB: dataset names were defined before. Redefining them from the config " << configName;
-      fvDatasets.clear();
-    }
+    LOG_IF(fatal, fvDatasets.size())
+      << "ObjectDB: dataset names were defined before. Please, use only one initialisation method:"
+      << " either configuration file, either setters from macro";
     try {
       const auto& rootNode = config["datasets"];
       fvDatasets.reserve(rootNode.size());
@@ -184,16 +184,13 @@ void ObjectDB::ReadFromYAML(const char* configName)
     }
   }
   else {
-    LOG(warn) << "ObjectDB: node checker/inputformat is not defined in the config " << configName;
+    LOG(warn) << "ObjectDB: node checker/datasets is not defined in the config " << configName;
   }
 
   // ----- Define version names
   if (config["versions"]) {
-    if (fvVersionLabels.size()) {
-      LOG(warn) << "ObjectDB: dataset names were defined before. Redefining them from the config " << configName;
-      fvVersionLabels.clear();
-      fvVersionPaths.clear();
-    }
+    LOG_IF(fatal, fvVersionLabels.size())
+      << "ObjectDB: dataset names were defined before. Attempt to redefine dataset names from config " << configName;
     try {
       const auto& rootNode = config["versions"];
       fvVersionLabels.reserve(rootNode.size());

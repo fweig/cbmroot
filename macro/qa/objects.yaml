@@ -1,19 +1,16 @@
-# List of objects from QA output to be checked
+##################################################
+#                                                #
+#  File-object map for the QA-Checker framework  #
+#                                                #
+##################################################
+
 
 checker:
-  # Format of the input file. In the format the next indicators can be used:
-  #   - %v :  Path to directory for this version
-  #   - %f :  File type
-  #   - %d :  Dataset name
-  inputformat: "%v/%f_%d.root"
-  # Datasets (at the moment all the datasets should contain the same sets of files and objects to compare)
-  datasets:
-    - auau.10gev.mbias.mu.eb.100ev.reco
-    - auau.10gev.mbias.el.eb.100ev.reco
-  # Section defines a list of files and stored objects to be compared. If object list is empty,
-  # all of the histograms will be compared
   files:
-    - name: L1_histo
+    - name: "%v/%d_qa.qa.root"
+      label: qa
       objects:
-        - L1/p_eff_all_vs_mom
-        - L1/h_ghost_Rmom
+        - CbmCaInputQaSts/efficiencies/casts_reco_eff_vs_r_st0
+        - CbmCaInputQaSts/efficiencies/casts_reco_eff_vs_xy_st0
+        - CbmCaInputQaSts/histograms/casts_pull_t_st2
+        - CbmCaInputQaSts/histograms/casts_res_x_vs_x_st2        
