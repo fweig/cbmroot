@@ -151,6 +151,9 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
     // Set STS as reference detector
     evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
 
+    // Make Bmon (previous reference detector) a selected detector (with default parameters)
+    evBuildRaw->AddDetector(kRawEventBuilderDetT0);
+
     // Use sliding window seed builder with STS
     // evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
     // evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);

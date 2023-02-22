@@ -97,6 +97,9 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
       evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
 
+      // Make Bmon (previous reference detector) a selected detector (with default parameters)
+      evBuildRaw->AddDetector(kRawEventBuilderDetT0);
+
       // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
       evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
 

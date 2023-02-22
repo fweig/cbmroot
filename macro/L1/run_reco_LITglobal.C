@@ -230,6 +230,9 @@ void run_reco_LITglobal(TString input = "", Int_t nTimeSlices = -1, Int_t firstT
       // Set STS as reference detector
       evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
 
+      // Make Bmon (previous reference detector) a selected detector (with default parameters)
+      evBuildRaw->AddDetector(kRawEventBuilderDetT0);
+
       // Use sliding window seed builder with STS
       //evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
       //evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);
