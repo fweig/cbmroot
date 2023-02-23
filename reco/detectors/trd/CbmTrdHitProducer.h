@@ -60,7 +60,7 @@ public:
     */
   virtual void Finish();
   virtual void SetParContainers();
-  /** \brief Correction of hit time in TRD2D due to different processes */ 
+  /** \brief Correction of hit time in TRD2D due to different processes */
   void SetHitTimeOffset(int dt) { fHitTimeOffset = dt; }
 
 private:
@@ -140,8 +140,8 @@ private:
 
   /** @brief Total processing time [RealTime]. */
   Float_t fProcessTime = 0;
-  int fHitTimeOffset = 0;  ///< hit time correction for synchronization
-  
+  int fHitTimeOffset   = 0;  ///< hit time correction for synchronization
+
   ClassDef(CbmTrdHitProducer, 2);
 };
 

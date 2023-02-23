@@ -209,7 +209,7 @@ private:
   UChar_t vrM   = 0;          //! maximum row
   UChar_t viM   = 0;          //! index of maximum signal in the projection
   UShort_t vyM  = 0;          //! bit map for cluster topology classification
-  int fHitTimeOff = 0;        //! hit time offset for synchronization
+  int fHitTimeOff = 0;          //! hit time offset for synchronization
   std::vector<Double_t> vs;   //! working copy of signals from cluster
   std::vector<Double_t> vse;  //! working copy of signal errors from cluster
   std::vector<Char_t> vt;     //! working copy of signal relative timing
