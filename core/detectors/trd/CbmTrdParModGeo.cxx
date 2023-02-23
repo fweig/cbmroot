@@ -4,6 +4,8 @@
 
 #include "CbmTrdParModGeo.h"
 
+#include <Logger.h>
+
 #include <TGeoBBox.h>          // for TGeoBBox
 #include <TGeoMatrix.h>        // for TGeoHMatrix
 #include <TGeoPhysicalNode.h>  // for TGeoPhysicalNode
@@ -13,7 +15,8 @@
 //___________________________________________________________________
 CbmTrdParModGeo::CbmTrdParModGeo(const char* name, const char* title) : CbmTrdParMod(name, title), fNode(nullptr)
 {
-  fNode = new TGeoPhysicalNode(title);
+  // AB : Do not initialize the physical node (alignment aware) at this point as the alignment is not applied yet
+  // fNode = new TGeoPhysicalNode(title);
 }
 
 //___________________________________________________________________
@@ -42,6 +45,22 @@ void CbmTrdParModGeo::GetXYZ(Double_t xyz[3]) const
   Double_t gxyz[3];
   fNode->GetMatrix()->LocalToMaster(xyz, gxyz);
   memcpy(xyz, gxyz, 3 * sizeof(Double_t));
+}
+
+//___________________________________________________________________
+bool CbmTrdParModGeo::SetNode()
+{
+  if (fNode) {
+    LOG(warn) << "CbmTrdParModGeo::SetNode: Aligned info already loaded. Updating";
+    delete fNode;
+  }
+  fNode = new TGeoPhysicalNode(GetTitle());
+  if (!fNode) return false;
+
+  LOG(info) << GetName() << " : " << GetTitle();
+  fNode->GetMatrix()->Print();
+
+  return true;
 }
 
 ClassImp(CbmTrdParModGeo)

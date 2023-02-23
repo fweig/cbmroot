@@ -41,6 +41,7 @@ public:
     return xyz[2];
   }
   virtual void LocalToMaster(Double_t in[3], Double_t out[3]) const;
+  bool SetNode();
 
 private:
   CbmTrdParModGeo(const CbmTrdParModGeo&);

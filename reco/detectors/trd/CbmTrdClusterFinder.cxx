@@ -202,12 +202,12 @@ CbmTrdModuleRec* CbmTrdClusterFinder::AddModule(const CbmTrdDigi* digi)
 //_____________________________________________________________________
 void CbmTrdClusterFinder::SetParContainers()
 {
-  fAsicPar = static_cast<CbmTrdParSetAsic*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetAsic"));
-  fGasPar  = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
-  fDigiPar = static_cast<CbmTrdParSetDigi*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetDigi"));
-  fGainPar = static_cast<CbmTrdParSetGain*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGain"));
-  // Get the full geometry information of the TRD modules
-  fGeoPar = new CbmTrdParSetGeo();
+  FairRuntimeDb* rtdb = FairRunAna::Instance()->GetRuntimeDb();
+  fAsicPar            = static_cast<CbmTrdParSetAsic*>(rtdb->getContainer("CbmTrdParSetAsic"));
+  fGasPar             = static_cast<CbmTrdParSetGas*>(rtdb->getContainer("CbmTrdParSetGas"));
+  fDigiPar            = static_cast<CbmTrdParSetDigi*>(rtdb->getContainer("CbmTrdParSetDigi"));
+  fGainPar            = static_cast<CbmTrdParSetGain*>(rtdb->getContainer("CbmTrdParSetGain"));
+  fGeoPar             = static_cast<CbmTrdParSetGeo*>(rtdb->getContainer("CbmTrdParSetGeo"));
 }
 
 //_____________________________________________________________________

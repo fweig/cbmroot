@@ -34,6 +34,7 @@ class CbmTrdParSetAsic;
 class CbmTrdParSetDigi;
 class CbmTrdParSetGain;
 class CbmTrdParSetGas;
+class CbmTrdParSetGeo;
 
 /**
  * \class CbmTrdParManager
@@ -48,7 +49,8 @@ public:
     kCbmTrdParSetDigi,
     kCbmTrdParSetGain,
     kCbmTrdParSetGas,
-    kEnd = kCbmTrdParSetGas
+    kCbmTrdParSetGeo,
+    kEnd = kCbmTrdParSetGeo
   };
   /**
    * @brief enumerator for organising the existing parameter sets of the trd
@@ -115,6 +117,7 @@ private:
   CbmTrdParSetDigi* fDigiPar;  ///< The set of read-out description parameters
   CbmTrdParSetGas* fGasPar;    ///< The set of gas description parameters
   CbmTrdParSetGain* fGainPar;  ///< The set of gain conversion parameters
+  CbmTrdParSetGeo* fGeoPar;    ///< The set of gain conversion parameters
 
   CbmTrdGeoHandler* fGeoHandler;
 
@@ -124,6 +127,6 @@ private:
   CbmTrdParManager(const CbmTrdParManager&);
   CbmTrdParManager& operator=(const CbmTrdParManager&);
 
-  ClassDef(CbmTrdParManager, 2)
+  ClassDef(CbmTrdParManager, 3)
 };
 #endif  // CBMTRDPARMANAGER_H

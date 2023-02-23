@@ -15,9 +15,12 @@ public:
   CbmTrdParSetGeo(const char* name = "CbmTrdParSetGeo", const char* title = "Trd Geometry Parameters",
                   const char* context = "TestDefaultContext");
   virtual ~CbmTrdParSetGeo(void);
-  /** \brief Fill map with full geometrical description for each detector to be distributed to all processing modules
+  /** \brief Fill map with full geometrical description for each detector to be distributed to all processing modules. Refer to the constructor of \class CbmTrdParModGeo for the details of using this description.
    */
-  Bool_t Init();
+  bool Init();
+  /** \brief Trigger loading alignment information for all nodes registered */
+  bool LoadAlignVolumes();
+
   virtual void Print(Option_t* opt = "") const;
 
 private:

@@ -16,11 +16,13 @@
 #include "CbmTrdParModDigi.h"  // for CbmTrdParModDigi
 #include "CbmTrdParModGain.h"  // for CbmTrdParModGain
 #include "CbmTrdParModGas.h"   // for CbmTrdParModGas
+#include "CbmTrdParModGeo.h"   // for CbmTrdParModGeo
 #include "CbmTrdParSet.h"      // for CbmTrdParSet
 #include "CbmTrdParSetAsic.h"  // for CbmTrdParSetAsic
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 #include "CbmTrdParSetGain.h"  // for CbmTrdParSetGain
 #include "CbmTrdParSetGas.h"   // for CbmTrdParSetGas
+#include "CbmTrdParSetGeo.h"   // for CbmTrdParSetGeo
 #include "CbmTrdParSpadic.h"   // for CbmTrdParSpadic
 
 #include <FairParAsciiFileIo.h>  // for FairParAsciiFileIo
@@ -53,6 +55,7 @@ CbmTrdParManager::CbmTrdParManager(Bool_t fasp)
   , fDigiPar(nullptr)
   , fGasPar(nullptr)
   , fGainPar(nullptr)
+  , fGeoPar(nullptr)
   , fGeoHandler(new CbmTrdGeoHandler())
   , fGeometryTag("")
   , fHardwareSetup()
@@ -70,6 +73,7 @@ void CbmTrdParManager::SetParContainers()
   fDigiPar            = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
   fGasPar             = (CbmTrdParSetGas*) (rtdb->getContainer("CbmTrdParSetGas"));
   fGainPar            = (CbmTrdParSetGain*) (rtdb->getContainer("CbmTrdParSetGain"));
+  fGeoPar             = (CbmTrdParSetGeo*) (rtdb->getContainer("CbmTrdParSetGeo"));
 }
 
 InitStatus CbmTrdParManager::Init()
@@ -161,6 +165,10 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
   Int_t moduleType = fGeoHandler->GetModuleType(path);
 
   printf("\nCbmTrdParManager::CreateModuleParameters(%s) type[%d]\n", path.Data(), moduleType);
+  // TODO Should move the geoHandler functionality to CbmTrdParSetGeo and remove code duplication
+  CbmTrdParModGeo* geo = new CbmTrdParModGeo(Form("TRD_%d", moduleAddress), path.Data());
+  fGeoPar->addParam(geo);
+
   for (Int_t i = 0; i < fst1_sect_count; i++) {
     sectorSizeX.AddAt(fst1_pad_type[moduleType - 1][i][0], i);
     sectorSizeY.AddAt(fst1_pad_type[moduleType - 1][i][1], i);
@@ -417,6 +425,7 @@ void CbmTrdParManager::GetParSetList(std::vector<std::shared_ptr<CbmTrdParSet>>*
       case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi: parSet = std::make_shared<CbmTrdParSetDigi>(); break;
       case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain: parSet = std::make_shared<CbmTrdParSetGain>(); break;
       case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas: parSet = std::make_shared<CbmTrdParSetGas>(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGeo: parSet = std::make_shared<CbmTrdParSetGeo>(); break;
     }
     parSetList->emplace_back(parSet);
   }
@@ -431,6 +440,7 @@ void CbmTrdParManager::GetParFileExtensions(std::vector<std::string>* vec)
       case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi: vec->emplace_back("digi"); break;
       case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain: vec->emplace_back("gas"); break;
       case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas: vec->emplace_back("gain"); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGeo: vec->emplace_back("geo"); break;
     }
   }
 }

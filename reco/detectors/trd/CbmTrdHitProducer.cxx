@@ -84,17 +84,17 @@ UInt_t CbmTrdHitProducer::addModuleHits(CbmTrdModuleRec* mod, CbmEvent* event)
 }
 
 //____________________________________________________________________________________
-CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* node)
+CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, const CbmTrdParModGeo* pg)
 {
   CbmTrdGeoHandler geoHandler;
-  Int_t moduleAddress = geoHandler.GetModuleAddress(node->GetName()),
-        moduleType = geoHandler.GetModuleType(node->GetName()), lyId = CbmTrdAddress::GetLayerId(address);
+  Int_t moduleAddress = geoHandler.GetModuleAddress(pg->GetTitle()),
+        moduleType = geoHandler.GetModuleType(pg->GetTitle()), lyId = CbmTrdAddress::GetLayerId(address);
   if (moduleAddress != address) {
     LOG(error) << "CbmTrdHitProducer::AddModule: Module ID " << address << " does not match geometry definition "
                << moduleAddress << ". Module init failed!";
     return NULL;
   }
-  LOG(info) << GetName() << "::AddModule(" << node->GetName() << " " << (moduleType < 9 ? '1' : '2') << "D] mod["
+  LOG(info) << GetName() << "::AddModule(" << pg->GetName() << " " << (moduleType < 9 ? '1' : '2') << "D] mod["
             << moduleAddress << "] ly[" << lyId << "] det[" << moduleAddress << "]";
 
   CbmTrdModuleRec* module(nullptr);
@@ -106,14 +106,8 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
     module = fModules[address] = new CbmTrdModuleRecR(address);
   }
 
-  // Try to load geometry parameters for the module
-  const CbmTrdParModGeo* pGeo = nullptr;
-  if (!fGeoPar) LOG(warn) << GetName() << ": No geometry parameter container!";
-  else
-    pGeo = (const CbmTrdParModGeo*) fGeoPar->GetModulePar(address);
-  if (!pGeo) LOG(warn) << GetName() << ": No geometry parameters for module " << address;
-  else
-    module->SetGeoPar(pGeo);
+  // Load geometry parameters for the module
+  module->SetGeoPar(pg);
 
 
   // try to load read-out parameters for module
@@ -267,21 +261,21 @@ InitStatus CbmTrdHitProducer::Init()
   // Get the full geometry information of the detector gas layers and store
   // them with the CbmTrdModuleRec. This information can then be used for
   // transformation calculations
-  CbmTrdGeoHandler geoHandler;
-  std::map<Int_t, TGeoPhysicalNode*> moduleMap = geoHandler.FillModuleMap();
+  if (!fGeoPar->LoadAlignVolumes()) {
+    LOG(error) << GetName() << "::Init: "
+               << "GEO info for modules unavailable !";
+    return kFATAL;
+  }
 
   Int_t nrModules = fDigiPar->GetNrOfModules();
-  Int_t nrNodes   = moduleMap.size();
+  Int_t nrNodes   = fGeoPar->GetNrOfModules();
   if (nrModules != nrNodes)
     LOG(fatal) << "CbmTrdHitProducer::Init() - Geometry(" << nrNodes << ") and parameter files(" << nrModules
                << ") have different number of modules.";
   for (Int_t loop = 0; loop < nrModules; ++loop) {
-    Int_t address                                   = fDigiPar->GetModuleId(loop);
-    std::map<Int_t, TGeoPhysicalNode*>::iterator it = moduleMap.find(address);
-    if (it == moduleMap.end()) {
-      LOG(fatal) << "Expected module with address " << address << " wasn't found in the map with TGeoNode information.";
-    }
-    AddModule(address, it->second);
+    int address                = fGeoPar->GetModuleId(loop);
+    const CbmTrdParModGeo* par = (const CbmTrdParModGeo*) fGeoPar->GetModulePar(address);
+    AddModule(address, par);
   }
   return kSUCCESS;
 }
@@ -370,11 +364,12 @@ void CbmTrdHitProducer::Finish()
 //________________________________________________________________________________________
 void CbmTrdHitProducer::SetParContainers()
 {
-  fAsicPar = static_cast<CbmTrdParSetAsic*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetAsic"));
-  fGasPar  = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
-  fDigiPar = static_cast<CbmTrdParSetDigi*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetDigi"));
-  fGainPar = static_cast<CbmTrdParSetGain*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGain"));
-  fGeoPar  = new CbmTrdParSetGeo();
+  FairRuntimeDb* rtdb = FairRunAna::Instance()->GetRuntimeDb();
+  fAsicPar            = static_cast<CbmTrdParSetAsic*>(rtdb->getContainer("CbmTrdParSetAsic"));
+  fGasPar             = static_cast<CbmTrdParSetGas*>(rtdb->getContainer("CbmTrdParSetGas"));
+  fDigiPar            = static_cast<CbmTrdParSetDigi*>(rtdb->getContainer("CbmTrdParSetDigi"));
+  fGainPar            = static_cast<CbmTrdParSetGain*>(rtdb->getContainer("CbmTrdParSetGain"));
+  fGeoPar             = static_cast<CbmTrdParSetGeo*>(rtdb->getContainer("CbmTrdParSetGeo"));
 }
 
 

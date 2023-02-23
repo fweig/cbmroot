@@ -33,16 +33,17 @@ CbmTrdParSetGeo::CbmTrdParSetGeo(const char* name, const char* title, const char
 CbmTrdParSetGeo::~CbmTrdParSetGeo(void) {}
 
 //________________________________________________________________________________________
-Bool_t CbmTrdParSetGeo::Init()
+bool CbmTrdParSetGeo::Init()
 {
   CbmTrdGeoHandler geo;
   TGeoNode* topNode = gGeoManager->GetTopNode();
   TObjArray* nodes  = topNode->GetNodes();
   if (!nodes) {
     LOG(fatal) << "CbmTrdParSetGeo::Init: nodes is null!";
-    return kFALSE;
+    return false;
   }
 
+  CbmTrdParModGeo* pGeo(nullptr);
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node = static_cast<TGeoNode*>(nodes->At(iNode));
     if (!TString(node->GetName()).Contains("trd", TString::kIgnoreCase))
@@ -72,12 +73,28 @@ Bool_t CbmTrdParSetGeo::Init()
           LOG(debug) << "Adding detector with path " << path.Data();
           // Generate a physical node which has all needed information
           gGeoManager->cd(path.Data());
-          Int_t address       = geo.GetModuleAddress();
-          fModuleMap[address] = new CbmTrdParModGeo(Form("TRD_%d", address), path.Data());
+          Int_t address = geo.GetModuleAddress();
+          pGeo          = new CbmTrdParModGeo(Form("TRD_%d", address), path.Data());
+          pGeo->SetModuleId(address);
+          addParam(pGeo);
         }
       }
     }
   }
+  return true;
+}
+
+//________________________________________________________________________________________
+bool CbmTrdParSetGeo::LoadAlignVolumes()
+{
+  if (!GetNrOfModules()) {
+    LOG(error) << "CbmTrdParSetGeo::LoadAlignVolumes: No modules initialized. Nothing to do.";
+    return false;
+  }
+
+  for (auto mod : fModuleMap)
+    if (!((CbmTrdParModGeo*) mod.second)->SetNode()) return false;
+
   return true;
 }
 

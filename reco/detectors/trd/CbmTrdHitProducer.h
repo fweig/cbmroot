@@ -26,7 +26,7 @@
 
 #include <limits>
 
-class TGeoPhysicalNode;
+class CbmTrdParModGeo;
 class CbmTrdParSetAsic;
 class CbmTrdParSetGas;
 class CbmTrdParSetDigi;
@@ -65,7 +65,7 @@ private:
   CbmTrdHitProducer(const CbmTrdHitProducer&);
   CbmTrdHitProducer& operator=(const CbmTrdHitProducer&);
 
-  CbmTrdModuleRec* AddModule(Int_t address, TGeoPhysicalNode* node);
+  CbmTrdModuleRec* AddModule(Int_t address, const CbmTrdParModGeo* pg);
 
   /**
    * @brief Process all clusters found in the TrdClusters branch
