@@ -36,9 +36,9 @@ public:
   virtual ~CbmMatch();
 
   /* Accessors */
-  const CbmLink& GetLink(int32_t i) const { return fLinks[i]; }
+  const CbmLink& GetLink(int32_t i) const { return fLinks.at(i); }
   const std::vector<CbmLink>& GetLinks() const { return fLinks; }
-  const CbmLink& GetMatchedLink() const { return fLinks[fMatchedIndex]; }
+  const CbmLink& GetMatchedLink() const { return fLinks.at(fMatchedIndex); }
   int32_t GetNofLinks() const { return fLinks.size(); }
   double GetTotalWeight() const { return fTotalWeight; }
 
