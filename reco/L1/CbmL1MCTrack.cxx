@@ -157,7 +157,7 @@ void CbmL1MCTrack::CalculateMaxNStaHits()
   int lastSta         = -1;
   int cur_maxNStaHits = 0;
   for (unsigned int iH = 0; iH < Hits.size(); iH++) {
-    CbmL1HitStore& sh = L1->fvHitStore[Hits[iH]];
+    CbmL1HitDebugInfo& sh = L1->fvHitDebugInfo[Hits[iH]];
     if (sh.iStation == lastSta) { cur_maxNStaHits++; }
     else {                             // new station
       if (!(sh.iStation > lastSta)) {  // tracks going in backward direction are not reconstructable

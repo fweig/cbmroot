@@ -31,10 +31,7 @@ class L1Track {
 public:
   static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
-  unsigned char NHits;      ///< Number of hits in track
-  unsigned char n;          ///< TODO: ??
-  float Momentum {kNaN};    ///< TODO: ??
-  float fTrackTime {kNaN};  ///< Track time
+  unsigned char NHits {0};  ///< Number of hits in track
   fscal TFirst[8] {kNaN};   ///< Track parameters on the first station
   fscal CFirst[28] {kNaN};  ///< Track parameter covariation matrix elements on the first station
   fscal TLast[8] {kNaN};    ///< Track parameters on the last station
@@ -42,28 +39,7 @@ public:
   fscal Tpv[8] {kNaN};      ///< Track parameters in the primary vertex
   fscal Cpv[28] {kNaN};     ///< Track parameter covariation matrix elements in the primary vertex
   fscal chi2 {kNaN};        ///< Track fit chi-square value
-  short int NDF;            ///< Track fit NDF value
-
-  // TODO: shouldn't it be the L1HitIndex_t type instead of int? (S.Zharko)
-  int FirstHitIndex;  ///< Track first hit index in the hits vector
-  int LastHitIndex;   ///< Track last hit index in the hits vector
-  int index;          ///< Index of the track
-  int ista;           ///< TODO: ??
-
-  /// Provides comparison of two L1Track objects
-  /// If two tracks have different number of hits, the smallest track has the largest number of hits.
-  /// If two tracks have the same numbers of hits and ...
-  static bool compareCand(const L1Track& a, const L1Track& b)
-  {
-    if (a.NHits != b.NHits) { return (a.NHits > b.NHits); }
-    if (a.ista != b.ista) { return (a.ista < b.ista); }
-    else {
-      return (a.chi2 < b.chi2);
-    }
-  }
-
-  /// Provides comparison for two tracks by the time variance
-  static bool compare(const L1Track& a, const L1Track& b) { return (a.Cpv[20] <= b.Cpv[20]); }
+  short int NDF {0};        ///< Track fit NDF value
 };
 
 

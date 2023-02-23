@@ -109,44 +109,44 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
     bool hasTrdHits  = false;
     bool hasTofHits  = false;
     for (vector<int>::iterator ih = it->Hits.begin(); ih != it->Hits.end(); ++ih) {
-      CbmL1HitStore& h = L1->fvHitStore[*ih];
+      const CbmL1HitId& h = L1->fvExternalHits[*ih];
 
-      if (h.Det == 1 && hasStsHits == false) {
+      if (h.detId == 1 && hasStsHits == false) {
         hasStsHits         = true;
         CbmStsTrack* track = new ((*fStsTracks)[stsTrackIndex]) CbmStsTrack();
         t->SetStsTrackIndex(stsTrackIndex);
         if (event) event->AddData(ECbmDataType::kStsTrack, stsTrackIndex);
-        CbmL1TrackToCbmStsTrack(T, track, h.Det);
+        CbmL1TrackToCbmStsTrack(T, track, h.detId);
         stsTrackIndex++;
       }
-      if (h.Det == 2 && hasMuchHits == false) {
+      if (h.detId == 2 && hasMuchHits == false) {
         hasMuchHits = true;
 
         CbmMuchTrack* track = new ((*fMuchTracks)[muchTrackIndex]) CbmMuchTrack();
         t->SetMuchTrackIndex(muchTrackIndex);
         if (event) event->AddData(ECbmDataType::kMuchTrack, muchTrackIndex);
-        CbmL1TrackToCbmMuchTrack(T, track, h.Det);
+        CbmL1TrackToCbmMuchTrack(T, track, h.detId);
         muchTrackIndex++;
       }
-      if (h.Det == 3 && hasTrdHits == false) {
+      if (h.detId == 3 && hasTrdHits == false) {
         hasTrdHits         = true;
         CbmTrdTrack* track = new ((*fTrdTracks)[trdTrackIndex]) CbmTrdTrack();
         t->SetTrdTrackIndex(trdTrackIndex);
         if (event) event->AddData(ECbmDataType::kTrdTrack, trdTrackIndex);
-        CbmL1TrackToCbmTrdTrack(T, track, h.Det);
+        CbmL1TrackToCbmTrdTrack(T, track, h.detId);
         trdTrackIndex++;
       }
-      if (h.Det == 4 && hasTofHits == false) {
+      if (h.detId == 4 && hasTofHits == false) {
         hasTofHits         = true;
         CbmTofTrack* track = new ((*fTofTracks)[tofTrackIndex]) CbmTofTrack();
 
         t->SetTofTrackIndex(tofTrackIndex);
 
         if (event) event->AddData(ECbmDataType::kTofTrack, tofTrackIndex);
-        CbmL1TrackToCbmTofTrack(T, track, h.Det);
+        CbmL1TrackToCbmTofTrack(T, track, h.detId);
         tofTrackIndex++;
 
-        // if (event) event->AddData(ECbmDataType::kTofHit, h.ExtIndex);
+        // if (event) event->AddData(ECbmDataType::kTofHit, h.hitId);
       }
     }
     //END create detector tracks if needed
@@ -166,8 +166,8 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTrack(CbmL1Track l1track, CbmTrack* 
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->fvHitStore[*ih];
-    if (h.Det != systemIdT) continue;
+    CbmL1HitId& h = L1->fvExternalHits[*ih];
+    if (h.detId != systemIdT) continue;
   }
   ndf -= 5;
   if (ndf <= 0) ndf = 1;
@@ -192,9 +192,9 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmStsTrack(CbmL1Track l1track, CbmStsT
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->fvHitStore[*ih];
-    if (h.Det != systemIdT) continue;
-    track->AddHit(h.ExtIndex, kSTSHIT);
+    CbmL1HitId& h = L1->fvExternalHits[*ih];
+    if (h.detId != systemIdT) continue;
+    track->AddHit(h.hitId, kSTSHIT);
   }
 
   ndf -= 5;
@@ -228,9 +228,9 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmMuchTrack(CbmL1Track l1track, CbmMuc
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->fvHitStore[*ih];
-    if (h.Det != systemIdT) continue;
-    track->AddHit(h.ExtIndex, kMUCHPIXELHIT);
+    CbmL1HitId& h = L1->fvExternalHits[*ih];
+    if (h.detId != systemIdT) continue;
+    track->AddHit(h.hitId, kMUCHPIXELHIT);
   }
   ndf -= 5;
   if (ndf <= 0) ndf = 1;
@@ -256,9 +256,9 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTrdTrack(CbmL1Track l1track, CbmTrdT
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->fvHitStore[*ih];
-    if (h.Det != systemIdT) continue;
-    track->AddHit(h.ExtIndex, kTRDHIT);
+    CbmL1HitId& h = L1->fvExternalHits[*ih];
+    if (h.detId != systemIdT) continue;
+    track->AddHit(h.hitId, kTRDHIT);
   }
   ndf -= 5;
   if (ndf <= 0) ndf = 1;
@@ -285,9 +285,9 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTofTrack(CbmL1Track l1track, CbmTofT
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->fvHitStore[*ih];
-    if (h.Det != systemIdT) continue;
-    track->AddHit(h.ExtIndex, kTOFHIT);
+    CbmL1HitId& h = L1->fvExternalHits[*ih];
+    if (h.detId != systemIdT) continue;
+    track->AddHit(h.hitId, kTOFHIT);
   }
   ndf -= 5;
   if (ndf <= 0) ndf = 1;

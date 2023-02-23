@@ -8,24 +8,34 @@
 #include "L1Vector.h"
 
 ///
-/// hits with hit-mcpoint match information
+/// Identificator for cbm hits with their detector and index in cbm arrays
 ///
-class CbmL1Hit {
+class CbmL1HitId {
 public:
-  CbmL1Hit() = default;
+  CbmL1HitId() = default;
+  CbmL1HitId(int det, int index) : detId(det), hitId(index) {};
 
-  CbmL1Hit(int hitId_, int extIndex_, int Det_) : hitId(hitId_), extIndex(extIndex_), Det(Det_) {};
+  int detId {0};  ///< detector ID (mvd/sts/etc)
+  int hitId {0};  ///< index of hit in the TClonesArray array
+};
 
-  int hitId    = 0;    ///< index of L1Hit in fInputData::fvHits array. Should be equal to index of this in L1->vHits
-  int extIndex = 0;    ///< index of hit in the TClonesArray array
-  int Det      = 0;    ///< detector ID (mvd/sts/etc)
-  float x      = 0.f;  ///< measured X coordinate
-  float y      = 0.f;  ///< measured Y coordinate
-  float t      = 0.f;  ///< measured time
-  int f        = 0;    ///< front strip index
-  int b        = 0;    ///< back strip index
-  int ID       = 0;    ///< TODO: check if this ID is redundant
-  L1Vector<int> mcPointIds {"CbmL1Hit::mcPointIds"};  ///< indices of CbmL1MCPoint in L1->fvMCPoints array
+
+///
+/// a helper class for performance evaluation that contains useful info about cbm hits with hit-mcpoint match information
+///
+class CbmL1HitDebugInfo {  // TODO: SZh 21.09.2022: Replace instances of this class with L1Hit
+public:
+  int ExtIndex;
+  int iStation;
+  double x;
+  double y;
+  double time;
+  double dx;
+  double dy;
+  double dt;
+  double dxy;
+  int Det;
+  L1Vector<int> mcPointIds {"CbmL1HitDebugInfo::mcPointIds"};  ///< indices of CbmL1MCPoint in L1->fvMCPoints array
 };
 
 #endif

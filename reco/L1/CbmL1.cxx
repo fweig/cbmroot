@@ -1028,7 +1028,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     // save reconstructed tracks
     if (fLegacyEventMode) vRTracksCur.clear();
-    int start_hit = 0;
+    int trackFirstHit = 0;
 
     float TsStart_new = TsStart + TsLength - TsOverlap;
 
@@ -1050,68 +1050,31 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
       t.chi2 = it->chi2;
       t.NDF  = it->NDF;
-      //t.T[4] = it->Momentum;
       t.Hits.clear();
-      t.fTrackTime = it->fTrackTime;
-
-      L1Vector<int> HitsLocal("CbmL1::HitsLocal");
-      HitsLocal.reserve(it->NHits);
-
-      for (int i = 0; i < it->NHits; i++) {
-        int start_hit1 = start_hit;
-        if (fpAlgo->fRecoHits[start_hit1] > fvExternalHits.size() - 1) start_hit++;
-        else if (!fLegacyEventMode) {
-          t.Hits.push_back((fpAlgo->GetInputData()->GetHit(fpAlgo->fRecoHits[start_hit]).ID));
-        }
-        else {
-          t.Hits.push_back(fpAlgo->fRecoHits[start_hit]);
-        }
-        HitsLocal.push_back(fpAlgo->fRecoHits[start_hit++]);
-      }
-
       t.mass        = fpAlgo->fDefaultMass;  // pion mass
       t.is_electron = 0;
-
       t.SetId(vRTracksCur.size());
-      //  CbmL1Track* prtra = &t;
 
-      int indd         = 0;
-      bool isInOverlap = 0;
+      bool isTrackInOverlap = 0;
 
-
-      for (unsigned int i = 0; i < HitsLocal.size(); i++) {
-        //      if ((*ih) > int(fvExternalHits.size() - 1)) {
-        //         indd = 1;
-        //         break;
-        //       }
-
-        if (fvExternalHits[HitsLocal[i]].t >= (TsStart + TsLength - TsOverlap)) {
-          isInOverlap = 1;
-          if (TsStart_new > fvExternalHits[HitsLocal[i]].t) TsStart_new = fvExternalHits[HitsLocal[i]].t;
+      for (int i = 0; i < it->NHits; i++) {
+        int caHitId  = fpAlgo->fRecoHits[trackFirstHit + i];
+        int cbmHitID = fpAlgo->GetInputData()->GetHit(caHitId).ID;
+        double time  = fpAlgo->GetInputData()->GetHit(caHitId).t;
+        if (!fLegacyEventMode) { t.Hits.push_back(cbmHitID); }
+        else {
+          t.Hits.push_back(caHitId);
         }
-
-        int nMCPoints = fvExternalHits[HitsLocal[i]].mcPointIds.size();
-        for (int iP = 0; iP < nMCPoints; iP++) {
-          int iMC = fvExternalHits[HitsLocal[i]].mcPointIds[iP];
-          if (iMC > int(fvMCPoints.size() - 1)) {
-            //           cout << " iMC " << iMC << " fvMCPoints.size() " <<  fvMCPoints.size() << endl;
-            indd = 1;
-          }
+        if (time >= (TsStart + TsLength - TsOverlap)) {
+          isTrackInOverlap = 1;
+          if (TsStart_new > time) { TsStart_new = time; }
         }
       }
+      trackFirstHit += it->NHits;
 
-      if (indd == 1) continue;
+      // Discard tracks from overlap region
+      if ((!fLegacyEventMode) && (isTrackInOverlap == 1)) { continue; }
 
-      if ((!fLegacyEventMode) && (isInOverlap == 1)) {
-
-        continue;  ///Discard tracks from overlap region
-
-        /// set strips as unused
-        //for (unsigned int i = 0; i < HitsLocal.size(); i++) {
-        //  fpAlgo->SetFUnUsed(const_cast<unsigned char&>((*fpAlgo->fStripFlag)[fvExternalHits[HitsLocal[i]].f]));
-        //  fpAlgo->SetFUnUsed(const_cast<unsigned char&>((*fpAlgo->fStripFlag)[fvExternalHits[HitsLocal[i]].b]));
-        //}
-      }
       vRTracksCur.push_back(t);
     }
 
@@ -1293,8 +1256,8 @@ void CbmL1::IdealTrackFinder()
     L1Vector<int> hitIndices("CbmL1::hitIndices", fpAlgo->GetParameters()->GetNstationsActive(), -1);
 
     for (unsigned int iH = 0; iH < MC.Hits.size(); iH++) {
-      const int hitI      = MC.Hits[iH];
-      const CbmL1Hit& hit = fvExternalHits[hitI];
+      const int hitI               = MC.Hits[iH];
+      const CbmL1HitDebugInfo& hit = fvHitDebugInfo[hitI];
 
       const int iStation = fvMCPoints[hit.mcPointIds[0]].iStation;
 
@@ -1319,8 +1282,6 @@ void CbmL1::IdealTrackFinder()
       fpAlgo->fRecoHits.push_back(hitI);
     }
 
-
-    algoTr.Momentum  = MC.p;
     algoTr.TFirst[0] = MC.x;
     algoTr.TFirst[1] = MC.y;
     algoTr.TFirst[2] = MC.px / MC.pz;
@@ -1470,7 +1431,7 @@ void CbmL1::WriteSIMDKFData()
     int st[20];
     int jHit = 0;
     for (int iHit = 0; iHit < NHits; iHit++) {
-      CbmL1HitStore& h = fvHitStore[RecTrack->Hits[iHit]];
+      CbmL1HitDebugInfo& h = fvHitDebugInfo[RecTrack->Hits[iHit]];
       st[jHit]         = h.iStation;
       if (h.ExtIndex < 0) {
         CbmMvdHit* MvdH = (CbmMvdHit*) fpMvdHits->At(-h.ExtIndex - 1);

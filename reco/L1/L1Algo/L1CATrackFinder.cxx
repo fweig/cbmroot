@@ -2212,8 +2212,6 @@ void L1Algo::CATrackFinder()
           }
 
           t.NHits = tr.NHits;
-          // t.Momentum   = tr.Momentum;
-          t.fTrackTime = sumTime / t.NHits;
           fTracks_local[num_thread].push_back(t);
           if (0) {  // SG debug
             cout << "store track " << iCandidate << " chi2= " << tr.chi2 << endl;

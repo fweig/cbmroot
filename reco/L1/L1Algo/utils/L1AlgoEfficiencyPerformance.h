@@ -224,9 +224,9 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
 
   // obtain mc data
   for (int iih = 0; iih < NHits; iih++) {
-    int nMC = fL1->fvExternalHits[iHits[iih]].mcPointIds.size();
+    int nMC = fL1->fvHitDebugInfo[iHits[iih]].mcPointIds.size();
     for (int iMC = 0; iMC < nMC; iMC++) {
-      const int iMCP = fL1->fvExternalHits[iHits[iih]].mcPointIds[iMC];
+      const int iMCP = fL1->fvHitDebugInfo[iHits[iih]].mcPointIds[iMC];
       int mcId       = fL1->fvMCPoints[iMCP].ID;
       mcIds[iih].push_back(mcId);
     }  // for mcPoints
@@ -254,7 +254,7 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
   for (unsigned int i = 0; i < mcsN.size(); i++) {
     if (mcsN[i] >= 0) {
       trlet.mcTrackId = mcsN[i];
-      trlet.iStation  = fL1->fvMCPoints[fL1->fvExternalHits[iHits[0]].mcPointIds[0]].iStation;
+      trlet.iStation  = fL1->fvMCPoints[fL1->fvHitDebugInfo[iHits[0]].mcPointIds[0]].iStation;
       break;
     }
   }
@@ -341,7 +341,7 @@ void L1AlgoEfficiencyPerformance<NHits>::CalculateEff()
         //             const int NPointHits = mtra.hitIds[iSta2].size();
         //             for (int iH = 0; iH < NPointHits; iH++){
         //               cout << mtra.hitIds[iSta2][iH] << "";
-        //               cout << "(" << fL1->fvHitStore[mtra.hitIds[iSta2][iH]].x << "\\" << fL1->fvHitStore[mtra.hitIds[iSta2][iH]].y << "= " << fL1->fvHitStore[mtra.hitIds[iSta2][iH]].x/fL1->fvHitStore[mtra.hitIds[iSta2][iH]].y << " ) ";
+        //               cout << "(" << fL1->fvHitDebugInfo[mtra.hitIds[iSta2][iH]].x << "\\" << fL1->fvHitDebugInfo[mtra.hitIds[iSta2][iH]].y << "= " << fL1->fvHitDebugInfo[mtra.hitIds[iSta2][iH]].x/fL1->fvHitDebugInfo[mtra.hitIds[iSta2][iH]].y << " ) ";
         //             }
         //             cout << endl;
         //           }

@@ -71,20 +71,6 @@ class CbmEvent;
 class TProfile2D;
 class TNtuple;
 
-/// TODO: SZh 21.09.2022: Replace instances of this class with L1Hit
-class CbmL1HitStore {
-public:
-  int ExtIndex;
-  int iStation;
-  double x;
-  double y;
-  double time;
-  double dx;
-  double dy;
-  double dt;
-  double dxy;
-  int Det;
-};
 
 /// Internal structure to handle link keys
 struct CbmL1LinkKey {
@@ -626,10 +612,6 @@ private:
 
   vector<vector<int>> fTofPointToTrack;  ///<
 
-  // ** Repacked input data **
-
-  L1Vector<CbmL1Hit> fvExternalHits = {"CbmL1::fvExternalHits"};  ///< Array of hits with MC information
-
   /// Indexes of hits after hits sorting (used only with fLegacyEventMode = true)
   L1Vector<int> fvSortedHitsIndexes = {"CbmL1::fvSortedHitsIndexes"};
 
@@ -639,7 +621,13 @@ private:
   L1Vector<int> fvHitPointIndexes      = {"CbmL1::fvHitPointIndexes"};  ///< Indexes of MC points vs. hit index
 
 public:
-  L1Vector<CbmL1HitStore> fvHitStore = {"CbmL1::fvHitStore"};  ///< Container of hits with extended information
+  // ** Repacked input data **
+
+  L1Vector<CbmL1HitId> fvExternalHits = {"CbmL1::fvExternalHits"};  ///< Array of hits
+
+private:
+  L1Vector<CbmL1HitDebugInfo> fvHitDebugInfo = {
+    "CbmL1::fvHitDebugInfo"};  ///< Container of hits with extended information
   // indices of MCPoints in fvMCPoints, indexed by index of hit in algo->vHits array. According to StsMatch. Used for IdealResponce
   //    L1Vector<int>          vHitMCRef1;
   //   CbmMatch HitMatch;

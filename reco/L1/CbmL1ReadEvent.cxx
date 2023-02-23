@@ -67,28 +67,28 @@ static bool compareMcPointZ(const int& a, const int& b)
 /// The structure is used to sort hits before writing them into L1 input arrays
 ///
 struct TmpHit {
-  int iStripF;          ///< index of front strip
-  int iStripB;          ///< index of back strip
-  int iStation;         ///< index of station
-  int ExtIndex;         ///< index of hit in the external TClonesArray array (NOTE: negative for MVD)
-  double u;             ///< position of hit along axis orthogonal to front strips [cm]
-  double v;             ///< position of hit along axis orthogonal to back strips [cm]
-  double x;             ///< position of hit along x axis [cm]
-  double y;             ///< position of hit along y axis [cm]
-  double z;             ///< position of hit along z axis [cm]
-  double dx;            ///< hit position uncertainty along x axis [cm]
-  double dy;            ///< hit position uncertainty along y axis [cm]
-  double dxy;           ///< hit position covariance along x and y axes [cm2]
-  double du;            ///< hit position uncertainty along axis orthogonal to front strips [cm]
-  double dv;            ///< hit position uncertainty along axis orthogonal to back strips [cm]
-  double xmc;           ///< MC position of hit [cm]
-  double ymc;           ///< MC position of hit [cm]
-  double p;             ///< MC total momentum [GeV/c]
-  double tx;            ///< MC slopes of the mc point
-  double ty;            ///< MC slopes of the mc point
-  int iMC;              ///< index of MCPoint in the fvMCPoints array
-  double time = 0.;     ///< time of the hit [ns]
-  double dt   = 1.e4;   ///< time error of the hit [ns]
+  int iStripF;         ///< index of front strip
+  int iStripB;         ///< index of back strip
+  int iStation;        ///< index of station
+  int ExtIndex;        ///< index of hit in the external TClonesArray array (NOTE: negative for MVD)
+  double u;            ///< position of hit along axis orthogonal to front strips [cm]
+  double v;            ///< position of hit along axis orthogonal to back strips [cm]
+  double x;            ///< position of hit along x axis [cm]
+  double y;            ///< position of hit along y axis [cm]
+  double z;            ///< position of hit along z axis [cm]
+  double dx;           ///< hit position uncertainty along x axis [cm]
+  double dy;           ///< hit position uncertainty along y axis [cm]
+  double dxy;          ///< hit position covariance along x and y axes [cm2]
+  double du;           ///< hit position uncertainty along axis orthogonal to front strips [cm]
+  double dv;           ///< hit position uncertainty along axis orthogonal to back strips [cm]
+  double xmc;          ///< MC position of hit [cm]
+  double ymc;          ///< MC position of hit [cm]
+  double p;            ///< MC total momentum [GeV/c]
+  double tx;           ///< MC slopes of the mc point
+  double ty;           ///< MC slopes of the mc point
+  int iMC;             ///< index of MCPoint in the fvMCPoints array
+  double time = 0.;    ///< time of the hit [ns]
+  double dt   = 1.e4;  ///< time error of the hit [ns]
   int Det;
   int id;  ///< index of hit before hits sorting
   int track;
@@ -343,7 +343,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   fvExternalHits.clear();                     /* <CbmL1Hit>     */
   fvRecoTracks.clear(); /* <CbmL1Track>   */  // TODO: Move from this function to more suitable place (S.Zharko)
   fvHitPointIndexes.clear(); /* <int>: indexes of MC-points in fvMCPoints (by index of fpAlgo->vHits) */
-  fvHitStore.clear();        /* <CbmL1HitStore> */
+  fvHitDebugInfo.clear();    /* <CbmL1HitDebugInfo> */
 
   fmMCPointsLinksMap.clear();
   fmMCTracksLinksMap.clear();
@@ -1248,12 +1248,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
 
-  // ----- Fill and save fvExternalHits, fvHitStore and fvHitPointIndexes vectors as well as fpData->vHits
+  // ----- Fill and save fvExternalHits, fvHitDebugInfo and fvHitPointIndexes vectors as well as fpData->vHits
   fvSortedHitsIndexes.reset(maxHitIndex + 1);
 
   fvExternalHits.reserve(nHits);
-
-  fvHitStore.reserve(nHits);
+  fvHitDebugInfo.reserve(nHits);
   fvHitPointIndexes.reserve(nHits);
 
   fIODataManager.ResetInputData();
@@ -1265,7 +1264,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   for (int iHit = 0; iHit < nHits; ++iHit) {
     TmpHit& th = tmpHits[iHit];
 
-    CbmL1HitStore s;
+    CbmL1HitDebugInfo s;
     s.Det      = th.Det;
     s.ExtIndex = th.ExtIndex;
     s.iStation = th.iStation;
@@ -1296,22 +1295,13 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
 
     // save hit
-    fvExternalHits.push_back(CbmL1Hit(iHit, th.ExtIndex, th.Det));
-
-    fvExternalHits[iHit].x = th.x;
-    fvExternalHits[iHit].y = th.y;
-    fvExternalHits[iHit].t = th.time;
-
-    fvExternalHits[iHit].ID = th.id;
-
-    fvExternalHits[iHit].f = th.iStripF;
-    fvExternalHits[iHit].b = th.iStripB;
+    fvExternalHits.push_back(CbmL1HitId(th.Det, th.ExtIndex));
 
     // TODO: Here one should fill in the fvExternalHits[iHit].mcPointIds
 
     fIODataManager.PushBackHit(h);
 
-    fvHitStore.push_back(s);
+    fvHitDebugInfo.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);
   }
 
@@ -1571,10 +1561,8 @@ void CbmL1::HitMatch()
 {
   const int NHits = fvExternalHits.size();
   for (int iH = 0; iH < NHits; iH++) {
-    CbmL1Hit& hit = fvExternalHits[iH];
-
-
-    int iP = fvHitPointIndexes[iH];
+    CbmL1HitDebugInfo& hit = fvHitDebugInfo[iH];
+    int iP                 = fvHitPointIndexes[iH];
     if (iP >= 0) {
       hit.mcPointIds.push_back_no_warning(iP);
       fvMCPoints[iP].hitIds.push_back_no_warning(iH);
