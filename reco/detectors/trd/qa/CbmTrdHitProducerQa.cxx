@@ -166,6 +166,7 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
     const CbmMatch* trdDigiMatch = fDigiMan->GetMatch(ECbmModuleId::kTrd, trdHit->GetRefId());
     if (nullptr == trdDigiMatch) continue;
 
+    if (0 == trdDigiMatch->GetNofLinks()) continue;  // catch case w/o links as then MatchedLink is invalid
     const CbmTrdPoint* trdPoint =
       dynamic_cast<CbmTrdPoint*>(fTrdPoints->Get(trdDigiMatch->GetMatchedLink()));  // file, event, object
     if (nullptr == trdPoint) continue;
