@@ -424,6 +424,10 @@ void CbmMatchRecoToMC::MatchClusters(ECbmModuleId systemId, const TClonesArray* 
     for (Int_t iDigi = 0; iDigi < nofDigis; iDigi++) {
       Int_t digiIndex           = cluster->GetDigi(iDigi);
       const CbmMatch* digiMatch = fDigiManager->GetMatch(systemId, digiIndex);
+      if (nullptr == digiMatch) {
+        LOG(fatal) << "CbmMatchRecoToMC::MatchClusters => no Match found for system " << systemId << " digi index "
+                   << digiIndex << " (digi " << iDigi << " from cluster " << iCluster << ") !";
+      }
       clusterMatch->AddLinks(*digiMatch);
     }  //# digis in cluster
   }    //# clusters
