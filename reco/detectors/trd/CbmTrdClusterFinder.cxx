@@ -62,7 +62,7 @@ CbmTrdClusterFinder::~CbmTrdClusterFinder()
     fClusters->Delete();
     delete fClusters;
   }
-  if (fGeoPar) { delete fGeoPar; }
+  // if (fGeoPar) { delete fGeoPar; }
   //   if(fModuleInfo){
   //     delete fModuleInfo;
   //   }

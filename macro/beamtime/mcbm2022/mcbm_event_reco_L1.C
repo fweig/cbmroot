@@ -461,6 +461,7 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
     std::cout << "-I- : Added task " << trdCluster->GetName() << std::endl;
 
     CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
+    trdHit->SetHitTimeOffset(363);  // hit time synchronization for TRD2D determined on run 2391
     run->AddTask(trdHit);
     std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   }

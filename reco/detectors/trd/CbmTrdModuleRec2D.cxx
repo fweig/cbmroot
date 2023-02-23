@@ -520,7 +520,7 @@ Bool_t CbmTrdModuleRec2D::MergeHits(CbmTrdHit* h, Int_t a0)
   h->SetDy(edy);
   h->SetDz(0.);
   h->SetDxy(0.);
-  h->SetTime(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP) * (vt0 + time) - tdrift + 30.29, edt);
+  h->SetTime(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP) * (vt0 + time) - tdrift + 30.29 + fHitTimeOff, edt);
   h->SetELoss(e);
   h->SetClassType();
   h->SetMaxType(IsMaxTilt());
@@ -732,7 +732,7 @@ Bool_t CbmTrdModuleRec2D::BuildHit(CbmTrdHit* h)
   h->SetDy(edy);
   h->SetDz(0);
   h->SetDxy(0.);
-  h->SetTime(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP) * (vt0 + time) - tdrift + 30.29, edt);
+  h->SetTime(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP) * (vt0 + time) - tdrift + 30.29 + fHitTimeOff, edt);
   h->SetELoss(e);
   h->SetClassType();
   h->SetMaxType(IsMaxTilt());

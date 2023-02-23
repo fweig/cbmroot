@@ -125,6 +125,10 @@ public:
   {
     use ? SETBIT(fConfigMap, ECbmTrdModuleRec2D::kHelpers) : CLRBIT(fConfigMap, ECbmTrdModuleRec2D::kHelpers);
   }
+  /** \brief Time offset to synchronize TRD2D hits to the rest of detectors 
+   * \param dt offset in [ns]
+   */
+  void SetHitTimeOffset(int dt) { fHitTimeOff = dt; }
 
 protected:
 private:
@@ -205,6 +209,7 @@ private:
   UChar_t vrM   = 0;          //! maximum row
   UChar_t viM   = 0;          //! index of maximum signal in the projection
   UShort_t vyM  = 0;          //! bit map for cluster topology classification
+  int fHitTimeOff = 0;        //! hit time offset for synchronization
   std::vector<Double_t> vs;   //! working copy of signals from cluster
   std::vector<Double_t> vse;  //! working copy of signal errors from cluster
   std::vector<Char_t> vt;     //! working copy of signal relative timing

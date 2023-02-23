@@ -52,7 +52,7 @@ CbmTrdHitProducer::~CbmTrdHitProducer()
 {
   fHits->Clear();
   delete fHits;
-  if (fGeoPar) delete fGeoPar;
+  //if (fGeoPar) delete fGeoPar;
 }
 
 //____________________________________________________________________________________
@@ -101,6 +101,7 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, const CbmTrdParModG
   if (moduleType >= 9) {
     module = fModules[address] = new CbmTrdModuleRec2D(address);
     ((CbmTrdModuleRec2D*) module)->SetUseHelpers(CbmTrdClusterFinder::UseRecoHelpers());
+    ((CbmTrdModuleRec2D*) module)->SetHitTimeOffset(fHitTimeOffset);
   }
   else {
     module = fModules[address] = new CbmTrdModuleRecR(address);
