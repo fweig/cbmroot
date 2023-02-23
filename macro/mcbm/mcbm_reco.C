@@ -262,6 +262,7 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
     std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName() << std::endl;
 
     CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
+    trdHit->SetHitTimeOffset(363);  // hit time synchronization for TRD2D determined on run 2391
     run->AddTask(trdHit);
     std::cout << "-I- " << myName << ": Added task " << trdHit->GetName() << std::endl;
   }
