@@ -181,7 +181,13 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     //run->AddTask(new CbmTrdHitRateQa());  //opens lots of windows
     //run->AddTask(new CbmTrdDigitizerPRFQa()); //works put currently doesn't do anything
     //run->AddTask(new CbmTrdHitRateFastQa());  //opens lots of windows
-    run->AddTask(new CbmTrdHitProducerQa());
+    CbmTrdHitProducerQa* trdHitProducerQa = new CbmTrdHitProducerQa();
+    if ("sis300_electron" == setup) {
+      /// Larger number of stations, needed to fit geometry and avoid warning
+      /// => fast-fix to accomodate the 4+4+2 complexity of tentative SIS300 geometry
+      trdHitProducerQa->SetNumberStations(10);
+    }
+    run->AddTask(trdHitProducerQa);
     run->AddTask(new CbmTrdCalibTracker());
     run->AddTask(new CbmTrackerInputQaTrd());  // Tracker requirements to TRD
   }

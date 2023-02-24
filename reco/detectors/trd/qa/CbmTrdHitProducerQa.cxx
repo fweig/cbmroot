@@ -174,7 +174,8 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
     const int planeId = trdHit->GetPlaneId();
 
     if (planeId >= fNoTrdStations * fNoTrdPerStation) {
-      cout << GetName() << ": Warning, TRD plane out of bounds, skipping hit." << endl;
+      cout << GetName() << ": Warning, TRD plane out of bounds, skipping hit."
+           << " (" << planeId << " VS " << fNoTrdStations << " x " << fNoTrdPerStation << ")" << endl;
       continue;
     }
 
