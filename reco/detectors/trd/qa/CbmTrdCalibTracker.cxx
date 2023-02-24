@@ -397,6 +397,9 @@ InitStatus CbmTrdCalibTracker::GeometryQa()
   // check geometry of the TRD modules
 
   double lastZ = -1;
+
+  // load alignment matrices
+  fTrdGeoPar->LoadAlignVolumes();
   for (int iStation = 0; iStation < fNtrackingStations; iStation++) {
 
     int ModuleId = fTrdDigiPar->GetModuleId(iStation);

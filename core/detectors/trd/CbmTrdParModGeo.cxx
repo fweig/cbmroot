@@ -57,8 +57,8 @@ bool CbmTrdParModGeo::SetNode()
   fNode = new TGeoPhysicalNode(GetTitle());
   if (!fNode) return false;
 
-  LOG(info) << GetName() << " : " << GetTitle();
-  fNode->GetMatrix()->Print();
+  LOG(debug) << GetName() << " : " << GetTitle();
+  // fNode->GetMatrix()->Print();
 
   return true;
 }
