@@ -249,7 +249,7 @@ InitStatus CbmL1::Init()
   fpMuchPoints = 0;
   fpTrdPoints  = 0;
   fpTofPoints  = 0;
-  fpMCTracks   = 0;
+  fpMcTracks   = 0;
 
   fpMvdHitMatches  = 0;
   fpTrdHitMatches  = 0;
@@ -258,18 +258,10 @@ InitStatus CbmL1::Init()
 
   fpStsClusters = 0;
 
-  fvFileEvent.clear();
+  fvSelectedMcEvents.clear();
 
-  if (!fLegacyEventMode) {  //  Time-slice mode selected
-    LOG(info) << GetName() << ": running in time-slice mode.";
-    fTimeSlice = NULL;
-    fTimeSlice = (CbmTimeSlice*) fairManager->GetObject("TimeSlice.");
-    if (fTimeSlice == NULL) LOG(fatal) << GetName() << ": No time slice branch in the tree!";
-
-  }     //? time-slice mode
-  else  // event mode
-    LOG(info) << GetName() << ": running in event mode.";
-
+  fTimeSlice = (CbmTimeSlice*) fairManager->GetObject("TimeSlice.");
+  if (!fTimeSlice) { LOG(fatal) << GetName() << ": No time slice branch in the tree!"; }
 
   fpStsClusters       = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("StsCluster"));
   fpStsHitMatches     = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("StsHitMatch"));
@@ -313,15 +305,13 @@ InitStatus CbmL1::Init()
 
     fpMcEventHeader = mcManager->GetObject("MCEventHeader.");
 
-    fpMCTracks = mcManager->InitBranch("MCTrack");
+    fpMcTracks = mcManager->InitBranch("MCTrack");
 
-    if (nullptr == fpMCTracks) LOG(fatal) << GetName() << ": No MCTrack data!";
+    if (nullptr == fpMcTracks) LOG(fatal) << GetName() << ": No MCTrack data!";
     if (nullptr == fpMcEventHeader) LOG(fatal) << GetName() << ": No MC event header data!";
 
-    if (!fLegacyEventMode) {
-      fpEventList = (CbmMCEventList*) fairManager->GetObject("MCEventList.");
-      if (nullptr == fpEventList) LOG(fatal) << GetName() << ": No MCEventList data!";
-    }
+    fpMcEventList = (CbmMCEventList*) fairManager->GetObject("MCEventList.");
+    if (nullptr == fpMcEventList) LOG(fatal) << GetName() << ": No MCEventList data!";
 
     if (fUseMVD) {
       fpMvdPoints      = mcManager->InitBranch("MvdPoint");
@@ -892,7 +882,7 @@ InitStatus CbmL1::Init()
 void CbmL1::Reconstruct(CbmEvent* event)
 {
   static int nevent = 0;
-  fvFileEvent.clear();
+  fvSelectedMcEvents.clear();
 
   // TODO: move these values to CbmL1Parameters namespace (S.Zharko)
   bool areDataLeft = true;   // whole TS processed?
@@ -932,19 +922,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
   }
   // -----------------------------------------------------------------------
 
-  if (!fLegacyEventMode && fPerformance) {
-
-    int nofEvents = fpEventList->GetNofEvents();
+  if (fPerformance) {
+    int nofEvents = fpMcEventList->GetNofEvents();
     for (int iE = 0; iE < nofEvents; iE++) {
-      int fileId  = fpEventList->GetFileIdByIndex(iE);
-      int eventId = fpEventList->GetEventIdByIndex(iE);
-      fvFileEvent.insert(DFSET::value_type(fileId, eventId));
+      int fileId  = fpMcEventList->GetFileIdByIndex(iE);
+      int eventId = fpMcEventList->GetEventIdByIndex(iE);
+      fvSelectedMcEvents.insert(DFSET::value_type(fileId, eventId));
     }
   }
   else {
     Int_t iFile  = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
     Int_t iEvent = FairRunAna::Instance()->GetEventHeader()->GetMCEntryNumber();
-    fvFileEvent.insert(DFSET::value_type(iFile, iEvent));
+    fvSelectedMcEvents.insert(DFSET::value_type(iFile, iEvent));
   }
 
   if (fVerbose > 1) { cout << "\nCbmL1::Exec event " << ++nevent << " ...\n\n"; }
@@ -1027,7 +1016,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 
     // save reconstructed tracks
-    if (fLegacyEventMode) vRTracksCur.clear();
     int trackFirstHit = 0;
 
     float TsStart_new = TsStart + TsLength - TsOverlap;
@@ -1061,10 +1049,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         int caHitId  = fpAlgo->fRecoHits[trackFirstHit + i];
         int cbmHitID = fpAlgo->GetInputData()->GetHit(caHitId).ID;
         double time  = fpAlgo->GetInputData()->GetHit(caHitId).t;
-        if (!fLegacyEventMode) { t.Hits.push_back(cbmHitID); }
-        else {
-          t.Hits.push_back(caHitId);
-        }
+        t.Hits.push_back(cbmHitID);
         if (time >= (TsStart + TsLength - TsOverlap)) {
           isTrackInOverlap = 1;
           if (TsStart_new > time) { TsStart_new = time; }
@@ -1073,7 +1058,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       trackFirstHit += it->NHits;
 
       // Discard tracks from overlap region
-      if ((!fLegacyEventMode) && (isTrackInOverlap == 1)) { continue; }
+      if (isTrackInOverlap == 1) { continue; }
 
       vRTracksCur.push_back(t);
     }
@@ -1084,14 +1069,14 @@ void CbmL1::Reconstruct(CbmEvent* event)
       float time    = sh->GetTime();
 
       if (TsStart_new <= time) {
-        FstHitinTs = i;  // TODO: shouldn't it be in the fLegacyEventMode == true only? (S.Zharko)
+        FstHitinTs = i;
         break;
       }
     }
 
-    if (!fLegacyEventMode) TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
+    TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
 
-    if (!fLegacyEventMode) LOG(debug) << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl;
+    LOG(debug) << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl;
   }
 
 
@@ -1124,8 +1109,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
   fvRecoTracks.reserve(vRTracksCur.size());
   for (unsigned int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
 
-    for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].Hits.size(); iHit++)
-      if (!fLegacyEventMode) { vRTracksCur[iTrack].Hits[iHit] = fvSortedHitsIndexes[vRTracksCur[iTrack].Hits[iHit]]; }
+    for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].Hits.size(); iHit++) {
+      vRTracksCur[iTrack].Hits[iHit] = fvSortedHitsIndexes[vRTracksCur[iTrack].Hits[iHit]];
+    }
 
     fvRecoTracks.push_back(vRTracksCur[iTrack]);
   }
@@ -1432,7 +1418,7 @@ void CbmL1::WriteSIMDKFData()
     int jHit = 0;
     for (int iHit = 0; iHit < NHits; iHit++) {
       CbmL1HitDebugInfo& h = fvHitDebugInfo[RecTrack->Hits[iHit]];
-      st[jHit]         = h.iStation;
+      st[jHit]             = h.iStation;
       if (h.ExtIndex < 0) {
         CbmMvdHit* MvdH = (CbmMvdHit*) fpMvdHits->At(-h.ExtIndex - 1);
         x[jHit]         = MvdH->GetX();

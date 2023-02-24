@@ -223,11 +223,6 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kSts>(int iHit) const
       int iFile  = link.GetFile();
       int iEvent = link.GetEntry();
 
-      if (fLegacyEventMode) {
-        iFile  = fvFileEvent.begin()->first;
-        iEvent = fvFileEvent.begin()->second;
-      }
-
       auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex + fNpointsMvdAll, iEvent, iFile));
       assert(itPoint != fmMCPointsLinksMap.cend());
 
@@ -413,8 +408,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     fNpointsTrdAll  = 0;
     fNpointsTofAll  = 0;
 
-
-    for (DFSET::iterator set_it = fvFileEvent.begin(); set_it != fvFileEvent.end(); ++set_it) {
+    for (DFSET::iterator set_it = fvSelectedMcEvents.begin(); set_it != fvSelectedMcEvents.end(); ++set_it) {
       Int_t iFile  = set_it->first;
       Int_t iEvent = set_it->second;
       if (fUseMVD) fNpointsMvdAll += fpMvdPoints->Size(iFile, iEvent);
@@ -424,7 +418,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       if (fUseTOF) fNpointsTofAll += fpTofPoints->Size(iFile, iEvent);
     }
 
-    for (DFSET::iterator set_it = fvFileEvent.begin(); set_it != fvFileEvent.end(); ++set_it) {
+    for (DFSET::iterator set_it = fvSelectedMcEvents.begin(); set_it != fvSelectedMcEvents.end(); ++set_it) {
       Int_t iFile   = set_it->first;
       Int_t iEvent  = set_it->second;
       firstMvdPoint = fvMCPoints.size();
@@ -766,10 +760,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       Int_t hitIndex = 0;
       hitIndex       = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
-      int hitIndexSort = 0;
-      if (!fLegacyEventMode) hitIndexSort = fvSortedStsHitsIndexes[hitIndex];
-      else
-        hitIndexSort = j;
+      int hitIndexSort = fvSortedStsHitsIndexes[hitIndex];
 
       // ***********************************
       // ** Fill the temporary hit object **
@@ -799,10 +790,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.time = h->GetTime();
         th.dt   = h->GetTimeError();
 
-        if (!fLegacyEventMode) { th.id = nMvdHits + hitIndex; }
-        else {
-          th.id = tmpHits.size();
-        }
+        th.id = nMvdHits + hitIndex;
 
         /// stop if reco TS ends and many hits left
         if (!event) {
@@ -1331,29 +1319,29 @@ void CbmL1::Fill_vMCTracks()
   // Count the total number of tracks in this event and reserve memory
   {
     Int_t nMCTracks = 0;
-    for (DFSET::iterator set_it = fvFileEvent.begin(); set_it != fvFileEvent.end(); ++set_it) {
+    for (DFSET::iterator set_it = fvSelectedMcEvents.begin(); set_it != fvSelectedMcEvents.end(); ++set_it) {
       Int_t iFile  = set_it->first;
       Int_t iEvent = set_it->second;
-      nMCTracks += fpMCTracks->Size(iFile, iEvent);
+      nMCTracks += fpMcTracks->Size(iFile, iEvent);
     }
     fvMCTracks.reserve(nMCTracks);
   }
 
   int fileEvent = 0;
   /* Loop over MC event */
-  for (DFSET::iterator set_it = fvFileEvent.begin(); set_it != fvFileEvent.end(); ++set_it, ++fileEvent) {
+  for (DFSET::iterator set_it = fvSelectedMcEvents.begin(); set_it != fvSelectedMcEvents.end(); ++set_it, ++fileEvent) {
     Int_t iFile  = set_it->first;
     Int_t iEvent = set_it->second;
 
     auto header = dynamic_cast<FairMCEventHeader*>(fpMcEventHeader->Get(iFile, iEvent));
     assert(header);
 
-    double eventTime = fpEventList->GetEventTime(iEvent, iFile);
+    double eventTime = fpMcEventList->GetEventTime(iEvent, iFile);
 
-    Int_t nMCTrack = fpMCTracks->Size(iFile, iEvent);
+    Int_t nMCTrack = fpMcTracks->Size(iFile, iEvent);
     /* Loop over MC tracks */
     for (Int_t iMCTrack = 0; iMCTrack < nMCTrack; iMCTrack++) {
-      CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fpMCTracks->Get(iFile, iEvent, iMCTrack));
+      CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fpMcTracks->Get(iFile, iEvent, iMCTrack));
       if (!MCTrack) { continue; }
 
       int mother_ID = MCTrack->GetMotherId();
@@ -1399,7 +1387,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   Int_t mcID    = -1;
   Double_t time = 0.f;
 
-  double eventTime = fpEventList->GetEventTime(event, file);
+  double eventTime = fpMcEventList->GetEventTime(event, file);
 
   if (MVD == 1) {
     CbmMvdPoint* pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(fpMvdPoints->Get(file, event, iPoint));  // file, event, object
@@ -1416,7 +1404,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 0) {
     CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fpStsPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    if (!fLegacyEventMode) {
+    {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
       Double_t Time_MC_point = eventTime + pt->GetTime();
@@ -1440,7 +1428,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 2) {
     CbmMuchPoint* pt = L1_DYNAMIC_CAST<CbmMuchPoint*>(fpMuchPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    if (!fLegacyEventMode) {
+    {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
       Double_t Time_MC_point = eventTime + pt->GetTime();
@@ -1465,7 +1453,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     CbmTrdPoint* pt = L1_DYNAMIC_CAST<CbmTrdPoint*>(fpTrdPoints->Get(file, event, iPoint));  // file, event, object
 
     if (!pt) return 1;
-    if (!fLegacyEventMode) {
+    {
       Double_t StartTime     = fTimeSlice->GetStartTime();  // not used
       Double_t EndTime       = fTimeSlice->GetEndTime();    // not used
       Double_t Time_MC_point = eventTime + pt->GetTime();   // not used
@@ -1489,7 +1477,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 4) {
     CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fpTofPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    if (!fLegacyEventMode) {
+    {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
       Double_t Time_MC_point = eventTime + pt->GetTime();
@@ -1538,7 +1526,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   MC->time = time;
 
   if (MC->ID < 0) return 1;
-  CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fpMCTracks->Get(file, event, MC->ID));
+  CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fpMcTracks->Get(file, event, MC->ID));
   if (!MCTrack) return 1;
   MC->pdg       = MCTrack->GetPdgCode();
   MC->mother_ID = MCTrack->GetMotherId();

@@ -460,8 +460,7 @@ void CbmL1::EfficienciesPerformance()
     cout << "Reconstructed MC tracks/event: "
          << (double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
-    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << (fLegacyEventMode ? " s/ev" : " s/time slice") << endl
-         << endl;
+    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << " s/time slice" << endl << endl;
   }
 }  // void CbmL1::Performance()
 
@@ -1943,7 +1942,7 @@ void CbmL1::InputPerformance()
 
         double mcTime = pt->GetTime();
 
-        if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
+        mcTime += fpMcEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
         // hit pulls and residuals
 
@@ -2034,8 +2033,7 @@ void CbmL1::InputPerformance()
 
       CbmMuchPoint* pt = (CbmMuchPoint*) fpMuchPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime    = pt->GetTime();
-
-      if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      mcTime += fpMcEventList->GetEventTime(link.GetEntry(), link.GetFile());
       // mcTime+=20;
 
       // hit pulls and residuals
@@ -2099,7 +2097,7 @@ void CbmL1::InputPerformance()
       CbmTrdPoint* pt = (CbmTrdPoint*) fpTrdPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime   = pt->GetTime();
 
-      if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      mcTime += fpMcEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
       //      if ((sh->GetPlaneId()) == 0) continue;
@@ -2161,7 +2159,7 @@ void CbmL1::InputPerformance()
       CbmTofPoint* pt = (CbmTofPoint*) fpTofPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime   = pt->GetTime();
 
-      if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      mcTime += fpMcEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
 

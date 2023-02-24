@@ -291,7 +291,6 @@ public:
 
 
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
-  void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
   void SetMissingHits(bool value) { fMissingHits = value; }
   void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
   void SetMcbmMode() { fTrackingMode = L1Algo::TrackingMode::kMcbm; }
@@ -477,7 +476,7 @@ public:
 
   L1Algo::TrackingMode fTrackingMode = L1Algo::TrackingMode::kSts;  ///< Tracking mode: kSts, kMcbm or kGlobal
 
-  DFSET fvFileEvent {};  ///< Map of fileID to eventId
+  DFSET fvSelectedMcEvents {};  ///< Set of selected MC events with fileID and eventId
 
 
   L1Vector<CbmL1Track> fvRecoTracks = {"CbmL1::fvRecoTracks"};  ///< Reconstructed tracks container
@@ -576,8 +575,8 @@ private:
   // ** MC input **
 
   // General
-  CbmMCEventList* fpEventList      = nullptr;  ///< MC event list (all)
-  CbmMCDataArray* fpMCTracks       = nullptr;  ///< MC tracks list
+  CbmMCEventList* fpMcEventList    = nullptr;  ///< MC event list (all)
+  CbmMCDataArray* fpMcTracks       = nullptr;  ///< MC tracks list
   CbmMCDataObject* fpMcEventHeader = nullptr;  ///< MC event header
 
   // MC-point arrays
@@ -614,11 +613,11 @@ private:
 
   /// Indexes of hits after hits sorting (used only with fLegacyEventMode = true)
   L1Vector<int> fvSortedHitsIndexes = {"CbmL1::fvSortedHitsIndexes"};
-
   /// Indexes of STS hits in fpStsHits array after hits sorting (used only with fLegacyEventMode = true)
   L1Vector<int> fvSortedStsHitsIndexes = {"CbmL1::fvSortedStsHitsIndexes"};
-  L1Vector<CbmL1MCTrack> fvMCTracks    = {"CbmL1::fvMCTracks"};         ///< Array of MC tracks
-  L1Vector<int> fvHitPointIndexes      = {"CbmL1::fvHitPointIndexes"};  ///< Indexes of MC points vs. hit index
+
+  L1Vector<CbmL1MCTrack> fvMCTracks = {"CbmL1::fvMCTracks"};         ///< Array of MC tracks
+  L1Vector<int> fvHitPointIndexes   = {"CbmL1::fvHitPointIndexes"};  ///< Indexes of MC points vs. hit index
 
 public:
   // ** Repacked input data **
@@ -663,7 +662,6 @@ private:
     fMatBudgetFileName {};  ///< Map for material budget file names vs. detectorID
 
   bool fExtrapolateToTheEndOfSTS {false};
-  bool fLegacyEventMode {false};
 
   KFTopoPerformance* fTopoPerformance {nullptr};
   L1EventEfficiencies fEventEfficiency {};  // average efficiencies
