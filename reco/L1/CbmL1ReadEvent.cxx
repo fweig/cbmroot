@@ -1153,7 +1153,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
   fIODataManager.ResetInputData();
   fIODataManager.ReserveNhits(nHits);
   fIODataManager.SetNhitKeys(NStrips);
-  //if (fPerformance) { fpMCModule->GetMCData()->ReserveNofHits(nHits); }
 
   // ----- Fill
   for (int iHit = 0; iHit < nHits; ++iHit) {
@@ -1196,10 +1195,8 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     fvHitDebugInfo.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);
-    //if (fPerformance) { fpMCModule->GetMCData()->RegisterPointIndexForHit(iHit, th.iMC); }
   }
-  if (fPerformance) { HitMatch(); }  /// OLD
-  //if (fPerformance) { fpMCModule->MatchPointsWithHits(fvHitDebugInfo); }  /// NEW
+  if (fPerformance) { HitMatch(); }                                       /// OLD
 
   if (fVerbose >= 2) cout << "ReadEvent: mvd and sts are saved." << endl;
 

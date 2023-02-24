@@ -167,8 +167,6 @@ void L1Algo::ReceiveParameters(L1Parameters&& parameters)
   fMomentumCutOff   = fParameters.GetMomentumCutOff();
 
   L1FieldRegion::ForceUseOfOriginalField(fParameters.DevIsUseOfOriginalField());
-
-  LOG(info) << fParameters.ToString(3);
 }
 
 /// TODO: Move to L1Hit

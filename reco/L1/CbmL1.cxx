@@ -866,6 +866,7 @@ InitStatus CbmL1::Init()
   fNTofStations  = fpAlgo->GetParameters()->GetNstationsActive(L1DetectorID::kTof);
   fNStations     = fpAlgo->GetParameters()->GetNstationsActive();
 
+  LOG(info) << fpAlgo->GetParameters()->ToString(0);
 
   LOG(info) << "----- Numbers of stations active in tracking -----";
   LOG(info) << "  MVD:    " << fNMvdStations;
@@ -874,7 +875,6 @@ InitStatus CbmL1::Init()
   LOG(info) << "  TRD:    " << fNTrdStations;
   LOG(info) << "  ToF:    " << fNTofStations;
   LOG(info) << "  Total:  " << fNStations;
-
 
   return kSUCCESS;
 }
@@ -1009,8 +1009,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
   if (fPerformance) {
     if (fVerbose > 1) { cout << "Performance..." << endl; }
     TrackMatch();
-    //fpMCModule->MatchRecoAndMCTracks(fvRecoTracks, fvHitDebugInfo);
-    //fpMCModule->ProcessEvent(event);
     EfficienciesPerformance();
     HistoPerformance();
     TrackFitPerformance();
@@ -1025,8 +1023,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
 // -----   Finish CbmStsFitPerformanceTask task   -----------------------------
 void CbmL1::Finish()
 {
-  //if (fPerformance) { fpMCModule->Finish(); }
-
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
 

@@ -189,9 +189,11 @@ void CbmCaMCModule::ProcessEvent(CbmEvent*) { fpQaModule->FillHistograms(); }
 //
 void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
 {
+  LOG(info) << "\033[1;32m!!!! FLAG 1\033[0m";
   // ----- Initialize stations arrangement and hit indexes
   fMCData.InitTrackInfo(vHits);
 
+  LOG(info) << "\033[1;32m!!!! FLAG 2\033[0m";
   // ----- Define reconstructable and additional flags
   for (auto& aTrk : fMCData.GetTrackContainer()) {
     bool isRec = true;  // is track reconstructable
@@ -226,6 +228,7 @@ void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
     aTrk.SetFlagReconstructable(isRec);
     aTrk.SetFlagAdditional(isAdd);
   }
+  LOG(info) << "\033[1;32m!!!! FLAG 3\033[0m";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

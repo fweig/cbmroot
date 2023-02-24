@@ -275,6 +275,7 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
                                          "All Reco", "All MC", "MCl(hits)", "MCl(MCps)"};
 
     CbmQaTable* aTable = new CbmQaTable(nameOfTable.c_str(), "Track Efficiency", NCounters + 2, 9);
+    aTable->SetColWidth(20);
     aTable->SetNamesOfRows(rowNames);
     aTable->SetNamesOfCols(colNames);
     for (int iC = 0; iC < NCounters; iC++) {

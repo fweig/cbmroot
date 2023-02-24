@@ -22,7 +22,6 @@
 #define _CbmL1_h_
 
 
-#include "CbmCaMCModule.h"
 #include "CbmL1DetectorID.h"
 #include "CbmL1Hit.h"
 #include "CbmL1MCPoint.h"
