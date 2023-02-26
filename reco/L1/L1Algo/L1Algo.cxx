@@ -87,18 +87,16 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
   fInputData = std::move(inputData);
 
   // ----- Reset data arrays -------------------------------------------------------------------------------------------
-  fvHitKeyFlags.reset(fInputData.GetNhitKeys());
+  fvHitKeyFlags.reset(fInputData.GetNhitKeys(), 0);
   int nHits    = fInputData.GetNhits();
   NHitsIsecAll = nHits;
-  vNotUsedHits_A.reset(nHits);
-  vNotUsedHits_B.reset(nHits);
-  vNotUsedHits_Buf.reset(nHits);
-  vNotUsedHitsxy_A.reset(nHits);
-  vNotUsedHitsxy_buf.reset(nHits);
-  vNotUsedHitsxy_B.reset(nHits);
-  RealIHit_v.reset(nHits);
-  RealIHit_v_buf.reset(nHits);
-  RealIHit_v_buf2.reset(nHits);
+  fGridHits.reset(nHits);
+  fGridHitsBuf.reset(nHits);
+  fGridHits.reset(nHits);
+  fGridPoints.reset(nHits);
+  fGridPointsBuf.reset(nHits);
+  fGridHitIds.reset(nHits);
+  fGridHitIdsBuf.reset(nHits);
 
 #ifdef _OPENMP
   fStripToTrackLock.reset(fInputData.GetNhitKeys());
@@ -195,17 +193,17 @@ int L1Algo::GetMcTrackIdForHit(int iHit) const
   return CbmL1::Instance()->GetMcPoints()[iMcPoint].ID;
 }
 
-int L1Algo::GetMcTrackIdForUnusedHit(int iHit) const
+int L1Algo::GetMcTrackIdForGridHit(int iHit) const
 {
-  int hitId    = (*RealIHitP)[iHit];
+  int hitId    = fGridHitIds[iHit];
   int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];
   if (iMcPoint < 0) return -1;
   return CbmL1::Instance()->GetMcPoints()[iMcPoint].ID;
 }
 
-const CbmL1MCTrack* L1Algo::GetMcTrackForUnusedHit(int iHit) const
+const CbmL1MCTrack* L1Algo::GetMcTrackForGridHit(int iHit) const
 {
-  int id = GetMcTrackIdForUnusedHit(iHit);
+  int id = GetMcTrackIdForGridHit(iHit);
   if (id < 0) return nullptr;
   return &CbmL1::Instance()->GetMcTracks()[id];
 }

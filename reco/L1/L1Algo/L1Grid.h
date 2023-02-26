@@ -43,8 +43,8 @@ public:
 
   ~L1Grid() = default;
 
-  void StoreHits(L1HitIndex_t nhits, const L1Hit* hits, char iS, L1Algo& Algo, L1HitIndex_t n, L1Hit* hitsBuf1,
-                 const L1Hit* hits1, L1HitIndex_t* indices1);
+  void StoreHits(L1Algo& Algo, char iS, L1HitIndex_t firstHitIndex, L1HitIndex_t nHits, const L1Hit hits[],
+                 L1Hit gridHits[], L1HitIndex_t gridHitIds[]);
 
   void CreatePar0(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
   void BuildBins(float yMin, float yMax, float zMin, float zMax, float tMin, float tMax, float sy, float sz, float st);
@@ -101,9 +101,9 @@ public:
   //     };
 
 
-  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf, L1HitIndex_t* indices,
-                      L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
-                      char iS, L1Algo& Algo, const L1Vector<unsigned char>& vSFlag);
+  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>& indicesBuf, L1HitIndex_t* indices,
+                      L1Vector<L1Hit>& hitsBuf, L1Vector<L1HitPoint>& pointsBuf, L1HitPoint* points,
+                      int& NHitsOnStation, char iS, L1Algo& Algo, const L1Vector<unsigned char>& vSFlag);
 
 
 private:

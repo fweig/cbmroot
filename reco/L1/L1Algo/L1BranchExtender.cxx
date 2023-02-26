@@ -229,18 +229,18 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
 
       if (fParameters.DevIsIgnoreHitSearchAreas()) {
         ih++;
-        if ((L1HitIndex_t) ih >= (HitsUnusedStopIndex[ista] - HitsUnusedStartIndex[ista])) { break; }
+        if ((L1HitIndex_t) ih >= (fGridHitStopIndex[ista] - fGridHitStartIndex[ista])) { break; }
       }
       else {
         if (!area.GetNext(ih)) { break; }
       }
 
-      L1HitIndex_t globalInd = HitsUnusedStartIndex[ista] + ih;
+      L1HitIndex_t globalInd = fGridHitStartIndex[ista] + ih;
 
-      const L1HitPoint& hitPoint = (*vHitPointsUnused)[globalInd];
+      const L1HitPoint& hitPoint = fGridPoints[globalInd];
       if (hitPoint.IsSuppressed()) { continue; }
 
-      const L1Hit& hit = (*vHitsUnused)[globalInd];
+      const L1Hit& hit = fGridHits[globalInd];
 
       if (sta.timeInfo && tr.nTimeMeasurements[0] > 0) {
         fscal dt = hit.t - tr.t[0];
@@ -279,9 +279,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& Tout, const bool dir,
     }
     if (iHit_best < 0) break;
 
-    newHits.push_back((*RealIHitP)[iHit_best]);
+    newHits.push_back(fGridHitIds[iHit_best]);
 
-    const L1Hit& hit = (*vHitsUnused)[iHit_best];
+    const L1Hit& hit = fGridHits[iHit_best];
 
     auto [x, y] = sta.ConvUVtoXY<fvec>(hit.u, hit.v);
 

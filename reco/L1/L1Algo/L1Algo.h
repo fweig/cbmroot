@@ -35,7 +35,6 @@ class L1AlgoDraw;
 #include "L1Grid.h"
 #include "L1Hit.h"
 #include "L1HitPoint.h"
-#include "L1HitsSortHelper.h"
 #include "L1InputData.h"
 #include "L1Parameters.h"
 #include "L1Portion.h"
@@ -73,6 +72,10 @@ template<Tindex NHits>
 class L1AlgoEfficiencyPerformance;
 #endif
 
+struct L1HitTimeInfo {
+  fscal fEventTimeMin {-std::numeric_limits<fscal>::max() / 2.};
+  fscal fEventTimeMax {std::numeric_limits<fscal>::max() / 2.};
+};
 
 /// Main class of L1 CA track finder algorithm
 ///
@@ -377,9 +380,9 @@ public:
   int GetMcTrackIdForHit(int iHit) const;
 
   /// Get mc track ID for a hit (debug tool)
-  int GetMcTrackIdForUnusedHit(int iHit) const;
+  int GetMcTrackIdForGridHit(int iGridHit) const;
 
-  const CbmL1MCTrack* GetMcTrackForUnusedHit(int iHit) const;
+  const CbmL1MCTrack* GetMcTrackForGridHit(int iHit) const;
 
 private:
   bool checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dchi2) const;
@@ -402,6 +405,8 @@ private:
     "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
 
 public:
+  L1Vector<L1HitTimeInfo> fHitTimeInfo[L1Constants::size::kMaxNstations];
+
   L1Grid vGrid[L1Constants::size::kMaxNstations];      ///<
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
 
@@ -429,18 +434,25 @@ public:
   //  L1Branch* pointer;
   unsigned int NHitsIsecAll {0};
 
-  L1Vector<L1Hit> vNotUsedHits_A {"L1Algo::vNotUsedHits_A"};
-  L1Vector<L1Hit> vNotUsedHits_B {"L1Algo::vNotUsedHits_B"};
-  L1Vector<L1Hit> vNotUsedHits_Buf {"L1Algo::vNotUsedHits_Buf"};
-  L1Vector<L1HitPoint> vNotUsedHitsxy_A {"L1Algo::vNotUsedHitsxy_A"};
-  L1Vector<L1HitPoint> vNotUsedHitsxy_buf {"L1Algo::vNotUsedHitsxy_buf"};
-  L1Vector<L1HitPoint> vNotUsedHitsxy_B {"L1Algo::vNotUsedHitsxy_B"};
+  L1Vector<L1HitIndex_t> fSliceHitIds {"L1Algo::fSliceHitIds"};                   ///< indices of the sub-slice hits
+  L1HitIndex_t fSliceHitIdsStartIndex[L1Constants::size::kMaxNstations + 1] {0};  ///< start of station hit inices
+  L1HitIndex_t fSliceHitIdsStopIndex[L1Constants::size::kMaxNstations + 1] {0};   ///< stop of station hit inices
+
+  L1Vector<L1Hit> fGridHits {"L1Algo::fGridHits"};        ///< hits, ordered with respect to their grid bins
+  L1Vector<L1Hit> fGridHitsBuf {"L1Algo::fGridHitsBuf"};  ///< hits, ordered with respect to their grid bins
+
+  L1Vector<L1HitIndex_t> fGridHitIds {"L1Algo::fGridHitIds"};        ///< indices of grid hits: iGridHit -> iCaHit
+  L1Vector<L1HitIndex_t> fGridHitIdsBuf {"L1Algo::fGridHitIdsBuf"};  ///< buffer for a new fGridHitIds
+
+  L1Vector<L1HitPoint> fGridPoints {"L1Algo::fGridPoints"};  ///< grid points parallel to fGridHits
+  L1Vector<L1HitPoint> fGridPointsBuf {"L1Algo::fGridPointsBuf"};
+
+  L1HitIndex_t fGridHitStartIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t fGridHitStopIndex[L1Constants::size::kMaxNstations + 1] {0};
+
   L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
   L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
 
-  L1Vector<L1HitIndex_t> RealIHit_v {"L1Algo::RealIHit_v"};
-  L1Vector<L1HitIndex_t> RealIHit_v_buf {"L1Algo::RealIHit_v_buf"};
-  L1Vector<L1HitIndex_t> RealIHit_v_buf2 {"L1Algo::RealIHit_v_buf2"};
 
 #ifdef _OPENMP
   L1Vector<omp_lock_t> fStripToTrackLock {"L1Algo::fStripToTrackLock"};
@@ -459,17 +471,6 @@ public:
   /// --- data used during finding iterations
   int isec {0};                                       // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
   const L1CAIteration* fpCurrentIteration = nullptr;  ///< pointer to the current CA track finder iteration
-
-  L1Vector<L1Hit>* vHitsUnused           = nullptr;
-  L1Vector<L1HitIndex_t>* RealIHitP      = nullptr;
-  L1Vector<L1HitIndex_t>* RealIHitPBuf   = nullptr;
-  L1Vector<L1HitPoint>* vHitPointsUnused = nullptr;
-  L1HitIndex_t* RealIHit                 = nullptr;  // index in vHits indexed by index in vHitsUnused
-
-  L1HitIndex_t HitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t HitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t HitsUnusedStartIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t HitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
 
   L1Vector<int> fHitFirstTriplet {"L1Algo::fHitFirstTriplet"};  /// link hit -> first triplet { hit, *, *}
   L1Vector<int> fHitNtriplets {"L1Algo::fHitNtriplets"};        /// link hit ->n triplets { hit, *, *}

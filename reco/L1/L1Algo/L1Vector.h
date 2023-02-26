@@ -90,6 +90,16 @@ public:
     return *this;
   }
 
+  /// Swap operator
+  void swap(L1Vector& v) noexcept
+  {
+    //LOG(info) << "\033[1;32mCALL L1Vector swap operator\033[0m";
+    if (this != &v) {
+      std::swap(fName, v.fName);
+      Tbase::swap(v);
+    }
+  }
+
   void SetName(const std::string& s) { fName = s; }
 
   void SetName(const std::basic_ostream<char>& s)

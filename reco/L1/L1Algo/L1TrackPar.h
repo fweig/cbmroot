@@ -84,12 +84,12 @@ public:
 
   void InitVelocityRange(fscal minP);
 
-  static constexpr float kClightNs {29.9792458};          // the speed of light cm/ns
-  static constexpr float kClightNsInv {1. / 29.9792458};  // inverse speed of light
-  static constexpr float kProtonMass   = 0.93827208816;
-  static constexpr float kPionMass     = 0.1395703918;
-  static constexpr float kMuonMass     = 0.105658375523;
-  static constexpr float kElectronMass = 0.0005109989500015;
+  static constexpr fscal kClightNs {29.9792458};          // the speed of light cm/ns
+  static constexpr fscal kClightNsInv {1. / 29.9792458};  // inverse speed of light
+  static constexpr fscal kProtonMass   = 0.93827208816;
+  static constexpr fscal kPionMass     = 0.1395703918;
+  static constexpr fscal kMuonMass     = 0.105658375523;
+  static constexpr fscal kElectronMass = 0.0005109989500015;
 
 } _fvecalignment;
 

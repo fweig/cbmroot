@@ -41,7 +41,6 @@
 #include "TRandom.h"
 #include "TStopwatch.h"
 
-#include "L1HitsSortHelper.h"
 #include "L1Timer.h"
 #ifdef DRAW
 #include "utils/L1AlgoDraw.h"
@@ -352,7 +351,7 @@ inline void L1Algo::findDoubletsStep0(
     for (L1HitIndex_t imh = -1; true;) {  // loop over the hits in the area
       if (fParameters.DevIsIgnoreHitSearchAreas()) {
         imh++;
-        if ((L1HitIndex_t) imh >= (HitsUnusedStopIndex[iStaM] - HitsUnusedStartIndex[iStaM])) { break; }
+        if ((L1HitIndex_t) imh >= (fGridHitStopIndex[iStaM] - fGridHitStartIndex[iStaM])) { break; }
       }
       else {
         if (!areaTime.GetNext(imh)) { break; }
@@ -364,10 +363,10 @@ inline void L1Algo::findDoubletsStep0(
       const L1HitPoint& hitl = vHits_l[hitsl_1[i1]];
 
       if (fParameters.DevIsMatchDoubletsViaMc()) {  // trd2d
-        int indL = HitsUnusedStartIndex[iStaL] + hitsl_1[i1];
-        int indM = HitsUnusedStartIndex[iStaM] + imh;
-        int iMC  = GetMcTrackIdForUnusedHit(indL);
-        if (iMC < 0 || iMC != GetMcTrackIdForUnusedHit(indM)) { continue; }
+        int indL = fGridHitStartIndex[iStaL] + hitsl_1[i1];
+        int indM = fGridHitStartIndex[iStaM] + imh;
+        int iMC  = GetMcTrackIdForGridHit(indL);
+        if (iMC < 0 || iMC != GetMcTrackIdForGridHit(indM)) { continue; }
       }
 
       // check y-boundaries
@@ -458,11 +457,11 @@ inline void L1Algo::findDoubletsStep0(
           if (dv * dv > 30. * (hitm.dV2() + hitm1.dV2())) { continue; }
 
           if (fParameters.DevIsSuppressOverlapHitsViaMc()) {
-            int indL  = HitsUnusedStartIndex[iStaL] + hitsl_1[i1];
-            int indM  = HitsUnusedStartIndex[iStaM] + imh;
-            int indM1 = HitsUnusedStartIndex[iStaM] + hitsm_2[imh1];
-            int iMC   = GetMcTrackIdForUnusedHit(indL);
-            if ((iMC != GetMcTrackIdForUnusedHit(indM)) || (iMC != GetMcTrackIdForUnusedHit(indM1))) { continue; }
+            int indL  = fGridHitStartIndex[iStaL] + hitsl_1[i1];
+            int indM  = fGridHitStartIndex[iStaM] + imh;
+            int indM1 = fGridHitStartIndex[iStaM] + hitsm_2[imh1];
+            int iMC   = GetMcTrackIdForGridHit(indL);
+            if ((iMC != GetMcTrackIdForGridHit(indM)) || (iMC != GetMcTrackIdForGridHit(indM1))) { continue; }
           }
 
           isOtherHit = true;
@@ -651,7 +650,7 @@ inline void L1Algo::findTripletsStep0(  // input
       while (true) {
         if (fParameters.DevIsIgnoreHitSearchAreas()) {
           irh1++;
-          if ((L1HitIndex_t) irh1 >= (HitsUnusedStopIndex[iStaR] - HitsUnusedStartIndex[iStaR])) break;
+          if ((L1HitIndex_t) irh1 >= (fGridHitStopIndex[iStaR] - fGridHitStartIndex[iStaR])) break;
           irh = irh1;
         }
         else {
@@ -659,16 +658,16 @@ inline void L1Algo::findTripletsStep0(  // input
         }
 
         // while (area.GetNext(irh)) {
-        //for (int irh = 0; irh < ( HitsUnusedStopIndex[iStaR] - HitsUnusedStartIndex[iStaR] ); irh++){
+        //for (int irh = 0; irh < ( fGridHitStopIndex[iStaR] - fGridHitStartIndex[iStaR] ); irh++){
         const L1HitPoint& hitr = vHits_r[irh];
         if (hitr.IsSuppressed()) continue;
 
         if (fParameters.DevIsMatchTripletsViaMc()) {
-          int indL = HitsUnusedStartIndex[iStaL] + hitsl_2[i2_4];
-          int indM = HitsUnusedStartIndex[iStaM] + hitsm_2_tmp[i2_4];
-          int indR = HitsUnusedStartIndex[iStaR] + irh;
-          int mcL  = GetMcTrackIdForUnusedHit(indL);
-          if (mcL < 0 || mcL != GetMcTrackIdForUnusedHit(indM) || mcL != GetMcTrackIdForUnusedHit(indR)) { continue; }
+          int indL = fGridHitStartIndex[iStaL] + hitsl_2[i2_4];
+          int indM = fGridHitStartIndex[iStaM] + hitsm_2_tmp[i2_4];
+          int indR = fGridHitStartIndex[iStaR] + irh;
+          int mcL  = GetMcTrackIdForGridHit(indL);
+          if (mcL < 0 || mcL != GetMcTrackIdForGridHit(indM) || mcL != GetMcTrackIdForGridHit(indR)) { continue; }
         }
 
         const fscal zr = hitr.Z();
@@ -866,14 +865,14 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     //if (!T3.IsEntryConsistent(false, i3_4)) continue;
 
     // prepare data
-    L1HitIndex_t ihit[NHits] = {(*RealIHitP)[hitsl_3[i3] + HitsUnusedStartIndex[ista[0]]],
-                                (*RealIHitP)[hitsm_3[i3] + HitsUnusedStartIndex[ista[1]]],
-                                (*RealIHitP)[hitsr_3[i3] + HitsUnusedStartIndex[ista[2]]]};
+    L1HitIndex_t ihit[NHits] = {fGridHitIds[hitsl_3[i3] + fGridHitStartIndex[ista[0]]],
+                                fGridHitIds[hitsm_3[i3] + fGridHitStartIndex[ista[1]]],
+                                fGridHitIds[hitsr_3[i3] + fGridHitStartIndex[ista[2]]]};
 
     if (fParameters.DevIsMatchTripletsViaMc()) {
-      int mc1 = GetMcTrackIdForUnusedHit(ihit[0]);
-      int mc2 = GetMcTrackIdForUnusedHit(ihit[1]);
-      int mc3 = GetMcTrackIdForUnusedHit(ihit[2]);
+      int mc1 = GetMcTrackIdForGridHit(ihit[0]);
+      int mc2 = GetMcTrackIdForGridHit(ihit[1]);
+      int mc3 = GetMcTrackIdForGridHit(ihit[2]);
       if ((mc1 != mc2) || (mc1 != mc3)) { continue; }
     }
 
@@ -994,9 +993,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     T3.SetOneEntry(i3_4, T, i3_4);
 
     {
-      int mc1 = GetMcTrackIdForUnusedHit(ihit[0]);
-      int mc2 = GetMcTrackIdForUnusedHit(ihit[1]);
-      int mc3 = GetMcTrackIdForUnusedHit(ihit[2]);
+      int mc1 = GetMcTrackIdForGridHit(ihit[0]);
+      int mc2 = GetMcTrackIdForGridHit(ihit[1]);
+      int mc3 = GetMcTrackIdForGridHit(ihit[2]);
       if ((mc1 >= 0) && (mc1 == mc2) && (mc1 == mc3)) {
         const CbmL1MCTrack& mctr = CbmL1::Instance()->GetMcTracks()[mc1];
         float ev                 = 0;
@@ -1023,9 +1022,9 @@ inline void L1Algo::findTripletsStep3(  // input
   /// \param istam  index of the middle station
   /// \param istar  index of the right station
   /// \param T_3  fitted trajectories of triplets
-  /// \param hitsl_3  index of the left triplet hit in unused hits on the left station
-  /// \param hitsm_3  index of the middle triplet hit in unused hits on the middle station
-  /// \param hitsr_3  index of the right triplet hit in unused hits on the right station
+  /// \param hitsl_3  index of the left triplet hit in Grid hits on the left station
+  /// \param hitsm_3  index of the middle triplet hit in Grid hits on the middle station
+  /// \param hitsr_3  index of the right triplet hit in Grid hits on the right station
 
 #ifdef _OPENMP
   unsigned int Thread = omp_get_thread_num();
@@ -1052,12 +1051,12 @@ inline void L1Algo::findTripletsStep3(  // input
     // select
     fscal chi2 = T3.chi2[i3_4];  // / T3.NDF[i3_4];
 
-    const L1HitIndex_t ihitl = hitsl_3[i3] + HitsUnusedStartIndex[istal];
-    const L1HitIndex_t ihitm = hitsm_3[i3] + HitsUnusedStartIndex[istam];
-    const L1HitIndex_t ihitr = hitsr_3[i3] + HitsUnusedStartIndex[istar];
-    L1_ASSERT(ihitl < HitsUnusedStopIndex[istal], ihitl << " < " << HitsUnusedStopIndex[istal]);
-    L1_ASSERT(ihitm < HitsUnusedStopIndex[istam], ihitm << " < " << HitsUnusedStopIndex[istam]);
-    L1_ASSERT(ihitr < HitsUnusedStopIndex[istar], ihitr << " < " << HitsUnusedStopIndex[istar]);
+    const L1HitIndex_t ihitl = hitsl_3[i3] + fGridHitStartIndex[istal];
+    const L1HitIndex_t ihitm = hitsm_3[i3] + fGridHitStartIndex[istam];
+    const L1HitIndex_t ihitr = hitsr_3[i3] + fGridHitStartIndex[istar];
+    L1_ASSERT(ihitl < fGridHitStopIndex[istal], ihitl << " < " << fGridHitStopIndex[istal]);
+    L1_ASSERT(ihitm < fGridHitStopIndex[istam], ihitm << " < " << fGridHitStopIndex[istam]);
+    L1_ASSERT(ihitr < fGridHitStopIndex[istar], ihitr << " < " << fGridHitStopIndex[istar]);
 
     unsigned int Location = PackTripletId(istal, Thread, fTriplets[istal][Thread].size());
 
@@ -1175,9 +1174,9 @@ inline void L1Algo::f5(  // input
             L1HitIndex_t ihitl = trip.GetLHit();
             L1HitIndex_t ihitm = trip.GetMHit();
             L1HitIndex_t ihitr = trip.GetRHit();
-            L1_ASSERT(ihitl < HitsUnusedStopIndex[istal], ihitl << " < " << HitsUnusedStopIndex[istal]);
-            L1_ASSERT(ihitm < HitsUnusedStopIndex[istam], ihitm << " < " << HitsUnusedStopIndex[istam]);
-            L1_ASSERT(ihitr < HitsUnusedStopIndex[istar], ihitr << " < " << HitsUnusedStopIndex[istar]);
+            L1_ASSERT(ihitl < fGridHitStopIndex[istal], ihitl << " < " << fGridHitStopIndex[istal]);
+            L1_ASSERT(ihitm < fGridHitStopIndex[istam], ihitm << " < " << fGridHitStopIndex[istam]);
+            L1_ASSERT(ihitr < fGridHitStopIndex[istar], ihitr << " < " << fGridHitStopIndex[istar]);
 
             L1Vector<unsigned int> neighCands("L1CATrackFinder::neighCands");  // save neighbour candidates
             neighCands.reserve(8);                                             // ~average is 1-2 for central, up to 5
@@ -1251,8 +1250,8 @@ inline void L1Algo::CreatePortionOfDoublets(
     const L1Station& stam = fParameters.GetStation(istam);
 
     // prepare data
-    L1HitPoint* vHits_l = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istal];
-    L1HitPoint* vHits_m = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istam];
+    L1HitPoint* vHits_l = &(fGridPoints[0]) + fGridHitStartIndex[istal];
+    L1HitPoint* vHits_m = &(fGridPoints[0]) + fGridHitStartIndex[istam];
 
     fvec u_front[L1Constants::size::kSingletPortionSizeVec];
     fvec u_back[L1Constants::size::kSingletPortionSizeVec];
@@ -1270,8 +1269,8 @@ inline void L1Algo::CreatePortionOfDoublets(
       u_front, u_back, zPos, hitsl_1, t, dt2, du2, dv2);
 
     for (Tindex i = 0; i < singletPortionSize; ++i)
-      L1_ASSERT(hitsl_1[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal],
-                hitsl_1[i] << " < " << HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal]);
+      L1_ASSERT(hitsl_1[i] < fGridHitStopIndex[istal] - fGridHitStartIndex[istal],
+                hitsl_1[i] << " < " << fGridHitStopIndex[istal] - fGridHitStartIndex[istal]);
 
     Tindex portionSize_V = (singletPortionSize + fvec::size() - 1) / fvec::size();
 
@@ -1298,12 +1297,12 @@ inline void L1Algo::CreatePortionOfDoublets(
       hitsm_2);
 
     for (Tindex i = 0; i < static_cast<Tindex>(hitsm_2.size()); ++i)
-      L1_ASSERT(hitsm_2[i] < HitsUnusedStopIndex[istam] - HitsUnusedStartIndex[istam],
-                hitsm_2[i] << " " << HitsUnusedStopIndex[istam] - HitsUnusedStartIndex[istam]);
+      L1_ASSERT(hitsm_2[i] < fGridHitStopIndex[istam] - fGridHitStartIndex[istam],
+                hitsm_2[i] << " " << fGridHitStopIndex[istam] - fGridHitStartIndex[istam]);
 
 #ifdef DOUB_PERFORMANCE
-    L1HitIndex_t* RealIHitL = &((*RealIHitP)[HitsUnusedStartIndex[istal]]);
-    L1HitIndex_t* RealIHitM = &((*RealIHitP)[HitsUnusedStartIndex[istam]]);
+    L1HitIndex_t* RealIHitL = &(fGridHitIds[fGridHitStartIndex[istal]]);
+    L1HitIndex_t* RealIHitM = &(fGridHitIds[fGridHitStartIndex[istam]]);
     for (Tindex i = 0; i < n2; ++i) {
       // int i_4 = i%4;
       // int i_V = i/4;
@@ -1350,10 +1349,10 @@ inline void L1Algo::CreatePortionOfTriplets(
     // prepare data
     const L1Station& star = fParameters.GetStation(istar);
 
-    L1HitPoint* vHits_m = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istam];
+    L1HitPoint* vHits_m = &(fGridPoints[0]) + fGridHitStartIndex[istam];
 
     L1HitPoint* vHits_r = 0;
-    vHits_r             = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istar];
+    vHits_r             = &(fGridPoints[0]) + fGridHitStartIndex[istar];
 
     Tindex n3 = 0;
 
@@ -1404,11 +1403,11 @@ inline void L1Algo::CreatePortionOfTriplets(
 
 
     for (Tindex i = 0; i < static_cast<Tindex>(hitsl_3.size()); ++i)
-      L1_assert(hitsl_3[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal]);
+      L1_assert(hitsl_3[i] < fGridHitStopIndex[istal] - fGridHitStartIndex[istal]);
     for (Tindex i = 0; i < static_cast<Tindex>(hitsm_3.size()); ++i)
-      L1_assert(hitsm_3[i] < HitsUnusedStopIndex[istam] - HitsUnusedStartIndex[istam]);
+      L1_assert(hitsm_3[i] < fGridHitStopIndex[istam] - fGridHitStartIndex[istam]);
     for (Tindex i = 0; i < static_cast<Tindex>(hitsr_3.size()); ++i)
-      L1_assert(hitsr_3[i] < HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar]);
+      L1_assert(hitsr_3[i] < fGridHitStopIndex[istar] - fGridHitStartIndex[istar]);
 
     /// Add the right hits to parameters estimation.
 
@@ -1424,9 +1423,9 @@ inline void L1Algo::CreatePortionOfTriplets(
     findTripletsStep2(n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3, 1);
 
 #ifdef TRIP_PERFORMANCE
-    L1HitIndex_t* RealIHitL = &((*RealIHitP)[HitsUnusedStartIndex[istal]]);
-    L1HitIndex_t* RealIHitM = &((*RealIHitP)[HitsUnusedStartIndex[istam]]);
-    L1HitIndex_t* RealIHitR = &((*RealIHitP)[HitsUnusedStartIndex[istar]]);
+    L1HitIndex_t* RealIHitL = &(fGridHitIds[fGridHitStartIndex[istal]]);
+    L1HitIndex_t* RealIHitM = &(fGridHitIds[fGridHitStartIndex[istam]]);
+    L1HitIndex_t* RealIHitR = &(fGridHitIds[fGridHitStartIndex[istar]]);
     for (Tindex i = 0; i < n3; ++i) {
       Tindex i_4            = i % 4;
       Tindex i_V            = i / 4;
@@ -1558,14 +1557,6 @@ void L1Algo::CATrackFinder()
    * CATrackFinder routine setting
    ***********************************/
 
-  RealIHitP                        = &RealIHit_v;
-  RealIHitPBuf                     = &RealIHit_v_buf;
-  vHitsUnused                      = &vNotUsedHits_B;  /// array of hits used on current iteration
-  L1Vector<L1Hit>* vHitsUnused_buf = &vNotUsedHits_A;  /// buffer for copy
-
-  vHitPointsUnused                           = &vNotUsedHitsxy_B;  /// array of info for hits used on current iteration
-  L1Vector<L1HitPoint>* vHitPointsUnused_buf = &vNotUsedHitsxy_A;
-
   NHitsIsecAll = 0;
   fTracks.clear();
   fRecoHits.clear();
@@ -1578,8 +1569,8 @@ void L1Algo::CATrackFinder()
   // #pragma omp parallel for  reduction(+:nNotUsedHits)
   for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
     nNotUsedHits += (fInputData.GetStopHitIndex(ista) - fInputData.GetStartHitIndex(ista));
-    HitsUnusedStartIndex[ista] = fInputData.GetStartHitIndex(ista);
-    HitsUnusedStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
+    fGridHitStartIndex[ista] = fInputData.GetStartHitIndex(ista);
+    fGridHitStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
   }
 
 #ifdef XXX
@@ -1602,8 +1593,6 @@ void L1Algo::CATrackFinder()
   //     if (yStep > 0.3)
   //      yStep = 1.25;
   //      xStep = 2.05;
-
-  vHitsUnused = &vNotUsedHits_Buf;
 
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
     const L1Station& st    = fParameters.GetStation(iS);
@@ -1632,15 +1621,15 @@ void L1Algo::CATrackFinder()
     }
 
     vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
-    int start = HitsUnusedStartIndex[iS];
-    int nhits = HitsUnusedStopIndex[iS] - start;
+    int start = fGridHitStartIndex[iS];
+    int nhits = fGridHitStopIndex[iS] - start;
 
     if (nhits > 0) {
-      vGridTime[iS].StoreHits(nhits, &(fInputData.GetHit(start)), iS, *this, start, &(vNotUsedHits_Buf[start]),
-                              &(fInputData.GetHit(start)), &(RealIHit_v[start]));
+      vGridTime[iS].StoreHits(*this, iS, start, nhits, &(fInputData.GetHit(start)), &(fGridHits[start]),
+                              &(fGridHitIds[start]));
     }
     else {  // to avoid out-of-range crash in array[start]
-      vGridTime[iS].StoreHits(nhits, nullptr, iS, *this, start, nullptr, nullptr, nullptr);
+      vGridTime[iS].StoreHits(*this, iS, start, nhits, nullptr, nullptr, nullptr);
     }
   }
 
@@ -1648,12 +1637,6 @@ void L1Algo::CATrackFinder()
   for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist)
     for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
       const L1Hit& h = fInputData.GetHit(ih);
-      //SetFUnUsed((*fStripFlag)[h.f]);
-      //SetFUnUsed((*fStripFlag)[h.b]);
-      //L1_SHOW(fInputData.GetNhitKeys());
-      //L1_SHOW(fvHitKeyFlags.size());
-      //L1_SHOW(h.f);
-      //L1_SHOW(h.b);
       fvHitKeyFlags[h.f] = 0;
       fvHitKeyFlags[h.b] = 0;
     }
@@ -1663,7 +1646,7 @@ void L1Algo::CATrackFinder()
 #pragma omp parallel for schedule(dynamic, 5)
 #endif
     for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ista); ih < fInputData.GetStopHitIndex(ista); ++ih) {
-      CreateHitPoint(vNotUsedHits_Buf[ih], vNotUsedHitsxy_B[ih]);
+      CreateHitPoint(fGridHits[ih], fGridPoints[ih]);
     }
   }
 
@@ -1706,29 +1689,22 @@ void L1Algo::CATrackFinder()
 #endif
 
     if (isec != 0) {
-      L1Vector<L1HitIndex_t>* RealIHitPTmp = RealIHitP;
-      RealIHitP                            = RealIHitPBuf;
-      RealIHitPBuf                         = RealIHitPTmp;
 
-      L1Vector<L1Hit>* vHitsUnused_temp = vHitsUnused;
-      vHitsUnused                       = vHitsUnused_buf;
-      vHitsUnused_buf                   = vHitsUnused_temp;
-
-      L1Vector<L1HitPoint>* vHitsUnused_temp2 = vHitPointsUnused;
-      vHitPointsUnused                        = vHitPointsUnused_buf;
-      vHitPointsUnused_buf                    = vHitsUnused_temp2;
+      fGridHitIds.swap(fGridHitIdsBuf);
+      fGridHits.swap(fGridHitsBuf);
+      fGridPoints.swap(fGridPointsBuf);
     }
     // TODO: Replace NStations with fInitManager.GetNstationsGeom() (S.Zharko)
     for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist) {
-      for (L1HitIndex_t ih = HitsUnusedStartIndex[ist]; ih < HitsUnusedStopIndex[ist]; ++ih) {
+      for (L1HitIndex_t ih = fGridHitStartIndex[ist]; ih < fGridHitStopIndex[ist]; ++ih) {
         //SG!!
         fHitFirstTriplet[ih] = 0;
         fHitNtriplets[ih]    = 0;
       }
     }
     /*
-   fHitFirstTriplet.assign(HitsUnusedStopIndex[fParameters.GetNstationsActive() - 1],0);
-   fHitNtriplets.assign(HitsUnusedStopIndex[fParameters.GetNstationsActive() - 1],0);
+   fHitFirstTriplet.assign(fGridHitStopIndex[fParameters.GetNstationsActive() - 1],0);
+   fHitNtriplets.assign(fGridHitStopIndex[fParameters.GetNstationsActive() - 1],0);
 */
     {
       // #pragma omp  task
@@ -1774,10 +1750,9 @@ void L1Algo::CATrackFinder()
 
 #ifndef L1_NO_ASSERT
       for (int istal = fParameters.GetNstationsActive() - 1; istal >= 0; istal--) {
-        L1_ASSERT(HitsUnusedStopIndex[istal] >= HitsUnusedStartIndex[istal],
-                  HitsUnusedStopIndex[istal] << " >= " << HitsUnusedStartIndex[istal]);
-        L1_ASSERT(HitsUnusedStopIndex[istal] <= (*vHitsUnused).size(),
-                  HitsUnusedStopIndex[istal] << " <= " << (*vHitsUnused).size());
+        L1_ASSERT(fGridHitStopIndex[istal] >= fGridHitStartIndex[istal],
+                  fGridHitStopIndex[istal] << " >= " << fGridHitStartIndex[istal]);
+        L1_ASSERT(fGridHitStopIndex[istal] <= fGridHits.size(), fGridHitStopIndex[istal] << " <= " << fGridHits.size());
       }
 #endif  // L1_NO_ASSERT
     }
@@ -1789,7 +1764,7 @@ void L1Algo::CATrackFinder()
       for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation;
            istal--) {  //start downstream chambers
         fSingletPortionSize[istal].clear();
-        int NHits_l   = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
+        int NHits_l   = fGridHitStopIndex[istal] - fGridHitStartIndex[istal];
         int nPortions = NHits_l / L1Constants::size::kSingletPortionSize;
         int rest      = NHits_l - nPortions * L1Constants::size::kSingletPortionSize;
         for (int ipp = 0; ipp < nPortions; ipp++) {
@@ -1811,7 +1786,7 @@ void L1Algo::CATrackFinder()
 
          for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation; istal--)  //start downstream chambers
          {
-         int nHits = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
+         int nHits = fGridHitStopIndex[istal] - fGridHitStartIndex[istal];
 
          int NHits_P = nHits/L1Constants::size::kSingletPortionSize;
 
@@ -1989,8 +1964,7 @@ void L1Algo::CATrackFinder()
             int thread_num = 0;
 #endif
             L1Triplet& first_trip = (fTriplets[istaF][iThread][itrip]);
-            if (fvHitKeyFlags[(*vHitsUnused)[first_trip.GetLHit()].f]
-                || fvHitKeyFlags[(*vHitsUnused)[first_trip.GetLHit()].b]) {
+            if (fvHitKeyFlags[fGridHits[first_trip.GetLHit()].f] || fvHitKeyFlags[fGridHits[first_trip.GetLHit()].b]) {
               continue;
             }
             //               ghost suppression !!!
@@ -1998,7 +1972,7 @@ void L1Algo::CATrackFinder()
 
             if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {  // ghost suppression !!!
               int nHits = 3 + first_trip.GetLevel();
-              if ((*vHitsUnused)[first_trip.GetLHit()].iSt == 0) {
+              if (fGridHits[first_trip.GetLHit()].iSt == 0) {
                 if (nHits < fpCurrentIteration->GetMinNhitsStation0()) { continue; }
               }
               else {
@@ -2015,7 +1989,7 @@ void L1Algo::CATrackFinder()
             //   curr_tr.Lengtha  = 0;
             curr_tr.ista = 0;
             curr_tr.fHits.clear();
-            curr_tr.fHits.push_back((*RealIHitP)[first_trip.GetLHit()]);
+            curr_tr.fHits.push_back(fGridHitIds[first_trip.GetLHit()]);
             curr_tr.NHits = 1;
 
             curr_L    = 1;
@@ -2264,10 +2238,10 @@ void L1Algo::CATrackFinder()
 
     // suppress strips of suppressed hits
     for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
-      for (L1HitIndex_t ih = HitsUnusedStartIndex[ista]; ih < HitsUnusedStopIndex[ista]; ih++) {
-        const L1HitPoint& hp = (*vHitPointsUnused)[ih];
+      for (L1HitIndex_t ih = fGridHitStartIndex[ista]; ih < fGridHitStopIndex[ista]; ih++) {
+        const L1HitPoint& hp = fGridPoints[ih];
         if (hp.IsSuppressed()) {
-          int hitId            = (*RealIHitP)[ih];
+          int hitId            = fGridHitIds[ih];
           const L1Hit& hit     = fInputData.GetHit(hitId);
           fvHitKeyFlags[hit.f] = 1;
           fvHitKeyFlags[hit.b] = 1;
@@ -2286,24 +2260,24 @@ void L1Algo::CATrackFinder()
       int NHitsOnStation = 0;
 
       for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
-        int start                   = HitsUnusedStartIndex[ista];
-        int Nelements               = HitsUnusedStopIndex[ista] - start;
+        int start                   = fGridHitStartIndex[ista];
+        int Nelements               = fGridHitStopIndex[ista] - start;
         L1Hit* staHits              = nullptr;  // to avoid out-of-range error in ..[start]
         L1HitIndex_t* staHitIndices = nullptr;
         L1HitPoint* staHitPoints    = nullptr;
         if (Nelements > 0) {
-          staHits       = &((*vHitsUnused)[start]);
-          staHitIndices = &((*RealIHitP)[start]);
-          staHitPoints  = &((*vHitPointsUnused)[start]);
+          staHits       = &(fGridHits[start]);
+          staHitIndices = &(fGridHitIds[start]);
+          staHitPoints  = &(fGridPoints[start]);
         }
 
         int NHitsOnStationTmp = NHitsOnStation;
 
-        vGridTime[ista].UpdateIterGrid(Nelements, staHits, RealIHitPBuf, staHitIndices, vHitsUnused_buf,
-                                       vHitPointsUnused_buf, staHitPoints, NHitsOnStation, ista, *this, fvHitKeyFlags);
+        vGridTime[ista].UpdateIterGrid(Nelements, staHits, fGridHitIdsBuf, staHitIndices, fGridHitsBuf, fGridPointsBuf,
+                                       staHitPoints, NHitsOnStation, ista, *this, fvHitKeyFlags);
 
-        HitsUnusedStartIndex[ista] = NHitsOnStationTmp;
-        HitsUnusedStopIndex[ista]  = NHitsOnStation;
+        fGridHitStartIndex[ista] = NHitsOnStationTmp;
+        fGridHitStopIndex[ista]  = NHitsOnStation;
       }
 
 #ifdef XXX
@@ -2319,7 +2293,7 @@ void L1Algo::CATrackFinder()
       // #ifdef DRAW
       //     draw->ClearVeiw();
       // //   draw->DrawInfo();
-      //     draw->DrawRestHits(HitsUnusedStartIndex, HitsUnusedStopIndex, RealIHit);
+      //     draw->DrawRestHits(fGridHitStartIndex, fGridHitStopIndex, RealIHit);
       //     draw->DrawRecoTracks();
       //     draw->SaveCanvas("Reco_"+isec+"_");
       //     draw->DrawAsk();
@@ -2329,13 +2303,13 @@ void L1Algo::CATrackFinder()
       //       fL1Pulls->Build(1);
       // #endif
 #ifdef COUNTERS
-      //  stat_nHits[isec] += (vHitsUnused*)->Size();
+      //  stat_nHits[isec] += (fGridHits*)->Size();
 
       cout << "iter = " << isec << endl;
       cout << " NSinglets = " << stat_nSinglets[isec] / stat_N << endl;
       //    cout << " NDoublets = " << stat_nDoublets[isec]/stat_N << endl;
       cout << " NTriplets = " << stat_nTriplets[isec] / stat_N << endl;
-      cout << " NHitsUnused = " << stat_nHits[isec] / stat_N << endl;
+      cout << " NfGridHit = " << stat_nHits[isec] / stat_N << endl;
 
 #endif  // COUNTERS
     }
@@ -2395,8 +2369,8 @@ void L1Algo::CATrackFinder()
         NDup=0, DupSize=0, NTrip=0, TripSize=0, NBranches=0, BranchSize=0, NTracks=0, TrackSize=0 ;
 
         NTimes++;
-        NHits += vHitsUnused->size();
-        HitSize += vHitsUnused->size()*sizeof(L1Hit);
+        NHits += fGridHits.size();
+        HitSize += fGridHits.size()*sizeof(L1Hit);
         NStrips+= vStrips.size();
         StripSize += vStrips.size()*sizeof(fscal) + (*fStripFlag).size()*sizeof(unsigned char);
         NStripsB+= (*fStripFlagB).size();
@@ -2477,31 +2451,31 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     const L1HitIndex_t& ihitr = curr_trip->GetRHit();
 
 
-    //if (!GetFUsed((*fStripFlag)[(*vHitsUnused)[ihitm].f] | (*fStripFlag)[(*vHitsUnused)[ihitm].b])) {
+    //if (!GetFUsed((*fStripFlag)[fGridHits[ihitm].f] | (*fStripFlag)[fGridHits[ihitm].b])) {
     //L1_SHOW(fInputData.GetNhitKeys());
     //L1_SHOW(fvHitKeyFlags.size());
-    //L1_SHOW((*vHitsUnused)[ihitm].f);
-    //L1_SHOW((*vHitsUnused)[ihitm].b);
-    if (!(fvHitKeyFlags[(*vHitsUnused)[ihitm].f] || fvHitKeyFlags[(*vHitsUnused)[ihitm].b])) {
+    //L1_SHOW(fGridHits[ihitm].f);
+    //L1_SHOW(fGridHits[ihitm].b);
+    if (!(fvHitKeyFlags[fGridHits[ihitm].f] || fvHitKeyFlags[fGridHits[ihitm].b])) {
 
-      //        curr_tr.Hits.push_back((*RealIHitP)[ihitm]);
+      //        curr_tr.Hits.push_back(fGridHitIds[ihitm]);
 
-      curr_tr.fHits.push_back((*RealIHitP)[ihitm]);
+      curr_tr.fHits.push_back(fGridHitIds[ihitm]);
 
       curr_tr.NHits++;
 
       curr_L++;
     }
 
-    //if (!GetFUsed((*fStripFlag)[(*vHitsUnused)[ihitr].f] | (*fStripFlag)[(*vHitsUnused)[ihitr].b])) {
+    //if (!GetFUsed((*fStripFlag)[fGridHits[ihitr].f] | (*fStripFlag)[fGridHits[ihitr].b])) {
     //L1_SHOW(fInputData.GetNhitKeys());
     //L1_SHOW(fvHitKeyFlags.size());
-    //L1_SHOW((*vHitsUnused)[ihitr].f);
-    //L1_SHOW((*vHitsUnused)[ihitr].b);
-    if (!(fvHitKeyFlags[(*vHitsUnused)[ihitr].f] || fvHitKeyFlags[(*vHitsUnused)[ihitr].b])) {
+    //L1_SHOW(fGridHits[ihitr].f);
+    //L1_SHOW(fGridHits[ihitr].b);
+    if (!(fvHitKeyFlags[fGridHits[ihitr].f] || fvHitKeyFlags[fGridHits[ihitr].b])) {
 
-      //curr_tr.Hits.push_back((*RealIHitP)[ihitr]);
-      curr_tr.fHits.push_back((*RealIHitP)[ihitr]);
+      //curr_tr.Hits.push_back(fGridHitIds[ihitr]);
+      curr_tr.fHits.push_back(fGridHitIds[ihitr]);
 
       curr_tr.NHits++;
 
@@ -2554,8 +2528,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal dchi2 = 0.;
       if (!checkTripletMatch(*curr_trip, new_trip, dchi2)) continue;
 
-      if (fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].f]
-          || fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].b]) {  //hits are used
+      if (fvHitKeyFlags[fGridHits[new_trip.GetLHit()].f]
+          || fvHitKeyFlags[fGridHits[new_trip.GetLHit()].b]) {  //hits are used
         //  no used hits allowed -> compare and store track
         if ((curr_L > best_L) || ((curr_L == best_L) && (curr_chi2 < best_chi2))) {
           best_tr = curr_tr;
@@ -2571,12 +2545,12 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 
 
         if (0) {  //SGtrd2d debug!!
-          int mc01 = GetMcTrackIdForUnusedHit(curr_trip->GetLHit());
-          int mc02 = GetMcTrackIdForUnusedHit(curr_trip->GetMHit());
-          int mc03 = GetMcTrackIdForUnusedHit(curr_trip->GetRHit());
-          int mc11 = GetMcTrackIdForUnusedHit(new_trip.GetLHit());
-          int mc12 = GetMcTrackIdForUnusedHit(new_trip.GetMHit());
-          int mc13 = GetMcTrackIdForUnusedHit(new_trip.GetRHit());
+          int mc01 = GetMcTrackIdForGridHit(curr_trip->GetLHit());
+          int mc02 = GetMcTrackIdForGridHit(curr_trip->GetMHit());
+          int mc03 = GetMcTrackIdForGridHit(curr_trip->GetRHit());
+          int mc11 = GetMcTrackIdForGridHit(new_trip.GetLHit());
+          int mc12 = GetMcTrackIdForGridHit(new_trip.GetMHit());
+          int mc13 = GetMcTrackIdForGridHit(new_trip.GetRHit());
           if ((mc01 == mc02) && (mc02 == mc03)) {
             cout << " sta " << ista << " mc0 " << mc01 << " " << mc02 << " " << mc03 << " mc1 " << mc11 << " " << mc12
                  << " " << mc13 << " chi2 " << curr_chi2 / (2 * (curr_L + 2) - 4) << " new "
@@ -2596,7 +2570,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 
         // add new hit
         new_tr[ista] = curr_tr;
-        new_tr[ista].fHits.push_back((*RealIHitP)[new_trip.GetLHit()]);
+        new_tr[ista].fHits.push_back(fGridHitIds[new_trip.GetLHit()]);
         new_tr[ista].NHits++;
 
         const int new_ista = ista + new_trip.GetMSta() - new_trip.GetLSta();

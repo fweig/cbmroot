@@ -37,8 +37,8 @@ inline void memset(T* dest, T i, size_t num)
 }
 
 
-void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf,
-                            L1HitIndex_t* indices, L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf,
+void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>& indicesBuf,
+                            L1HitIndex_t* indices, L1Vector<L1Hit>& hitsBuf, L1Vector<L1HitPoint>& pointsBuf,
                             L1HitPoint* points, int& NHitsOnStation, char iS, L1Algo& Algo,
                             const L1Vector<unsigned char>& vSFlag)
 {
@@ -107,9 +107,9 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitI
 
         const L1HitIndex_t& index1 = fHitsInBin[x] + fFirstHitInBin[bin];
 
-        (*hits2)[index1 + NHitsOnStation]      = hits[x];
-        (*indicesBuf)[index1 + NHitsOnStation] = indices[x];
-        (*pointsBuf)[index1 + NHitsOnStation]  = points[x];
+        hitsBuf[index1 + NHitsOnStation]    = hits[x];
+        indicesBuf[index1 + NHitsOnStation] = indices[x];
+        pointsBuf[index1 + NHitsOnStation]  = points[x];
       }
     }
   }
@@ -166,27 +166,26 @@ void L1Grid::BuildBins(float yMin, float yMax, float zMin, float zMax, float tMi
 }
 
 
-void L1Grid::StoreHits(L1HitIndex_t nhits, const L1Hit* hits, char iS, L1Algo& Algo, L1HitIndex_t n, L1Hit* hitsBuf1,
-                       const L1Hit* hits1, L1HitIndex_t* indices1)
+void L1Grid::StoreHits(L1Algo& Algo, char iS, L1HitIndex_t firstHitIndex, L1HitIndex_t nHits, const L1Hit hits[],
+                       L1Hit gridHits[], L1HitIndex_t gridHitIds[])
 {
 
-  fscal xs = 0;
-  fscal ys = 0;
+  fscal x = 0;
+  fscal y = 0;
 
   fFirstHitInBin.reset(fN + 2, 0);
 
 #ifdef _OPENMP
-#pragma omp parallel for firstprivate(xs, ys)
+#pragma omp parallel for firstprivate(x, y)
 #endif
-  for (L1HitIndex_t x = 0; x < nhits; x++) {
-    Algo.GetHitCoor((hits)[x], xs, ys, iS);
-
-
-    fHitsInBin[x] = fFirstHitInBin[GetBinBounded(xs, ys, (hits)[x].t) + 1];
+  for (L1HitIndex_t ih = 0; ih < nHits; ih++) {
+    Algo.GetHitCoor((hits)[ih], x, y, iS);
+    auto bin       = GetBinBounded(x, y, (hits)[ih].t);
+    fHitsInBin[ih] = fFirstHitInBin[bin + 1];
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-    fFirstHitInBin[GetBinBounded(xs, ys, (hits)[x].t) + 1]++;
+    fFirstHitInBin[bin + 1]++;
   }
 
 
@@ -214,22 +213,14 @@ void L1Grid::StoreHits(L1HitIndex_t nhits, const L1Hit* hits, char iS, L1Algo& A
   }
 
 
-#pragma omp parallel for firstprivate(xs, ys)
-  for (L1HitIndex_t x = 0; x < nhits; x++) {
-
-    Algo.GetHitCoor((hits1)[x], xs, ys, iS);
-
-
-    const L1HitIndex_t& bin = GetBinBounded(xs, ys, (hits1)[x].t);
-
+#pragma omp parallel for firstprivate(x, y)
+  for (L1HitIndex_t ih = 0; ih < nHits; ih++) {
+    Algo.GetHitCoor((hits)[ih], x, y, iS);
+    auto bin = GetBinBounded(x, y, (hits)[ih].t);
     {
-
-      const L1HitIndex_t& index1 = fHitsInBin[x] + fFirstHitInBin[bin];
-
-      (hitsBuf1)[index1] = hits[x];
-
-
-      (indices1)[index1] = x + n;
+      const L1HitIndex_t& index1 = fFirstHitInBin[bin] + fHitsInBin[ih];
+      gridHits[index1]           = hits[ih];
+      gridHitIds[index1]         = firstHitIndex + ih;
     }
   }
 }
