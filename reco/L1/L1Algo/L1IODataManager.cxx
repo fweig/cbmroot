@@ -25,7 +25,7 @@ L1IODataManager::L1IODataManager(const L1Parameters* pParameters) : fpParameters
 bool L1IODataManager::SendInputData(L1Algo* pAlgo)
 {
   // Set boundary hit indexes
-  SetStartStopHitIndexes();
+  InitData();
 
   // Check data before input
   if (CheckInputData<L1Constants::control::kInputDataQaLevel>()) {
@@ -69,26 +69,33 @@ void L1IODataManager::ResetInputData() noexcept
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1IODataManager::SetStartStopHitIndexes()
+void L1IODataManager::InitData()
 {
-  // TODO: probably, it is better to loop before the actual number of stations
-  for (int iStation = 0; iStation < fpParameters->GetNstationsActive(); ++iStation) {
-    fInputData.fvStartHitIndexes[iStation] =
-      std::lower_bound(fInputData.fvHits.begin(), fInputData.fvHits.end(), iStation,
-                       [](const L1Hit& hit, int ist) { return hit.iSt < ist; })
-      - fInputData.fvHits.begin();
+  // Sort hits within stations
+  L1Vector<L1Hit> fvHitsNew;
+  fvHitsNew.reset(fInputData.fvHits.size());
 
-    fInputData.fvStopHitIndexes[iStation] =
-      std::upper_bound(fInputData.fvHits.begin(), fInputData.fvHits.end(), iStation,
-                       [](int ist, const L1Hit& hit) { return hit.iSt > ist; })
-      - fInputData.fvHits.begin();
+  std::fill(fvHitIndex.begin(), fvHitIndex.end(), 0);
+  std::fill(fInputData.fvStartHitIndexes.begin(), fInputData.fvStartHitIndexes.end(), 0);
 
-    // Account for stations with no hits
-    if (fInputData.fvStartHitIndexes[iStation] == fInputData.fvStopHitIndexes[iStation]) {
-      fInputData.fvStartHitIndexes[iStation] = 0;
-      fInputData.fvStopHitIndexes[iStation]  = 0;
-    }
+  // Count number of hits in each station
+  for (const auto& hit : fInputData.fvHits) {
+    ++fInputData.fvStartHitIndexes[hit.iSt + 1];
   }
+
+  // Fill bordering numbers of hits for each station
+  for (int iSt = 0; iSt < fpParameters->GetNstationsActive(); ++iSt) {
+    fInputData.fvStartHitIndexes[iSt + 1] += fInputData.fvStartHitIndexes[iSt];
+  }
+
+  // Save ordered hits to new vector
+  for (const auto& hit : fInputData.fvHits) {
+    int iSt                                                            = hit.iSt;
+    fvHitsNew[fInputData.fvStartHitIndexes[iSt] + (fvHitIndex[iSt]++)] = hit;
+  }
+
+  // Swap contents of old and new hits vector
+  std::swap(fvHitsNew, fInputData.fvHits);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

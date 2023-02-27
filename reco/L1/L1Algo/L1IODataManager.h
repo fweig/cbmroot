@@ -79,8 +79,10 @@ public:
   void WriteInputData(const std::string& fileName) const;
 
 private:
-  /// Sets the start and stop indexes vs. station index
-  void SetStartStopHitIndexes();
+  /// @brief Initializes data object
+  ///
+  /// Sorts hits by stations (complexity O(n)) and defines bordering hit index for station
+  void InitData();
 
   /// Provides quick QA for input data
   /// \tparam  Level  The level of the checks. The values of the parameter:
@@ -100,6 +102,9 @@ private:
   L1InputData fInputData {};  ///< Object of input data
 
   const L1Parameters* fpParameters = nullptr;  ///< Pointer to the tracking parameters object
+
+  /// @brief Utility array for sorting hits by stations
+  std::array<L1HitIndex_t, L1Constants::size::kMaxNstations + 1> fvHitIndex = {0};
 };
 
 

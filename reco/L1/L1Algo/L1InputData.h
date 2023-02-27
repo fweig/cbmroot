@@ -80,11 +80,11 @@ public:
 
   /// Gets index of (the last + 1) hit in the sorted hits vector
   /// \param iStation  Index of the tracking station in the active stations array
-  L1HitIndex_t GetStopHitIndex(int iStation) const { return fvStopHitIndexes[iStation]; }
+  L1HitIndex_t GetStopHitIndex(int iStation) const { return fvStartHitIndexes[iStation + 1]; }
 
   /// Gets n hits for the station
   /// \param iStation  Index of the tracking station in the active stations array
-  L1HitIndex_t GetNhits(int iStation) const { return fvStopHitIndexes[iStation] - fvStartHitIndexes[iStation]; }
+  L1HitIndex_t GetNhits(int iStation) const { return fvStartHitIndexes[iStation + 1] - fvStartHitIndexes[iStation]; }
 
 
 private:
@@ -97,7 +97,6 @@ private:
   {
     ar& fvHits;
     ar& fvStartHitIndexes;
-    ar& fvStopHitIndexes;
     ar& fNhitKeys;
   }
 
@@ -105,21 +104,13 @@ private:
   // ** Member variables list **
   // ***************************
 
-  /// Sorted sample of input hits
-  /// \note Hits in the vector are sorted as follows. Among two hits
-  ///       the largest has the largest station index in the active
-  ///       stations array. If both indexes were measured withing one
-  ///       station, the largest hit has the largest y component of
-  ///       the coordinates
+  /// @brief Sample of input hits
   L1Vector<L1Hit> fvHits = {"L1InputData::fvHits"};
 
-  /// Index of the first hit in the sorted hits vector for a given station
-  std::array<L1HitIndex_t, L1Constants::size::kMaxNstations> fvStartHitIndexes = {0};
+  /// @brief Index of the first hit in the sorted hits vector for a given station
+  std::array<L1HitIndex_t, L1Constants::size::kMaxNstations + 1> fvStartHitIndexes = {0};
 
-  /// Index of the last hit in the sorted hits vector for a given station
-  std::array<L1HitIndex_t, L1Constants::size::kMaxNstations> fvStopHitIndexes = {0};
-
-  /// Number of hit keys used for rejecting fake STS hits
+  /// @brief Number of hit keys used for rejecting fake STS hits
   int fNhitKeys = -1;
 };
 
@@ -134,7 +125,6 @@ private:
 {
   std::swap(fvHits, other.fvHits);
   std::swap(fvStartHitIndexes, other.fvStartHitIndexes);
-  std::swap(fvStopHitIndexes, other.fvStopHitIndexes);
   std::swap(fNhitKeys, other.fNhitKeys);
 }
 
