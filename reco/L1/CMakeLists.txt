@@ -41,7 +41,8 @@ set(SRCS
 
   L1Algo/L1Algo.cxx
   L1Algo/L1TrackPar.cxx
-  L1Algo/L1CATrackFinder.cxx
+  L1Algo/L1CaTrackFinder.cxx
+  L1Algo/L1CaTrackFinderSlice.cxx
   L1Algo/L1BranchExtender.cxx
   L1Algo/L1TrackFitter.cxx
   L1Algo/L1Grid.cxx

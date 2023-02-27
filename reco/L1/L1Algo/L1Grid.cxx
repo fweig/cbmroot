@@ -166,9 +166,13 @@ void L1Grid::BuildBins(float yMin, float yMax, float zMin, float zMax, float tMi
 }
 
 
-void L1Grid::StoreHits(L1Algo& Algo, char iS, L1HitIndex_t firstHitIndex, L1HitIndex_t nHits, const L1Hit hits[],
-                       L1Hit gridHits[], L1HitIndex_t gridHitIds[])
+void L1Grid::StoreHits(L1Algo& algo, int iS, L1HitIndex_t& nGridHitsFilled)
 {
+
+  L1HitIndex_t firstHitIndex = algo.fSliceHitIdsStartIndex[iS];
+  L1HitIndex_t nHits         = algo.fSliceHitIdsStopIndex[iS] - firstHitIndex;
+
+  algo.fGridHitStartIndex[iS] = nGridHitsFilled;
 
   fscal x = 0;
   fscal y = 0;
@@ -179,8 +183,10 @@ void L1Grid::StoreHits(L1Algo& Algo, char iS, L1HitIndex_t firstHitIndex, L1HitI
 #pragma omp parallel for firstprivate(x, y)
 #endif
   for (L1HitIndex_t ih = 0; ih < nHits; ih++) {
-    Algo.GetHitCoor((hits)[ih], x, y, iS);
-    auto bin       = GetBinBounded(x, y, (hits)[ih].t);
+    L1HitIndex_t caHitId = algo.fSliceHitIds[firstHitIndex + ih];
+    const L1Hit& h       = algo.GetInputData().GetHit(caHitId);
+    algo.GetHitCoor(h, x, y, iS);
+    auto bin       = GetBinBounded(x, y, h.t);
     fHitsInBin[ih] = fFirstHitInBin[bin + 1];
 #ifdef _OPENMP
 #pragma omp atomic
@@ -215,12 +221,17 @@ void L1Grid::StoreHits(L1Algo& Algo, char iS, L1HitIndex_t firstHitIndex, L1HitI
 
 #pragma omp parallel for firstprivate(x, y)
   for (L1HitIndex_t ih = 0; ih < nHits; ih++) {
-    Algo.GetHitCoor((hits)[ih], x, y, iS);
-    auto bin = GetBinBounded(x, y, (hits)[ih].t);
+    L1HitIndex_t caHitId = algo.fSliceHitIds[firstHitIndex + ih];
+    const L1Hit& h       = algo.GetInputData().GetHit(caHitId);
+    algo.GetHitCoor(h, x, y, iS);
+    auto bin = GetBinBounded(x, y, h.t);
     {
-      const L1HitIndex_t& index1 = fFirstHitInBin[bin] + fHitsInBin[ih];
-      gridHits[index1]           = hits[ih];
-      gridHitIds[index1]         = firstHitIndex + ih;
+      const L1HitIndex_t& index1                 = fFirstHitInBin[bin] + fHitsInBin[ih];
+      algo.fGridHits[nGridHitsFilled + index1]   = h;
+      algo.fGridHitIds[nGridHitsFilled + index1] = caHitId;
     }
   }
+
+  nGridHitsFilled += nHits;
+  algo.fGridHitStopIndex[iS] = nGridHitsFilled;
 }

@@ -1002,25 +1002,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
     //     }
 
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
-    fpAlgo->CATrackFinder();
+    fpAlgo->CaTrackFinder();
     //       IdealTrackFinder();
-    fTrackingTime += fpAlgo->fCATime;
+    fTrackingTime += fpAlgo->fCaRecoTime;
 
     if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
-    //  fpAlgo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
-
-    // track fit
-    fpAlgo->L1KFTrackFitter();
-
-
-    if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 
     // save reconstructed tracks
     int trackFirstHit = 0;
 
     float TsStart_new = TsStart + TsLength - TsOverlap;
 
-    for (L1Vector<L1Track>::iterator it = fpAlgo->fTracks.begin(); it != fpAlgo->fTracks.end(); it++) {
+    for (L1Vector<L1Track>::iterator it = fpAlgo->fRecoTracks.begin(); it != fpAlgo->fRecoTracks.end(); it++) {
 
       CbmL1Track t;
 
@@ -1047,8 +1040,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
       for (int i = 0; i < it->NHits; i++) {
         int caHitId  = fpAlgo->fRecoHits[trackFirstHit + i];
-        int cbmHitID = fpAlgo->GetInputData()->GetHit(caHitId).ID;
-        double time  = fpAlgo->GetInputData()->GetHit(caHitId).t;
+        int cbmHitID = fpAlgo->GetInputData().GetHit(caHitId).ID;
+        double time  = fpAlgo->GetInputData().GetHit(caHitId).t;
         t.Hits.push_back(cbmHitID);
         if (time >= (TsStart + TsLength - TsOverlap)) {
           isTrackInOverlap = 1;
@@ -1076,7 +1069,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
 
-    LOG(debug) << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl;
+    LOG(debug) << "CA Track Finder: " << fpAlgo->fCaRecoTime << " s/sub-ts" << endl;
   }
 
 
@@ -1225,7 +1218,7 @@ void CbmL1::writedir2current(TObject* obj)
 
 void CbmL1::IdealTrackFinder()
 {
-  fpAlgo->fTracks.clear();
+  fpAlgo->fRecoTracks.clear();
   fpAlgo->fRecoHits.clear();
 
   for (L1Vector<CbmL1MCTrack>::iterator i = fvMCTracks.begin(); i != fvMCTracks.end(); ++i) {
@@ -1275,7 +1268,7 @@ void CbmL1::IdealTrackFinder()
     algoTr.TFirst[4] = MC.q / MC.p;
     algoTr.TFirst[5] = MC.z;
 
-    fpAlgo->fTracks.push_back(algoTr);
+    fpAlgo->fRecoTracks.push_back(algoTr);
   }
 }  // void CbmL1::IdealTrackFinder()
 

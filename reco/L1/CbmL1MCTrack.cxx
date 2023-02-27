@@ -126,7 +126,7 @@ void CbmL1MCTrack::CalculateHitCont()
   {
     for (int ih = 0; ih < nhits; ih++) {
       int jh         = Hits[ih];
-      const L1Hit& h = algo->GetInputData()->GetHit(jh);
+      const L1Hit& h = algo->GetInputData().GetHit(jh);
       int ista       = h.iSt;
 
       if (ista - istaold == 1) ncont++;

@@ -43,15 +43,10 @@ public:
 
   ~L1Grid() = default;
 
-  void StoreHits(L1Algo& Algo, char iS, L1HitIndex_t firstHitIndex, L1HitIndex_t nHits, const L1Hit hits[],
-                 L1Hit gridHits[], L1HitIndex_t gridHitIds[]);
+  void StoreHits(L1Algo& Algo, int iS, L1HitIndex_t& nGridHitsFilled);
 
   void CreatePar0(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
   void BuildBins(float yMin, float yMax, float zMin, float zMax, float tMin, float tMax, float sy, float sz, float st);
-
-  void HitsSort(L1HitPoint* pointsBuf, L1Hit* hitsBuf, const L1Hit* hits, L1HitIndex_t* indices,
-                L1HitIndex_t* indicesBuf, L1HitPoint* points, L1HitIndex_t n, L1HitIndex_t nhits, char iS,
-                L1Algo& Algo);
 
   void Initial1(int NThreads);
   void AllocateMemory(int NThreads);

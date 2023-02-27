@@ -870,9 +870,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
                                 fGridHitIds[hitsr_3[i3] + fGridHitStartIndex[ista[2]]]};
 
     if (fParameters.DevIsMatchTripletsViaMc()) {
-      int mc1 = GetMcTrackIdForGridHit(ihit[0]);
-      int mc2 = GetMcTrackIdForGridHit(ihit[1]);
-      int mc3 = GetMcTrackIdForGridHit(ihit[2]);
+      int mc1 = GetMcTrackIdForCaHit(ihit[0]);
+      int mc2 = GetMcTrackIdForCaHit(ihit[1]);
+      int mc3 = GetMcTrackIdForCaHit(ihit[2]);
       if ((mc1 != mc2) || (mc1 != mc3)) { continue; }
     }
 
@@ -993,9 +993,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     T3.SetOneEntry(i3_4, T, i3_4);
 
     {
-      int mc1 = GetMcTrackIdForGridHit(ihit[0]);
-      int mc2 = GetMcTrackIdForGridHit(ihit[1]);
-      int mc3 = GetMcTrackIdForGridHit(ihit[2]);
+      int mc1 = GetMcTrackIdForCaHit(ihit[0]);
+      int mc2 = GetMcTrackIdForCaHit(ihit[1]);
+      int mc3 = GetMcTrackIdForCaHit(ihit[2]);
       if ((mc1 >= 0) && (mc1 == mc2) && (mc1 == mc3)) {
         const CbmL1MCTrack& mctr = CbmL1::Instance()->GetMcTracks()[mc1];
         float ev                 = 0;
@@ -1469,7 +1469,7 @@ inline void L1Algo::CreatePortionOfTriplets(
 // *                                                                                                *
 // **************************************************************************************************
 
-void L1Algo::CATrackFinder()
+void L1Algo::CaTrackFinderSlice()
 {
   fNFindIterations = fParameters.GetNcaIterations();
 
@@ -1506,7 +1506,7 @@ void L1Algo::CATrackFinder()
   draw->InitL1Draw(this);
 #endif
 
-  TStopwatch c_time;  // for performance time
+
 #if defined(XXX) || defined(COUNTERS)
   static unsigned int stat_N = 0;  // number of events
   stat_N++;
@@ -1551,48 +1551,39 @@ void L1Algo::CATrackFinder()
   static Tindex stat_nLevels[L1Constants::size::kMaxNstations - 2][fNFindIterations] = {{0}};
   static Tindex stat_nCalls[fNFindIterations]                                        = {0};  // n calls of CAFindTrack
   static Tindex stat_nTrCandidates[fNFindIterations]                                 = {0};
+
+  stat_nStartHits += fSliceHitIds.size();
 #endif
 
   /********************************/ /**
    * CATrackFinder routine setting
    ***********************************/
 
-  NHitsIsecAll = 0;
-  fTracks.clear();
-  fRecoHits.clear();
+  ResetSliceData();
 
-  fRecoHits.reserve(2 * fInputData.GetNhits());
-  fTracks.reserve(2 * fInputData.GetNhits() / fParameters.GetNstationsActive());
-
-  int nNotUsedHits = 0;
-
-  // #pragma omp parallel for  reduction(+:nNotUsedHits)
-  for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
-    nNotUsedHits += (fInputData.GetStopHitIndex(ista) - fInputData.GetStartHitIndex(ista));
-    fGridHitStartIndex[ista] = fInputData.GetStartHitIndex(ista);
-    fGridHitStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
-  }
+  int nSliceHits = fSliceHitIds.size();
 
 #ifdef XXX
-  c_time.Start();
   c_timerG.Start();
 #endif  // XXX
 
-  fscal yStep = 1.5 / sqrt(nNotUsedHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
+  fscal yStep = 1.5 / sqrt(nSliceHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
 
 
-  //  fscal yStep = 0.5 / sqrt(nNotUsedHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
+  //  fscal yStep = 0.5 / sqrt(nSliceHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
   if (yStep > 0.3) yStep = 0.3;
   fscal xStep = yStep * 3;
   // fscal xStep = yStep * 3;
 
   //  yStep = 0.0078;
-  //  const fscal hitDensity = sqrt( nNotUsedHits );
+  //  const fscal hitDensity = sqrt( nSliceHits );
 
   //     fscal yStep = 0.7*4/hitDensity; // empirics. 0.01*sqrt(2374) ~= 0.5
   //     if (yStep > 0.3)
   //      yStep = 1.25;
   //      xStep = 2.05;
+
+  L1HitIndex_t nGridHitsFilled = 0;
 
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
     const L1Station& st    = fParameters.GetStation(iS);
@@ -1602,8 +1593,9 @@ void L1Algo::CATrackFinder()
     bool timeUninitialised = 1;
     fscal lasttime         = 0;
     fscal starttime        = 0;
-    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(iS); ih < fInputData.GetStopHitIndex(iS); ++ih) {
-      const L1Hit& h       = fInputData.GetHit(ih);
+
+    for (L1HitIndex_t ih = fSliceHitIdsStartIndex[iS]; ih < fSliceHitIdsStopIndex[iS]; ++ih) {
+      const L1Hit& h       = fInputData.GetHit(fSliceHitIds[ih]);
       auto [dxx, dxy, dyy] = st.FormXYCovarianceMatrix(h.du2, h.dv2);
       fscal dx             = sqrt(dxx);
       fscal dy             = sqrt(dyy);
@@ -1621,47 +1613,30 @@ void L1Algo::CATrackFinder()
     }
 
     vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
-    int start = fGridHitStartIndex[iS];
-    int nhits = fGridHitStopIndex[iS] - start;
-
-    if (nhits > 0) {
-      vGridTime[iS].StoreHits(*this, iS, start, nhits, &(fInputData.GetHit(start)), &(fGridHits[start]),
-                              &(fGridHitIds[start]));
-    }
-    else {  // to avoid out-of-range crash in array[start]
-      vGridTime[iS].StoreHits(*this, iS, start, nhits, nullptr, nullptr, nullptr);
-    }
+    vGridTime[iS].StoreHits(*this, iS, nGridHitsFilled);
   }
 
+  fGridHits.reduce(nGridHitsFilled);
+  fGridHitsBuf.reduce(nGridHitsFilled);
+  fGridHitIds.reduce(nGridHitsFilled);
+  fGridHitIdsBuf.reduce(nGridHitsFilled);
+  fGridPoints.reduce(nGridHitsFilled);
+  fGridPointsBuf.reduce(nGridHitsFilled);
 
-  for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist)
-    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
-      const L1Hit& h = fInputData.GetHit(ih);
-      fvHitKeyFlags[h.f] = 0;
-      fvHitKeyFlags[h.b] = 0;
-    }
 
-  for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 5)
 #endif
-    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ista); ih < fInputData.GetStopHitIndex(ista); ++ih) {
-      CreateHitPoint(fGridHits[ih], fGridPoints[ih]);
-    }
+  for (unsigned int ih = 0; ih < fGridHits.size(); ++ih) {
+    const L1Hit& h = fGridHits[ih];
+    CreateHitPoint(h, fGridPoints[ih]);
   }
-
-#ifdef COUNTERS
-  stat_nStartHits += nNotUsedHits;
-#endif
 
 #ifdef XXX
   c_timerG.Stop();
   gti["init  "] = c_timerG;
   c_timerG.Start();
 #endif
-
-  TStopwatch c_time1;
-  c_time1.Start();
 
   /********************************/ /**
    *  Loop over tracking iterations
@@ -2027,7 +2002,7 @@ void L1Algo::CATrackFinder()
                    << " chi2= " << best_chi2 << endl;
               cout << " hits: ";
               for (unsigned int i = 0; i < tr.fHits.size(); i++) {
-                cout << GetMcTrackIdForHit(tr.fHits[i]) << " ";
+                cout << GetMcTrackIdForCaHit(tr.fHits[i]) << " ";
               }
               cout << endl;
             }
@@ -2136,8 +2111,8 @@ void L1Algo::CATrackFinder()
       // ==
 
       for (int i = 0; i < fNThreads; ++i) {
-        fTracks_local[i].clear();
-        fRecoHits_local[i].clear();
+        fSliceRecoTracks_thread[i].clear();
+        fSliceRecoHits_thread[i].clear();
       }
 
       for (int i = 0; i < fNThreads; ++i) {
@@ -2173,7 +2148,7 @@ void L1Algo::CATrackFinder()
             const L1Hit& hit     = fInputData.GetHit(*phIt);
             fvHitKeyFlags[hit.f] = 1;
             fvHitKeyFlags[hit.b] = 1;
-            fRecoHits_local[num_thread].push_back(*phIt);
+            fSliceRecoHits_thread[num_thread].push_back(*phIt);
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
             const L1Station& stah = fParameters.GetStation(hit.iSt);
@@ -2186,12 +2161,12 @@ void L1Algo::CATrackFinder()
           }
 
           t.NHits = tr.NHits;
-          fTracks_local[num_thread].push_back(t);
+          fSliceRecoTracks_thread[num_thread].push_back(t);
           if (0) {  // SG debug
             cout << "store track " << iCandidate << " chi2= " << tr.chi2 << endl;
             cout << " hits: ";
             for (unsigned int ih = 0; ih < tr.fHits.size(); ih++) {
-              cout << GetMcTrackIdForHit(tr.fHits[ih]) << " ";
+              cout << GetMcTrackIdForCaHit(tr.fHits[ih]) << " ";
             }
             cout << '\n';
           }
@@ -2206,46 +2181,44 @@ void L1Algo::CATrackFinder()
       Time.Start();
 
 #endif
-      int nTracks = fTracks.size();
-      L1Vector<int> offset_tracks("L1CATrackFinder::offset_tracks", fNThreads, nTracks);
-      L1Vector<int> offset_hits("L1CATrackFinder::offset_hits", fNThreads, NHitsIsecAll);
+      int nRecoTracks = fSliceRecoTracks.size();
+      int nRecoHits   = fSliceRecoHits.size();
 
-      assert(NHitsIsecAll == fRecoHits.size());  //SG!!
+      L1Vector<int> offset_tracks("L1CATrackFinder::offset_tracks", fNThreads, nRecoTracks);
+      L1Vector<int> offset_hits("L1CATrackFinder::offset_hits", fNThreads, nRecoHits);
 
-      nTracks += fTracks_local[0].size();
-      NHitsIsecAll += fRecoHits_local[0].size();
+
+      nRecoTracks += fSliceRecoTracks_thread[0].size();
+      nRecoHits += fSliceRecoHits_thread[0].size();
 
       for (int i = 1; i < fNThreads; ++i) {
-        offset_tracks[i] = offset_tracks[i - 1] + fTracks_local[i - 1].size();
-        offset_hits[i]   = offset_hits[i - 1] + fRecoHits_local[i - 1].size();
-        nTracks += fTracks_local[i].size();
-        NHitsIsecAll += fRecoHits_local[i].size();
+        offset_tracks[i] = offset_tracks[i - 1] + fSliceRecoTracks_thread[i - 1].size();
+        offset_hits[i]   = offset_hits[i - 1] + fSliceRecoHits_thread[i - 1].size();
+        nRecoTracks += fSliceRecoTracks_thread[i].size();
+        nRecoHits += fSliceRecoHits_thread[i].size();
       }
-      fTracks.enlarge(nTracks);
-      fRecoHits.enlarge(NHitsIsecAll);
+      fSliceRecoTracks.enlarge(nRecoTracks);
+      fSliceRecoHits.enlarge(nRecoHits);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
       for (int i = 0; i < fNThreads; ++i) {
-        for (Tindex iC = 0; iC < (Tindex) fTracks_local[i].size(); ++iC) {
-          fTracks[offset_tracks[i] + iC] = fTracks_local[i][iC];
+        for (Tindex iC = 0; iC < (Tindex) fSliceRecoTracks_thread[i].size(); ++iC) {
+          fSliceRecoTracks[offset_tracks[i] + iC] = fSliceRecoTracks_thread[i][iC];
         }
-        for (Tindex iH = 0; iH < (Tindex) fRecoHits_local[i].size(); ++iH) {
-          fRecoHits[offset_hits[i] + iH] = fRecoHits_local[i][iH];
+        for (Tindex iH = 0; iH < (Tindex) fSliceRecoHits_thread[i].size(); ++iH) {
+          fSliceRecoHits[offset_hits[i] + iH] = fSliceRecoHits_thread[i][iH];
         }
       }
     }  // firstTripletLevel
 
     // suppress strips of suppressed hits
-    for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
-      for (L1HitIndex_t ih = fGridHitStartIndex[ista]; ih < fGridHitStopIndex[ista]; ih++) {
-        const L1HitPoint& hp = fGridPoints[ih];
-        if (hp.IsSuppressed()) {
-          int hitId            = fGridHitIds[ih];
-          const L1Hit& hit     = fInputData.GetHit(hitId);
-          fvHitKeyFlags[hit.f] = 1;
-          fvHitKeyFlags[hit.b] = 1;
-        }
+    for (L1HitIndex_t ip = 0; ip < fGridPoints.size(); ip++) {
+      const L1HitPoint& hp = fGridPoints[ip];
+      if (hp.IsSuppressed()) {
+        const L1Hit& hit     = fGridHits[ip];
+        fvHitKeyFlags[hit.f] = 1;
+        fvHitKeyFlags[hit.b] = 1;
       }
     }
 
@@ -2329,7 +2302,7 @@ void L1Algo::CATrackFinder()
     this->L1KFTrackFitter();
 
     // Merge clones
-    fCloneMerger.Exec(fTracks, fRecoHits);
+    fCloneMerger.Exec(fSliceRecoTracks, fSliceRecoHits);
   }
 
 #ifdef XXX
@@ -2338,12 +2311,6 @@ void L1Algo::CATrackFinder()
 #endif
 
   //==================================
-
-  c_time.Stop();
-
-  //   cout << "End TrackFinder" << endl;
-  //  CATime = (double(c_time.CpuTime()));
-  fCATime = (double(c_time.RealTime()));
 
 #ifdef XXX
 
@@ -2382,8 +2349,8 @@ void L1Algo::CATrackFinder()
 
         NBranches += stat_max_n_branches;
         BranchSize += stat_max_BranchSize;
-        NTracks += fTracks.size();
-        TrackSize += sizeof(L1Track)*fTracks.size() + sizeof(L1HitIndex_t)*fRecoHits.size();
+        NTracks += fSliceRecoTracks.size();
+        TrackSize += sizeof(L1Track)*fSliceRecoTracks.size() + sizeof(L1HitIndex_t)*fSliceRecoHits.size();
         int k = 1024*NTimes;
 
         cout<<"L1 Event size: \n"

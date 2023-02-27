@@ -28,9 +28,9 @@ void L1Algo::SetNThreads(unsigned int n)
 
   for (int i = 0; i < fNThreads; i++) {
 
-    fTracks_local[i].SetName(std::stringstream() << "L1Algo::fTracks_local[" << i << "]");
+    fSliceRecoTracks_thread[i].SetName(std::stringstream() << "L1Algo::fSliceRecoTracks_thread[" << i << "]");
 
-    fRecoHits_local[i].SetName(std::stringstream() << "L1Algo::fRecoHits_local[" << i << "]");
+    fSliceRecoHits_thread[i].SetName(std::stringstream() << "L1Algo::fSliceRecoHits_thread[" << i << "]");
 
     fTrackCandidates[i].SetName(std::stringstream() << "L1Algo::fTrackCandidates[" << i << "]");
 
@@ -85,18 +85,27 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
 {
   // ----- Get input data ----------------------------------------------------------------------------------------------
   fInputData = std::move(inputData);
+}
 
-  // ----- Reset data arrays -------------------------------------------------------------------------------------------
-  fvHitKeyFlags.reset(fInputData.GetNhitKeys(), 0);
-  int nHits    = fInputData.GetNhits();
-  NHitsIsecAll = nHits;
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void L1Algo::ResetSliceData()
+{
+  int nHits = fSliceHitIds.size();
+
   fGridHits.reset(nHits);
   fGridHitsBuf.reset(nHits);
-  fGridHits.reset(nHits);
-  fGridPoints.reset(nHits);
-  fGridPointsBuf.reset(nHits);
   fGridHitIds.reset(nHits);
   fGridHitIdsBuf.reset(nHits);
+  fGridPoints.reset(nHits);
+  fGridPointsBuf.reset(nHits);
+
+  fHitFirstTriplet.reset(nHits);
+  fHitNtriplets.reset(nHits);
+
+  // TODO: SG: reduce the array size to the number of keys in subslice
+
+  fStripToTrack.reset(fInputData.GetNhitKeys(), -1);
 
 #ifdef _OPENMP
   fStripToTrackLock.reset(fInputData.GetNhitKeys());
@@ -105,30 +114,33 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
   }
 #endif
 
-  fStripToTrack.clear();
-  fStripToTrack.reserve(fInputData.GetNhitKeys());
+  fSliceRecoTracks.clear();
+  fSliceRecoTracks.reserve(2 * nHits / fParameters.GetNstationsActive());
 
-  fHitFirstTriplet.reset(nHits);
-  fHitNtriplets.reset(nHits);
+  fSliceRecoHits.clear();
+  fSliceRecoHits.reserve(2 * nHits);
 
   for (int i = 0; i < L1Constants::size::kMaxNstations; i++) {
+    int nHitsStation = fSliceHitIdsStopIndex[i] - fSliceHitIdsStartIndex[i] + 1;
     fSingletPortionSize[i].clear();
-    fSingletPortionSize[i].reserve(2 * fInputData.GetNhits(i));
+    fSingletPortionSize[i].reserve(2 * nHitsStation);
   }
 
   for (int i = 0; i < fNThreads; i++) {
-    fTracks_local[i].clear();
-    fTracks_local[i].reserve(nHits / 10);
-    fRecoHits_local[i].clear();
-    fRecoHits_local[i].reserve(nHits);
+    fSliceRecoTracks_thread[i].clear();
+    fSliceRecoTracks_thread[i].reserve(nHits / 10);
+    fSliceRecoHits_thread[i].clear();
+    fSliceRecoHits_thread[i].reserve(nHits);
     fTrackCandidates[i].clear();
     fTrackCandidates[i].reserve(nHits / 10);
     for (unsigned int j = 0; j < L1Constants::size::kMaxNstations; j++) {
+      int nHitsStation = fSliceHitIdsStopIndex[i] - fSliceHitIdsStartIndex[i] + 1;
       fTriplets[j][i].clear();
-      fTriplets[j][i].reserve(2 * nHits);
+      fTriplets[j][i].reserve(2 * nHitsStation);
     }
   }
 }
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -185,7 +197,7 @@ void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
   point.Set(hit.z, hit.u, hit.v, hit.t, hit.du2, hit.dv2, hit.dt2);
 }
 
-int L1Algo::GetMcTrackIdForHit(int iHit) const
+int L1Algo::GetMcTrackIdForCaHit(int iHit) const
 {
   int hitId    = iHit;
   int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];

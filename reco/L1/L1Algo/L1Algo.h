@@ -166,7 +166,7 @@ public:
   void ReceiveParameters(L1Parameters&& parameters);
 
   /// Gets pointer to input data object for external access
-  const L1InputData* GetInputData() const { return &fInputData; }
+  const L1InputData& GetInputData() const { return fInputData; }
 
   /// ----- Hit-point-strips conversion routines ------
 
@@ -201,7 +201,9 @@ public:
    *                             ------  FUNCTIONAL PART ------
    ************************************************************************************************/
 
-  /// ----- Subroutines used by L1Algo::CATrackFinder() ------
+  /// ----- Subroutines used by L1Algo::CaTrackFinder() ------
+
+  void ResetSliceData();
 
   void CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best_L, fscal& best_chi2, const L1Triplet* curr_trip,
                    L1Branch& curr_tr, unsigned char& curr_L, fscal& curr_chi2, unsigned char min_best_l,
@@ -357,8 +359,11 @@ public:
 
   void PrintHits();
 
-  /// The main procedure - find tracks.
-  void CATrackFinder();
+  /// The main procedure - find tracks
+  void CaTrackFinder();
+
+  /// find tracks in a sub-timeslice
+  void CaTrackFinderSlice();
 
   /// Track fitting procedures
 
@@ -377,7 +382,7 @@ public:
   int GetNfieldStations() const { return fNfieldStations; }
 
   /// Get mc track ID for a hit (debug tool)
-  int GetMcTrackIdForHit(int iHit) const;
+  int GetMcTrackIdForCaHit(int iHit) const;
 
   /// Get mc track ID for a hit (debug tool)
   int GetMcTrackIdForGridHit(int iGridHit) const;
@@ -405,7 +410,7 @@ private:
     "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
 
 public:
-  L1Vector<L1HitTimeInfo> fHitTimeInfo[L1Constants::size::kMaxNstations];
+  L1Vector<L1HitTimeInfo> fHitTimeInfo;
 
   L1Grid vGrid[L1Constants::size::kMaxNstations];      ///<
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
@@ -414,10 +419,13 @@ public:
   fscal fMaxDy[L1Constants::size::kMaxNstations];
   fscal fMaxDt[L1Constants::size::kMaxNstations];
 
-  double fCATime {0.};  // time of track finding
+  double fCaRecoTime {0.};  // time of the track finder + fitter
 
-  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           ///< reconstructed tracks
+  L1Vector<L1Track> fRecoTracks {"L1Algo::fRecoTracks"};   ///< reconstructed tracks
   L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  ///< packed hits of reconstructed tracks
+
+  L1Vector<L1Track> fSliceRecoTracks {"L1Algo::fSliceRecoTracks"};   ///< reconstructed tracks in sub-timeslice
+  L1Vector<L1HitIndex_t> fSliceRecoHits {"L1Algo::fSliceRecoHits"};  ///< packed hits of reconstructed tracks
 
   /// Created triplets vs station and thread index
   L1Vector<L1Triplet> fTriplets[L1Constants::size::kMaxNstations][L1Constants::size::kMaxNthreads] {
@@ -430,9 +438,6 @@ public:
   L1Vector<Tindex> fSingletPortionSize[L1Constants::size::kMaxNstations] {
     "L1Algo::fSingletPortionSize"};  ///< Number of doublets in a portion
 
-
-  //  L1Branch* pointer;
-  unsigned int NHitsIsecAll {0};
 
   L1Vector<L1HitIndex_t> fSliceHitIds {"L1Algo::fSliceHitIds"};                   ///< indices of the sub-slice hits
   L1HitIndex_t fSliceHitIdsStartIndex[L1Constants::size::kMaxNstations + 1] {0};  ///< start of station hit inices
@@ -450,8 +455,8 @@ public:
   L1HitIndex_t fGridHitStartIndex[L1Constants::size::kMaxNstations + 1] {0};
   L1HitIndex_t fGridHitStopIndex[L1Constants::size::kMaxNstations + 1] {0};
 
-  L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
-  L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
+  L1Vector<L1Track> fSliceRecoTracks_thread[L1Constants::size::kMaxNthreads] {"L1Algo::fSliceRecoTracks_thread"};
+  L1Vector<L1HitIndex_t> fSliceRecoHits_thread[L1Constants::size::kMaxNthreads] {"L1Algo::fSliceRecoHits_thread"};
 
 
 #ifdef _OPENMP
@@ -459,7 +464,7 @@ public:
 #endif
 
   L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};    // front strip to track pointers
-  L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrackB"};  // back strip to track pointers
+  // L1Vector<int> fStripToTrack1B {"L1Algo::fStripToTrackB"};  // back strip to track pointers
 
   int fNThreads {0};
   bool fMissingHits {0};  ///< TODO ???

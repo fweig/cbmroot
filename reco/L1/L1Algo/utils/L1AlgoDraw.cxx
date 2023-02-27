@@ -74,15 +74,15 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   //   algo = CbmL1::Instance()->algo;
   algo = algo_;
 
-  vHits.reserve(algo->GetInputData()->GetNhits());
-  for (unsigned int i = 0; i < algo->GetInputData()->GetNhits(); i++) {
-    vHits.push_back(algo->GetInputData()->GetHit(i));
+  vHits.reserve(algo->GetInputData().GetNhits());
+  for (unsigned int i = 0; i < algo->GetInputData().GetNhits(); i++) {
+    vHits.push_back(algo->GetInputData().GetHit(i));
   }
   NStations = algo->GetParameters()->GetNstationsActive();
   for (int i = 0; i < NStations; i++) {
-    HitsStartIndex[i]    = algo->GetInputData()->GetStartHitIndex(i);
-    HitsStopIndex[i]     = algo->GetInputData()->GetStopHitIndex(i);
-    vStations[i]         = algo->GetParameters()->GetStation(i);
+    HitsStartIndex[i] = algo->GetInputData().GetStartHitIndex(i);
+    HitsStopIndex[i]  = algo->GetInputData().GetStopHitIndex(i);
+    vStations[i]      = algo->GetParameters()->GetStation(i);
   }
 }
 
@@ -234,9 +234,9 @@ void L1AlgoDraw::DrawRecoTracks()
   int NRecTracks = 0;
   //   CbmL1 &L1 = *CbmL1::Instance();
 
-  int curRecoHit            = 0;
-  L1Vector<L1HitIndex_t>& recoHits = algo->fRecoHits;
-  for (vector<L1Track>::iterator it = algo->fTracks.begin(); it != algo->fTracks.end(); ++it) {
+  int curRecoHit                   = 0;
+  L1Vector<L1HitIndex_t>& recoHits = algo->fSliceRecoHits;
+  for (vector<L1Track>::iterator it = algo->fSliceRecoTracks.begin(); it != algo->fSliceRecoTracks.end(); ++it) {
     L1Track& T = *it;
     int nHits  = T.NHits;
     //     if (nHits > 5) continue; // draw clones
@@ -368,8 +368,8 @@ void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Doublets_hits, map<L1HitInde
                               const int /*MaxArrSize*/, L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   for (int iSta = 0; iSta < NStations - 1; iSta++) {
-    const int firstHitOnSta            = StsRestHitsStartIndex[iSta];
-    const int firstHitOnNextSta        = StsRestHitsStartIndex[iSta + 1];
+    const int firstHitOnSta                           = StsRestHitsStartIndex[iSta];
+    const int firstHitOnNextSta                       = StsRestHitsStartIndex[iSta + 1];
     L1HitIndex_t* staDoubletsHits                     = &(Doublets_hits[iSta][0]);
     map<L1HitIndex_t, L1HitIndex_t>& staDoubletsStart = Doublets_start[iSta];
 
@@ -400,8 +400,8 @@ void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Doublets_hits, map<L1HitInde
 void L1AlgoDraw::DrawDoubletsOnSta(int iSta, L1HitIndex_t* Doublets_hits, L1HitIndex_t* Doublets_start,
                                    const int MaxArrSize, L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
-  const int firstHitOnSta     = StsRestHitsStartIndex[iSta];
-  const int firstHitOnNextSta = StsRestHitsStartIndex[iSta + 1];
+  const int firstHitOnSta        = StsRestHitsStartIndex[iSta];
+  const int firstHitOnNextSta    = StsRestHitsStartIndex[iSta + 1];
   L1HitIndex_t* staDoubletsHits  = Doublets_hits + MaxArrSize * iSta;
   L1HitIndex_t* staDoubletsStart = Doublets_start + MaxArrSize * iSta;
 
@@ -466,9 +466,9 @@ void L1AlgoDraw::DrawDoublet(int il, int ir)
 
 void L1AlgoDraw::DrawInfo()
 {
-  cout << " vHits.size = " << algo->GetInputData()->GetNhits() << endl;
-  cout << " vRecoHits.size = " << algo->fRecoHits.size() << endl;
-  cout << " vTracks.size = " << algo->fTracks.size() << endl;
+  cout << " vHits.size = " << algo->GetInputData().GetNhits() << endl;
+  cout << " vRecoHits.size = " << algo->fSliceRecoHits.size() << endl;
+  cout << " vTracks.size = " << algo->fSliceRecoTracks.size() << endl;
 }
 
 void L1AlgoDraw::DrawTarget()

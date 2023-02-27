@@ -24,7 +24,7 @@ using namespace NS_L1TrackFitter;
 void L1Algo::L1KFTrackFitter()
 {
   //  cout << " Start L1 Track Fitter " << endl;
-  int start_hit = 0;  // for interation in fRecoHits[]
+  int start_hit = 0;  // for interation in fSliceRecoHits[]
 
   //  static L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   //  static L1FieldRegion fld _fvecalignment;
@@ -106,19 +106,19 @@ void L1Algo::L1KFTrackFitter()
     ZSta[ista] = sta[ista].fZ;
   }
 
-  unsigned short N_vTracks = fTracks.size();  // number of tracks processed per one SSE register
+  unsigned short N_vTracks = fSliceRecoTracks.size();  // number of tracks processed per one SSE register
 
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
 
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (int i = 0; i < nTracks_SIMD; i++) {
-      t[i] = &fTracks[itrack + i];
+      t[i] = &fSliceRecoTracks[itrack + i];
     }
 
     // fill the rest of the SIMD vectors with something reasonable
     for (uint i = nTracks_SIMD; i < fvec::size(); i++) {
-      t[i] = &fTracks[itrack];
+      t[i] = &fSliceRecoTracks[itrack];
     }
 
     // get hits of current track
@@ -137,7 +137,7 @@ void L1Algo::L1KFTrackFitter()
 
       for (int ih = 0; ih < nHitsTrack; ih++) {
 
-        const L1Hit& hit = fInputData.GetHit(fRecoHits[start_hit++]);
+        const L1Hit& hit = fInputData.GetHit(fSliceRecoHits[start_hit++]);
         const int ista   = hit.iSt;
 
         //if (sta[ista].fieldStatus) { isFieldPresent[iVec] = true; }
