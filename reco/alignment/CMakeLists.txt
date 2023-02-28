@@ -19,6 +19,7 @@ set(PUBLIC_DEPENDENCIES
 set(PRIVATE_DEPENDENCIES
   L1
   bba::library
+  CbmStsBase
 )
 
 generate_cbm_library()

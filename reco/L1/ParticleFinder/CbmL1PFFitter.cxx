@@ -46,6 +46,7 @@
 //typedef L1Fit1 L1Fit;
 
 using std::vector;
+using namespace std;
 
 namespace NS_L1TrackFitter
 {
@@ -100,7 +101,7 @@ inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int
 void FilterFirst(L1Fit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
 {
   L1TrackPar& tr = fit.Tr();
-  tr.ResetErrors(dxx, dyy, vINF, vINF, 1., 1.e6, 1.e2);
+  tr.ResetErrors(dxx, dyy, 1., 1., 1., 1.e6, 1.e2);
   tr.C10 = dxy;
   tr.x   = x;
   tr.y   = y;
@@ -109,18 +110,13 @@ void FilterFirst(L1Fit& fit, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
   tr.NDF = -3.0;
 }
 
-void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
+void CbmL1PFFitter::Fit(std::vector<CbmStsTrack>& Tracks, const std::vector<CbmMvdHit>& vMvdHits,
+                        const std::vector<CbmStsHit>& vStsHits, const std::vector<int>& pidHypo)
 {
 
   L1FieldValue b0, b1, b2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
-
-
-  FairRootManager* fManger  = FairRootManager::Instance();
-  TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
-  int NMvdStations          = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
-  TClonesArray* listMvdHits = 0;
-  if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
+  // fld.SetUseOriginalField();
 
   static int nHits = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int iVec = 0, i = 0;
@@ -169,7 +165,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
     T.t  = 0.;
     T.vi = 0.;
-    T.ResetErrors(1.e2, 1.e2, 1.e4, 1.e4, 1.e4, 1.e6, 1.e2);
+    T.ResetErrors(1.e2, 1.e2, 1., 1., 1., 1.e6, 1.e2);
 
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
     for (i = 0; i < nTracks_SIMD; i++) {
@@ -179,6 +175,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       T.tx[i]  = tr[i]->GetParamFirst()->GetTx();
       T.ty[i]  = tr[i]->GetParamFirst()->GetTy();
       T.qp[i]  = tr[i]->GetParamFirst()->GetQp();
+      T.t[i]   = 0.;
+      T.vi[i]  = 0.;
       T.z[i]   = tr[i]->GetParamFirst()->GetZ();
       T.C00[i] = tr[i]->GetParamFirst()->GetCovariance(0, 0);
       T.C10[i] = tr[i]->GetParamFirst()->GetCovariance(1, 0);
@@ -218,9 +216,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         float posx = 0.f, posy = 0.f, posz = 0.f, time = 0.;
 
         if (i < nHitsTrackMvd) {
-          if (!listMvdHits) continue;
-          int hitIndex   = tr[iVec]->GetMvdHitIndex(i);
-          CbmMvdHit* hit = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(hitIndex));
+          int hitIndex         = tr[iVec]->GetMvdHitIndex(i);
+          const CbmMvdHit* hit = &(vMvdHits[hitIndex]);
 
           posx = hit->GetX();
           posy = hit->GetY();
@@ -236,9 +233,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           dt2[ista][iVec] = hit->GetTimeError() * hit->GetTimeError();
         }
         else {
-          if (!listStsHits) continue;
-          int hitIndex   = tr[iVec]->GetHitIndex(i - nHitsTrackMvd);
-          CbmStsHit* hit = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndex));
+          int hitIndex         = tr[iVec]->GetHitIndex(i - nHitsTrackMvd);
+          const CbmStsHit* hit = &(vStsHits[hitIndex]);
 
           posx = hit->GetX();
           posy = hit->GetY();
@@ -291,7 +287,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         }
       }
     }
+
     // fit forward
+
     i = 0;
 
     FilterFirst(fit, x_first, y_first, fstC00, fstC10, fstC11);
@@ -359,7 +357,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       tr[iVec]->SetParamLast(&par);
     }
 
-    //fit backward
+    // fit backward
+
     fit.SetQp0(T.qp);
 
     i = nHits - 1;
@@ -440,6 +439,29 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   delete[] w;
   delete[] fB;
 }
+
+void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, const vector<int>& pidHypo)
+{
+
+  FairRootManager* fManger  = FairRootManager::Instance();
+  TClonesArray* mvdHitArray = (TClonesArray*) fManger->GetObject("MvdHit");
+  TClonesArray* stsHitArray = (TClonesArray*) fManger->GetObject("StsHit");
+
+  std::vector<CbmMvdHit> vMvdHits;
+  std::vector<CbmStsHit> vStsHits;
+
+  for (int ih = 0; ih < mvdHitArray->GetEntriesFast(); ih++) {
+    CbmMvdHit hit = *dynamic_cast<const CbmMvdHit*>(mvdHitArray->At(ih));
+    vMvdHits.push_back(hit);
+  }
+
+  for (int ih = 0; ih < stsHitArray->GetEntriesFast(); ih++) {
+    vStsHits.push_back(*dynamic_cast<const CbmStsHit*>(stsHitArray->At(ih)));
+  }
+
+  Fit(Tracks, vMvdHits, vStsHits, pidHypo);
+}
+
 
 void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRegion>& field, vector<float>& chiToVtx,
                                    CbmKFVertex& primVtx, float chiPrim)

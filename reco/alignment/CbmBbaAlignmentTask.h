@@ -12,6 +12,10 @@
 #ifndef CbmBbaAlignmentTask_H
 #define CbmBbaAlignmentTask_H
 
+#include "CbmMvdHit.h"
+#include "CbmStsHit.h"
+#include "CbmStsTrack.h"
+
 #include "FairTask.h"
 
 class TClonesArray;
@@ -19,6 +23,14 @@ class TFile;
 class TDirectory;
 class TH1F;
 
+///
+/// an example of alignment using BBA package
+///
+/// you need to switch to the double precision in /algo/ca/CaSimdVc.h
+/// by uncommenting this line there:
+///
+/// typedef Vc::double_v fvec;
+///
 class CbmBbaAlignmentTask : public FairTask {
 public:
   // Constructors/Destructors ---------
@@ -39,10 +51,28 @@ private:
   void WriteHistosCurFile(TObject* obj);
   int GetHistoIndex(int pdg);
 
-  //input branches
-  TClonesArray* fStsTrackArray {nullptr};
-  TClonesArray* fMCTrackArray {nullptr};
-  TClonesArray* fStsTrackMatchArray {nullptr};
+  void ApplyAlignment(const std::vector<double>& par);
+
+  double CostFunction(const std::vector<double>& par);
+
+  //input data arrays
+  TClonesArray* fInputMvdHits {nullptr};
+  TClonesArray* fInputStsHits {nullptr};
+  TClonesArray* fInputStsTracks {nullptr};
+
+  TClonesArray* fInputMcTracks {nullptr};         // Mc info for debugging
+  TClonesArray* fInputStsTrackMatches {nullptr};  // Mc info for debugging
+
+  // collection of selected tracks and hits
+  std::vector<CbmStsTrack> fTracks;
+  std::vector<CbmMvdHit> fMvdHits;
+  std::vector<CbmStsHit> fStsHits;
+
+  // temporary array with aligned hits
+  std::vector<CbmStsHit> fStsHitsAligned;
+
+  // array with pdg hypothesis for tracks
+  std::vector<int> fTrackPdg;
 
   //output file with histograms
   TString fHistoFileName {"CbmBbaAlignmentHisto.root"};
@@ -50,6 +80,10 @@ private:
   TDirectory* fHistoDir {nullptr};
 
   Int_t fNEvents {0};
+
+  Int_t fMaxNtracks {10000};
+
+  double fCostIdeal {1.e10};
 
   //histograms
   TH1F* hTestHisto {nullptr};

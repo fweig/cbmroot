@@ -22,6 +22,8 @@
 
 #include <vector>
 
+class CbmMvdHit;
+class CbmStsHit;
 class CbmStsTrack;
 class L1FieldRegion;
 class CbmKFVertex;
@@ -42,7 +44,9 @@ public:
   ~CbmL1PFFitter();
 
   //functions for fitting CbmStsTrack
-  void Fit(std::vector<CbmStsTrack>& Tracks, std::vector<int>& pidHypo);
+  void Fit(std::vector<CbmStsTrack>& Tracks, const std::vector<CbmMvdHit>& vMvdHits,
+           const std::vector<CbmStsHit>& vStsHits, const std::vector<int>& pidHypo);
+  void Fit(std::vector<CbmStsTrack>& Tracks, const std::vector<int>& pidHypo);
   void CalculateFieldRegion(std::vector<CbmStsTrack>& Tracks, std::vector<PFFieldRegion>& Field);
   void CalculateFieldRegionAtLastPoint(std::vector<CbmStsTrack>& Tracks, std::vector<PFFieldRegion>& field);
   void GetChiToVertex(std::vector<CbmStsTrack>& Tracks, std::vector<PFFieldRegion>& field, std::vector<float>& chiToVtx,
