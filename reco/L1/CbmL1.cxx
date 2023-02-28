@@ -884,14 +884,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
   static int nevent = 0;
   fvSelectedMcEvents.clear();
 
-  // TODO: move these values to CbmL1Parameters namespace (S.Zharko)
-  bool areDataLeft = true;   // whole TS processed?
-  float TsStart    = 0;      // starting time of sub-TS
-  float TsLength   = 10000;  // length of sub-TS
-  float TsOverlap  = 15;     // min length of overlap region
-  int FstHitinTs   = 0;      // 1st hit index in TS
-
-
   // TODO: Refactor this part, check usage ---------------------------------
   int nStsHits = (fUseSTS && fpStsHits ? fpStsHits->GetEntriesFast() : 0);
 
@@ -905,7 +897,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
       SortHits.push_back(std::pair<double, int>(t, j));
     }
     std::sort(SortHits.begin(), SortHits.end());
-    if (SortHits.size() > 0) TsStart = SortHits[0].first;  ///reco TS start time is set to smallest hit time
     fvSortedStsHitsIndexes.clear();
     fvSortedStsHitsIndexes.reserve(SortHits.size());
     for (unsigned int i = 0; i < SortHits.size(); i++) {
@@ -929,11 +920,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
       int eventId = fpMcEventList->GetEventIdByIndex(iE);
       fvSelectedMcEvents.insert(DFSET::value_type(fileId, eventId));
     }
-  }
-  else {
-    Int_t iFile  = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
-    Int_t iEvent = FairRunAna::Instance()->GetEventHeader()->GetMCEntryNumber();
-    fvSelectedMcEvents.insert(DFSET::value_type(iFile, iEvent));
   }
 
   if (fVerbose > 1) { cout << "\nCbmL1::Exec event " << ++nevent << " ...\n\n"; }
@@ -960,133 +946,67 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   fTrackingTime = 0;
 
-
-  while (areDataLeft) {
-    if (event) {
-      areDataLeft = false;
-      TsStart     = 0;
-      TsLength    = 2000000000;  // TODO: Why this number was selected? (S.Zharko)
-      TsOverlap   = 0;
-      FstHitinTs  = 0;
-    }
-
-
-    // ----- Read data from branches and send data from IODataManager to L1Algo ----------------------------------------
-    ReadEvent(TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
-
-
-    if (fPerformance) {
-      HitMatch();
-      // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
-      for (auto it = fvMCTracks.begin(); it != fvMCTracks.end(); ++it) {
-        it->Init();
-      }
-    }
-
-    if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
-
-    //  FieldApproxCheck();
-    //  FieldIntegralCheck();
-
-    // TODO: Remove code below (S.Zharko)
-    //     for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
-    // #ifdef USE_EVENT_NUMBER
-    //       L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
-    //       h.n      = -1;
-    // #endif
-    //       if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
-    // #ifdef USE_EVENT_NUMBER
-    //       const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
-    //       h.n                     = mcp.event;
-    // #endif
-    //     }
-
-    if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
-    fpAlgo->CaTrackFinder();
-    //       IdealTrackFinder();
-    fTrackingTime += fpAlgo->fCaRecoTime;
-
-    if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
-
-    // save reconstructed tracks
-    int trackFirstHit = 0;
-
-    float TsStart_new = TsStart + TsLength - TsOverlap;
-
-    for (L1Vector<L1Track>::iterator it = fpAlgo->fRecoTracks.begin(); it != fpAlgo->fRecoTracks.end(); it++) {
-
-      CbmL1Track t;
-
-      for (int i = 0; i < L1TrackPar::kNparTr; i++) {
-        t.T[i]     = it->TFirst[i];
-        t.TLast[i] = it->TLast[i];
-        t.Tpv[i]   = it->Tpv[i];
-      }
-
-      for (int i = 0; i < L1TrackPar::kNparCov; i++) {
-        t.C[i]     = it->CFirst[i];
-        t.CLast[i] = it->CLast[i];
-        t.Cpv[i]   = it->Cpv[i];
-      }
-
-      t.chi2 = it->chi2;
-      t.NDF  = it->NDF;
-      t.Hits.clear();
-      t.mass        = fpAlgo->fDefaultMass;  // pion mass
-      t.is_electron = 0;
-      t.SetId(vRTracksCur.size());
-
-      bool isTrackInOverlap = 0;
-
-      for (int i = 0; i < it->NHits; i++) {
-        int caHitId  = fpAlgo->fRecoHits[trackFirstHit + i];
-        int cbmHitID = fpAlgo->GetInputData().GetHit(caHitId).ID;
-        double time  = fpAlgo->GetInputData().GetHit(caHitId).t;
-        t.Hits.push_back(cbmHitID);
-        if (time >= (TsStart + TsLength - TsOverlap)) {
-          isTrackInOverlap = 1;
-          if (TsStart_new > time) { TsStart_new = time; }
-        }
-      }
-      trackFirstHit += it->NHits;
-
-      // Discard tracks from overlap region
-      if (isTrackInOverlap == 1) { continue; }
-
-      vRTracksCur.push_back(t);
-    }
-
-    for (int i = 0; i < nStsHits; ++i) {
-
-      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(fvSortedStsHitsIndexes[i]));
-      float time    = sh->GetTime();
-
-      if (TsStart_new <= time) {
-        FstHitinTs = i;
-        break;
-      }
-    }
-
-    TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
-
-    LOG(debug) << "CA Track Finder: " << fpAlgo->fCaRecoTime << " s/sub-ts" << endl;
-  }
+  // ----- Read data from branches and send data from IODataManager to L1Algo ----------------------------------------
+  ReadEvent(event);
 
 
   if (fPerformance) {
-
-    float start = 0;
-    float end   = 10000000000.f;
-    int fHit    = 0;
-    bool stop   = 0;
-
-    ReadEvent(start, end, start, fHit, stop, event);
     HitMatch();
     // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
-
-    for (L1Vector<CbmL1MCTrack>::iterator it = fvMCTracks.begin(); it != fvMCTracks.end(); ++it)
+    for (auto it = fvMCTracks.begin(); it != fvMCTracks.end(); ++it) {
       it->Init();
+    }
   }
+
+  if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
+
+  //  FieldApproxCheck();
+  //  FieldIntegralCheck();
+
+  if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
+  fpAlgo->CaTrackFinder();
+  //       IdealTrackFinder();
+  fTrackingTime += fpAlgo->fCaRecoTime;
+
+  if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
+
+  // save reconstructed tracks
+  int trackFirstHit = 0;
+
+  for (L1Vector<L1Track>::iterator it = fpAlgo->fRecoTracks.begin(); it != fpAlgo->fRecoTracks.end();
+       trackFirstHit += it->NHits, it++) {
+
+    CbmL1Track t;
+
+    for (int i = 0; i < L1TrackPar::kNparTr; i++) {
+      t.T[i]     = it->TFirst[i];
+      t.TLast[i] = it->TLast[i];
+      t.Tpv[i]   = it->Tpv[i];
+    }
+
+    for (int i = 0; i < L1TrackPar::kNparCov; i++) {
+      t.C[i]     = it->CFirst[i];
+      t.CLast[i] = it->CLast[i];
+      t.Cpv[i]   = it->Cpv[i];
+    }
+
+    t.chi2 = it->chi2;
+    t.NDF  = it->NDF;
+    t.Hits.clear();
+    t.mass        = fpAlgo->fDefaultMass;  // pion mass
+    t.is_electron = 0;
+    t.SetId(vRTracksCur.size());
+
+    for (int i = 0; i < it->NHits; i++) {
+      int caHitId  = fpAlgo->fRecoHits[trackFirstHit + i];
+      int cbmHitID = fpAlgo->GetInputData().GetHit(caHitId).ID;
+      t.Hits.push_back(cbmHitID);
+    }
+    vRTracksCur.push_back(t);
+  }
+
+  LOG(debug) << "CA Track Finder: " << fpAlgo->fCaRecoTime << " s/sub-ts" << endl;
+
   //
   //   if (fSTAPDataMode % 2 == 1) {  // 1,3
   //     WriteSTAPAlgoData();
@@ -1128,7 +1048,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
   // output performance
   if (fPerformance) {
     if (fVerbose > 1) { cout << "Performance..." << endl; }
-    //HitMatch();
     TrackMatch();
   }
 

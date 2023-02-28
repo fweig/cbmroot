@@ -1457,6 +1457,7 @@ void CbmL1::TrackFitPerformance()
 
     // last TRD point
     do {
+      break;  // only produce these plots in debug mode
       if (!fpTrdPoints) break;
       const CbmL1MCTrack& mcTrack = *(it->GetMCTracks()[0]);
       int nTrdPoints              = fpTrdPoints->Size(mcTrack.iFile, mcTrack.iEvent);
@@ -1481,6 +1482,7 @@ void CbmL1::TrackFitPerformance()
 
     // last TOF point
     do {
+      // only produce these plots in debug mode
       if (!fpTofPoints) break;
       const CbmL1MCTrack& mcTrack = *(it->GetMCTracks()[0]);
       int nTofPoints              = fpTofPoints->Size(mcTrack.iFile, mcTrack.iEvent);

@@ -343,14 +343,8 @@ private:
   /// Read information about hits, mcPoints and mcTracks into L1 classes
 
   /// Repacks data from the external TClonesArray objects to the internal L1 arrays
-  /// \param TsStart      Reference to the time slice start time
-  /// \param TsLength     Reference to the time slice length
-  /// \param TsOverlap    Reference to the time slice overlap length (does not used at the moment)
-  /// \param FstHitinTs   Index of the first hit in the time-slice
-  /// \param areDataLeft  Flag: true - data were left after reading the sub-timeslice
   /// \param event        Pointer to the current CbmEvent object
-  void ReadEvent(float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs, bool& areDataLeft,
-                 CbmEvent* event = NULL);
+  void ReadEvent(CbmEvent* event = NULL);
 
   /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint
   /// \param   MC       Pointer to a target CbmL1MCPoint object

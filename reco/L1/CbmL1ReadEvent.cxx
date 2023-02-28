@@ -322,15 +322,11 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs, bool& areDataLeft,
-                      CbmEvent* event)
+void CbmL1::ReadEvent(CbmEvent* event)
 {
   static int nCalls = 0;
 
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;
-
-  areDataLeft = false;  // no data left after reading the sub-timeslice
-
 
   // clear arrays for next event
   fvMCPoints.clear();                         /* <CbmL1MCPoint> */
@@ -754,9 +750,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
     int firstDetStrip = NStrips;
 
-    if (event) FstHitinTs = 0;
-
-    for (Int_t j = FstHitinTs; j < nEntSts; j++) {
+    for (Int_t j = 0; j < nEntSts; j++) {
       Int_t hitIndex = 0;
       hitIndex       = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
@@ -791,14 +785,6 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.dt   = h->GetTimeError();
 
         th.id = nMvdHits + hitIndex;
-
-        /// stop if reco TS ends and many hits left
-        if (!event) {
-          if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
-            areDataLeft = true;  // there are unprocessed data left in the time slice
-            break;
-          }
-        }
 
         TVector3 pos, err;
         h->Position(pos);

@@ -96,8 +96,11 @@ void L1Algo::CaTrackFinder()
   // cut data into sub-timeslices and process them one by one
 
   bool areDataLeft = true;  // is the whole TS processed
+  int nSubSlices   = 0;
 
   while (areDataLeft) {
+
+    nSubSlices++;
 
     // select the sub-slice hits
     fSliceHitIds.clear();
@@ -187,4 +190,5 @@ void L1Algo::CaTrackFinder()
 
   auto timerEnd = std::chrono::high_resolution_clock::now();
   fCaRecoTime   = (double) (std::chrono::duration<double>(timerEnd - timerStart).count());
+  std::cout << "CaTracker: nSubSlices processed = " << nSubSlices << std::endl;
 }
