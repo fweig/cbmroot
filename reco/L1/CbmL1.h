@@ -351,10 +351,10 @@ private:
   /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
   /// \param   file     Index of the input file
   /// \param   event    Index of the input event
-  /// \param   MVD      Index of the detector subsystem
+  /// \param   iDet     Index of the detector subsystem
   /// \return  flag: false - success, true - some errors occurred
   // TODO: Probably, we should replace input parameter MVD with the template  (S.Zharko)
-  bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD);
+  bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int iDet);
 
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
@@ -604,11 +604,6 @@ private:
   TClonesArray* fpMuchDigiMatches   = nullptr;  ///< Array of MuCh digi matches (NOTE: currently unsused)
 
   vector<vector<int>> fTofPointToTrack;  ///<
-
-  /// Indexes of hits after hits sorting (used only with fLegacyEventMode = true)
-  L1Vector<int> fvSortedHitsIndexes = {"CbmL1::fvSortedHitsIndexes"};
-  /// Indexes of STS hits in fpStsHits array after hits sorting (used only with fLegacyEventMode = true)
-  L1Vector<int> fvSortedStsHitsIndexes = {"CbmL1::fvSortedStsHitsIndexes"};
 
   L1Vector<CbmL1MCTrack> fvMCTracks = {"CbmL1::fvMCTracks"};         ///< Array of MC tracks
   L1Vector<int> fvHitPointIndexes   = {"CbmL1::fvHitPointIndexes"};  ///< Indexes of MC points vs. hit index

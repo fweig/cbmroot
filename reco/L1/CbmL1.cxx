@@ -884,35 +884,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
   static int nevent = 0;
   fvSelectedMcEvents.clear();
 
-  // TODO: Refactor this part, check usage ---------------------------------
-  int nStsHits = (fUseSTS && fpStsHits ? fpStsHits->GetEntriesFast() : 0);
-
-  if (!event) {
-    /// sort input hits by time
-    L1Vector<std::pair<double, int>> SortHits("CbmL1::SortHits");
-    SortHits.reserve(nStsHits);
-    for (Int_t j = 0; j < nStsHits; j++) {
-      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(j));
-      double t      = sh->GetTime();
-      SortHits.push_back(std::pair<double, int>(t, j));
-    }
-    std::sort(SortHits.begin(), SortHits.end());
-    fvSortedStsHitsIndexes.clear();
-    fvSortedStsHitsIndexes.reserve(SortHits.size());
-    for (unsigned int i = 0; i < SortHits.size(); i++) {
-      int j = SortHits[i].second;
-      fvSortedStsHitsIndexes.push_back(j);
-    };
-  }
-  else {
-    fvSortedStsHitsIndexes.clear();
-    fvSortedStsHitsIndexes.reserve(nStsHits);
-    for (int i = 0; i < nStsHits; i++) {
-      fvSortedStsHitsIndexes.push_back(i);
-    }
-  }
-  // -----------------------------------------------------------------------
-
   if (fPerformance) {
     int nofEvents = fpMcEventList->GetNofEvents();
     for (int iE = 0; iE < nofEvents; iE++) {
@@ -926,25 +897,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #ifdef _OPENMP
   omp_set_num_threads(1);
 #endif
-  // repack data
-
-  L1Vector<CbmL1Track> vRTracksCur("CbmL1::vRTracksCur");
-  // FIXME: Update the following code block in order to account for MuCh, TRD and TOF (S.Zharko)
-  {
-    int nHits = 0;
-    int nSta  = 1;
-    if (fUseMVD && fpMvdHits) {
-      nHits += fpMvdHits->GetEntriesFast();
-      nSta += fNMvdStations;
-    }
-    if (fUseSTS && fpStsHits) {
-      nHits += fpStsHits->GetEntriesFast();
-      nSta += fNStsStations;
-    }
-    vRTracksCur.reserve(10 + (2 * nHits) / nSta);
-  }
-
-  fTrackingTime = 0;
 
   // ----- Read data from branches and send data from IODataManager to L1Algo ----------------------------------------
   ReadEvent(event);
@@ -966,11 +918,15 @@ void CbmL1::Reconstruct(CbmEvent* event)
   if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
   fpAlgo->CaTrackFinder();
   //       IdealTrackFinder();
-  fTrackingTime += fpAlgo->fCaRecoTime;
+  fTrackingTime = fpAlgo->fCaRecoTime;
 
   if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
 
   // save reconstructed tracks
+
+  fvRecoTracks.clear();
+  fvRecoTracks.reserve(fpAlgo->fRecoTracks.size());
+
   int trackFirstHit = 0;
 
   for (L1Vector<L1Track>::iterator it = fpAlgo->fRecoTracks.begin(); it != fpAlgo->fRecoTracks.end();
@@ -995,39 +951,17 @@ void CbmL1::Reconstruct(CbmEvent* event)
     t.Hits.clear();
     t.mass        = fpAlgo->fDefaultMass;  // pion mass
     t.is_electron = 0;
-    t.SetId(vRTracksCur.size());
+    t.SetId(fvRecoTracks.size());
 
     for (int i = 0; i < it->NHits; i++) {
       int caHitId  = fpAlgo->fRecoHits[trackFirstHit + i];
       int cbmHitID = fpAlgo->GetInputData().GetHit(caHitId).ID;
       t.Hits.push_back(cbmHitID);
     }
-    vRTracksCur.push_back(t);
+    fvRecoTracks.push_back(t);
   }
 
   LOG(debug) << "CA Track Finder: " << fpAlgo->fCaRecoTime << " s/sub-ts" << endl;
-
-  //
-  //   if (fSTAPDataMode % 2 == 1) {  // 1,3
-  //     WriteSTAPAlgoData();
-  //     WriteSTAPPerfData();
-  //   };
-  //   if (fSTAPDataMode >= 2) {  // 2,3
-  //     //ReadSTAPAlgoData();
-  //
-  //     ReadSTAPPerfData();
-  //   };
-
-  fvRecoTracks.clear();
-  fvRecoTracks.reserve(vRTracksCur.size());
-  for (unsigned int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
-
-    for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].Hits.size(); iHit++) {
-      vRTracksCur[iTrack].Hits[iHit] = fvSortedHitsIndexes[vRTracksCur[iTrack].Hits[iHit]];
-    }
-
-    fvRecoTracks.push_back(vRTracksCur[iTrack]);
-  }
 
 
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }

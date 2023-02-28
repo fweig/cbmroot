@@ -93,19 +93,9 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
 
     for (vector<int>::iterator ih = it->Hits.begin(); ih != it->Hits.end(); ++ih) {
       CbmL1HitId& h = L1->fvExternalHits[*ih];
-      // 	  double zref = L1->fpAlgo->vStations[h.iStation].z[0];
-      if (h.detId > 1) {  // not MVD or STS hit
-        continue;
-      }
-      if (h.hitId < 0) {
-        // CbmMvdHit tmp;
-        // tmp.SetZ(zref);
-        t->AddMvdHit(-h.hitId - 1);  //, &tmp );
-      }
-      else {
-        //CbmStsHit tmp;
-        //tmp.SetZ(zref);
-        t->AddHit(h.hitId, kSTSHIT);  //, &tmp );
+      if (h.detId == 0) { t->AddMvdHit(h.hitId); }
+      else if (h.detId == 1) {
+        t->AddHit(h.hitId, kSTSHIT);
       }
     }
   }

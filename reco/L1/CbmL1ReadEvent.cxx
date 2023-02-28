@@ -90,7 +90,6 @@ struct TmpHit {
   double time = 0.;    ///< time of the hit [ns]
   double dt   = 1.e4;  ///< time error of the hit [ns]
   int Det;
-  int id;  ///< index of hit before hits sorting
   int track;
 
   /// Provides comparison of two hits.
@@ -108,17 +107,15 @@ struct TmpHit {
   /// Creates a hit from the CbmL1MCPoint object
   /// \param point  constant reference to the input MC-point
   /// \param det
-  /// \param nTmpHits
   /// \param nStripF
   /// \param ip
   /// \param NStrips
   /// \param st       reference to the station info object
-  void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int nTmpHits, int& NStrips, const L1Station& st,
-                          double du_, double dv_, double dt_, bool doSmear)
+  void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int& NStrips, const L1Station& st, double du_,
+                          double dv_, double dt_, bool doSmear)
   {
     ExtIndex = 0;
     Det      = det;
-    id       = nTmpHits;
     iStation = point.iStation;
 
     dt   = dt_;
@@ -178,7 +175,7 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kMvd>(int iHit) const
 {
   int iPoint = -1;
   if (fpMvdHitMatches) {
-    int iHitExt          = -(1 + iHit);  // TODO: SZh 28.08.2022: this should be replaced with iHitExt = hit.extIdex
+    int iHitExt          = iHit;
     const auto* hitMatch = dynamic_cast<CbmMatch*>(fpMvdHitMatches->At(iHitExt));
     assert(hitMatch);
     if (hitMatch->GetNofLinks() > 0 && hitMatch->GetLink(0).GetIndex() < fNpointsMvd) {
@@ -423,7 +420,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
         double maxDeviation      = 0;
         for (Int_t iMC = 0; iMC < fNpointsMvdInEvent; iMC++) {
           CbmL1MCPoint MC;
-          if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
+          if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
             MC.iStation          = -1;
             const L1Station* sta = fpAlgo->GetParameters()->GetStations().begin();
             double bestDist      = 1.e20;
@@ -464,7 +461,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
         double maxDeviation = 0;
         for (Int_t iMC = 0; iMC < nMC; iMC++) {
           CbmL1MCPoint MC;
-          if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
+          if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation          = -1;
             const L1Station* sta = fpAlgo->GetParameters()->GetStations().begin();
             double bestDist      = 1.e20;
@@ -683,8 +680,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       TmpHit th;
       {
         CbmMvdHit* h = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(j));
-        th.ExtIndex  = -(1 + j);
-        th.id        = tmpHits.size();
+        th.ExtIndex  = j;
         th.iStation  = h->GetStationNr();
 
         int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetStationNr(), L1DetectorID::kMvd);
@@ -734,8 +730,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       int DetId = 0;
       double du = 5.e-4;
       double dt = 1000.;
-      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, dt, true);
+      th.CreateHitFromPoint(p, ip, DetId, NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du, du, dt, true);
       tmpHits.push_back(th);
       nMvdHits++;
     }
@@ -751,10 +746,8 @@ void CbmL1::ReadEvent(CbmEvent* event)
     int firstDetStrip = NStrips;
 
     for (Int_t j = 0; j < nEntSts; j++) {
-      Int_t hitIndex = 0;
-      hitIndex       = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
-      int hitIndexSort = fvSortedStsHitsIndexes[hitIndex];
+      Int_t hitIndex = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
       // ***********************************
       // ** Fill the temporary hit object **
@@ -764,8 +757,8 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
       // Fill reconstructed information
       {
-        CbmStsHit* h = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndexSort));
-        th.ExtIndex  = hitIndexSort;
+        CbmStsHit* h = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndex));
+        th.ExtIndex  = hitIndex;
         th.Det       = 1;
         int stIdx    = fpAlgo->GetParameters()->GetStationIndexActive(
           CbmStsSetup::Instance()->GetStationNumber(h->GetAddress()), L1DetectorID::kSts);
@@ -783,8 +776,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
         //Get time
         th.time = h->GetTime();
         th.dt   = h->GetTimeError();
-
-        th.id = nMvdHits + hitIndex;
 
         TVector3 pos, err;
         h->Position(pos);
@@ -805,7 +796,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
         th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
-      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kSts>(hitIndexSort) : -1;
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kSts>(hitIndex) : -1;
 
       if (1 == fStsUseMcHit && th.iMC >= 0) {
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
@@ -832,8 +823,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       int DetId = 1;
       double du = 10.e-4;
       double dt = 5.;
-      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, dt, true);
+      th.CreateHitFromPoint(p, ip, DetId, NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du, du, dt, true);
       tmpHits.push_back(th);
       nStsHits++;
     }
@@ -853,16 +843,12 @@ void CbmL1::ReadEvent(CbmEvent* event)
     for (int j = 0; j < nEnt; j++) {
       TmpHit th;
       {
-
-
-        Int_t hitIndex = 0;
-        hitIndex       = (event ? event->GetIndex(ECbmDataType::kMuchPixelHit, j) : j);
+        Int_t hitIndex = (event ? event->GetIndex(ECbmDataType::kMuchPixelHit, j) : j);
 
         CbmMuchPixelHit* h = static_cast<CbmMuchPixelHit*>(fpMuchPixelHits->At(hitIndex));
 
         th.ExtIndex = hitIndex;
         th.Det      = 2;
-        th.id       = tmpHits.size();
 
         Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(h->GetAddress());
         Int_t layerNumber   = CbmMuchGeoScheme::GetLayerIndex(h->GetAddress());
@@ -948,8 +934,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       int DetId = 2;
       double du = 100.e-4;
       double dt = 3.9;
-      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, dt, true);
+      th.CreateHitFromPoint(p, ip, DetId, NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du, du, dt, true);
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -972,8 +957,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
     for (int iHit = 0; iHit < nEntTrd; iHit++) {
       TmpHit th;
 
-      Int_t hitIndex = 0;
-      hitIndex       = (event ? event->GetIndex(ECbmDataType::kTrdHit, iHit) : iHit);
+      Int_t hitIndex = (event ? event->GetIndex(ECbmDataType::kTrdHit, iHit) : iHit);
 
       CbmTrdHit* h = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(hitIndex));
 
@@ -984,8 +968,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
       th.ExtIndex = hitIndex;
       th.Det      = 3;
-      th.id       = tmpHits.size();
-
 
       int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetPlaneId(), L1DetectorID::kTrd);
       assert(stIdx != -1);
@@ -1082,8 +1064,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       int DetId = 3;
       double du = 0.1;
       double dt = 10.;
-      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, dt, true);
+      th.CreateHitFromPoint(p, ip, DetId, NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du, du, dt, true);
       tmpHits.push_back(th);
       nTrdHits++;
     }
@@ -1100,9 +1081,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     for (int j = 0; j < nEntTof; j++) {
 
-
-      Int_t hitIndex = 0;
-      hitIndex       = (event ? event->GetIndex(ECbmDataType::kTofHit, j) : j);
+      Int_t hitIndex = (event ? event->GetIndex(ECbmDataType::kTofHit, j) : j);
 
       TmpHit th;
 
@@ -1111,8 +1090,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
       th.ExtIndex = hitIndex;
       th.Det      = 4;
-
-      th.id = tmpHits.size();
 
       if (0x00202806 == h->GetAddress() || 0x00002806 == h->GetAddress()) continue;  // TODO: Why? (S.Zharko)
 
@@ -1182,8 +1159,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       int DetId = 4;
       double du = 0.1;
       double dt = 0.075;
-      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, dt, true);
+      th.CreateHitFromPoint(p, ip, DetId, NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du, du, dt, true);
       tmpHits.push_back(th);
       nTofHits++;
     }
@@ -1211,19 +1187,10 @@ void CbmL1::ReadEvent(CbmEvent* event)
   //
   sort(tmpHits.begin(), tmpHits.end(), TmpHit::Compare);
 
-  // ----- Save strips into L1Algo
-  int maxHitIndex = 0;
-
-  for (int ih = 0; ih < nHits; ih++) {
-    TmpHit& th = tmpHits[ih];
-    if (maxHitIndex < th.id) { maxHitIndex = th.id; }
-  }  // ih
-
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
 
   // ----- Fill and save fvExternalHits, fvHitDebugInfo and fvHitPointIndexes vectors as well as fpData->vHits
-  fvSortedHitsIndexes.reset(maxHitIndex + 1);
 
   fvExternalHits.reserve(nHits);
   fvHitDebugInfo.reserve(nHits);
@@ -1249,8 +1216,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
     s.dxy      = th.dxy;
     s.time     = th.time;
 
-    fvSortedHitsIndexes[th.id] = iHit;
-
     assert(th.iStripF >= 0 || th.iStripF < NStrips);
     assert(th.iStripB >= 0 || th.iStripB < NStrips);
 
@@ -1258,7 +1223,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
     h.iSt = th.iStation;
     h.f   = th.iStripF;
     h.b   = th.iStripB;
-    h.ID  = th.id;
+    h.ID  = iHit;
     h.z   = th.z;
     h.u   = th.u;
     h.v   = th.v;
@@ -1367,7 +1332,7 @@ void CbmL1::Fill_vMCTracks()
 //--------------------------------------------------------------------------------------------------
 //
 // TODO: Probably, we should reduce code here, rewriting this funciton as a template from CbmMvdPoint (S.Zharko)
-bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD)
+bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int iDet)
 {
   TVector3 xyzI, PI, xyzO, PO;
   Int_t mcID    = -1;
@@ -1375,7 +1340,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 
   double eventTime = fpMcEventList->GetEventTime(event, file);
 
-  if (MVD == 1) {
+  if (iDet == 0) {
     CbmMvdPoint* pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(fpMvdPoints->Get(file, event, iPoint));  // file, event, object
     //CbmMvdPoint *pt = L1_DYNAMIC_CAST<CbmMvdPoint*> (Point);
 
@@ -1387,7 +1352,8 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     mcID = pt->GetTrackID();
     time = eventTime + pt->GetTime();
   }
-  if (MVD == 0) {
+
+  if (iDet == 1) {
     CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fpStsPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
     {
@@ -1411,7 +1377,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   }
 
 
-  if (MVD == 2) {
+  if (iDet == 2) {
     CbmMuchPoint* pt = L1_DYNAMIC_CAST<CbmMuchPoint*>(fpMuchPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
     {
@@ -1435,7 +1401,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   }
 
 
-  if (MVD == 3) {
+  if (iDet == 3) {
     CbmTrdPoint* pt = L1_DYNAMIC_CAST<CbmTrdPoint*>(fpTrdPoints->Get(file, event, iPoint));  // file, event, object
 
     if (!pt) return 1;
@@ -1460,7 +1426,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     time = eventTime + pt->GetTime();
   }
 
-  if (MVD == 4) {
+  if (iDet == 4) {
     CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fpTofPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
     {

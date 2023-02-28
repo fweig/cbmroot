@@ -88,7 +88,7 @@ private:
   /** Convert detector specific track info to a detector track
    **/
   void CbmL1TrackToCbmTrack(CbmL1Track T, CbmTrack* track, int systemIdT);
-  void CbmL1TrackToCbmStsTrack(CbmL1Track T, CbmStsTrack* track, int systemIdT);
+  void CbmL1TrackToCbmStsTrack(CbmL1Track T, CbmStsTrack* track);
   void CbmL1TrackToCbmMuchTrack(CbmL1Track T, CbmMuchTrack* track, int systemIdT);
   void CbmL1TrackToCbmTrdTrack(CbmL1Track T, CbmTrdTrack* track, int systemIdT);
   void CbmL1TrackToCbmTofTrack(CbmL1Track T, CbmTofTrack* track, int systemIdT);
