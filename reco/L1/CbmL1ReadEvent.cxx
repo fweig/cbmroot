@@ -851,7 +851,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
         th.dx  = h->GetDx();
         th.dy  = h->GetDy();
-        th.dxy = 0;
+        th.dxy = 0;  /// FIXME: ???
 
         th.du = h->GetDx();
         th.dv = h->GetDy();
@@ -1056,7 +1056,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
       if (0x00202806 == h->GetAddress() || 0x00002806 == h->GetAddress()) continue;  // TODO: Why? (S.Zharko)
 
-      if (5 == CbmTofAddress::GetSmType(h->GetAddress())) continue;
+      if (5 == CbmTofAddress::GetSmType(h->GetAddress())) continue;  // Skip T0 hits from TOF
 
       int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStationIndex(h);
 
@@ -1150,9 +1150,9 @@ void CbmL1::ReadEvent(CbmEvent* event)
   fvHitDebugInfo.reserve(nHits);
   fvHitPointIndexes.reserve(nHits);
 
-  fIODataManager.ResetInputData();
-  fIODataManager.ReserveNhits(nHits);
-  fIODataManager.SetNhitKeys(NStrips);
+  fpIODataManager->ResetInputData();
+  fpIODataManager->ReserveNhits(nHits);
+  fpIODataManager->SetNhitKeys(NStrips);
 
   // ----- Fill
   for (int iHit = 0; iHit < nHits; ++iHit) {
@@ -1191,12 +1191,12 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     // TODO: Here one should fill in the fvExternalHits[iHit].mcPointIds
 
-    fIODataManager.PushBackHit(h, th.fDataStream);
+    fpIODataManager->PushBackHit(h, th.fDataStream);
 
     fvHitDebugInfo.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);
   }
-  if (fPerformance) { HitMatch(); }                                       /// OLD
+  if (fPerformance) { HitMatch(); }  /// OLD
 
   if (fVerbose >= 2) cout << "ReadEvent: mvd and sts are saved." << endl;
 
@@ -1204,7 +1204,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
   if (1 == fSTAPDataMode) { WriteSTAPAlgoInputData(nCalls); }
   if (2 == fSTAPDataMode) { ReadSTAPAlgoInputData(nCalls); }
   // TODO: SZh: If we read data from file, we don't need to collect them above. This should be addressed
-  fIODataManager.SendInputData(fpAlgo);
+  fpIODataManager->SendInputData(fpAlgo);
 
   if (fPerformance) {
     if (fVerbose >= 10) cout << "HitMatch is done." << endl;

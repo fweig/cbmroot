@@ -37,7 +37,8 @@ void CbmQaTask::Exec(Option_t* /*option*/)
 {
   fNofEvents.SetVal(fNofEvents.GetVal() + 1);
   LOG_IF(info, fVerbose > 1) << fName << ": event " << fNofEvents.GetVal();
-  FillHistograms();
+  this->InitTimeSlice();
+  this->FillHistograms();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

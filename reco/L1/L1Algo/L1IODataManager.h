@@ -13,7 +13,6 @@
 #include "L1Constants.h"
 #include "L1InputData.h"
 
-class L1Parameters;
 class L1Algo;
 //class L1OutputData;
 
@@ -28,11 +27,7 @@ public:
   // ** Constructors and destructor **
 
   /// Default constructor
-  L1IODataManager() = delete;
-
-  /// Constructor
-  /// \param fpParameters  Pointer to the L1 tracking algorithm parameters instance
-  L1IODataManager(const L1Parameters* pParameters);
+  L1IODataManager() = default;
 
   /// Destructor
   ~L1IODataManager() = default;
@@ -48,6 +43,10 @@ public:
 
   /// Move assignment operator
   L1IODataManager& operator=(L1IODataManager&& other) = delete;
+
+  /// @brief Gets number of hits stored
+  /// @return  Number of hits
+  int GetNofHits() { return fInputData.fHits.size(); }
 
   /// Reads input data object from boost-serialized binary file
   /// \param  fileName  Name of input file
@@ -77,6 +76,10 @@ public:
   /// Sets the number of hit keys
   /// \param  nKeys  Number of hit keys
   void SetNhitKeys(int nKeys) { fInputData.fNhitKeys = nKeys; }
+
+  /// @brief Sets number of active stations
+  /// @param nStations  Number of stations
+  void SetNofActiveStations(int nStations) { fNofActiveStations = nStations; }
 
   /// Sends (moves) input data to the destination reference
   /// \param  pAlgo  Pointer to the L1 tracking algorithm main class
@@ -110,9 +113,8 @@ private:
 
   L1InputData fInputData {};  ///< Object of input data
 
-  const L1Parameters* fpParameters {nullptr};  ///< Pointer to the tracking parameters object
-
   int64_t fLastStreamId {-1};  ///< data stream Id of the last hit added
+  int fNofActiveStations = -1;  ///< Number of active stations
 };
 
 

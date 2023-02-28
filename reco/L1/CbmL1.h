@@ -445,8 +445,8 @@ private:
   // ***************************
 
 
-  L1InitManager fInitManager;      ///< Tracking parameters data manager
-  L1IODataManager fIODataManager;  ///< Input-output data manager
+  L1InitManager fInitManager;                                  ///< Tracking parameters data manager
+  std::shared_ptr<L1IODataManager> fpIODataManager = nullptr;  ///< Input-output data manager
 
   //std::unique_ptr<CbmCaMCModule> fpMCModule = nullptr;  ///< MC-module for tracking
 

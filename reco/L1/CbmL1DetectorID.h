@@ -23,4 +23,12 @@ enum class L1DetectorID
   kTof
 };
 
+/// @brief Enumeration for different tracking running modes
+enum class ECbmTrackingMode
+{
+  kSTS,  ///< Local tracking in CBM (STS + MVD), results stored to the StsTrack branch
+  kMCBM  ///< Global tracking in mCBM (STS, MuCh, TRD, TOF), results stored to GlobalTrack branch
+};
+
+
 #endif  // CbmL1DetectorID_h

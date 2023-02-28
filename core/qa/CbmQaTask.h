@@ -85,6 +85,9 @@ protected:
   /// Initializes canvases
   virtual InitStatus InitCanvases();
 
+  /// Initializes event / time-slice
+  virtual InitStatus InitTimeSlice() { return kSUCCESS; }
+
   /// Method to fill histograms per event or time-slice
   virtual void FillHistograms();
 

@@ -90,7 +90,6 @@ CbmL1::CbmL1() : CbmL1("L1") {}
 CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, const TString& dataDir,
              int findParticleMode)
   : FairTask(name, verbose)
-  , fIODataManager(L1IODataManager(gAlgo.GetParameters()))
   , fPerformance(performance)
   , fSTAPDataMode(dataMode)
   , fFindParticlesMode(findParticleMode)
@@ -102,6 +101,8 @@ CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, c
     case 2: LOG(info) << "CbmL1: input data will be read from external files"; break;
     default: LOG(info) << "CbmL1: tracking will be run without external data R/W"; break;
   }
+
+  fpIODataManager = std::make_shared<L1IODataManager>();
 
   if (1 == fSTAPDataMode || 2 == fSTAPDataMode) { this->DefineSTAPNames(dataDir); }
 
@@ -867,6 +868,7 @@ InitStatus CbmL1::Init()
   fNStations     = fpAlgo->GetParameters()->GetNstationsActive();
 
   LOG(info) << fpAlgo->GetParameters()->ToString(0);
+  fpIODataManager->SetNofActiveStations(fNStations);
 
   LOG(info) << "----- Numbers of stations active in tracking -----";
   LOG(info) << "  MVD:    " << fNMvdStations;
@@ -1202,7 +1204,7 @@ void CbmL1::WriteSTAPAlgoInputData(int iJob)  // must be called after ReadEvent
                      + TString::Format(kSTAPAlgoIDataSuffix.data(), iJob);
 
   // Write file
-  fIODataManager.WriteInputData(filename.Data());
+  fpIODataManager->WriteInputData(filename.Data());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1228,7 +1230,7 @@ void CbmL1::ReadSTAPAlgoInputData(int iJob)
                      + TString::Format(kSTAPAlgoIDataSuffix.data(), iJob);
 
   // Read file
-  fIODataManager.ReadInputData(filename.Data());
+  fpIODataManager->ReadInputData(filename.Data());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

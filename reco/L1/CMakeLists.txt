@@ -49,6 +49,7 @@ set(SRCS
   CbmL1Performance.cxx
   CbmL1ReadEvent.cxx
   CbmCaMCModule.cxx
+  CbmCaTimeSliceReader.cxx
   L1Algo/L1Station.cxx
   L1Algo/L1Fit.cxx
   L1Algo/L1MCEvent.cxx
@@ -86,6 +87,7 @@ set(SRCS
   qa/CbmCaInputQaMuch.cxx
   qa/CbmCaInputQaTrd.cxx
   qa/CbmCaInputQaTof.cxx
+  qa/CbmCaOutputQa.cxx
   qa/CbmTofInteraction.cxx # Tests
 )
 

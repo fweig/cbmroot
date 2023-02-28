@@ -348,6 +348,7 @@ public:
   void DrawRecoTracksTime(const L1Vector<CbmL1Track>& tracks);
 #endif
 
+  /// TODO: Move to L1
   enum TrackingMode
   {
     kSts,
