@@ -81,28 +81,10 @@ struct TmpHit {
   double dxy;          ///< hit position covariance along x and y axes [cm2]
   double du;           ///< hit position uncertainty along axis orthogonal to front strips [cm]
   double dv;           ///< hit position uncertainty along axis orthogonal to back strips [cm]
-  double xmc;          ///< MC position of hit [cm]
-  double ymc;          ///< MC position of hit [cm]
-  double p;            ///< MC total momentum [GeV/c]
-  double tx;           ///< MC slopes of the mc point
-  double ty;           ///< MC slopes of the mc point
   int iMC;             ///< index of MCPoint in the fvMCPoints array
   double time = 0.;    ///< time of the hit [ns]
   double dt   = 1.e4;  ///< time error of the hit [ns]
   int Det;
-  int track;
-
-  /// Provides comparison of two hits.
-  /// If two hits belong to different stations,
-  /// the smallest hit belongs to the station with the smallest index. Otherwise, the smallest hit
-  /// has the smallest y coordinate
-  /// \param  a  Left hit
-  /// \param  b  Right hit
-  /// \return boolean: true - the left hit is smaller then the right one
-  static bool Compare(const TmpHit& a, const TmpHit& b)
-  {
-    return (a.iStation < b.iStation) || ((a.iStation == b.iStation) && (a.y < b.y));
-  }
 
   /// Creates a hit from the CbmL1MCPoint object
   /// \param point  constant reference to the input MC-point
@@ -154,12 +136,7 @@ struct TmpHit {
     }
     std::tie(x, y) = st.ConvUVtoXY<double>(u, v);
     z              = point.z;
-
-    xmc   = point.x;
-    ymc   = point.y;
-    track = point.ID;
-    p     = point.p;
-    iMC   = ip;
+    iMC            = ip;
   }
 };
 
@@ -809,16 +786,8 @@ void CbmL1::ReadEvent(CbmEvent* event)
   }    // if fpStsHits
 
   if (fUseSTS && (2 == fStsUseMcHit)) {  // create hits from points
-
     for (int ip = firstStsPoint; ip < firstStsPoint + fNpointsSts; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
-      //       int mcTrack           = p.ID;
-      //       if (mcTrack < 0) continue;
-      //       const CbmL1MCTrack& t = fvMCTracks[mcTrack];
-      //if (t.p < 1) continue;
-      // if (t.Points.size() > 4) continue;
-      // cout << "sts mc: station " << p.iStation - fNMvdStations << " x " << p.x << " y " << p.y << " z " << p.z << " t "
-      //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
       int DetId = 1;
       double du = 10.e-4;
@@ -1007,18 +976,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
       std::tie(th.u, th.v) = st.ConvXYtoUV<double>(th.x, th.y);
 
-      th.iMC   = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(th.ExtIndex) : -1;
-      th.track = (th.iMC > -1) ? fvMCPoints[th.iMC].ID : -1;
-      //int iMcTrd = -1;
-      //if (fPerformance && fpTrdHitMatches) {
-      //  CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iHit));
-      //  if (trdHitMatch->GetNofLinks() > 0) {
-      //    iMcTrd = trdHitMatch->GetLink(0).GetIndex();
-      //    assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
-      //    th.iMC   = iMcTrd + fNpointsMvd + fNpointsSts + fNpointsMuch;
-      //    th.track = fvMCPoints[th.iMC].ID;
-      //  }
-      //}
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(th.ExtIndex) : -1;
 
       if (1 == fTrdUseMcHit) {  // replace hit by MC points
 
@@ -1498,6 +1456,5 @@ void CbmL1::HitMatch()
       hit.mcPointIds.push_back_no_warning(iP);
       fvMCPoints[iP].hitIds.push_back_no_warning(iH);
     }
-
   }  // for hits
 }
