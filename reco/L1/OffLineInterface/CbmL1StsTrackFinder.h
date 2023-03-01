@@ -37,22 +37,23 @@ public:
 
 
   /** Destructor **/
-  virtual ~CbmL1StsTrackFinder();
+  ~CbmL1StsTrackFinder();
 
 
   /** Initialisation **/
-  virtual void Init();
+  void Init();
 
 
   /** Track finding algorithm
    **/
-  virtual Int_t DoFind();
+  Int_t DoFind();
 
   /** Execute track finding on one event
    ** @param event  Pointer to event object
    ** @value Number of created tracks
    **/
-  virtual Int_t FindTracks(CbmEvent* event);
+  Int_t FindTracks(CbmEvent* event);
+
 
   /// set a default particle mass for the track fit
   /// it is used during reconstruction

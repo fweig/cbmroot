@@ -78,7 +78,7 @@ void CbmL1MCTrack::Init()
   CalculateMaxNStaMC();
   CalculateMaxNStaHits();
   CalculateIsReconstructable();
-}  // void CbmL1MCTrack::Init()
+}
 
 
 float CbmL1MCTrack::Fraction_MC()

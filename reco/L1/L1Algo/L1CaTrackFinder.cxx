@@ -62,8 +62,8 @@ void L1Algo::CaTrackFinder()
 
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
 
-    const L1Station& st       = fParameters.GetStation(iS);
-    int nStationHits          = fInputData.GetNhits(iS);
+    const L1Station& st = fParameters.GetStation(iS);
+    int nStationHits    = fInputData.GetNhits(iS);
 
     fscal maxTimeBeforeHit = std::numeric_limits<fscal>::min();
 

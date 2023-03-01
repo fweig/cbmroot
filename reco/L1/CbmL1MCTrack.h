@@ -61,6 +61,8 @@ public:
   void AddTouchTrack(CbmL1Track* tTr) { tTracks.push_back_no_warning(tTr); }
   bool IsDisturbed() const { return tTracks.size(); }
 
+  void SetIsReconstructable(bool v) { isReconstructable = v; }
+
   friend class CbmL1;
 
   double pt() { return sqrt(px * px + py * py); }

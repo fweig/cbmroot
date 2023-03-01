@@ -34,6 +34,7 @@
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
 // #include "CbmSetup.h"
+#include "CbmEvent.h"
 #include "CbmMCDataObject.h"
 #include "CbmStsFindTracks.h"
 #include "CbmStsHit.h"
@@ -882,14 +883,41 @@ InitStatus CbmL1::Init()
 void CbmL1::Reconstruct(CbmEvent* event)
 {
   static int nevent = 0;
+
   fvSelectedMcEvents.clear();
 
+  int bestMcFile  = -1;
+  int bestMcEvent = -1;
+
   if (fPerformance) {
-    int nofEvents = fpMcEventList->GetNofEvents();
-    for (int iE = 0; iE < nofEvents; iE++) {
-      int fileId  = fpMcEventList->GetFileIdByIndex(iE);
-      int eventId = fpMcEventList->GetEventIdByIndex(iE);
-      fvSelectedMcEvents.insert(DFSET::value_type(fileId, eventId));
+    if (event) {
+      CbmMatch* match = event->GetMatch();
+      if (!match) {
+        LOG(error) << "CbmL1: match between reco and MC events missing!! Performance can not be evaluated!!";
+        fPerformance = 0;
+      }
+      else {
+        cout << "CbmL1: mc events all " << fpMcEventList->GetNofEvents() << " mc events linked " << match->GetNofLinks()
+             << std::endl;
+        for (int iLink = 0; iLink < match->GetNofLinks(); iLink++) {
+          const CbmLink& link = match->GetLink(iLink);
+          fvSelectedMcEvents.insert(DFSET::value_type(link.GetFile(), link.GetEntry()));
+          cout << "CbmL1: linked mc event file " << link.GetFile() << " event  " << link.GetEntry() << std::endl;
+        }
+        if (match->GetNofLinks() > 1) {
+          const CbmLink& link = match->GetMatchedLink();
+          bestMcFile          = link.GetFile();
+          bestMcEvent         = link.GetEntry();
+        }
+      }
+    }
+    else {
+      int nofEvents = fpMcEventList->GetNofEvents();
+      for (int iE = 0; iE < nofEvents; iE++) {
+        int fileId  = fpMcEventList->GetFileIdByIndex(iE);
+        int eventId = fpMcEventList->GetEventIdByIndex(iE);
+        fvSelectedMcEvents.insert(DFSET::value_type(fileId, eventId));
+      }
     }
   }
 
@@ -902,15 +930,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   ReadEvent(event);
 
-
   if (fPerformance) {
     HitMatch();
     // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
     for (auto it = fvMCTracks.begin(); it != fvMCTracks.end(); ++it) {
       it->Init();
     }
+    if (bestMcFile >= 0) {  // suppress mc tracks from complementary mc events
+      for (auto it = fvMCTracks.begin(); it != fvMCTracks.end(); ++it) {
+        if (it->iFile != bestMcFile || it->iEvent != bestMcEvent) { it->SetIsReconstructable(false); }
+      }
+    }
   }
-
 
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
 
