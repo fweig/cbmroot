@@ -1607,13 +1607,18 @@ void L1Algo::CaTrackFinderSlice()
       if (timeUninitialised || starttime > time) { starttime = time; }
       timeUninitialised = false;
     }
-    /*
-    int nSliceHits = fSliceHitIds.size();
-    fscal yStep    = 1.5 / sqrt(nSliceHits + 1);  // empirics. 0.01*sqrt(2374) ~= 0.5
-    if (yStep > 0.3) yStep = 0.3;
-    if (yStep < 0.01) yStep = 0.01;
-    fscal xStep = yStep * 3;
-    vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
+
+    // TODO: changing the grid also changes the result. Investigate why it happens.
+    // TODO: find the optimal grid size
+
+    /*  SG: old code from Valentina
+      int nSliceHits = fSliceHitIds.size();
+      int nSliceHits = fSliceHitIdsStopIndex[iS] - fSliceHitIdsStartIndex[iS];
+      fscal yStep    = 1.5 / sqrt(nSliceHits + 1);  // empirics. 0.01*sqrt(2374) ~= 0.5
+      if (yStep > 0.3) yStep = 0.3;
+      if (yStep < 0.01) yStep = 0.01;
+      fscal xStep = yStep * 3;
+      vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
     */
 
     int nSliceHits = fSliceHitIdsStopIndex[iS] - fSliceHitIdsStartIndex[iS];

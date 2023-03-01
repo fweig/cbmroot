@@ -41,15 +41,12 @@
 
 #include "FairMCEventHeader.h"
 
-#include "L1Algo/L1Algo.h"
-
-//#include "CbmMvdHitMatch.h"
-
-
 #include "TDatabasePDG.h"
 #include "TRandom.h"
 
 #include <iostream>
+
+#include "L1Algo/L1Algo.h"
 
 using std::cout;
 using std::endl;
@@ -125,7 +122,7 @@ struct TmpHit {
   /// of the hit is known precisely
   /// \param point  constant reference to the input MC-point
   /// \param st     reference to the station info object
-  // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
+  ///
   void SetHitFromPoint(const CbmL1MCPoint& point, int ip, const L1Station& st, bool doSmear = 1)
   {
     std::tie(u, v) = st.ConvXYtoUV<double>(point.x, point.y);
@@ -303,10 +300,9 @@ void CbmL1::ReadEvent(CbmEvent* event)
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;
 
   // clear arrays for next event
-  fvMCPoints.clear();                         /* <CbmL1MCPoint> */
-  fvMCTracks.clear();                         /* <CbmL1MCTrack> */
-  fvExternalHits.clear();                     /* <CbmL1Hit>     */
-  fvRecoTracks.clear(); /* <CbmL1Track>   */  // TODO: Move from this function to more suitable place (S.Zharko)
+  fvMCPoints.clear();        /* <CbmL1MCPoint> */
+  fvMCTracks.clear();        /* <CbmL1MCTrack> */
+  fvExternalHits.clear();    /* <CbmL1Hit>     */
   fvHitPointIndexes.clear(); /* <int>: indexes of MC-points in fvMCPoints (by index of fpAlgo->vHits) */
   fvHitDebugInfo.clear();    /* <CbmL1HitDebugInfo> */
 
@@ -320,19 +316,21 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
   {  // reserve enough space for hits
     int nHitsTotal = 0;
-    if (fUseMVD && fpMvdHits) nHitsTotal += fpMvdHits->GetEntriesFast();
-    Int_t nEntSts = 0;
-    if (fUseSTS && fpStsHits) {
-      if (event) { nEntSts = event->GetNofData(ECbmDataType::kStsHit); }
-      else {
-        nEntSts = fpStsHits->GetEntriesFast();
-      }
-      if (nEntSts < 0) nEntSts = 0;  // GetNofData() can return -1;
+    if (event) {  // be careful: GetNofData() can return -1
+      if (fUseMVD && fpMvdHits) { nHitsTotal += std::max(event->GetNofData(ECbmDataType::kMvdHit), 0); }
+      if (fUseSTS && fpStsHits) { nHitsTotal += std::max(event->GetNofData(ECbmDataType::kStsHit), 0); }
+      if (fUseMUCH && fpMuchPixelHits) { nHitsTotal += std::max(event->GetNofData(ECbmDataType::kMuchPixelHit), 0); }
+      if (fUseTRD && fpTrdHits) { nHitsTotal += std::max(event->GetNofData(ECbmDataType::kTrdHit), 0); }
+      if (fUseTOF && fpTofHits) { nHitsTotal += std::max(event->GetNofData(ECbmDataType::kTofHit), 0); }
     }
-    nHitsTotal += nEntSts;
-    if (fUseMUCH && fpMuchPixelHits) nHitsTotal += fpMuchPixelHits->GetEntriesFast();
-    if (fUseTRD && fpTrdHits) nHitsTotal += fpTrdHits->GetEntriesFast();
-    if (fUseTOF && fpTofHits) nHitsTotal += fpTofHits->GetEntriesFast();
+    else {
+      if (fUseMVD && fpMvdHits) { nHitsTotal += fpMvdHits->GetEntriesFast(); }
+      if (fUseSTS && fpStsHits) { nHitsTotal += fpStsHits->GetEntriesFast(); }
+      if (fUseMUCH && fpMuchPixelHits) { nHitsTotal += fpMuchPixelHits->GetEntriesFast(); }
+      if (fUseTRD && fpTrdHits) { nHitsTotal += fpTrdHits->GetEntriesFast(); }
+      if (fUseTOF && fpTofHits) { nHitsTotal += fpTofHits->GetEntriesFast(); }
+    }
+
     tmpHits.reserve(nHitsTotal);
   }
 
@@ -653,11 +651,22 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     int firstDetStrip = NStrips;
 
-    for (int j = 0; j < fpMvdHits->GetEntriesFast(); j++) {
+    // MVD hits are not yet fully integrated to the event builder
+    // catch the situation when MVD hits are present in data, but there is no corresp. branch in the event
+    // read hits directly from the time slice
+
+    bool readFromEvent = (event && (event->GetNofData(ECbmDataType::kMvdHit) >= 0));
+
+    Int_t nEntries = (readFromEvent ? event->GetNofData(ECbmDataType::kMvdHit) : fpMvdHits->GetEntriesFast());
+
+    for (int j = 0; j < nEntries; j++) {
+
+      Int_t hitIndex = (readFromEvent ? event->GetIndex(ECbmDataType::kMvdHit, j) : j);
+
       TmpHit th;
       {
-        CbmMvdHit* h = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(j));
-        th.ExtIndex  = j;
+        CbmMvdHit* h = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(hitIndex));
+        th.ExtIndex  = hitIndex;
         th.iStation  = h->GetStationNr();
 
         int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetStationNr(), L1DetectorID::kMvd);
