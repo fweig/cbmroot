@@ -18,6 +18,11 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
+#include "CbmCaInputQaMuch.h"
+#include "CbmCaInputQaSts.h"
+#include "CbmCaInputQaTof.h"
+#include "CbmCaInputQaTrd.h"
+#include "CbmCaOutputQa.h"
 #include "CbmDefs.h"
 #include "CbmMCDataManager.h"
 #include "CbmMuchDigitizerQa.h"
@@ -73,12 +78,24 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Loading setup " << setup << std::endl;
-  CbmSetup::Instance()->LoadSetup(setup);
+  CbmSetup* geo = CbmSetup::Instance();
+  geo->LoadSetup(setup);
   // You can modify the pre-defined setup by using
   // CbmSetup::Instance()->RemoveModule(ESystemId) or
   // CbmSetup::Instance()->SetModule(ESystemId, const char*, Bool_t) or
   // CbmSetup::Instance()->SetActive(ESystemId, Bool_t)
   // See the class documentation of CbmSetup.
+  // ------------------------------------------------------------------------
+
+  // -----   Some global switches   -----------------------------------------
+  //Bool_t eventBased = !sEvBuildRaw.IsNull();
+  bool bUseMvd  = geo->IsActive(ECbmModuleId::kMvd);
+  bool bUseSts  = geo->IsActive(ECbmModuleId::kSts);
+  bool bUseRich = geo->IsActive(ECbmModuleId::kRich);
+  bool bUseMuch = geo->IsActive(ECbmModuleId::kMuch);
+  bool bUseTrd  = geo->IsActive(ECbmModuleId::kTrd);
+  bool bUseTof  = geo->IsActive(ECbmModuleId::kTof);
+  bool bUsePsd  = geo->IsActive(ECbmModuleId::kPsd);
   // ------------------------------------------------------------------------
 
   // -----   Parameter files as input to the runtime database   -------------
@@ -156,7 +173,6 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   mcManager->AddFile(traFile);
   if (!dataTra2.IsNull()) mcManager->AddFile(tra2File);
   if (!dataTra3.IsNull()) mcManager->AddFile(tra3File);
-
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
 
@@ -195,21 +211,38 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
 
   // ----- TOF QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kTof)) {
-    run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TOF
+    //run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TOF
   }
   // ------------------------------------------------------------------------
 
   // ----- STS QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) {
     //run->AddTask(new CbmStsDigitizeQa()); //opens lots of windows
-    run->AddTask(new CbmStsFindTracksQa());
-    run->AddTask(new CbmTrackingInputQaSts());
+    //run->AddTask(new CbmStsFindTracksQa());
+    //run->AddTask(new CbmTrackingInputQaSts());
   }
   // ------------------------------------------------------------------------
 
-  // ----- Event builder QA  ---------------------------------
+  // ----- Event builder QA  ------------------------------------------------
   CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
-  run->AddTask(evBuildQA);
+  //run->AddTask(evBuildQA);
+  // ------------------------------------------------------------------------
+
+  // ----- Tracking QA ------------------------------------------------------
+  int verbose       = 3;
+  bool isMCUsed     = true;
+  TString caParFile = recFile;
+  caParFile.ReplaceAll(".root", ".L1Parameters.dat");
+
+  auto* pCaOutputQa = new cbm::ca::OutputQa(verbose, isMCUsed);
+  pCaOutputQa->SetStsTrackingMode();
+  pCaOutputQa->ReadParameters(caParFile.Data());
+  pCaOutputQa->SetUseMvd(bUseMvd);
+  pCaOutputQa->SetUseSts(bUseSts);
+  //pCaOutputQa->SetUseMuch(bUseMuch);
+  //pCaOutputQa->SetUseTrd(bUseTrd);
+  //pCaOutputQa->SetUseTof(bUseTof);
+  run->AddTask(pCaOutputQa);
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------

@@ -244,6 +244,11 @@ public:
   /// \return Success flag
   bool SendParameters(L1Algo* pAlgo);
 
+  /// @brief Sends (moves) parameters object to an external destination
+  /// @param destination  Reference to the parameters object of destination
+  /// @return  Success flag
+  bool SendParameters(L1Parameters& destination);
+
   /// Writes parameters object from boost-serialized binary file
   /// \param  fileName  Name of input file
   void WriteParametersObject(const std::string& fileName) const;

@@ -36,6 +36,23 @@ bool L1IODataManager::SendInputData(L1Algo* pAlgo)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+bool L1IODataManager::SendInputData(L1InputData& destination)
+{
+  // Set boundary hit indexes
+  InitData();
+
+  // Check data before input
+  if (CheckInputData<L1Constants::control::kInputDataQaLevel>()) {
+    destination = std::move(fInputData);
+    assert(this->GetNofHits() == 0);
+    return true;
+  }
+  LOG(error) << "L1: Attempt to set up inconsistent input data";
+  return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void L1IODataManager::ReadInputData(const std::string& fileName)
 {
   // Reset input data object

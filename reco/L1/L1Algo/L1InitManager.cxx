@@ -18,6 +18,11 @@
 
 #include "L1Algo.h"
 #include "L1Assert.h"
+
+using L1Constants::clrs::kCL;   // end colored log
+using L1Constants::clrs::kGNb;  // bold green log
+using L1Constants::clrs::kRDb;  // bold red log
+
 // ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
@@ -264,16 +269,17 @@ void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 void L1InitManager::ReadParametersObject(const std::string& fileName)
 {
   // Open input binary file
-  std::ifstream ifs(fileName);
-  if (!ifs) { LOG(fatal) << "L1InitManager: parameters data file \"" << fileName << "\" was not found"; }
+  std::ifstream ifs(fileName, std::ios::binary);
+  if (!ifs) { LOG(fatal) << "L1InitManager: parameters data file \"" << kGNb << fileName << kCL << "\" was not found"; }
 
   // Get L1InputData object
   try {
-    boost::archive::text_iarchive ia(ifs);
+    boost::archive::binary_iarchive ia(ifs);
     ia >> fParameters;
   }
   catch (const std::exception&) {
-    LOG(fatal) << "L1InitManager: parameters file \"" << fileName << "\" has incorrect data format or was corrupted";
+    LOG(fatal) << "L1InitManager: parameters file \"" << kGNb << fileName << kCL
+               << "\" has incorrect data format or was corrupted";
   }
 }
 
@@ -326,6 +332,16 @@ bool L1InitManager::SendParameters(L1Algo* pAlgo)
 {
   assert(pAlgo);
   pAlgo->ReceiveParameters(std::move(fParameters));
+  LOG(info) << "L1InitManager: parameters object was sent to the tracking algorithm";
+  return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+bool L1InitManager::SendParameters(L1Parameters& destination)
+{
+  destination = std::move(fParameters);
+  LOG(info) << "L1InitManager: parameters object was sent to an external destination";
   return true;
 }
 
@@ -465,9 +481,11 @@ void L1InitManager::WriteParametersObject(const std::string& fileName) const
   // Open output binary file
   std::ofstream ofs(fileName, std::ios::binary);
   if (!ofs) {
-    LOG(error) << "L1InitManager: failed opening file \"" << fileName << " for writing parameters object\"";
+    LOG(error) << "L1InitManager: failed opening file \"" << kGNb << fileName << kCL << "\" to write parameters object";
     return;
   }
+
+  LOG(info) << "L1InitManager: writing CA parameters object to file \"" << kGNb << fileName << '\"' << kCL;
 
   // Serialize L1Parameters object and write
   boost::archive::binary_oarchive oa(ofs);

@@ -11,6 +11,8 @@
 
 #include "Logger.h"
 
+#include "L1InitManager.h"
+
 using ca::tools::Debugger;
 using cbm::ca::OutputQa;
 
@@ -32,6 +34,7 @@ InitStatus OutputQa::InitDataBranches()
   LOG(info) << fName << ": Initializing data branches";
 
   if (!fpTSReader.get()) { fpTSReader = std::make_unique<TimeSliceReader>(fTrackingMode); }
+
 
   if (!fpDataManager.get()) { fpDataManager = std::make_shared<L1IODataManager>(); }
 
@@ -55,11 +58,27 @@ InitStatus OutputQa::InitDataBranches()
 //
 InitStatus OutputQa::InitTimeSlice()
 {
-  // Read hits
+  // Read hits: fill fvHitIds, fvDbgHits and fpDataManager
   fpTSReader->ReadHits();
+  fpDataManager->SendInputData(fInputData);
 
   // Read reconstructed tracks
   fpTSReader->ReadRecoTracks();
+  LOG(info) << fName << ": Time slice was read: " << fInputData.GetNhits() << " hits, " << fvRecoTracks.size()
+            << " tracks";
 
   return kSUCCESS;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void OutputQa::ReadParameters(const char* filename)
+{
+  fpParameters = std::make_shared<L1Parameters>();
+
+  L1InitManager manager;
+  manager.ReadParametersObject(filename);
+  manager.SendParameters(*fpParameters);
+
+  LOG(info) << fpParameters->ToString(10);
 }

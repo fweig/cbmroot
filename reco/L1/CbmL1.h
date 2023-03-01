@@ -154,13 +154,14 @@ public:
   ///                           - #1 data for standalone mode is written to configuration file (currently does not work)
   ///                           - #2 tracking runs in standalone mode using configuration file (currently does not work)
   ///                           - #3 data is written and read (currently does not work)
+  ///                           - #4 parameters file is saved, but the data does not
   /// \param  dataDir           Name of directory for configuration file
   /// \param  findParticleMode  Find particle utility mode
   ///                           - #0 FindParticles is not used
   ///                           - #1 All MC particles are reconstructable
   ///                           - #2 MC particles are reconstructable if created from reconstructable tracks
   ///                           - #3: MC particles are reconstructable if created from reconstructed tracks
-  CbmL1(const char* name, Int_t verbose = 1, Int_t performance = 0, int dataMode = 0, const TString& dataDir = "./",
+  CbmL1(const char* name, Int_t verbose = 1, Int_t performance = 0, int dataMode = 0, const char* dataDir = "",
         int findParticleMode = 0);
 
   /// Copy constructor
@@ -397,14 +398,16 @@ private:
 
   // ** STandAlone Package service-functions **
 
+  /// @brief Defines names for output in STAP mode
+  /// @param dirName  Name of output directory for STAP data
+  ///
   /// Defines the name of input/output directory [dir] and prefix of the files [pref], which is used to define
   /// input and output data trees in the reconstruction macro. If the output TTree file has name
   /// /path/to/[pref].reco.root, the data files will be:
   ///   [dir]/input_hits/[pref].job[No].L1InputData.dat - hits input files, containing serialized L1InputData objects,
   ///     stored for each job (each call of CbmL1::ReadEvent function)
   ///   [dir]/[pref].L1Parameters.dat - parameters input files, containing serialized L1Parameters object
-  ///
-  void DefineSTAPNames(TString dirName);
+  void DefineSTAPNames(const char* dirName);
 
   /// Writes initialized L1Parameters object to file ""
   void WriteSTAPParamObject();

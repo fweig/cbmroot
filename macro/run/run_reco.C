@@ -382,7 +382,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     run->AddTask(kalman);
 
     // L1 tracking
-    auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3, 0) : new CbmL1("L1", 0);
+    auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3, 4) : new CbmL1("L1", 0, 0, 4);
 
     // L1 configuration file (optional)
     // At the moment, the YAML configuration file defines different parameters for a sequence of track finder

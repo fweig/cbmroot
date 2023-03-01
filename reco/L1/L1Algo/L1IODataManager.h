@@ -86,9 +86,14 @@ public:
   /// \return Success flag
   bool SendInputData(L1Algo* pAlgo);
 
+  /// @brief Sends (moves) input data to an object (alternative method of data sending)
+  /// @param destination  Destination object of input data
+  bool SendInputData(L1InputData& destination);
+
   /// Writes input data object to boost-serialized binary file
   /// \param  fileName  Name of input file
   void WriteInputData(const std::string& fileName) const;
+
 
 private:
   /// @brief Initializes data object

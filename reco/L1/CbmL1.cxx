@@ -87,7 +87,7 @@ CbmL1::CbmL1() : CbmL1("L1") {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, const TString& dataDir,
+CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, const char* dataDir,
              int findParticleMode)
   : FairTask(name, verbose)
   , fPerformance(performance)
@@ -104,7 +104,7 @@ CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, c
 
   fpIODataManager = std::make_shared<L1IODataManager>();
 
-  if (1 == fSTAPDataMode || 2 == fSTAPDataMode) { this->DefineSTAPNames(dataDir); }
+  this->DefineSTAPNames(dataDir);
 
   if (!CbmTrackingDetectorInterfaceInit::Instance()) {
     LOG(fatal) << "CbmL1: CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
@@ -844,7 +844,7 @@ InitStatus CbmL1::Init()
     if (!fInitManager.FormParametersContainer()) { return kFATAL; }
 
     // Write to file if needed
-    if (1 == fSTAPDataMode) { this->WriteSTAPParamObject(); }
+    if (1 == fSTAPDataMode || 4 == fSTAPDataMode) { this->WriteSTAPParamObject(); }
   }
 
 
@@ -1143,43 +1143,35 @@ void CbmL1::IdealTrackFinder()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::DefineSTAPNames(TString dirName)
+void CbmL1::DefineSTAPNames(const char* dirName)
 {
+  // FIXME: SZh 01.03.2023: Clean STAP names
   namespace bfs = boost::filesystem;
 
-  // Check, if dirName path exists
-  if (!bfs::exists(dirName.Data())) {
-    LOG(warn) << "CbmL1: directory " << dirName.Data()
-              << " (full path: " << bfs::system_complete(dirName.Data()).string()
-              << ") for writing L1AlgoData object does not exist";
+  if (fSTAPDataMode == 0) { return; }
+
+  // Define file prefix (/path/to/data/setup.reco.root -> "setup.reco")
+  bfs::path pathToRecoOutput = FairRunAna::Instance()->GetUserOutputFileName().Data();
+  fSTAPDataPrefix            = pathToRecoOutput.filename().string();
+  fSTAPDataPrefix.ReplaceAll(".root", "");
+  fSTAPDataPrefix = fSTAPDataPrefix.Strip(TString::EStripType::kBoth, '.');
+
+  TString sDirName = TString(dirName).Length();
+  if (!sDirName.Length()) { fSTAPDataDir = pathToRecoOutput.parent_path().string(); }
+  else if (bfs::exists(sDirName.Data()) && bfs::is_directory(sDirName.Data())) {
+    fSTAPDataDir = sDirName;
+  }
+  else {
     fSTAPDataDir = ".";
   }
 
-  // Check, if dirName path is a directory
-  if (!bfs::is_directory(fSTAPDataDir.Data())) {
-    LOG(warn) << "CbmL1: path " << fSTAPDataDir.Data()
-              << " (full path: " << bfs::system_complete(fSTAPDataDir.Data()).string() << ") is not a directory";
-    fSTAPDataDir = ".";
-  }
-
-  // TODO: Prepare directory, if it is not defined?
-  //
   LOG(info) << "CbmL1: STAP data root directory is \033[1;32m" << bfs::system_complete(fSTAPDataDir.Data())
             << "\033[0m";
 
-  // Output prefix definition
-  bfs::path pathToOutput = FairRunAna::Instance()->GetUserOutputFileName().Data();
-  fSTAPDataPrefix        = pathToOutput.filename().string();
-  TString sOutputSuffix  = ".reco.root";
-  {
-    int suffixIdx = fSTAPDataPrefix.Index(sOutputSuffix);
-    if (suffixIdx != -1) { fSTAPDataPrefix.Remove(suffixIdx, sOutputSuffix.Length()); }
-  }
-  // Leave prefix without points on the edges, if there are any
-  fSTAPDataPrefix = fSTAPDataPrefix.Strip(TString::EStripType::kBoth, '.');
+  if (fSTAPDataMode == 4) { return; }
 
   // Directory for handling L1InputData objects
-  TString sInputDataDir = fSTAPDataDir + "/" + TString(kSTAPAlgoIDataDir.data());
+  TString sInputDataDir = fSTAPDataDir + "/" + fSTAPDataPrefix + "_cainputdata";
   if (!bfs::exists(sInputDataDir.Data())) {
     LOG(warn) << "CbmL1: directory for tracking input data does not exist. It will be created";
     bfs::create_directories(sInputDataDir.Data());
@@ -1200,8 +1192,8 @@ void CbmL1::WriteSTAPParamObject()
 //
 void CbmL1::WriteSTAPAlgoInputData(int iJob)  // must be called after ReadEvent
 {
-  TString filename = fSTAPDataDir + "/" + TString(kSTAPAlgoIDataDir.data()) + "/" + fSTAPDataPrefix + "."
-                     + TString::Format(kSTAPAlgoIDataSuffix.data(), iJob);
+  TString filename =
+    fSTAPDataDir + "/" + fSTAPDataPrefix + "_cainputdata/" + +TString::Format(kSTAPAlgoIDataSuffix.data(), iJob);
 
   // Write file
   fpIODataManager->WriteInputData(filename.Data());

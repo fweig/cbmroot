@@ -130,7 +130,6 @@ namespace cbm::ca
     /// @param pParameters  Pointer to the parameters instance
     void SetParameters(const L1Parameters* pParameters);
 
-
   private:
     /// @brief Reads hits for a given detector subsystem
     /// @tparam Detector ID

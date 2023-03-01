@@ -10,11 +10,13 @@
 #ifndef CbmCaOutputQa_h
 #define CbmCaOutputQa_h 1
 
+#include "CbmCaMCModule.h"
 #include "CbmCaTimeSliceReader.h"
 #include "CbmL1DetectorID.h"
 #include "CbmQaTask.h"
 
 #include "CaToolsDebugger.h"
+#include "L1Parameters.h"
 
 namespace cbm::ca
 {
@@ -26,6 +28,17 @@ namespace cbm::ca
     /// @param  verbose   Verbosity level
     /// @param  isMCUsed  Flag, if MC information is available for this task
     OutputQa(int verbose, bool isMCUsed);
+
+    /// @brief Enables debugger
+    /// @param filename  Name of output ROOT file
+    ///
+    /// Creates a debugger and enables its usage inside a QA task
+    void EnableDebugger(const char* filename);
+
+    /// @brief Reads defined parameters object from file
+    /// @param filename  Name of parameter file
+    /// @note  TEMPORARY FUNCTION, A SEPARATE PARAMETERS INITIALIZATION CLASS IS TO BE USED
+    void ReadParameters(const char* filename);
 
     /// @brief Sets MVD use flag
     /// @param flag  Boolean flag: true - detector subsystem is used, false - detector subsystem is ignored
@@ -52,12 +65,6 @@ namespace cbm::ca
 
     /// @brief Sets mCBM global tracking mode
     void SetMcbmTrackingMode() { fTrackingMode = ECbmTrackingMode::kMCBM; }
-
-    /// @brief Enables debugger
-    /// @param filename  Name of output ROOT file
-    ///
-    /// Creates a debugger and enables its usage inside a QA task
-    void EnableDebugger(const char* filename);
 
 
     ClassDef(OutputQa, 0);
@@ -98,12 +105,15 @@ namespace cbm::ca
     ECbmTrackingMode fTrackingMode = ECbmTrackingMode::kSTS;  ///< Tracking mode
 
     std::unique_ptr<TimeSliceReader> fpTSReader       = nullptr;  ///< Reader of the time slice
+    std::unique_ptr<CbmCaMCModule> fpMCModule         = nullptr;  ///< MC module
     std::shared_ptr<L1IODataManager> fpDataManager    = nullptr;  ///< Data manager
     std::shared_ptr<::ca::tools::Debugger> fpDebugger = nullptr;  ///< Debugger
+    std::shared_ptr<L1Parameters> fpParameters        = nullptr;  ///< Tracking parameters object
 
     L1Vector<CbmL1HitId> fvHitIds {"CbmCaOutputQa::fvHitIds"};
     L1Vector<CbmL1HitDebugInfo> fvDbgHits {"CbmCaOutputQa::fvDbgHits"};
     L1Vector<CbmL1Track> fvRecoTracks {"CbmCaOutputQa::fvRecoTracks"};
+    L1InputData fInputData;  ///< Input hits to L1 algo
   };
 }  // namespace cbm::ca
 
