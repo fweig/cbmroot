@@ -174,8 +174,8 @@ public:
 
   void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta);
 
+  std::pair<fscal, fscal> GetHitCoorOnGrid(const L1Hit& h, char iS);
 
-  void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS);
 
   L1HitPoint CreateHitPoint(const L1Hit& hit);  // full the hit point by hit information.
 

@@ -13,7 +13,7 @@ class L1SliceData;
 
 class L1HitArea {
 public:
-  L1HitArea(const L1Grid& grid, float y, float z, float dy, float dz);
+  L1HitArea(const L1Grid& grid, float x, float y, float dx, float dy);
 
   /**
      * look up the next hit in the requested area.
@@ -24,82 +24,82 @@ public:
 protected:
   const L1Grid& fGrid;
 
-  unsigned short fBZmax;  // maximal Z bin index
-  unsigned short fBDY;    // Y distance of bin indexes
-  unsigned int fIndYmin;  // minimum index for
-  unsigned short fIz;     // current Z bin index (incremented while iterating)
-  L1HitIndex_t fHitYlst;  // last possible hit index in current z-line
+  unsigned short fBYmax;  // maximal Y bin index
+  unsigned short fBDX;    // X distance of bin indexes
+  unsigned int fIndXmin;  // minimum index for
+  unsigned short fIy;     // current Y bin index (incremented while iterating)
+  L1HitIndex_t fHitXlst;  // last possible hit index in current y-line
   L1HitIndex_t fIh;       // hit index iterating inside the bins
-  int fNy;                // Number of bins in Y direction
+  int fNx;                // Number of bins in X direction
 };
 
-inline L1HitArea::L1HitArea(const L1Grid& grid, float y, float z, float dy, float dz)
+inline L1HitArea::L1HitArea(const L1Grid& grid, float x, float y, float dx, float dy)
   : fGrid(grid)
-  , fBZmax(0)
-  , fBDY(0)
-  , fIndYmin(0)
-  , fIz(0)
-  , fHitYlst(0)
+  , fBYmax(0)
+  , fBDX(0)
+  , fIndXmin(0)
+  , fIy(0)
+  , fHitXlst(0)
   , fIh(0)
-  , fNy(fGrid.Ny())
+  , fNx(fGrid.Nx())
 {
+  const float minX = x - dx;
+  const float maxX = x + dx;
   const float minY = y - dy;
   const float maxY = y + dy;
-  const float minZ = z - dz;
-  const float maxZ = z + dz;
-  unsigned short bYmin, bZmin, bYmax;  // boundary bin indexes
-  fGrid.GetBinBounded(minY, minZ, bYmin, bZmin);
-  fGrid.GetBinBounded(maxY, maxZ, bYmax, fBZmax);
+  unsigned short bXmin, bYmin, bXmax;  // boundary bin indexes
+  fGrid.GetBinBounded(minX, minY, bXmin, bYmin);
+  fGrid.GetBinBounded(maxX, maxY, bXmax, fBYmax);
 
-  fBDY = (bYmax - bYmin + 1);  // bin index span in y direction
+  fBDX = (bXmax - bXmin + 1);  // bin index span in x direction
 
-  fIndYmin = (bZmin * fNy + bYmin);  // same as grid.GetBin(fMinY, fMinZ), i.e. the smallest bin index of interest
-  // fIndYmin + fBDY - 1 then is the largest bin index of interest with the same Z
+  fIndXmin = (bYmin * fNx + bXmin);  // same as grid.GetBin(fminX, fMinY), i.e. the smallest bin index of interest
+  // fIndXmin + fBDX - 1 then is the largest bin index of interest with the same Y
 
-  fGrid.GetBinBounds(fIndYmin, y, dy, z, dz);
+  fGrid.GetBinBounds(fIndXmin, x, dx, y, dy);
 
-  fIz = bZmin;
+  fIy = bYmin;
 
-  fIh      = fGrid.FirstHitInBin(fIndYmin);
-  fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
+  fIh      = fGrid.FirstHitInBin(fIndXmin);
+  fHitXlst = fGrid.FirstHitInBin(fIndXmin + fBDX);
 }
 
 inline bool L1HitArea::GetNext(L1HitIndex_t& i)
 {
-  bool yIndexOutOfRange     = fIh >= fHitYlst;  // current y is not in the area
-  bool nextZIndexOutOfRange = (fIz >= fBZmax);  // there isn't any new z-line
+  bool xIndexOutOfRange     = fIh >= fHitXlst;  // current x is not in the area
+  bool nextYIndexOutOfRange = (fIy >= fBYmax);  // there isn't any new y-line
 
-  if (yIndexOutOfRange && nextZIndexOutOfRange) {  // all iterators are over the end
+  if (xIndexOutOfRange && nextYIndexOutOfRange) {  // all iterators are over the end
     return false;
   }
 
-  // at least one entry in the vector has (fIh >= fHitYlst && fIz < fBZmax)
-  bool needNextZ = yIndexOutOfRange && !nextZIndexOutOfRange;
+  // at least one entry in the vector has (fIh >= fHitXlst && fIy < fBYmax)
+  bool needNextY = xIndexOutOfRange && !nextYIndexOutOfRange;
 
-  // skip as long as fIh is outside of the interesting bin y-index
-  while (ISLIKELY(needNextZ)) {  //ISLIKELY to speed the programm and optimise the use of registers
-    fIz++;                       // get new z-line
+  // skip as long as fIh is outside of the interesting bin x-index
+  while (ISLIKELY(needNextY)) {  //ISLIKELY to speed the programm and optimise the use of registers
+    fIy++;                       // get new y-line
       // get next hit
-    fIndYmin += fNy;
-    fIh      = fGrid.FirstHitInBin(fIndYmin);  // get first hit in cell, if z-line is new
-    fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
+    fIndXmin += fNx;
+    fIh      = fGrid.FirstHitInBin(fIndXmin);  // get first hit in cell, if y-line is new
+    fHitXlst = fGrid.FirstHitInBin(fIndXmin + fBDX);
 
-    yIndexOutOfRange     = fIh >= fHitYlst;
-    nextZIndexOutOfRange = (fIz >= fBZmax);
-    needNextZ            = yIndexOutOfRange && !nextZIndexOutOfRange;
+    xIndexOutOfRange     = fIh >= fHitXlst;
+    nextYIndexOutOfRange = (fIy >= fBYmax);
+    needNextY            = xIndexOutOfRange && !nextYIndexOutOfRange;
   }
 
-  L1_ASSERT(fIh < fGrid.FirstHitInBin(fGrid.N()) || yIndexOutOfRange,
-            fIh << " < " << fGrid.FirstHitInBin(fGrid.N()) << " || " << yIndexOutOfRange);
+  L1_ASSERT(fIh < fGrid.FirstHitInBin(fGrid.N()) || xIndexOutOfRange,
+            fIh << " < " << fGrid.FirstHitInBin(fGrid.N()) << " || " << xIndexOutOfRange);
   i = fIh;  // return
 
   fIh++;  // go to next
-  return !yIndexOutOfRange;
+  return !xIndexOutOfRange;
 }
 
 class L1HitAreaTime {
 public:
-  L1HitAreaTime(const L1Grid& grid, float y, float z, float dy, float dz, float t, float dt);
+  L1HitAreaTime(const L1Grid& grid, float x, float y, float dx, float dy, float t, float dt);
 
   /**
      * look up the next hit in the requested area.
@@ -110,122 +110,122 @@ public:
 protected:
   const L1Grid& fGrid;
 
-  unsigned short fBZmax;  // maximal Z bin index
-  unsigned short fBDY;    // Y distance of bin indexes
-  unsigned int fIndYmin;  // minimum index for
-  unsigned short fIz;     // current Z bin index (incremented while iterating)
-  L1HitIndex_t fHitYlst;  // last possible hit index in current z-line
+  unsigned short fBYmax;  // maximal Y bin index
+  unsigned short fBDX;    // X distance of bin indexes
+  unsigned int fIndXmin;  // minimum index for
+  unsigned short fIy;     // current Y bin index (incremented while iterating)
+  L1HitIndex_t fHitXlst;  // last possible hit index in current y-line
   L1HitIndex_t fIh;       // hit index iterating inside the bins
-  int fNy;                // Number of bins in Y direction
-  int fNz;
+  int fNx;                // Number of bins in X direction
+  int fNy;
 
-  unsigned short fBTmax;  // maximal Z bin index
-  unsigned short fIt;     // current Z bin index (incremented while iterating)
+  unsigned short fBTmax;  // maximal Y bin index
+  unsigned short fIt;     // current Y bin index (incremented while iterating)
 
-  unsigned short fBZmin;
   unsigned short fBYmin;
+  unsigned short fBXmin;
 
 
-  unsigned int fIndZmin;  // minimum index for
+  unsigned int fIndYmin;  // minimum index for
 };
 
-inline L1HitAreaTime::L1HitAreaTime(const L1Grid& grid, float y, float z, float dy, float dz, float t, float dt)
+inline L1HitAreaTime::L1HitAreaTime(const L1Grid& grid, float x, float y, float dx, float dy, float t, float dt)
   : fGrid(grid)
-  , fBZmax(0)
-  , fBDY(0)
-  , fIndYmin(0)
-  , fIz(0)
-  , fHitYlst(0)
+  , fBYmax(0)
+  , fBDX(0)
+  , fIndXmin(0)
+  , fIy(0)
+  , fHitXlst(0)
   , fIh(0)
+  , fNx(fGrid.Nx())
   , fNy(fGrid.Ny())
-  , fNz(fGrid.Nz())
   , fBTmax(0)
   , fIt(0)
-  , fBZmin(0)
   , fBYmin(0)
-  , fIndZmin(0)
+  , fBXmin(0)
+  , fIndYmin(0)
 {
+  const float minX = x - dx;
+  const float maxX = x + dx;
   const float minY = y - dy;
   const float maxY = y + dy;
-  const float minZ = z - dz;
-  const float maxZ = z + dz;
   const float minT = t - dt;
 
 
   const float maxT = t + dt;
 
-  unsigned short bYmin, bZmin, bYmax, bTmin;  // boundary bin indexes
-  fGrid.GetBinBounded(minY, minZ, minT, bYmin, bZmin, bTmin);
-  fGrid.GetBinBounded(maxY, maxZ, maxT, bYmax, fBZmax, fBTmax);
-  fBZmin = bZmin;
+  unsigned short bXmin, bYmin, bXmax, bTmin;  // boundary bin indexes
+  fGrid.GetBinBounded(minX, minY, minT, bXmin, bYmin, bTmin);
+  fGrid.GetBinBounded(maxX, maxY, maxT, bXmax, fBYmax, fBTmax);
   fBYmin = bYmin;
+  fBXmin = bXmin;
 
 
-  fBDY = (bYmax - bYmin + 1);  // bin index span in y direction
+  fBDX = (bXmax - bXmin + 1);  // bin index span in x direction
 
-  fIndYmin = (bTmin * fNy * fNz + bZmin * fNy + bYmin);
+  fIndXmin = (bTmin * fNx * fNy + bYmin * fNx + bXmin);
 
-  //fGrid.GetBinBounds(fIndYmin, y, dy, z, dz, t, dt);
+  //fGrid.GetBinBounds(fIndXmin, x, dx, y, dy, t, dt);
 
-  fIz = bZmin;
+  fIy = bYmin;
 
   fIt = bTmin;
 
-  fIh = fGrid.FirstHitInBin(fIndYmin);
+  fIh = fGrid.FirstHitInBin(fIndXmin);
 
-  fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
+  fHitXlst = fGrid.FirstHitInBin(fIndXmin + fBDX);
 }
 
 inline bool L1HitAreaTime::GetNext(L1HitIndex_t& i)
 {
-  bool yIndexOutOfRange     = fIh >= fHitYlst;  // current y is not in the area
-  bool nextZIndexOutOfRange = (fIz >= fBZmax);  // there isn't any new z-line
-  bool nextTIndexOutOfRange = (fIt >= fBTmax);  // there isn't any new z-line
+  bool xIndexOutOfRange     = fIh >= fHitXlst;  // current x is not in the area
+  bool nextYIndexOutOfRange = (fIy >= fBYmax);  // there isn't any new y-line
+  bool nextTIndexOutOfRange = (fIt >= fBTmax);  // there isn't any new y-line
 
 
-  if (yIndexOutOfRange && nextZIndexOutOfRange && nextTIndexOutOfRange) {  // all iterators are over the end
+  if (xIndexOutOfRange && nextYIndexOutOfRange && nextTIndexOutOfRange) {  // all iterators are over the end
     return false;
   }
 
-  // at least one entry in the vector has (fIh >= fHitYlst && fIz < fBZmax)
-  bool needNextZ = yIndexOutOfRange && !nextZIndexOutOfRange;
-  bool needNextT = yIndexOutOfRange && nextZIndexOutOfRange && !nextTIndexOutOfRange;
+  // at least one entry in the vector has (fIh >= fHitXlst && fIy < fBYmax)
+  bool needNextY = xIndexOutOfRange && !nextYIndexOutOfRange;
+  bool needNextT = xIndexOutOfRange && nextYIndexOutOfRange && !nextTIndexOutOfRange;
 
 
-  while (ISLIKELY((needNextZ) || (needNextT))) {  //ISLIKELY to speed the programm and optimise the use of registers
+  while (ISLIKELY((needNextY) || (needNextT))) {  //ISLIKELY to speed the programm and optimise the use of registers
 
     if (needNextT) {
       fIt++;
-      fIz = fBZmin;
+      fIy = fBYmin;
 
-      fIndYmin = (fIt * fNy * fNz + fBZmin * fNy + fBYmin);
-      fIh      = fGrid.FirstHitInBin(fIndYmin);  // get first hit in cell, if z-line is new
-      fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
+      fIndXmin = (fIt * fNx * fNy + fBYmin * fNx + fBXmin);
+      fIh      = fGrid.FirstHitInBin(fIndXmin);  // get first hit in cell, if y-line is new
+      fHitXlst = fGrid.FirstHitInBin(fIndXmin + fBDX);
     }
     else {
 
-      fIz++;  // get new z-line
+      fIy++;  // get new y-line
       // get next hit
-      fIndYmin += fNy;
-      fIh = fGrid.FirstHitInBin(fIndYmin);  // get first hit in cell, if z-line is new
+      fIndXmin += fNx;
+      fIh = fGrid.FirstHitInBin(fIndXmin);  // get first hit in cell, if y-line is new
 
-      fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
+      fHitXlst = fGrid.FirstHitInBin(fIndXmin + fBDX);
     }
 
-    yIndexOutOfRange     = fIh >= fHitYlst;
-    nextZIndexOutOfRange = (fIz >= fBZmax);
-    needNextZ            = yIndexOutOfRange && !nextZIndexOutOfRange;
+    xIndexOutOfRange     = fIh >= fHitXlst;
+    nextYIndexOutOfRange = (fIy >= fBYmax);
+    needNextY            = xIndexOutOfRange && !nextYIndexOutOfRange;
 
     nextTIndexOutOfRange = (fIt >= fBTmax);
-    needNextT            = yIndexOutOfRange && nextZIndexOutOfRange && !nextTIndexOutOfRange;
+    needNextT            = xIndexOutOfRange && nextYIndexOutOfRange && !nextTIndexOutOfRange;
   }
 
-  L1_ASSERT(fIh < fGrid.FirstHitInBin(fGrid.N() + 1) || yIndexOutOfRange,
-            fIh << " < " << fGrid.FirstHitInBin(fGrid.N() + 1) << " || " << yIndexOutOfRange);
+  L1_ASSERT(fIh < fGrid.FirstHitInBin(fGrid.N() + 1) || xIndexOutOfRange,
+            fIh << " < " << fGrid.FirstHitInBin(fGrid.N() + 1) << " || " << xIndexOutOfRange);
   i = fIh;  // return
 
   fIh++;  // go to next
-  return !yIndexOutOfRange;
+  return !xIndexOutOfRange;
 }
 
 #endif

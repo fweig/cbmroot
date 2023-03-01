@@ -899,6 +899,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #endif
 
   // ----- Read data from branches and send data from IODataManager to L1Algo ----------------------------------------
+
   ReadEvent(event);
 
 
@@ -909,6 +910,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       it->Init();
     }
   }
+
 
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
 

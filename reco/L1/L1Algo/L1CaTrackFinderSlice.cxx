@@ -1561,27 +1561,10 @@ void L1Algo::CaTrackFinderSlice()
 
   ResetSliceData();
 
-  int nSliceHits = fSliceHitIds.size();
-
 #ifdef XXX
   c_timerG.Start();
 #endif  // XXX
 
-  fscal yStep = 1.5 / sqrt(nSliceHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
-
-
-  //  fscal yStep = 0.5 / sqrt(nSliceHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
-  if (yStep > 0.3) yStep = 0.3;
-  fscal xStep = yStep * 3;
-  // fscal xStep = yStep * 3;
-
-  //  yStep = 0.0078;
-  //  const fscal hitDensity = sqrt( nSliceHits );
-
-  //     fscal yStep = 0.7*4/hitDensity; // empirics. 0.01*sqrt(2374) ~= 0.5
-  //     if (yStep > 0.3)
-  //      yStep = 1.25;
-  //      xStep = 2.05;
 
   L1HitIndex_t nGridHitsFilled = 0;
 
@@ -1594,8 +1577,15 @@ void L1Algo::CaTrackFinderSlice()
     fscal lasttime         = 0;
     fscal starttime        = 0;
 
+
+    fscal gridMinX = -0.1;
+    fscal gridMaxX = 0.1;
+    fscal gridMinY = -0.1;
+    fscal gridMaxY = 0.1;
+
     for (L1HitIndex_t ih = fSliceHitIdsStartIndex[iS]; ih < fSliceHitIdsStopIndex[iS]; ++ih) {
-      const L1Hit& h       = fInputData.GetHit(fSliceHitIds[ih]);
+      const L1Hit& h = fInputData.GetHit(fSliceHitIds[ih]);
+
       auto [dxx, dxy, dyy] = st.FormXYCovarianceMatrix(h.du2, h.dv2);
       fscal dx             = sqrt(dxx);
       fscal dy             = sqrt(dyy);
@@ -1605,14 +1595,40 @@ void L1Algo::CaTrackFinderSlice()
       if (fMaxDy[iS] < dy) { fMaxDy[iS] = dy; }
       if (fMaxDt[iS] < dt) { fMaxDt[iS] = dt; }
 
+      auto [x, y] = GetHitCoorOnGrid(h, iS);
+      if (x < gridMinX) { gridMinX = x; }
+      if (x > gridMaxX) { gridMaxX = x; }
+      if (y < gridMinY) { gridMinY = y; }
+      if (y > gridMaxY) { gridMaxY = y; }
+
       const fscal time = h.t;
       assert(std::isfinite(time));
       if (timeUninitialised || lasttime < time) { lasttime = time; }
       if (timeUninitialised || starttime > time) { starttime = time; }
       timeUninitialised = false;
     }
-
+    /*
+    int nSliceHits = fSliceHitIds.size();
+    fscal yStep    = 1.5 / sqrt(nSliceHits + 1);  // empirics. 0.01*sqrt(2374) ~= 0.5
+    if (yStep > 0.3) yStep = 0.3;
+    if (yStep < 0.01) yStep = 0.01;
+    fscal xStep = yStep * 3;
     vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
+    */
+
+    int nSliceHits = fSliceHitIdsStopIndex[iS] - fSliceHitIdsStartIndex[iS];
+    fscal sizeY    = gridMaxY - gridMinY;
+    fscal sizeX    = gridMaxX - gridMinX;
+    int nBins2D    = 1 + nSliceHits;
+    fscal yStep    = sizeY / sqrt(nBins2D);
+    fscal xStep    = sizeX / sqrt(nBins2D);
+    if (yStep > 0.3) yStep = 0.3;
+    if (yStep < 0.01) yStep = 0.01;
+    if (xStep > 0.3) xStep = 0.3;
+    if (xStep < 0.01) xStep = 0.01;
+
+    vGridTime[iS].BuildBins(gridMinX, gridMaxX, gridMinY, gridMaxY, starttime, lasttime, xStep, yStep,
+                            (lasttime - starttime + 1));
     vGridTime[iS].StoreHits(*this, iS, nGridHitsFilled);
   }
 

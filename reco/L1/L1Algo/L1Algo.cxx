@@ -169,13 +169,13 @@ void L1Algo::ReceiveParameters(L1Parameters&& parameters)
 }
 
 /// TODO: Move to L1Hit
-void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
+std::pair<fscal, fscal> L1Algo::GetHitCoorOnGrid(const L1Hit& h, char iS)
 {
   const L1Station& sta = fParameters.GetStation(int(iS));
-  std::tie(_x, _y)     = sta.ConvUVtoXY<fscal>(_h.u, _h.v);
-  float dz             = _h.z - fParameters.GetTargetPositionZ()[0];
-  _x /= dz;
-  _y /= dz;
+  fscal x, y;
+  std::tie(x, y) = sta.ConvUVtoXY<fscal>(h.u, h.v);
+  float dz       = h.z - fParameters.GetTargetPositionZ()[0];
+  return {x / dz, y / dz};
 }
 
 /// TODO: Move to L1Hit

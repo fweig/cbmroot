@@ -1240,6 +1240,7 @@ void CbmL1::TrackFitPerformance()
     gDirectory = currentDir;
   }  // if first call
 
+
   for (vector<CbmL1Track>::iterator it = fvRecoTracks.begin(); it != fvRecoTracks.end(); ++it) {
 
     if (it->IsGhost()) continue;
@@ -1482,6 +1483,7 @@ void CbmL1::TrackFitPerformance()
 
     // last TOF point
     do {
+      break;  // only produce these plots in debug mode
       // only produce these plots in debug mode
       if (!fpTofPoints) break;
       const CbmL1MCTrack& mcTrack = *(it->GetMCTracks()[0]);
@@ -1745,6 +1747,9 @@ void CbmL1::FieldIntegralCheck()
 
 void CbmL1::InputPerformance()
 {
+  // The input performance is currently evaluated by other CBM tasks
+  // TODO: obsolete code, remove it
+
   //  static TH1I *nStripFHits, *nStripBHits, *nStripFMC, *nStripBMC;
 
   static TH1F *resXsts, *resYsts, *resTsts, *resXmvd, *resYmvd /*, *pullZ*/;
