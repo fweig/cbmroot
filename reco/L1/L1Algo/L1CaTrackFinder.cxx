@@ -63,33 +63,47 @@ void L1Algo::CaTrackFinder()
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
 
     const L1Station& st       = fParameters.GetStation(iS);
-    L1HitIndex_t nStationHits = fInputData.GetNhits(iS);
-    for (L1HitIndex_t ih = 0; ih < nStationHits; ++ih) {
-      int caHitId         = fInputData.GetStartHitIndex(iS) + ih;
-      const L1Hit& h      = fInputData.GetHit(caHitId);
-      L1HitTimeInfo& info = fHitTimeInfo[caHitId];
-      if (0 && !st.timeInfo) {
-        info.fEventTimeMin = -std::numeric_limits<fscal>::max() / 2.;
-        info.fEventTimeMax = std::numeric_limits<fscal>::max() / 2.;
-      }
-      else {
-        auto [x, y] = st.ConvUVtoXY(h.u, h.v);
-        fscal dx    = x - targX;
-        fscal dy    = y - targY;
-        fscal dz    = h.z - targZ;
-        fscal l     = sqrt(dx * dx + dy * dy + dz * dz);
+    int nStationHits          = fInputData.GetNhits(iS);
 
-        fscal timeOfFlightMin = l * L1TrackPar::kClightNsInv;
-        fscal timeOfFlightMax =
-          1.5 * l * sqrt(1. + L1TrackPar::kProtonMass * L1TrackPar::kProtonMass / minProtonMomentum / minProtonMomentum)
-          * L1TrackPar::kClightNsInv;
-        fscal dt           = 3.5 * sqrt(h.dt2);
-        info.fEventTimeMin = h.t - dt - timeOfFlightMax;
-        info.fEventTimeMax = h.t + dt - timeOfFlightMin;
-      }
+    fscal maxTimeBeforeHit = std::numeric_limits<fscal>::min();
+
+    // loop in the reverse order to fill L1HitTimeInfo::fMinTimeAfterHit fields
+
+    for (int ih = 0; ih < nStationHits; ++ih) {
+      L1HitIndex_t caHitId = fInputData.GetStartHitIndex(iS) + ih;
+      const L1Hit& h       = fInputData.GetHit(caHitId);
+
+      auto [x, y] = st.ConvUVtoXY(h.u, h.v);
+      fscal dx    = x - targX;
+      fscal dy    = y - targY;
+      fscal dz    = h.z - targZ;
+      fscal l     = sqrt(dx * dx + dy * dy + dz * dz);
+
+      fscal timeOfFlightMin = l * L1TrackPar::kClightNsInv;
+      fscal timeOfFlightMax =
+        1.5 * l * sqrt(1. + L1TrackPar::kProtonMass * L1TrackPar::kProtonMass / minProtonMomentum / minProtonMomentum)
+        * L1TrackPar::kClightNsInv;
+      fscal dt = 3.5 * sqrt(h.dt2);
+
+      L1HitTimeInfo& info = fHitTimeInfo[caHitId];
+      info.fEventTimeMin  = h.t - dt - timeOfFlightMax;
+      info.fEventTimeMax  = h.t + dt - timeOfFlightMin;
+
+      if (maxTimeBeforeHit < info.fEventTimeMax) { maxTimeBeforeHit = info.fEventTimeMax; }
+      info.fMaxTimeBeforeHit = maxTimeBeforeHit;
+
       if (tsStart > info.fEventTimeMax - 5) {
         tsStart = info.fEventTimeMax - 5;  // 5 ns margin
       }
+    }
+
+    fscal minTimeAfterHit = std::numeric_limits<fscal>::max();
+
+    for (int ih = nStationHits - 1; ih >= 0; --ih) {
+      L1HitIndex_t caHitId = fInputData.GetStartHitIndex(iS) + ih;
+      L1HitTimeInfo& info  = fHitTimeInfo[caHitId];
+      if (minTimeAfterHit > info.fEventTimeMin) { minTimeAfterHit = info.fEventTimeMin; }
+      info.fMinTimeAfterHit = minTimeAfterHit;
     }
   }
 
@@ -97,6 +111,12 @@ void L1Algo::CaTrackFinder()
 
   bool areDataLeft = true;  // is the whole TS processed
   int nSubSlices   = 0;
+
+  L1HitIndex_t sliceFirstHit[L1Constants::size::kMaxNstations] {0};
+
+  for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+    sliceFirstHit[iS] = fInputData.GetStartHitIndex(iS);
+  }
 
   while (areDataLeft) {
 
@@ -111,8 +131,8 @@ void L1Algo::CaTrackFinder()
 
     for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
       fSliceHitIdsStartIndex[iS] = fSliceHitIds.size();
-      for (L1HitIndex_t caHitId = fInputData.GetStartHitIndex(iS); caHitId < fInputData.GetStopHitIndex(iS);
-           ++caHitId) {
+
+      for (L1HitIndex_t caHitId = sliceFirstHit[iS]; caHitId < fInputData.GetStopHitIndex(iS); ++caHitId) {
         L1HitTimeInfo& info = fHitTimeInfo[caHitId];
         const L1Hit& h      = fInputData.GetHit(caHitId);
         if (fvHitKeyFlags[h.f] || fvHitKeyFlags[h.b]) {  // the hit is already reconstructed
@@ -120,13 +140,22 @@ void L1Algo::CaTrackFinder()
         }
         if (info.fEventTimeMin > tsStart + tsLength) {  // the hit is too late for the sub slice
           areDataLeft = true;
+          if (info.fMinTimeAfterHit > tsStart + tsLength) {
+            // this hit and all later hits are out of the sub-slice
+            break;
+          }
         }
         else {
           if (tsStart <= info.fEventTimeMax) {  // the hit belongs to the sub-slice
             fSliceHitIds.push_back(caHitId);
+            if (info.fMaxTimeBeforeHit < tsStart + tsLength - tsOverlap) {
+              // this hit and all hits before are before the overlap
+              sliceFirstHit[iS] = caHitId + 1;
+            }
           }
         }  // else the hit has been alread processed in previous sub-slices
       }
+
       fSliceHitIdsStopIndex[iS] = fSliceHitIds.size();
     }
 

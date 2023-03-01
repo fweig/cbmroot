@@ -1178,15 +1178,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
    * Measured hits gathering: END
    */
 
-
-  //
-  //  Hits sorting
-  //
-  //  Two hits are compared as follows. If the hits are measured with two different stations, the smallest hit has the smallest
-  //  station ID. If the hits are measured within one station, the smallest hit has the smallest y position coordinate.
-  //
-  sort(tmpHits.begin(), tmpHits.end(), TmpHit::Compare);
-
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
 

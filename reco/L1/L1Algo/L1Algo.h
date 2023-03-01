@@ -75,6 +75,8 @@ class L1AlgoEfficiencyPerformance;
 struct L1HitTimeInfo {
   fscal fEventTimeMin {-std::numeric_limits<fscal>::max() / 2.};
   fscal fEventTimeMax {std::numeric_limits<fscal>::max() / 2.};
+  fscal fMaxTimeBeforeHit {0.};  //< max event time for hits [0 .. hit] in the station hit array
+  fscal fMinTimeAfterHit {0.};   //< min event time for hits [hit ... ] in the station hit array
 };
 
 /// Main class of L1 CA track finder algorithm
@@ -463,7 +465,7 @@ public:
   L1Vector<omp_lock_t> fStripToTrackLock {"L1Algo::fStripToTrackLock"};
 #endif
 
-  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};    // front strip to track pointers
+  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};  // front strip to track pointers
   // L1Vector<int> fStripToTrack1B {"L1Algo::fStripToTrackB"};  // back strip to track pointers
 
   int fNThreads {0};
