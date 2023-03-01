@@ -330,7 +330,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
       if (fUseTRD && fpTrdHits) { nHitsTotal += fpTrdHits->GetEntriesFast(); }
       if (fUseTOF && fpTofHits) { nHitsTotal += fpTofHits->GetEntriesFast(); }
     }
-
     tmpHits.reserve(nHitsTotal);
   }
 
