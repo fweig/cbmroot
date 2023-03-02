@@ -281,6 +281,16 @@ FileLicenceCheck:
   tags:
     - qemu_macosx
 
+.macosx_13_variables_nov22p1: &macosx_13_variables_nov22p1
+    OS: "macOS13"
+    FAIRSOFT_VERSION: "nov22p1"
+    FAIRROOT_VERSION: "v18.8.0"
+    BASE_PATH: "/opt"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    IMAGE_NAME: "${OS}_${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    EXTRA_PATH: /usr/local/bin
+
 .macosx_12_variables_nov22p1: &macosx_12_variables_nov22p1
     OS: "macOS12"
     FAIRSOFT_VERSION: "nov22p1"
@@ -384,6 +394,11 @@ CbmRoot_Merge_Singularity_centos7_nov22p1:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
   variables:
     <<: [*mergeRequestVariables, *singularity_centos7_variables_nov22p1]
+
+CbmRoot_Merge_macosx_13_nov22p1:
+  <<: [*macosx_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *macosx_13_variables_nov22p1]
 
 CbmRoot_Merge_macosx_12_nov22p1:
   <<: [*macosx_tag, *check_merge_request, *build_and_test]
