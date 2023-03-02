@@ -32,13 +32,16 @@ void OutputQa::EnableDebugger(const char* filename)
 InitStatus OutputQa::InitDataBranches()
 {
   LOG(info) << fName << ": Initializing data branches";
+  LOG_IF(fatal, !fpParameters.get())
+    << fName << ": CA parameters object is not defined. Please, provide initializer or read parameters from binary "
+    << "via OutputQa::ReadParameters(filename) from the qa macro";
 
-  if (!fpTSReader.get()) { fpTSReader = std::make_unique<TimeSliceReader>(fTrackingMode); }
 
-
+  // Initialize IO data manager
   if (!fpDataManager.get()) { fpDataManager = std::make_shared<L1IODataManager>(); }
 
   // Initialize time slice reader instance
+  if (!fpTSReader.get()) { fpTSReader = std::make_unique<TimeSliceReader>(fTrackingMode); }
   fpTSReader->SetDetector(L1DetectorID::kMvd, fbUseMvd);
   fpTSReader->SetDetector(L1DetectorID::kSts, fbUseSts);
   fpTSReader->SetDetector(L1DetectorID::kMuch, fbUseMuch);
@@ -48,9 +51,29 @@ InitStatus OutputQa::InitDataBranches()
   fpTSReader->RegisterIODataManager(fpDataManager);
   fpTSReader->RegisterTracksContainer(fvRecoTracks);
   fpTSReader->RegisterHitDebugInfoContainer(fvDbgHits);
-  fpTSReader->RegisterHitIndexContainer(fvHitIds);
+  //fpTSReader->RegisterHitIndexContainer(fvHitIds);
 
   fpTSReader->InitRun();
+
+  // Initialize MC module
+  if (IsMCUsed()) {
+    if (!fpMCModule.get()) { fpMCModule = std::make_unique<CbmCaMCModule>(fVerbose, fPerformanceMode); }
+    fpMCModule->SetDetector(L1DetectorID::kMvd, fbUseMvd);
+    fpMCModule->SetDetector(L1DetectorID::kSts, fbUseSts);
+    fpMCModule->SetDetector(L1DetectorID::kMuch, fbUseMuch);
+    fpMCModule->SetDetector(L1DetectorID::kTrd, fbUseTrd);
+    fpMCModule->SetDetector(L1DetectorID::kTof, fbUseTof);
+
+    fpMCModule->RegisterInputData(fInputData);
+    fpMCModule->RegisterMCData(fMCData);
+    fpMCModule->RegisterRecoTrackContainer(fvRecoTracks);
+    fpMCModule->RegisterHitIndexContainer(fvHitIds);
+    fpMCModule->RegisterParameters(fpParameters);
+
+    fpMCModule->InitRun();
+  }
+
+
   return kSUCCESS;
 }
 
@@ -58,14 +81,30 @@ InitStatus OutputQa::InitDataBranches()
 //
 InitStatus OutputQa::InitTimeSlice()
 {
+  int nMCTracks   = -1;
+  int nMCPoints   = -1;
+  int nHits       = -1;
+  int nRecoTracks = -1;
+
   // Read hits: fill fvHitIds, fvDbgHits and fpDataManager
   fpTSReader->ReadHits();
   fpDataManager->SendInputData(fInputData);
 
   // Read reconstructed tracks
   fpTSReader->ReadRecoTracks();
-  LOG(info) << fName << ": Time slice was read: " << fInputData.GetNhits() << " hits, " << fvRecoTracks.size()
-            << " tracks";
+
+  nHits       = fInputData.GetNhits();
+  nRecoTracks = fvRecoTracks.size();
+
+  if (IsMCUsed()) {
+    // Read MC information
+    fpMCModule->InitEvent(nullptr);
+    nMCTracks = fMCData.GetNofTracks();
+    nMCPoints = fMCData.GetNofPoints();
+  }
+
+  LOG(info) << fName << ": Event or time slice consists from " << nHits << " hits, " << nRecoTracks << " reco tracks, "
+            << nMCTracks << " MC tracks, " << nMCPoints << " MC points";
 
   return kSUCCESS;
 }

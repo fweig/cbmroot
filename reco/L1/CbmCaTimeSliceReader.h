@@ -126,10 +126,6 @@ namespace cbm::ca
     /// @note Should be called before this->Init()
     void SetDetector(L1DetectorID detID, bool flag = true);
 
-    /// @brief Sets the instance of parameters object
-    /// @param pParameters  Pointer to the parameters instance
-    void SetParameters(const L1Parameters* pParameters);
-
   private:
     /// @brief Reads hits for a given detector subsystem
     /// @tparam Detector ID
@@ -184,10 +180,8 @@ namespace cbm::ca
     L1Vector<CbmL1Track>* fpvTracks                  = nullptr;  ///< Pointer to array of reconstructed tracks
     std::shared_ptr<L1IODataManager> fpIODataManager = nullptr;  ///< Pointer to input data manager
 
-
     // Additional
-    const L1Parameters* fpParameters = nullptr;  ///< Pointer to the defined parameters instance
-    ECbmTrackingMode fTrackingMode;              ///< Tracking mode
+    ECbmTrackingMode fTrackingMode;  ///< Tracking mode
 
     // Indexes
     int fNofHits     = 0;  ///< Stored number of hits

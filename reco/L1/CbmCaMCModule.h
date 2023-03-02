@@ -34,8 +34,8 @@
 
 #include "CaToolsMCData.h"
 #include "CaToolsMCPoint.h"
-#include "CaToolsQa.h"
 #include "L1Constants.h"
+#include "L1InputData.h"
 #include "L1Parameters.h"
 #include "L1Undef.h"
 
@@ -52,6 +52,7 @@ class CbmCaMCModule {
 public:
   /// @brief Constructor
   /// @param verbosity  Verbosity level
+  /// @param perfMode   Performance mode (defines cut on number of consecutive stations with hit or point)
   CbmCaMCModule(int verb = 0, int perfMode = 3) : fVerbose(verb), fPerformanceMode(perfMode) {}
 
   /// @brief Destructor
@@ -83,14 +84,6 @@ public:
   {
     return std::accumulate(fvNofPointsUsed.cbegin(), fvNofPointsUsed.cbegin() + int(detID) + 1, 0) - 1;
   }
-
-  /// @brief Gets MC data object
-  /// @return  Constant reference to MC data object
-  const ca::tools::MCData& GetMCData() const { return fMCData; }
-
-  /// @brief Gets mutable pointer to MC data object
-  /// @return  Mutable reference to MC data object
-  ca::tools::MCData* GetMCData() { return &fMCData; }
 
   /// @brief Defines performance action in the beginning of each event or time slice
   /// @note This function should be called before hits initialization
@@ -126,12 +119,9 @@ public:
   int MatchHitWithMc(int iHit) const;
 
   /// @brief Assigns MC point indexes to each hit and hit indexes to each MC point
-  /// @param  vInputExtHits  Vector of external input hits
-  void MatchPointsWithHits(L1Vector<CbmL1HitDebugInfo>& vInputExtHits);
+  void MatchPointsWithHits();
 
   /// @brief Matches reconstructed tracks with MC tracks
-  /// @param  vRecoTracks    Vector of reconstructed tracks
-  /// @param  vInputExtHits  Vector of external input hits
   ///
   /// In the procedure, the maps of associated MC track indexes to corresponding number of hits are filled out and the
   /// max purity is calculated for each reconstructed track in the TS/event. If the value of purity for a given MC track
@@ -139,7 +129,7 @@ public:
   /// time the index of the reconstructed track object is saved to this MC track object. If purity for the MC track does
   /// not pass the threshold, its index will not be accounted as a matched track, and the index of reconstructed track
   /// will be added as an index of "touched" track.
-  void MatchRecoAndMCTracks(L1Vector<CbmL1Track>& vRecoTracks, L1Vector<CbmL1HitDebugInfo>& vInputExtHits);
+  void MatchRecoAndMCTracks();
 
   /// @brief Sets used detector subsystems
   /// @param  detID  Id of detector
@@ -147,20 +137,36 @@ public:
   /// @note Should be called before this->Init()
   void SetDetector(L1DetectorID detID, bool flag);
 
-  /// @brief Sets pointer to the vector of hits from reference
-  void SetHitContainer(const L1Vector<CbmL1HitDebugInfo>& vHits) { fpvHits = &vHits; }
-
   /// @brief Sets legacy event mode:
   /// @param flag Flag:
   ///              - true:  runs on events base,
   ///              - false: runs on time-slice base
   void SetLegacyEventMode(bool flag) { fbLegacyEventMode = flag; }
 
-  /// @brief Registers pointer to the tracking parameters object
-  void SetParameters(const L1Parameters* pParameters) { fpParameters = pParameters; }
+  /// @brief Registers MC data object
+  /// @param mcData  Instance of MC data
+  void RegisterMCData(ca::tools::MCData& mcData) { fpMCData = &mcData; }
 
-  /// @brief Sets pointer to the vector of reconstructed tracks from reference
-  void SetRecoTrackContainer(const L1Vector<CbmL1Track>& vRecoTracks) { fpvRecoTracks = &vRecoTracks; }
+  /// @brief Registers reconstructed track container
+  /// @param vRecoTrack Reference to reconstructed track container
+  void RegisterRecoTrackContainer(L1Vector<CbmL1Track>& vRecoTracks) { fpvRecoTracks = &vRecoTracks; }
+
+  /// @brief Registers hit index container
+  /// @param vHitIds  Reference to hit index container
+  void RegisterHitIndexContainer(L1Vector<CbmL1HitDebugInfo>& vHitIds) { fpvHitIds = &vHitIds; }
+
+  /// @brief Registers input data object
+  /// @param inputData  Instance of the input data object
+  void RegisterInputData(L1InputData& inputData) { fpInputData = &inputData; }
+
+  // /// @brief Registers debug hit container
+  // /// @param vDbgHits  Reference to debug hit container
+  // void RegisterHitDebugInfoContainer(L1Vector<CbmL1HitStore>& vDbgHits) { fpvDbgHits = &vDbgHits; }
+
+  /// @brief Registers CA parameters object
+  /// @param pParameters  A shared pointer to the parameters object
+  void RegisterParameters(std::shared_ptr<L1Parameters>& pParameters) { fpParameters = pParameters; }
+
 
 private:
   /// @brief Calculates global index of MC point
@@ -200,14 +206,9 @@ private:
   bool FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MCPoint& point);
 
 
-  // *******************************
-  // **     Utility variables     **
-  // *******************************
+  std::shared_ptr<L1Parameters> fpParameters = nullptr;  ///< Pointer to tracking parameters object
 
-  const L1Parameters* fpParameters = nullptr;  ///< Pointer to tracking parameters object
-
-  // **  Flags **
-
+  // ------ Flags
   bool fbUseMvd  = false;  ///< is MVD used
   bool fbUseSts  = false;  ///< is STS used
   bool fbUseMuch = false;  ///< is MuCh used
@@ -218,18 +219,15 @@ private:
   int fVerbose           = 0;      ///< Verbosity level
   int fPerformanceMode   = -1;     ///< Mode of performance
 
-  // *********************************
-  // **     Input data branches     **
-  // *********************************
-
+  // ------ Input data branches
   const CbmTimeSlice* fpTimeSlice = nullptr;  ///< Current time slice
 
-  // ------ Mc-event
+  // Mc-event
   CbmMCEventList* fpMCEventList    = nullptr;  ///< MC event list
   CbmMCDataObject* fpMCEventHeader = nullptr;  ///< MC event header
   CbmMCDataArray* fpMCTracks       = nullptr;  ///< MC tracks input
 
-  // ------ Mc-points
+  // Mc-points
   CbmMCDataArray* fpMvdPoints  = nullptr;  ///< MVD MC-points input container
   CbmMCDataArray* fpStsPoints  = nullptr;  ///< STS MC-points input container
   CbmMCDataArray* fpMuchPoints = nullptr;  ///< MuCh MC-points input container
@@ -239,7 +237,7 @@ private:
   std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsOrig = {};  ///< Number of points by detector provided
   std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsUsed = {};  ///< Number of points used in performance
 
-  // ------ Matches
+  // Matches
   TClonesArray* fpMvdHitMatches  = nullptr;  ///< Array of MVD hit matches
   TClonesArray* fpStsHitMatches  = nullptr;  ///< Array of STS hit matches
   TClonesArray* fpMuchHitMatches = nullptr;  ///< Array of MuCh hit matches
@@ -249,23 +247,16 @@ private:
   TClonesArray* fpStsHits           = nullptr;  ///< Array of STS hits (currently needed for matching)
   TClonesArray* fpStsClusterMatches = nullptr;  ///< Array of STS cluster matches
 
-  // ------ Matching information
+  // Matching information
   std::set<std::pair<int, int>> fFileEventIDs;  ///< Set of file and event indexes: first - iFile, second - iEvent
 
-  // ************************************
-  // **     Current MC data object     **
-  // ************************************
+  ca::tools::MCData* fpMCData = nullptr;  ///< MC-information in CA tracking internal format (tracks and points)
 
-  ca::tools::MCData fMCData {};  ///< MC-information in CA tracking internal format (tracks and points)
-
-  std::unique_ptr<ca::tools::Qa> fpQaModule = nullptr;  ///< Pointer to CA QA module
-
-  // ********************************************
-  // **     Pointers to reconstructed data     **
-  // ********************************************
-
-  const L1Vector<CbmL1Track>* fpvRecoTracks = nullptr;  ///< Pointer to reconstructed track container
-  const L1Vector<CbmL1HitDebugInfo>* fpvHits = nullptr;  ///< Pointer to hits container
+  // Reconstructed data
+  L1Vector<CbmL1Track>* fpvRecoTracks = nullptr;  ///< Pointer to reconstructed track container
+  L1Vector<CbmL1HitDebugInfo>* fpvHitIds       = nullptr;  ///< Pointer to hit index container
+  //L1Vector<CbmL1HitStore>* fpvDbgHits = nullptr;  ///< Pointer to debug hit container
+  L1InputData* fpInputData = nullptr;  ///< Pointer to input data object
 };
 
 // **********************************************
@@ -286,7 +277,7 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
   int iTmcExt = undef::kI32;  // Track ID in the external container
   // MVD
   if constexpr (L1DetectorID::kMvd == DetID) {
-    auto* pExtPoint = L1_DYNAMIC_CAST<CbmMvdPoint*>(fpMvdPoints->Get(iFile, iEvent, iExtId));
+    auto* pExtPoint = dynamic_cast<CbmMvdPoint*>(fpMvdPoints->Get(iFile, iEvent, iExtId));
     if (!pExtPoint) {
       LOG(warn) << "CbmCaMCModule: MVD MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
                 << ", iFile = " << iFile << " does not exist";
@@ -301,7 +292,7 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
   }
   // STS
   else if constexpr (L1DetectorID::kSts == DetID) {
-    auto* pExtPoint = L1_DYNAMIC_CAST<CbmStsPoint*>(fpStsPoints->Get(iFile, iEvent, iExtId));
+    auto* pExtPoint = dynamic_cast<CbmStsPoint*>(fpStsPoints->Get(iFile, iEvent, iExtId));
     if (!pExtPoint) {
       LOG(warn) << "CbmCaMCModule: STS MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
                 << ", iFile = " << iFile << " does not exist";
@@ -316,7 +307,7 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
   }
   // MuCh
   else if constexpr (L1DetectorID::kMuch == DetID) {
-    auto* pExtPoint = L1_DYNAMIC_CAST<CbmMuchPoint*>(fpMuchPoints->Get(iFile, iEvent, iExtId));
+    auto* pExtPoint = dynamic_cast<CbmMuchPoint*>(fpMuchPoints->Get(iFile, iEvent, iExtId));
     if (!pExtPoint) {
       LOG(warn) << "CbmCaMCModule: MuCh MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
                 << ", iFile = " << iFile << " does not exist";
@@ -331,7 +322,7 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
   }
   // TRD
   else if constexpr (L1DetectorID::kTrd == DetID) {
-    auto* pExtPoint = L1_DYNAMIC_CAST<CbmTrdPoint*>(fpTrdPoints->Get(iFile, iEvent, iExtId));
+    auto* pExtPoint = dynamic_cast<CbmTrdPoint*>(fpTrdPoints->Get(iFile, iEvent, iExtId));
     if (!pExtPoint) {
       LOG(warn) << "CbmCaMCModule: TRD MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
                 << ", iFile = " << iFile << " does not exist";
@@ -346,7 +337,7 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
   }
   // TOF
   else if constexpr (L1DetectorID::kTof == DetID) {
-    auto* pExtPoint = L1_DYNAMIC_CAST<CbmTofPoint*>(fpTofPoints->Get(iFile, iEvent, iExtId));
+    auto* pExtPoint = dynamic_cast<CbmTofPoint*>(fpTofPoints->Get(iFile, iEvent, iExtId));
     if (!pExtPoint) {
       LOG(warn) << "CbmCaMCModule: TOF MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
                 << ", iFile = " << iFile << " does not exist";
@@ -418,34 +409,28 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
   point.SetEventId(iEvent);
   point.SetFileId(iFile);
   point.SetTime(time);
-
   point.SetX(posMid.X());
   point.SetY(posMid.Y());
   point.SetZ(posMid.Z());
-
   point.SetXIn(posIn.X());
   point.SetYIn(posIn.Y());
   point.SetZIn(posIn.Z());
-
   point.SetXOut(posOut.X());
   point.SetYOut(posOut.Y());
   point.SetZOut(posOut.Z());
-
   point.SetPx(momMid.X());
   point.SetPy(momMid.Y());
   point.SetPz(momMid.Z());
-
   point.SetPxIn(momIn.X());
   point.SetPyIn(momIn.Y());
   point.SetPzIn(momIn.Z());
-
   point.SetPxOut(momOut.X());
   point.SetPyOut(momOut.Y());
   point.SetPzOut(momOut.Z());
 
-  int iTmcInt = fMCData.FindInternalTrackIndex(iTmcExt, iEvent, iFile);
+  int iTmcInt = fpMCData->FindInternalTrackIndex(iTmcExt, iEvent, iFile);
 
-  point.SetId(fMCData.GetNofPoints());  // select current number of points as a local id of points
+  point.SetId(fpMCData->GetNofPoints());  // select current number of points as a local id of points
   point.SetTrackId(iTmcInt);
   point.SetStationId(stationID);
   point.SetDetectorId(DetID);
@@ -481,9 +466,9 @@ void CbmCaMCModule::ReadMCPointsForDetector(CbmMCDataArray* pPoints)
         ca::tools::MCPoint aPoint;
         if (FillMCPoint<DetID>(iP, iEvent, iFile, aPoint)) {
           aPoint.SetExternalId(CalcGlobMCPointIndex(iP, DetID));
-          int iPInt = fMCData.GetNofPoints();  // assign an index of point in internal container
-          if (aPoint.GetTrackId() > -1) { fMCData.GetTrack(aPoint.GetTrackId()).AddPointIndex(iPInt); }
-          fMCData.AddPoint(aPoint);
+          int iPInt = fpMCData->GetNofPoints();  // assign an index of point in internal container
+          if (aPoint.GetTrackId() > -1) { fpMCData->GetTrack(aPoint.GetTrackId()).AddPointIndex(iPInt); }
+          fpMCData->AddPoint(aPoint);
           ++fvNofPointsUsed[int(DetID)];
         }
       }  // iP: end

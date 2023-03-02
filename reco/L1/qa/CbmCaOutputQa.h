@@ -66,6 +66,9 @@ namespace cbm::ca
     /// @brief Sets mCBM global tracking mode
     void SetMcbmTrackingMode() { fTrackingMode = ECbmTrackingMode::kMCBM; }
 
+    /// @brief Sets performance mode
+    /// @param mode  Performance mode (3 is default: TODO - test)
+    void SetPerformanceMode(int mode) { fPerformanceMode = mode; }
 
     ClassDef(OutputQa, 0);
 
@@ -102,6 +105,8 @@ namespace cbm::ca
     bool fbUseTrd  = false;  ///< is TRD used
     bool fbUseTof  = false;  ///< is TOF used
 
+    int fPerformanceMode = 3;  ///< Performance mode
+
     ECbmTrackingMode fTrackingMode = ECbmTrackingMode::kSTS;  ///< Tracking mode
 
     std::unique_ptr<TimeSliceReader> fpTSReader       = nullptr;  ///< Reader of the time slice
@@ -110,10 +115,11 @@ namespace cbm::ca
     std::shared_ptr<::ca::tools::Debugger> fpDebugger = nullptr;  ///< Debugger
     std::shared_ptr<L1Parameters> fpParameters        = nullptr;  ///< Tracking parameters object
 
-    L1Vector<CbmL1HitId> fvHitIds {"CbmCaOutputQa::fvHitIds"};
+    L1Vector<CbmL1HitDebugInfo> fvHitIds {"CbmCaOutputQa::fvHitIds"};
     L1Vector<CbmL1HitDebugInfo> fvDbgHits {"CbmCaOutputQa::fvDbgHits"};
     L1Vector<CbmL1Track> fvRecoTracks {"CbmCaOutputQa::fvRecoTracks"};
-    L1InputData fInputData;  ///< Input hits to L1 algo
+    L1InputData fInputData;       ///< Input hits to CA algo
+    ::ca::tools::MCData fMCData;  ///< Input MC data (points and tracks)
   };
 }  // namespace cbm::ca
 

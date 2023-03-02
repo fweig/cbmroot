@@ -59,9 +59,6 @@ void TimeSliceReader::Clear()
   fpvDbgHits      = nullptr;
   fpIODataManager = nullptr;
   fpvTracks       = nullptr;
-
-  // Other
-  fpParameters = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -259,14 +256,6 @@ void TimeSliceReader::SetDetector(L1DetectorID detID, bool flag)
     case L1DetectorID::kTrd: fbUseTrd = flag; break;
     case L1DetectorID::kTof: fbUseTof = flag; break;
   }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void TimeSliceReader::SetParameters(const L1Parameters* pParameters)
-{
-  LOG_IF(fatal, !pParameters) << "TimeSliceReader: passed null pointer as L1IODataManager instance";
-  fpParameters = pParameters;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
