@@ -19,16 +19,6 @@ using namespace stsxyter;  // Class own namespace
 
 //************************* Messages OP ************************************//
 //----------------------------------------------------------------------------
-MessSubType Message::GetSubType() const
-{
-  switch (GetField(kFieldSubtype)) {
-    case static_cast<uint16_t>(MessSubType::TsMsb): return MessSubType::TsMsb;
-    case static_cast<uint16_t>(MessSubType::Epoch): return MessSubType::Epoch;
-    case static_cast<uint16_t>(MessSubType::Status): return MessSubType::Status;
-    default: return MessSubType::Empty;
-  }  // switch( static_cast< uint16_t>( GetField( kFieldSubtype ) ) )
-}
-//----------------------------------------------------------------------------
 bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl, bool bBinning) const
 {
   bool bPrintHex    = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Hex);
