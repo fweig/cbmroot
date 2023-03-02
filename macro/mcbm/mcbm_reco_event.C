@@ -376,7 +376,6 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
 
   // L1 tracking
   auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3, 0) : new CbmL1();
-  l1->SetLegacyEventMode(1);
   l1->SetMcbmMode();
 
   if (strcmp(setupName, "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);

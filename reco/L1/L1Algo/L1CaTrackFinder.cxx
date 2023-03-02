@@ -219,5 +219,5 @@ void L1Algo::CaTrackFinder()
 
   auto timerEnd = std::chrono::high_resolution_clock::now();
   fCaRecoTime   = (double) (std::chrono::duration<double>(timerEnd - timerStart).count());
-  std::cout << "CaTracker: nSubSlices processed = " << nSubSlices << std::endl;
+  LOG(debug) << "CaTracker: nSubSlices processed = " << nSubSlices;
 }

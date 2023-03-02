@@ -433,7 +433,6 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = new CbmL1();
-    l1->SetLegacyEventMode(1);
     l1->SetMcbmMode();
 
     // --- Material budget file names
