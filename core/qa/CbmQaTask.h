@@ -19,11 +19,20 @@
 #include "TEfficiency.h"
 #include "TFolder.h"
 #include "TH1.h"
+#include "TH2.h"
+#include "TH3.h"
 #include "TParameter.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
+#include "TProfile3D.h"
 #include "TROOT.h"
 
 #include <algorithm>
+#include <regex>
 #include <string_view>
+#include <type_traits>
+
+#include <yaml-cpp/yaml.h>
 
 /// Class CbmQaTask is to be inherited with a particular QA-task. It provides mechanisms for storage and management
 /// of QA canvases and histograms management
@@ -63,6 +72,14 @@ public:
   /// FairTask: Defines action of the task in the end of run
   void Finish();
 
+  /// @brief Sets task configuration file
+  /// @param filename  Name of file
+  ///
+  /// Sets name of YAML configuration file, which defines parameters needed for the task. The file is assumed
+  /// to contain root branch "qa/[task name]". A subbranch "histograms" contains a list of histograms with pre defined
+  /// parameters: title, number of bins and axis ranges.
+  void SetConfigName(const char* filename) { fsConfigName = filename; }
+
   ClassDef(CbmQaTask, 0);
 
 protected:
@@ -74,22 +91,22 @@ protected:
   virtual bool Check() = 0;
 
   /// De-initialize the task
-  virtual void DeInit();
+  virtual void DeInit() {}
 
   /// Initializes data branches
-  virtual InitStatus InitDataBranches();
+  virtual InitStatus InitDataBranches() { return kSUCCESS; }
 
   /// Initializes histograms
-  virtual InitStatus InitHistograms();
+  virtual InitStatus InitHistograms() { return kSUCCESS; }
 
   /// Initializes canvases
-  virtual InitStatus InitCanvases();
+  virtual InitStatus InitCanvases() { return kSUCCESS; }
 
   /// Initializes event / time-slice
   virtual InitStatus InitTimeSlice() { return kSUCCESS; }
 
   /// Method to fill histograms per event or time-slice
-  virtual void FillHistograms();
+  virtual void FillHistograms() {}
 
   /// Creates, initializes and registers a canvas
   /// \tparam  T     Type of the canvas: TCanvas or CbmQaCanvas (\note T should not be a pointer)
@@ -112,21 +129,21 @@ protected:
   template<typename T, typename... Args>
   T* MakeHisto(const char* name, Args... args);
 
+  /// @brief Creates, initializes and registers a histogram, based on the configuration file
+  /// @tparam T    Type of the histogram (@note: should not be a pointer)
+  /// @param  name  Name of the histogram, stored in config
+  /// @param  id0   First index (optional)
+  /// @param  id1   Second index (optional)
+  /// @param  id2   Third index (optional)
+  /// @return  Pointer to the histogram object
+  template<typename T>
+  T* MakeHistoFromConfig(const char* name, int id0 = -1, int id1 = -1, int id2 = -1);
+
   /// Creates, initializes and registers a table
   /// \param  name  Name of the table
   /// \param  args  The rest of the arguments, which will be passed to the table constructor
   template<typename... Args>
   CbmQaTable* MakeTable(const char* name, Args... args);
-
-  /// Method to setup histogram properties (text sizes etc.)
-  /// \param  pHist  Pointer to a histogram to tune
-  virtual void SetHistoProperties(TH1* pHist);
-
-  /// Gets a reference to histograms map
-  ///const auto& GetHistoMap() const { return fmpHistList; }
-
-  /// Gets a reference to canvases map
-  ///const auto& GetCanvasMap() const { return fmpCanvList; }
 
   /// Get current event number
   int GetEventNumber() const { return fNofEvents.GetVal(); }
@@ -147,16 +164,8 @@ protected:
 
 
 private:
-  // **********************************************************
-  // ** Functions accessible inside the CbmQaTask class only **
-  // **********************************************************
-
-  /// De-initialize this task
+  /// @brief De-initializes this task
   void DeInitBase();
-
-  // ***********************
-  // ** Private variables **
-  // ***********************
 
   // I/O
   std::unique_ptr<TFolder> fpFolderRoot = nullptr;  ///< Root folder to store histograms and canvases
@@ -169,6 +178,9 @@ private:
   bool fbUseMC     = false;  ///< Flag, if MC is used
 
   TParameter<int> fNofEvents {"nEvents", 0};  ///< Number of processed events
+
+  TString fsConfigName      = "";       ///< Name of YAML configuration file
+  YAML::Node* fpCurrentNode = nullptr;  ///< Pointer to current node of the configuration file
 };
 
 
@@ -256,14 +268,131 @@ T* CbmQaTask::MakeHisto(const char* nameBase, Args... args)
     delete pHist;
   }
 
-  // Create a new histogram or profile
   T* pHist = new T(name, args...);
 
   // Register histogram in the folder
   if (!fpFolderHist) { fpFolderHist = fpFolderRoot->AddFolder("histograms", "Histograms"); }
   fpFolderHist->Add(pHist);
 
-  SetHistoProperties(pHist);
+  return pHist;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<typename T>
+T* CbmQaTask::MakeHistoFromConfig(const char* nameBase, int id0, int id1, int id2)
+{
+  std::string name = std::string(fsPrefix.Data()) + "_" + nameBase;
+  if (id0 > -1) { name = std::regex_replace(name, std::regex("\\%0"), std::to_string(id0)); }
+  if (id1 > -1) { name = std::regex_replace(name, std::regex("\\%1"), std::to_string(id1)); }
+  if (id2 > -1) { name = std::regex_replace(name, std::regex("\\%2"), std::to_string(id2)); }
+
+  // Check, if the histogram with a given name was already created. If so, delete it
+  if (gROOT->FindObject(name.data())) {
+    LOG(warn) << fName << ": A histogram with name \"" << name << "\" was previously created and will be deleted now "
+              << "to avoid memory leaks";
+    T* pHist = (T*) gROOT->FindObject(name.data());
+    delete pHist;
+  }
+
+  T* pHist = nullptr;
+  // Create histogram
+  LOG_IF(fatal, !fpCurrentNode)
+    << fName << ": attempt to make a histogram (\"" << nameBase << "\") from configuration file, which was not "
+    << "defined. Please, provide configuration file with defined histogram list to the task via "
+    << "SetConfigName(filename) function.";
+  try {
+    const auto& node = (*fpCurrentNode)["histograms"][nameBase];
+    LOG_IF(fatal, !node) << fName << ": node for histogram \"" << nameBase
+                         << "\" was not defined in the configuration file";
+
+    std::string title = node["title"].as<std::string>("").data();
+    if (id0 > -1) { title = std::regex_replace(title, std::regex("\\%0"), std::to_string(id0)); }
+    if (id1 > -1) { title = std::regex_replace(title, std::regex("\\%1"), std::to_string(id1)); }
+    if (id2 > -1) { title = std::regex_replace(title, std::regex("\\%2"), std::to_string(id2)); }
+
+    // 1D-profiles
+    if constexpr (std::is_base_of_v<TProfile, T>) {
+      int nBinsX      = node["nbinsx"].as<int>();
+      double minX     = node["minx"].as<double>();
+      double maxX     = node["maxx"].as<double>();
+      double minY     = node["miny"].as<double>(0.);
+      double maxY     = node["maxy"].as<double>(0.);
+      std::string opt = node["opt"].as<std::string>("");
+      pHist           = new T(name.data(), title.data(), nBinsX, minX, maxX, minY, maxY, opt.data());
+    }
+    // 2D-profiles
+    else if constexpr (std::is_base_of_v<TProfile2D, T>) {
+      int nBinsX      = node["nbinsx"].as<int>();
+      double minX     = node["minx"].as<double>();
+      double maxX     = node["maxx"].as<double>();
+      int nBinsY      = node["nbinsy"].as<int>();
+      double minY     = node["miny"].as<double>();
+      double maxY     = node["maxy"].as<double>();
+      double minZ     = node["minz"].as<double>(0.);
+      double maxZ     = node["maxz"].as<double>(0.);
+      std::string opt = node["opt"].as<std::string>("");
+      pHist = new T(name.data(), title.data(), nBinsX, minX, maxX, nBinsY, minY, maxY, minZ, maxZ, opt.data());
+    }
+    // 3D-profiles
+    else if constexpr (std::is_base_of_v<TProfile3D, T>) {
+      int nBinsX      = node["nbinsx"].as<int>();
+      double minX     = node["minx"].as<double>();
+      double maxX     = node["maxx"].as<double>();
+      int nBinsY      = node["nbinsy"].as<int>();
+      double minY     = node["miny"].as<double>();
+      double maxY     = node["maxy"].as<double>();
+      int nBinsZ      = node["nbinsz"].as<int>();
+      double minZ     = node["minz"].as<double>();
+      double maxZ     = node["maxz"].as<double>();
+      std::string opt = node["opt"].as<std::string>("");
+      pHist = new T(name.data(), title.data(), nBinsX, minX, maxX, nBinsY, minY, maxY, minZ, maxZ, opt.data());
+    }
+    // 2D-histograms
+    else if constexpr (std::is_base_of_v<TH2, T>) {
+      int nBinsX  = node["nbinsx"].as<int>();
+      double minX = node["minx"].as<double>();
+      double maxX = node["maxx"].as<double>();
+      int nBinsY  = node["nbinsy"].as<int>();
+      double minY = node["miny"].as<double>();
+      double maxY = node["maxy"].as<double>();
+      pHist       = new T(name.data(), title.data(), nBinsX, minX, maxX, nBinsY, minY, maxY);
+    }
+    // 3D-histograms + derived
+    else if constexpr (std::is_base_of_v<TH3, T>) {
+      int nBinsX  = node["nbinsx"].as<int>();
+      double minX = node["minx"].as<double>();
+      double maxX = node["maxx"].as<double>();
+      int nBinsY  = node["nbinsy"].as<int>();
+      double minY = node["miny"].as<double>();
+      double maxY = node["maxy"].as<double>();
+      int nBinsZ  = node["nbinsz"].as<int>();
+      double minZ = node["minz"].as<double>();
+      double maxZ = node["maxz"].as<double>();
+      pHist       = new T(name.data(), title.data(), nBinsX, minX, maxX, nBinsY, minY, maxY, nBinsZ, minZ, maxZ);
+    }
+    // 1D-histograms + derived
+    else if constexpr (std::is_base_of_v<TH1, T>) {
+      int nBinsX  = node["nbinsx"].as<int>();
+      double minX = node["minx"].as<double>();
+      double maxX = node["maxx"].as<double>();
+      pHist       = new T(name.data(), title.data(), nBinsX, minX, maxX);
+    }
+    // Other types are restricted
+    //else {
+    //  static_assert(false, "CbmQaTask::MakeTable: unsupported type given as a template parameter");
+    //}
+  }
+  catch (const YAML::InvalidNode& exc) {
+    LOG(fatal) << fName << ": error while reading the histogram \"" << nameBase << "\" properties from "
+               << "configuration file \"" << fsConfigName << "\". Please, check the file formatting. \n Tip: probably, "
+               << "there ara mistakes in the obligatory property names, for example, \"nbinsX\" or \"nXBins\" is "
+               << "used instead of \"nbinsx\" etc.";
+  }
+
+  // Register histogram in the folder
+  if (!fpFolderHist) { fpFolderHist = fpFolderRoot->AddFolder("histograms", "Histograms"); }
+  fpFolderHist->Add(pHist);
 
   return pHist;
 }

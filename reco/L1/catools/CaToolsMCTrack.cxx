@@ -11,9 +11,12 @@
 
 #include "CbmL1Hit.h"
 
+#include <iomanip>
+#include <sstream>
+
 #include "CaToolsMCPoint.h"
 
-using namespace ca::tools;
+using ca::tools::MCTrack;
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -147,4 +150,70 @@ void MCTrack::InitPointsInfo(const L1Vector<MCPoint>& vPoints)
 void MCTrack::SortPointIndexes(const std::function<bool(const int& lhs, const int& rhs)>& cmpFn)
 {
   std::sort(fvPointIndexes.begin(), fvPointIndexes.end(), cmpFn);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+std::string MCTrack::ToString(int verbose, bool header) const
+{
+  using std::setfill;
+  using std::setw;
+  std::stringstream msg;
+  if (header) {
+    if (verbose > 0) {
+      msg << setw(8) << setfill(' ') << "ID" << ' ';
+      msg << setw(8) << setfill(' ') << "Mother" << ' ';
+      msg << setw(8) << setfill(' ') << "PDG" << ' ';
+      if (verbose > 1) {
+        msg << setw(8) << setfill(' ') << "N h." << ' ';
+        msg << setw(8) << setfill(' ') << "N p." << ' ';
+        msg << setw(8) << setfill(' ') << "N r.tr." << ' ';
+        if (verbose > 2) { msg << setw(8) << setfill(' ') << "N t.tr." << ' '; }
+        msg << setw(12) << setfill(' ') << "zVTX [cm]" << ' ';
+        msg << setw(12) << setfill(' ') << "t [ns]" << ' ';
+        msg << setw(12) << setfill(' ') << "p [GeV/c]" << ' ';
+      }
+      msg << setw(8) << setfill(' ') << "rec-able" << ' ';
+      msg << setw(8) << setfill(' ') << "rec-ed" << ' ';
+    }
+  }
+  else {
+    if (verbose > 0) {
+      msg << setw(8) << setfill(' ') << fId << ' ';
+      msg << setw(8) << setfill(' ') << fMotherId << ' ';
+      msg << setw(8) << setfill(' ') << fPdgCode << ' ';
+      if (verbose > 1) {
+        msg << setw(8) << setfill(' ') << GetNofHits() << ' ';
+        msg << setw(8) << setfill(' ') << GetNofPoints() << ' ';
+        msg << setw(8) << setfill(' ') << GetNofRecoTracks() << ' ';
+        if (verbose > 2) { msg << setw(8) << setfill(' ') << GetNofTouchTracks() << ' '; }
+        msg << setw(12) << setfill(' ') << GetStartZ() << ' ';
+        msg << setw(12) << setfill(' ') << GetStartT() << ' ';
+        msg << setw(12) << setfill(' ') << GetP() << ' ';
+      }
+      msg << setw(8) << setfill(' ') << IsReconstructable() << ' ';
+      msg << setw(8) << setfill(' ') << IsReconstructed() << ' ';
+      if (verbose > 1) {
+        msg << "\n\t- point indexes: ";
+        for (int index : fvPointIndexes) {
+          msg << index << ' ';
+        }
+        msg << "\n\t- hit indexes: ";
+        for (int index : fvHitIndexes) {
+          msg << index << ' ';
+        }
+        msg << "\n\t- reconstructed track indexes: ";
+        for (int index : fvRecoTrackIndexes) {
+          msg << index << ' ';
+        }
+        if (verbose > 2) {
+          msg << "\n\t- touch track indexes: ";
+          for (int index : fvTouchTrackIndexes) {
+            msg << index << ' ';
+          }
+        }
+      }
+    }
+  }
+  return msg.str();
 }

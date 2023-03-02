@@ -11,6 +11,7 @@
 #define CbmCaMCModule_h 1
 
 #include "CbmL1DetectorID.h"
+#include "CbmL1Hit.h"
 #include "CbmL1Track.h"
 #include "CbmLink.h"
 #include "CbmMCDataArray.h"
@@ -95,41 +96,28 @@ public:
   bool InitRun();
 
   /// @brief  Initializes MC track
-  /// @param  vHits  Vector of hit objects
   ///
   /// Initializes information about arrangement of points and hits of MC tracks within stations and the status
-  /// of track reconstructability, calculates max number of points and hits on a station, number of consecutive
-  /// stations containing a hit or point and number of stations and points with hits. Provides the determination
-  /// of track reconstructability status.
-  void InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits);
+  /// of track ability to be reconstructed, calculates max number of points and hits on a station, number of
+  /// consecutive stations containing a hit or point and number of stations and points with hits.
+  void InitTrackInfo();
+
+  /// @brief Match reconstructed and MC data
+  ///
+  /// Runs matching of hits with points and reconstructed tracks with
+  void MatchRecoAndMC();
 
   /// @brief Processes event
   ///
   /// Fills histograms and tables, should be called after the tracking done
   void ProcessEvent(CbmEvent* pEvent);
 
-  /// @brief Matches hit with MC point
-  /// @tparam  DetId Detector ID
-  /// @param   iHit  External index of hit
-  /// @return        MC-point index in fvMCPoints array
-  ///
-  /// This method finds a match for a given hit or matches for hits clusters (in case of STS), finds the best
-  /// link in the match and returns the corresponding global ID of the MC points
-  template<L1DetectorID DetId>
-  int MatchHitWithMc(int iHit) const;
-
-  /// @brief Assigns MC point indexes to each hit and hit indexes to each MC point
-  void MatchPointsWithHits();
-
-  /// @brief Matches reconstructed tracks with MC tracks
-  ///
-  /// In the procedure, the maps of associated MC track indexes to corresponding number of hits are filled out and the
-  /// max purity is calculated for each reconstructed track in the TS/event. If the value of purity for a given MC track
-  /// is larger then a threshold, the corresponding track index is saved to the reconstructed track object, in the same
-  /// time the index of the reconstructed track object is saved to this MC track object. If purity for the MC track does
-  /// not pass the threshold, its index will not be accounted as a matched track, and the index of reconstructed track
-  /// will be added as an index of "touched" track.
-  void MatchRecoAndMCTracks();
+  /// @brief Sets first hit indexes container in different detectors
+  /// @param source Array of indexes
+  void RegisterFirstHitIndexes(const std::array<int, L1Constants::size::kMaxNdetectors + 1>& source)
+  {
+    fpvFstHitId = &source;
+  }
 
   /// @brief Sets used detector subsystems
   /// @param  detID  Id of detector
@@ -153,28 +141,23 @@ public:
 
   /// @brief Registers hit index container
   /// @param vHitIds  Reference to hit index container
-  void RegisterHitIndexContainer(L1Vector<CbmL1HitDebugInfo>& vHitIds) { fpvHitIds = &vHitIds; }
-
-  /// @brief Registers input data object
-  /// @param inputData  Instance of the input data object
-  void RegisterInputData(L1InputData& inputData) { fpInputData = &inputData; }
-
-  // /// @brief Registers debug hit container
-  // /// @param vDbgHits  Reference to debug hit container
-  // void RegisterHitDebugInfoContainer(L1Vector<CbmL1HitStore>& vDbgHits) { fpvDbgHits = &vDbgHits; }
+  void RegisterHitIndexContainer(L1Vector<CbmL1HitId>& vHitIds) { fpvHitIds = &vHitIds; }
 
   /// @brief Registers CA parameters object
   /// @param pParameters  A shared pointer to the parameters object
   void RegisterParameters(std::shared_ptr<L1Parameters>& pParameters) { fpParameters = pParameters; }
 
+  /// @brief Registers debug hit container
+  /// @param vQaHits  Reference to debug hit container
+  void RegisterQaHitContainer(L1Vector<CbmL1HitDebugInfo>& vQaHits) { fpvQaHits = &vQaHits; }
 
 private:
   /// @brief Calculates global index of MC point
   /// @param  iPointLocal  Local index of MC point
   /// @param  detID        Detector ID
   ///
-  /// Calculates global index of MC point as a sum of a given local index and total provided number of points in previous
-  /// detector subsystem
+  /// The function calculates global index of MC point as a sum of a given local index and total provided number of
+  /// points in previous detector subsystem.
   int CalcGlobMCPointIndex(int iPointLocal, L1DetectorID detID) const
   {
     return iPointLocal + std::accumulate(fvNofPointsOrig.cbegin(), fvNofPointsOrig.cbegin() + int(detID), 0);
@@ -183,6 +166,31 @@ private:
   /// @brief Check class initialization
   /// @note The function throws std::logic_error, if initialization is incomplete
   void CheckInit() const;
+
+  /// @brief Matches hit with MC point
+  /// @tparam  DetId Detector ID
+  /// @param   iHitExt  External index of hit
+  /// @return           MC-point index in fvMCPoints array
+  ///
+  /// This method finds a match for a given hit or matches for hits clusters (in case of STS), finds the best
+  /// link in the match and returns the corresponding global ID of the MC points.
+  template<L1DetectorID DetId>
+  int MatchHitWithMc(int iHitExt) const;
+
+  /// @brief Match MC points and reconstructed hits
+  ///
+  /// Writes indexes of MC points to each hit and indexes of hits to each MC point.
+  void MatchPointsAndHits();
+
+  /// @brief Matches reconstructed tracks with MC tracks
+  ///
+  /// In the procedure, the maps of associated MC track indexes to corresponding number of hits are filled out and the
+  /// max purity is calculated for each reconstructed track in the TS/event. If the value of purity for a given MC track
+  /// is larger then a threshold, the corresponding track index is saved to the reconstructed track object, in the same
+  /// time the index of the reconstructed track object is saved to this MC track object. If purity for the MC track does
+  /// not pass the threshold, its index will not be accounted as a matched track, and the index of reconstructed track
+  /// will be added as an index of "touched" track.
+  void MatchRecoAndMCTracks();
 
   /// @brief Reads MC tracks from external trees and saves them to MCDataObject
   void ReadMCTracks();
@@ -204,7 +212,6 @@ private:
   /// @return false  Point is incorrect and will be ignored
   template<L1DetectorID DetID>
   bool FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MCPoint& point);
-
 
   std::shared_ptr<L1Parameters> fpParameters = nullptr;  ///< Pointer to tracking parameters object
 
@@ -234,8 +241,8 @@ private:
   CbmMCDataArray* fpTrdPoints  = nullptr;  ///< TRD MC-points input container
   CbmMCDataArray* fpTofPoints  = nullptr;  ///< TOF MC-points input container
 
-  std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsOrig = {};  ///< Number of points by detector provided
-  std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsUsed = {};  ///< Number of points used in performance
+  std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsOrig = {0};  ///< Number of points by detector provided
+  std::array<int, L1Constants::size::kMaxNdetectors> fvNofPointsUsed = {0};  ///< Number of points used in performance
 
   // Matches
   TClonesArray* fpMvdHitMatches  = nullptr;  ///< Array of MVD hit matches
@@ -250,13 +257,18 @@ private:
   // Matching information
   std::set<std::pair<int, int>> fFileEventIDs;  ///< Set of file and event indexes: first - iFile, second - iEvent
 
-  ca::tools::MCData* fpMCData = nullptr;  ///< MC-information in CA tracking internal format (tracks and points)
+  // MC data
+  ca::tools::MCData* fpMCData = nullptr;  ///< MC information (hits and tracks) instance
 
   // Reconstructed data
-  L1Vector<CbmL1Track>* fpvRecoTracks = nullptr;  ///< Pointer to reconstructed track container
-  L1Vector<CbmL1HitDebugInfo>* fpvHitIds       = nullptr;  ///< Pointer to hit index container
-  //L1Vector<CbmL1HitStore>* fpvDbgHits = nullptr;  ///< Pointer to debug hit container
-  L1InputData* fpInputData = nullptr;  ///< Pointer to input data object
+  L1Vector<CbmL1Track>* fpvRecoTracks    = nullptr;  ///< Pointer to reconstructed track container
+  L1Vector<CbmL1HitId>* fpvHitIds        = nullptr;  ///< Pointer to hit index container
+  L1Vector<CbmL1HitDebugInfo>* fpvQaHits = nullptr;  ///< Pointer to QA hit container
+
+  /// @brief Pointer to array of first hit indexes in the detector subsystem
+  ///
+  /// This array must be initialized in the run initialization function.
+  const std::array<int, L1Constants::size::kMaxNdetectors + 1>* fpvFstHitId = nullptr;
 };
 
 // **********************************************

@@ -115,13 +115,6 @@ try {
 
   LOG(info) << "CA MC Module: initializing CA tracking Monte-Carlo module... \033[1;32mDone!\033[0m";
 
-  LOG(info) << "Detector subsystems used:";
-  LOG(info) << "\tMVD:  " << (fbUseMvd ? "ON" : "OFF");
-  LOG(info) << "\tSTS:  " << (fbUseSts ? "ON" : "OFF");
-  LOG(info) << "\tMuCh: " << (fbUseMuch ? "ON" : "OFF");
-  LOG(info) << "\tTRD:  " << (fbUseTrd ? "ON" : "OFF");
-  LOG(info) << "\tTOF:  " << (fbUseTof ? "ON" : "OFF");
-
   return true;
 }
 catch (const std::logic_error& error) {
@@ -134,9 +127,7 @@ catch (const std::logic_error& error) {
 //
 void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
 {
-  std::cout << "\033[1;32mCALL CbmCAMCModule::InitEvent\033[0m\n";
-
-  // ------ Fill a set of file and event indexes
+  // Fill a set of file and event indexes
   fFileEventIDs.clear();
   if (fbLegacyEventMode) {
     int iFile  = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
@@ -152,18 +143,19 @@ void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
     }
   }
 
-  // ------ Read data
+  // Read data
   fpMCData->Clear();
   this->ReadMCTracks();
   this->ReadMCPoints();
-  L1_SHOW(fpMCData->GetNofTracks());
-  L1_SHOW(fpMCData->GetNofPoints());
 
-  // ------ Prepare tracks: set point indexes and redefine indexes from external to internal containers
+  // Prepare tracks: set point indexes and redefine indexes from external to internal containers
   for (auto& aTrk : fpMCData->GetTrackContainer()) {
     aTrk.SortPointIndexes(
       [&](const int& iPl, const int& iPr) { return fpMCData->GetPoint(iPl).GetZ() < fpMCData->GetPoint(iPr).GetZ(); });
   }
+
+  // ------ Match reconstructed and MC data
+  this->MatchRecoAndMC();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -172,16 +164,14 @@ void CbmCaMCModule::ProcessEvent(CbmEvent*) {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
+void CbmCaMCModule::InitTrackInfo()
 {
-  LOG(info) << "\033[1;32m!!!! FLAG 1\033[0m";
   // ----- Initialize stations arrangement and hit indexes
-  fpMCData->InitTrackInfo(vHits);
+  fpMCData->InitTrackInfo(*fpvQaHits);
 
-  LOG(info) << "\033[1;32m!!!! FLAG 2\033[0m";
   // ----- Define reconstructable and additional flags
   for (auto& aTrk : fpMCData->GetTrackContainer()) {
-    bool isRec = true;  // is track reconstructable
+    bool isRec = true;  // the track can be reconstructed
 
     // Cut on momentum
     isRec &= aTrk.GetP() > CbmL1Constants::MinRecoMom;
@@ -213,7 +203,6 @@ void CbmCaMCModule::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
     aTrk.SetFlagReconstructable(isRec);
     aTrk.SetFlagAdditional(isAdd);
   }
-  LOG(info) << "\033[1;32m!!!! FLAG 3\033[0m";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -227,32 +216,21 @@ void CbmCaMCModule::Finish() {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchPointsWithHits()
+void CbmCaMCModule::MatchRecoAndMC()
 {
-  // FIXME: Cleaning up makes it safer, but probably is not needed after old code removal
-  for (auto& hit : (*fpvHitIds)) {
-    hit.mcPointIds.clear();
-  }
-
-  int nHits = fpvHitIds->size();
-  for (int iH = 0; iH < nHits; ++iH) {
-    auto& hit = (*fpvHitIds)[iH];
-    int iP    = fpMCData->GetPointIndexOfHit(iH);
-    if (iP > -1) {
-      hit.mcPointIds.push_back_no_warning(iP);
-      fpMCData->GetPoint(iP).AddHitID(iH);
-    }
-  }  // loop over hit indexes: end
+  this->MatchPointsAndHits();
+  this->MatchRecoAndMCTracks();
+  this->InitTrackInfo();
 }
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHit) const
+int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHitExt) const
 {
   int iPoint = -1;
   if (fpMvdHitMatches) {
-    int iHitExt          = -(1 + iHit);  // TODO: SZh 28.08.2022: this should be replaced with iHitExt = hit.extIdex
     const auto* hitMatch = dynamic_cast<CbmMatch*>(fpMvdHitMatches->At(iHitExt));
     assert(hitMatch);
     if (hitMatch->GetNofLinks() > 0 && hitMatch->GetLink(0).GetIndex() < fvNofPointsUsed[int(L1DetectorID::kMvd)]) {
@@ -265,10 +243,10 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHit) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHit) const
+int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHitExt) const
 {
   int iPoint     = -1;
-  const auto* sh = dynamic_cast<CbmStsHit*>(fpStsHits->At(iHit));
+  const auto* sh = dynamic_cast<CbmStsHit*>(fpStsHits->At(iHitExt));
 
   // Match MC point
   if (fpStsClusterMatches) {
@@ -321,10 +299,10 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHit) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHit) const
+int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHitExt) const
 {
   int iPoint               = -1;
-  const auto* hitMatchMuch = dynamic_cast<CbmMatch*>(fpMuchHitMatches->At(iHit));
+  const auto* hitMatchMuch = dynamic_cast<CbmMatch*>(fpMuchHitMatches->At(iHitExt));
   if (hitMatchMuch) {
     for (int iLink = 0; iLink < hitMatchMuch->GetNofLinks(); ++iLink) {
       if (hitMatchMuch->GetLink(iLink).GetIndex() < fvNofPointsUsed[int(L1DetectorID::kMuch)]) {
@@ -346,10 +324,10 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHit) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
+int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
 {
   int iPoint           = -1;
-  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTrdHitMatches->At(iHit));
+  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTrdHitMatches->At(iHitExt));
   if (hitMatch) {
     int iMC = -1;
     if (hitMatch->GetNofLinks() > 0) {
@@ -371,10 +349,10 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
+int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
 {
   int iPoint           = -1;
-  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTofHitMatches->At(iHit));
+  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTofHitMatches->At(iHitExt));
   if (hitMatch) {
     for (int iLink = 0; iLink < hitMatch->GetNofLinks(); ++iLink) {
       int iMc    = hitMatch->GetLink(iLink).GetIndex();
@@ -393,6 +371,55 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void CbmCaMCModule::MatchPointsAndHits()
+{
+  // Clear point indexes of each hit
+  // NOTE: at the moment only the best point is stored to the hit, but we keep the possibility for keeping many
+  //       points for possible future module extension.
+  for (auto& hit : (*fpvQaHits)) {
+    hit.mcPointIds.clear();
+  }
+
+  // Match hit with point for different detectors
+  auto DoMatch = [&](int iH, int iP) constexpr
+  {
+    if (iP > -1) {
+      auto& hit = (*fpvQaHits)[iH];
+      hit.mcPointIds.push_back_no_warning(iP);
+      fpMCData->GetPoint(iP).AddHitID(iH);
+    }
+  };
+
+  int iH = 0;
+  if (fbUseMvd) {
+    for (iH = (*fpvFstHitId)[int(L1DetectorID::kMvd)]; iH < (*fpvFstHitId)[int(L1DetectorID::kMvd) + 1]; ++iH) {
+      DoMatch(iH, MatchHitWithMc<L1DetectorID::kMvd>((*fpvQaHits)[iH].ExtIndex));
+    }
+  }
+  if (fbUseSts) {
+    for (iH = (*fpvFstHitId)[int(L1DetectorID::kSts)]; iH < (*fpvFstHitId)[int(L1DetectorID::kSts) + 1]; ++iH) {
+      DoMatch(iH, MatchHitWithMc<L1DetectorID::kSts>((*fpvQaHits)[iH].ExtIndex));
+    }
+  }
+  if (fbUseSts) {
+    for (iH = (*fpvFstHitId)[int(L1DetectorID::kMuch)]; iH < (*fpvFstHitId)[int(L1DetectorID::kMuch) + 1]; ++iH) {
+      DoMatch(iH, MatchHitWithMc<L1DetectorID::kMuch>((*fpvQaHits)[iH].ExtIndex));
+    }
+  }
+  if (fbUseTrd) {
+    for (iH = (*fpvFstHitId)[int(L1DetectorID::kTrd)]; iH < (*fpvFstHitId)[int(L1DetectorID::kTrd) + 1]; ++iH) {
+      DoMatch(iH, MatchHitWithMc<L1DetectorID::kTrd>((*fpvQaHits)[iH].ExtIndex));
+    }
+  }
+  if (fbUseTof) {
+    for (iH = (*fpvFstHitId)[int(L1DetectorID::kTof)]; iH < (*fpvFstHitId)[int(L1DetectorID::kTof) + 1]; ++iH) {
+      DoMatch(iH, MatchHitWithMc<L1DetectorID::kTof>((*fpvQaHits)[iH].ExtIndex));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void CbmCaMCModule::MatchRecoAndMCTracks()
 {
   for (int iTre = 0; iTre < int(fpvRecoTracks->size()); ++iTre) {
@@ -402,7 +429,7 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
     auto& mNofHitsVsMCTrkID = trkRe.hitMap;
     mNofHitsVsMCTrkID.clear();
     for (int iH : trkRe.Hits) {
-      for (int iP : (*fpvHitIds)[iH].mcPointIds) {
+      for (int iP : (*fpvQaHits)[iH].mcPointIds) {
         assert(iP > -1);  // Should never be triggered
         int iTmc = fpMCData->GetPoint(iP).GetTrackId();
         if (mNofHitsVsMCTrkID.find(iTmc) == mNofHitsVsMCTrkID.end()) { mNofHitsVsMCTrkID[iTmc] = 1; }
@@ -472,20 +499,18 @@ void CbmCaMCModule::SetDetector(L1DetectorID detID, bool flag)
 //
 void CbmCaMCModule::CheckInit() const
 {
-  // ----- Check parameters
+  // Check parameters
   if (!fpParameters.get()) { throw std::logic_error("Tracking parameters object was not defined"); }
 
+  // Check output data containers
   if (!fpMCData) { throw std::logic_error("MC data object was not registered"); }
-
   if (!fpvRecoTracks) { throw std::logic_error("Reconstructed track container was not registered"); }
-
   if (!fpvHitIds) { throw std::logic_error("Hit index container was not registered"); }
-
-  if (!fpInputData) { throw std::logic_error("Input data object was not registered"); }
+  if (!fpvQaHits) { throw std::logic_error("QA hit container was not registered"); }
+  if (!fpvFstHitId) { throw std::logic_error("Array of first hit indexes in each detector was not registered"); }
 
   // Check event list
   if (!fbLegacyEventMode && !fpMCEventList) { throw std::logic_error("MC event list was not found"); }
-
   if (!fbLegacyEventMode && !fpTimeSlice) { throw std::logic_error("Time slice was not found"); }
 
   // Tracks branch
@@ -716,7 +741,7 @@ void CbmCaMCModule::ReadMCTracks()
       else {
         // This is a secondary track, mother ID should be recalculated for the internal array
         int motherId = fpMCData->FindInternalTrackIndex(extMotherId, iEvent, iFile);
-        assert(motherId > -1);
+        if (motherId == -1) { motherId = -3; }  // Mother is neutral particle, which is rejected
         aTrk.SetMotherId(motherId);
       }
 

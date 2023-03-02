@@ -17,6 +17,7 @@ set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   FairRoot::Base
   FairLogger::FairLogger
+  external::yaml-cpp
   ROOT::Core
   ROOT::Gpad
   ROOT::Hist

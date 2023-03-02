@@ -117,64 +117,65 @@ void Qa::FillHistograms()
   // ** Fill distributions for reconstructed tracks (including ghost ones) **
   // ************************************************************************
 
-  for (const auto& recoTrk : *fpvRecoTracks) {
-    // Reject tracks, which do not contain hits
-    if (recoTrk.GetNofHits() < 1) { continue; }
+  //for (const auto& recoTrk : *fpvRecoTracks) {
+  //  // Reject tracks, which do not contain hits
+  //  if (recoTrk.GetNofHits() < 1) { continue; }
 
-    const auto& hitFst = (*fpvHits)[recoTrk.GetHitIndexes()[0]];                         // first hit of track
-    const auto& hitSnd = (*fpvHits)[recoTrk.GetHitIndexes()[1]];                         // second hit of track
-    const auto& hitLst = (*fpvHits)[recoTrk.GetHitIndexes()[recoTrk.GetNofHits() - 1]];  // last hit of track
+  //  const auto& hitFst = (*fpvHits)[recoTrk.GetHitIndexes()[0]];                         // first hit of track
+  //  const auto& hitSnd = (*fpvHits)[recoTrk.GetHitIndexes()[1]];                         // second hit of track
+  //  const auto& hitLst = (*fpvHits)[recoTrk.GetHitIndexes()[recoTrk.GetNofHits() - 1]];  // last hit of track
 
-    fph_reco_p->Fill(recoTrk.GetP());
-    fph_reco_pt->Fill(recoTrk.GetPt());
-    fph_reco_phi->Fill(recoTrk.GetPhi());
-    fph_reco_nhits->Fill(recoTrk.GetNofHits());
-    fph_reco_fsta->Fill(hitFst.GetStationId());
-    fph_reco_purity->Fill(100 * recoTrk.GetMaxPurity());
+  //  fph_reco_p->Fill(recoTrk.GetP());
+  //  fph_reco_pt->Fill(recoTrk.GetPt());
+  //  fph_reco_phi->Fill(recoTrk.GetPhi());
+  //  fph_reco_nhits->Fill(recoTrk.GetNofHits());
+  //  //fph_reco_fsta->Fill(hitFst.GetStationId());
+  //  fph_reco_purity->Fill(100 * recoTrk.GetMaxPurity());
 
-    if (recoTrk.GetNDF() > 0) {
-      if (recoTrk.IsGhost()) {
-        fph_ghost_chi2_ndf->Fill(recoTrk.GetChiSq() / recoTrk.GetNDF());
-        fph_ghost_prob->Fill(recoTrk.GetProb());
-      }
-      else {
-        int iTmc          = recoTrk.GetMCTrackIndexes()[0];  // Index of first MC-track
-        const auto& mcTrk = fpMCData->GetTrack(iTmc);
-        // NOTE: reconstructed tracks usually have reference to only one MC-track
-        if (mcTrk.IsReconstructable()) {
-          fph_reco_chi2_ndf->Fill(recoTrk.GetChiSq() / recoTrk.GetNDF());
-          fph_reco_prob->Fill(recoTrk.GetProb());
-        }
-        else {
-          fph_rest_chi2_ndf->Fill(recoTrk.GetChiSq() / recoTrk.GetNDF());
-          fph_rest_prob->Fill(recoTrk.GetProb());
-        }
-      }
-    }  // recoTrk.GetNDF() > 0: end
+  //  if (recoTrk.GetNDF() > 0) {
+  //    if (recoTrk.IsGhost()) {
+  //      fph_ghost_chi2_ndf->Fill(recoTrk.GetChiSq() / recoTrk.GetNDF());
+  //      fph_ghost_prob->Fill(recoTrk.GetProb());
+  //    }
+  //    else {
+  //      int iTmc          = recoTrk.GetMCTrackIndexes()[0];  // Index of first MC-track
+  //      const auto& mcTrk = fpMCData->GetTrack(iTmc);
+  //      // NOTE: reconstructed tracks usually have reference to only one MC-track
+  //      if (mcTrk.IsReconstructable()) {
+  //        fph_reco_chi2_ndf->Fill(recoTrk.GetChiSq() / recoTrk.GetNDF());
+  //        fph_reco_prob->Fill(recoTrk.GetProb());
+  //      }
+  //      else {
+  //        fph_rest_chi2_ndf->Fill(recoTrk.GetChiSq() / recoTrk.GetNDF());
+  //        fph_rest_prob->Fill(recoTrk.GetProb());
+  //      }
+  //    }
+  //  }  // recoTrk.GetNDF() > 0: end
 
-    if (recoTrk.IsGhost()) {
-      fph_ghost_purity->Fill(100 * recoTrk.GetMaxPurity());
-      fph_ghost_p->Fill(recoTrk.GetP());
-      fph_ghost_pt->Fill(recoTrk.GetPt());
-      fph_ghost_nhits->Fill(recoTrk.GetNofHits());
-      fph_ghost_fsta->Fill(hitFst.GetStationId());
+  //  if (recoTrk.IsGhost()) {
+  //    fph_ghost_purity->Fill(100 * recoTrk.GetMaxPurity());
+  //    fph_ghost_p->Fill(recoTrk.GetP());
+  //    fph_ghost_pt->Fill(recoTrk.GetPt());
+  //    fph_ghost_nhits->Fill(recoTrk.GetNofHits());
+  //    fph_ghost_fsta->Fill(hitFst.GetStationId());
+  //    fph_ghost_fhitR->Fill(hitFst.GetDistFromBP());
 
-      // z-positions of the first and second hit stations
-      double z0 = fpParameters->GetStation(hitFst.GetStationId()).fZ[0];
-      double z1 = fpParameters->GetStation(hitSnd.GetStationId()).fZ[0];
+  //    // z-positions of the first and second hit stations
+  //    double z0 = fpParameters->GetStation(hitFst.GetStationId()).fZ[0];
+  //    double z1 = fpParameters->GetStation(hitSnd.GetStationId()).fZ[0];
 
-      if (fabs(z1 - z0) > 1.e-4) {  // test for z1 != z2
-        fph_ghost_tx->Fill((hitSnd.GetX() - hitFst.GetX()) / (z1 - z0));
-        fph_ghost_ty->Fill((hitSnd.GetY() - hitFst.GetY()) / (z1 - z0));
-      }
+  //    if (fabs(z1 - z0) > 1.e-4) {  // test for z1 != z2
+  //      fph_ghost_tx->Fill((hitSnd.GetX() - hitFst.GetX()) / (z1 - z0));
+  //      fph_ghost_ty->Fill((hitSnd.GetY() - hitFst.GetY()) / (z1 - z0));
+  //    }
 
-      fph_ghost_nhits_vs_p->Fill(recoTrk.GetP(), recoTrk.GetNofHits());
-      fph_ghost_fsta_vs_p->Fill(recoTrk.GetP(), hitFst.GetStationId());
-      if (hitFst.GetStationId() <= hitLst.GetStationId()) {
-        fph_ghost_lsta_vs_fsta->Fill(hitFst.GetStationId(), hitLst.GetStationId());
-      }
-    }  // recoTrk.IsGhost(): end
-  }    // loop over recoTrk: end
+  //    fph_ghost_nhits_vs_p->Fill(recoTrk.GetP(), recoTrk.GetNofHits());
+  //    fph_ghost_fsta_vs_p->Fill(recoTrk.GetP(), hitFst.GetStationId());
+  //    if (hitFst.GetStationId() <= hitLst.GetStationId()) {
+  //      fph_ghost_lsta_vs_fsta->Fill(hitFst.GetStationId(), hitLst.GetStationId());
+  //    }
+  //  }  // recoTrk.IsGhost(): end
+  //}  // loop over recoTrk: end
 
 
   // *************************************

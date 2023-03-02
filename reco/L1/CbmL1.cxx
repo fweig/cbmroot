@@ -1156,8 +1156,11 @@ void CbmL1::DefineSTAPNames(const char* dirName)
   fSTAPDataPrefix.ReplaceAll(".root", "");
   fSTAPDataPrefix = fSTAPDataPrefix.Strip(TString::EStripType::kBoth, '.');
 
-  TString sDirName = TString(dirName).Length();
-  if (!sDirName.Length()) { fSTAPDataDir = pathToRecoOutput.parent_path().string(); }
+  TString sDirName = TString(dirName);
+  if (sDirName.Length() == 0) {
+    fSTAPDataDir = pathToRecoOutput.parent_path().string();
+    L1_SHOW(fSTAPDataDir);
+  }
   else if (bfs::exists(sDirName.Data()) && bfs::is_directory(sDirName.Data())) {
     fSTAPDataDir = sDirName;
   }

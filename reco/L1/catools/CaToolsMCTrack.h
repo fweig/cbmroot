@@ -10,6 +10,8 @@
 #ifndef CaToolsMCTrack_h
 #define CaToolsMCTrack_h 1
 
+#include "CbmL1Hit.h"
+
 #include "TMath.h"
 
 #include <functional>
@@ -309,6 +311,12 @@ namespace ca::tools
     /// Sorts points inside track by a provided hit comparison function function
     /// \param  cmpFn  Functional object to compare mcPoints
     void SortPointIndexes(const std::function<bool(const int& lhs, const int& rhs)>& cmpFn);
+
+    /// @brief Provides string representation of a track
+    /// @param verbose  Verbosity level
+    /// @param header   Flag: to print header or data
+    /// @return String representation
+    std::string ToString(int verbose = 1, bool header = false) const;
 
   private:
     // ****************************

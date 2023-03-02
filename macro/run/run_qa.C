@@ -18,17 +18,13 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
-#include "CbmCaInputQaMuch.h"
-#include "CbmCaInputQaSts.h"
-#include "CbmCaInputQaTof.h"
-#include "CbmCaInputQaTrd.h"
-#include "CbmCaOutputQa.h"
 #include "CbmDefs.h"
 #include "CbmMCDataManager.h"
 #include "CbmMuchDigitizerQa.h"
 #include "CbmMuchHitFinderQa.h"
 #include "CbmMuchTransportQa.h"
 #include "CbmSetup.h"
+#include "CbmStsFindTracksQa.h"
 
 #include <FairFileSource.h>
 #include <FairMonitor.h>
@@ -45,7 +41,7 @@
 void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "data/sis100_muon_jpsi_test",
             TString dataReco = "data/sis100_muon_jpsi_test", TString dataPar = "data/sis100_muon_jpsi_test",
             TString dataSink = "data/sis100_muon_jpsi_test", TString setup = "sis100_muon_jpsi", Int_t nEvents = -1,
-            TString dataTra2 = "", TString dataTra3 = "")
+            TString dataTra2 = "", TString dataTra3 = "", const char* configName = "./qa_config.fcbm.yaml")
 {
 
   gROOT->SetBatch(kTRUE);
@@ -58,9 +54,12 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   fair::Logger::DefineVerbosity(
     "user1", fair::VerbositySpec::Make(fair::VerbositySpec::Info::severity, fair::VerbositySpec::Info::file_line));
   FairLogger::GetLogger()->SetLogVerbosityLevel("user1");
+  FairLogger::GetLogger()->SetColoredLog(true);
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
+  bool bUseMC    = true;  // MC flag: used or not
+  int verbose    = 3;
   TString myName = "run_qa";                       // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
@@ -78,8 +77,9 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Loading setup " << setup << std::endl;
-  CbmSetup* geo = CbmSetup::Instance();
+  auto* geo = CbmSetup::Instance();
   geo->LoadSetup(setup);
+
   // You can modify the pre-defined setup by using
   // CbmSetup::Instance()->RemoveModule(ESystemId) or
   // CbmSetup::Instance()->SetModule(ESystemId, const char*, Bool_t) or
@@ -96,6 +96,13 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   bool bUseTrd  = geo->IsActive(ECbmModuleId::kTrd);
   bool bUseTof  = geo->IsActive(ECbmModuleId::kTof);
   bool bUsePsd  = geo->IsActive(ECbmModuleId::kPsd);
+  std::cout << "  MVD: " << (bUseMvd ? "ON" : "OFF") << '\n';
+  std::cout << "  STS: " << (bUseSts ? "ON" : "OFF") << '\n';
+  std::cout << "  RICH: " << (bUseRich ? "ON" : "OFF") << '\n';
+  std::cout << "  MUCH: " << (bUseMuch ? "ON" : "OFF") << '\n';
+  std::cout << "  TRD: " << (bUseTrd ? "ON" : "OFF") << '\n';
+  std::cout << "  TOF: " << (bUseTof ? "ON" : "OFF") << '\n';
+  std::cout << "  PSD: " << (bUsePsd ? "ON" : "OFF") << '\n';
   // ------------------------------------------------------------------------
 
   // -----   Parameter files as input to the runtime database   -------------
@@ -173,6 +180,7 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   mcManager->AddFile(traFile);
   if (!dataTra2.IsNull()) mcManager->AddFile(tra2File);
   if (!dataTra3.IsNull()) mcManager->AddFile(tra3File);
+
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
 
@@ -189,6 +197,10 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     CbmMuchHitFinderQa* muchHitFinderQa = new CbmMuchHitFinderQa();
     muchHitFinderQa->SetGeoFileName(muchParFile);
     run->AddTask(muchHitFinderQa);
+
+    auto* pCaInputQaMuch = new CbmCaInputQaMuch(verbose, bUseMC);
+    pCaInputQaMuch->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputQaMuch);
   }
 
   // ----- TRD QA  ---------------------------------
@@ -206,36 +218,43 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     run->AddTask(trdHitProducerQa);
     run->AddTask(new CbmTrdCalibTracker());
     run->AddTask(new CbmTrackerInputQaTrd());  // Tracker requirements to TRD
+    auto* pCaInputQaTrd = new CbmCaInputQaTrd(verbose, bUseMC);
+    pCaInputQaTrd->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputQaTrd);
   }
   // ------------------------------------------------------------------------
 
   // ----- TOF QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kTof)) {
     //run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TOF
+    auto* pCaInputQaTof = new CbmCaInputQaTof(verbose, bUseMC);
+    pCaInputQaTof->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputQaTof);
   }
   // ------------------------------------------------------------------------
 
   // ----- STS QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) {
     //run->AddTask(new CbmStsDigitizeQa()); //opens lots of windows
-    //run->AddTask(new CbmStsFindTracksQa());
-    //run->AddTask(new CbmTrackingInputQaSts());
+    run->AddTask(new CbmStsFindTracksQa());
+    auto* pCaInputQaSts = new CbmCaInputQaSts(verbose, bUseMC);
+    pCaInputQaSts->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputQaSts);
   }
   // ------------------------------------------------------------------------
 
-  // ----- Event builder QA  ------------------------------------------------
+  // ----- Event builder QA  ---------------------------------
   CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
-  //run->AddTask(evBuildQA);
+  run->AddTask(evBuildQA);
   // ------------------------------------------------------------------------
 
   // ----- Tracking QA ------------------------------------------------------
-  int verbose       = 3;
-  bool isMCUsed     = true;
   TString caParFile = recFile;
   caParFile.ReplaceAll(".root", ".L1Parameters.dat");
 
-  auto* pCaOutputQa = new cbm::ca::OutputQa(verbose, isMCUsed);
+  auto* pCaOutputQa = new cbm::ca::OutputQa(verbose, bUseMC);
   pCaOutputQa->SetStsTrackingMode();
+  pCaOutputQa->SetConfigName(configName);
   pCaOutputQa->ReadParameters(caParFile.Data());
   pCaOutputQa->SetUseMvd(bUseMvd);
   pCaOutputQa->SetUseSts(bUseSts);

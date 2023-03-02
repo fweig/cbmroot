@@ -11,9 +11,9 @@
 
 #include "L1Vector.h"
 
-/// TODO: SZh: Complete the rule of five
-/// TODO: SZh: Make variables private
-/// TODO; SZh: Move class to ca::tools (ca::tools::Hit)
+// TODO: SZh: Complete the rule of five
+// TODO: SZh: Make variables private
+// TODO: SZh: Move class to ca::tools (ca::tools::Hit)
 
 ///
 /// Identificator for cbm hits with their detector and index in cbm arrays
@@ -23,8 +23,8 @@ public:
   CbmL1HitId() = default;
   CbmL1HitId(int det, int index) : detId(det), hitId(index) {};
 
-  int detId {0};  ///< detector ID (mvd/sts/etc)
-  int hitId {0};  ///< index of hit in the TClonesArray array
+  int detId = -1;  ///< detector ID
+  int hitId = -1;  ///< index of hit in the TClonesArray array
 };
 
 
@@ -99,6 +99,7 @@ public:
     return msg.str();
   }
 
+  // TODO: SZh 2.03.2023: make the variables private
   int ExtIndex;                                                ///< index of hit in the external branch
   int iStation;                                                ///< index of station in active stations array
   double x;                                                    ///< x coordinate of position [cm]

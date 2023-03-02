@@ -107,10 +107,6 @@ namespace ca::tools
     /// Gets a reference to the vector of points
     const auto& GetPointContainer() const { return fvPoints; }
 
-    /// Gets point index by global index of hit
-    /// \param  iHit  Index of hit
-    auto GetPointIndexOfHit(int iHit) const { return fvPointIndexOfHit[iHit]; }
-
     /// Gets a reference to MC track by its internal index
     const auto& GetTrack(int idx) const { return fvTracks[idx]; }
 
@@ -130,23 +126,11 @@ namespace ca::tools
     /// with hits.
     void InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits);
 
-    /// Registers index of point for a given index of hit
-    /// \param  iHit    Index of hit
-    /// \param  iPoint  Index of point
-    void RegisterPointIndexForHit(int iHit, int iPoint)
-    {
-      assert(int(fvPointIndexOfHit.size()) > iHit);
-      fvPointIndexOfHit[iHit] = iPoint;
-    }
-
     /// Reserves memory for tracks to avoid extra allocations
     void ReserveNofTracks(int nTracks) { fvTracks.reserve(nTracks); }
 
     /// Reserves memory for points to avoid extra allocations
     void ReserveNofPoints(int nPoints) { fvPoints.reserve(nPoints); }
-
-    /// Reserves total number of used hits in the event
-    void ReserveNofHits(int nHits) { fvPointIndexOfHit.reserve(nHits); }
 
     /// Prints an example of tracks and points
     /// \param verbose  Verbose level:
@@ -162,9 +146,6 @@ namespace ca::tools
 
     L1Vector<MCPoint> fvPoints = {"ca::tools::MCData::fvPoints"};  ///< Container of points
     L1Vector<MCTrack> fvTracks = {"ca::tools::MCData::fvTracks"};  ///< Container of tracks
-
-    /// Correspondence of MC point index to the global hit index
-    L1Vector<int> fvPointIndexOfHit = {"ca::tools::MCData::fvPointIndexOfHit"};
 
     std::unordered_map<LinkKey, int> fmPointLinkMap = {};  ///< MC point internal index vs. link
     std::unordered_map<LinkKey, int> fmTrackLinkMap = {};  ///< MC track internal index vs. link

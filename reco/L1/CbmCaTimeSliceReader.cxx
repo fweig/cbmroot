@@ -23,6 +23,7 @@
 using cbm::ca::TimeSliceReader;
 using L1Constants::clrs::kCL;   // clear log
 using L1Constants::clrs::kGNb;  // green bold log
+using L1Constants::clrs::kRDb;  // red bold log
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -41,6 +42,7 @@ void TimeSliceReader::Clear()
 
   // Input branches
   fpBrTimeSlice = nullptr;
+  fpParameters  = nullptr;
 
   fpBrMvdHits  = nullptr;
   fpBrStsHits  = nullptr;
@@ -56,15 +58,51 @@ void TimeSliceReader::Clear()
 
   // Pointers to output containers
   fpvHitIds       = nullptr;
-  fpvDbgHits      = nullptr;
+  fpvQaHits       = nullptr;
   fpIODataManager = nullptr;
   fpvTracks       = nullptr;
+
+  fNofHits     = 0;
+  fNofHitKeys  = 0;
+  fFirstHitKey = 0;
+
+  std::fill(fvHitFirstIndexDet.begin(), fvHitFirstIndexDet.end(), 0);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void TimeSliceReader::InitRun()
+void TimeSliceReader::CheckInit() const
 {
+  // Check parameters
+  if (!fpParameters.get()) { throw std::logic_error("Tracking parameters object was not defined"); }
+  if (!fpvHitIds) { throw std::logic_error("Hit index container was not defined"); }
+
+  if (!fpBrTimeSlice) { throw std::logic_error("Time slice branch is unavailable"); }
+
+  if (fbUseMvd && !fpBrMvdHits) { throw std::logic_error("MVD hits branch is unavailable"); }
+  if (fbUseSts && !fpBrStsHits) { throw std::logic_error("STS hits branch is unavailable"); }
+  if (fbUseMuch && !fpBrMuchHits) { throw std::logic_error("MuCh hits branch is unavailable"); }
+  if (fbUseTrd && !fpBrTrdHits) { throw std::logic_error("TRD hits branch is unavailable"); }
+  if (fbUseTof && !fpBrTofHits) { throw std::logic_error("TOF hits branch is unavailable"); }
+
+  if (fpvTracks) {
+    if (ECbmTrackingMode::kSTS == fTrackingMode) {
+      if (!fpBrRecoTracks) { throw std::logic_error("StsTrack branch is unavailable"); }
+    }
+    else if (ECbmTrackingMode::kMCBM == fTrackingMode) {
+      if (!fpBrRecoTracks) { throw std::logic_error("GlobalTrack branch is unavailable"); }
+      if (fbUseSts && !fpBrStsTracks) { throw std::logic_error("StsTrack branch is unavailable"); }
+      if (fbUseMuch && !fpBrMuchTracks) { throw std::logic_error("MuchTrack branch is unavailable"); }
+      if (fbUseTrd && !fpBrRecoTracks) { throw std::logic_error("TrdTrack branch is unavailable"); }
+      if (fbUseTof && !fpBrRecoTracks) { throw std::logic_error("TofTrack branch is unavailable"); }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+bool TimeSliceReader::InitRun()
+try {
   LOG(info) << "TimeSliceReader: initializing run ... ";
 
   // Init tracking detector interfaces
@@ -80,70 +118,48 @@ void TimeSliceReader::InitRun()
   LOG_IF(fatal, !pFairManager) << "TimeSliceReader: FairRootManager was not defined";
 
   fpBrTimeSlice = dynamic_cast<CbmTimeSlice*>(pFairManager->GetObject("TimeSlice."));
-  LOG_IF(fatal, !fpBrTimeSlice) << "TimeSliceReader: time slice was not defined";
 
   // Init hit branches
-  if (fbUseMvd) {
-    fpBrMvdHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MvdHit"));
-    LOG_IF(fatal, !fpBrMvdHits) << "TimeSliceReader: MVD hits were not found";
-  }
-
-  if (fbUseSts) {
-    fpBrStsHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsHit"));
-    LOG_IF(fatal, !fpBrStsHits) << "TimeSliceReader: STS hits were not found";
-  }
-
-  if (fbUseMuch) {
-    fpBrMuchHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MuchPixelHit"));
-    LOG_IF(fatal, !fpBrMuchHits) << "TimeSliceReader: MuCh hits were not found";
-  }
-
-  if (fbUseTrd) {
-    fpBrTrdHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TrdHit"));
-    LOG_IF(fatal, !fpBrTrdHits) << "TimeSliceReader: TRD hits were not found";
-  }
-
-  if (fbUseTof) {
-    fpBrTofHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TofHit"));
-    LOG_IF(fatal, !fpBrTofHits) << "TimeSliceReader: TOF hits were not found";
-  }
+  if (fbUseMvd) { fpBrMvdHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MvdHit")); }
+  if (fbUseSts) { fpBrStsHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsHit")); }
+  if (fbUseMuch) { fpBrMuchHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MuchPixelHit")); }
+  if (fbUseTrd) { fpBrTrdHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TrdHit")); }
+  if (fbUseTof) { fpBrTofHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TofHit")); }
 
   // Init track branches
   if (fpvTracks) {
     switch (fTrackingMode) {
       case ECbmTrackingMode::kSTS:
         fpBrRecoTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsTrack"));
-        LOG_IF(fatal, !fpBrRecoTracks) << "TimeSliceReader: StsTrack not found";
         break;
       case ECbmTrackingMode::kMCBM:
         fpBrRecoTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("GlobalTrack"));
-        LOG_IF(fatal, !fpBrRecoTracks) << "TimeSliceReader: GlobalTrack not found";
-        if (fbUseSts) {
-          fpBrStsTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsTrack"));
-          LOG_IF(fatal, !fpBrStsTracks) << "TimeSliceReader: StsTrack not found";
-        }
-        if (fbUseMuch) {
-          fpBrMuchTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MuchTrack"));
-          LOG_IF(fatal, !fpBrMuchTracks) << "TimeSliceReader: MuchTrack not found";
-        }
-        if (fbUseTrd) {
-          fpBrTrdTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TrdTrack"));
-          LOG_IF(fatal, !fpBrTrdTracks) << "TimeSliceReader: TrdTrack not found";
-        }
-        if (fbUseTof) {
-          fpBrTofTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TofTrack"));
-          LOG_IF(fatal, !fpBrTofTracks) << "TimeSliceReader: TofTrack not found";
-        }
+        if (fbUseSts) { fpBrStsTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsTrack")); }
+        if (fbUseMuch) { fpBrMuchTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MuchTrack")); }
+        if (fbUseTrd) { fpBrTrdTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TrdTrack")); }
+        if (fbUseTof) { fpBrTofTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TofTrack")); }
         break;
     }
   }
 
+  // Check initialization
+  this->CheckInit();
+
   LOG(info) << "TimeSliceReader: initializing run ... " << kGNb << "done" << kCL;
+  return true;
+}
+catch (const std::logic_error& error) {
+  LOG(info) << "TimeSliceReader: initializing run ... " << kRDb << "failed" << kCL << "\nReason: " << error.what();
+  return false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void TimeSliceReader::InitTimeSlice() { LOG(info) << "TimeSliceReader: initializing time slice"; }
+void TimeSliceReader::InitTimeSlice()
+{
+  this->ReadHits();
+  this->ReadRecoTracks();
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -162,21 +178,58 @@ void TimeSliceReader::ReadHits()
   if (fbUseTof) { nHitsTot += fpBrTofHits->GetEntriesFast(); }
 
   // Resize the containers
-  fpvHitIds->clear();
-  fpvHitIds->reserve(nHitsTot);
-  fpvDbgHits->clear();
-  fpvDbgHits->reserve(nHitsTot);
-  fpIODataManager->ResetInputData();
-  fpIODataManager->ReserveNhits(nHitsTot);
+  if (fpvHitIds) {
+    fpvHitIds->clear();
+    fpvHitIds->reserve(nHitsTot);
+  }
+  if (fpvQaHits) {
+    fpvQaHits->clear();
+    fpvQaHits->reserve(nHitsTot);
+  }
+  if (fpIODataManager) {
+    fpIODataManager->ResetInputData();
+    fpIODataManager->ReserveNhits(nHitsTot);
+  }
+
+  std::fill(fvHitFirstIndexDet.begin(), fvHitFirstIndexDet.end(), 0);
+
+  // Save number of hits stored
+  std::array<int, L1Constants::size::kMaxNdetectors> vNofHits = {0};
 
   // Read hits for different detectors
-  if (fbUseMvd) { fNofHits += ReadHitsForDetector<L1DetectorID::kMvd>(fpBrMvdHits); }
-  if (fbUseSts) { fNofHits += ReadHitsForDetector<L1DetectorID::kSts>(fpBrStsHits); }
-  if (fbUseMuch) { fNofHits += ReadHitsForDetector<L1DetectorID::kMuch>(fpBrMuchHits); }
-  if (fbUseTrd) { fNofHits += ReadHitsForDetector<L1DetectorID::kTrd>(fpBrTrdHits); }
-  if (fbUseTof) { fNofHits += ReadHitsForDetector<L1DetectorID::kTof>(fpBrTofHits); }
+  if (fbUseMvd) { vNofHits[int(L1DetectorID::kMvd)] += ReadHitsForDetector<L1DetectorID::kMvd>(fpBrMvdHits); }
+  if (fbUseSts) { vNofHits[int(L1DetectorID::kSts)] += ReadHitsForDetector<L1DetectorID::kSts>(fpBrStsHits); }
+  if (fbUseMuch) { vNofHits[int(L1DetectorID::kMuch)] += ReadHitsForDetector<L1DetectorID::kMuch>(fpBrMuchHits); }
+  if (fbUseTrd) { vNofHits[int(L1DetectorID::kTrd)] += ReadHitsForDetector<L1DetectorID::kTrd>(fpBrTrdHits); }
+  if (fbUseTof) { vNofHits[int(L1DetectorID::kTof)] += ReadHitsForDetector<L1DetectorID::kTof>(fpBrTofHits); }
 
-  fpIODataManager->SetNhitKeys(fNofHitKeys);
+  // Save first hit index for different detector subsystems
+  for (uint32_t iDet = 0; iDet < vNofHits.size(); ++iDet) {
+    fvHitFirstIndexDet[iDet + 1] = fvHitFirstIndexDet[iDet] + vNofHits[iDet];
+    fNofHits += vNofHits[iDet];
+  }
+
+  // Update maps of ext->int hit indexes
+  // NOTE: fvpHitIds must be initialized, if we want to read tracks from the file
+  if (fpvHitIds) {
+    auto UpdateHitIndexMap = [&](L1Vector<int> & vIds, L1DetectorID detID) constexpr
+    {
+      vIds.reset(vNofHits[int(detID)]);
+      for (int iH = fvHitFirstIndexDet[int(detID)]; iH < fvHitFirstIndexDet[int(detID) + 1]; ++iH) {
+        vIds[(*fpvHitIds)[iH].hitId] = iH;
+      }
+    };
+    if (fbUseMvd) { UpdateHitIndexMap(vHitMvdIds, L1DetectorID::kMvd); }
+    if (fbUseSts) { UpdateHitIndexMap(vHitStsIds, L1DetectorID::kSts); }
+    if (fbUseMuch) { UpdateHitIndexMap(vHitMuchIds, L1DetectorID::kMuch); }
+    if (fbUseTrd) { UpdateHitIndexMap(vHitTrdIds, L1DetectorID::kTrd); }
+    if (fbUseTof) { UpdateHitIndexMap(vHitTofIds, L1DetectorID::kTof); }
+  }
+  // Update number of hit keys in input data object
+  if (fpIODataManager) { fpIODataManager->SetNhitKeys(fNofHitKeys); }
+
+  // Sort debug hits
+  if (fpvQaHits) { this->SortQaHits(); }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -210,10 +263,12 @@ void TimeSliceReader::ReadRecoTracks()
         track.Hits.clear();
         track.Hits.reserve(pInputTrack->GetNofHits());
         for (int iH = 0; iH < pInputTrack->GetNofMvdHits(); ++iH) {
-          track.Hits.push_back(-pInputTrack->GetMvdHitIndex(iH) - 1);  // !!!!
-        }                                                              // iH
+          int iHint = vHitMvdIds[pInputTrack->GetMvdHitIndex(iH)];
+          track.Hits.push_back(iHint);  // !!!!
+        }                               // iH
         for (int iH = 0; iH < pInputTrack->GetNofStsHits(); ++iH) {
-          track.Hits.push_back(pInputTrack->GetStsHitIndex(iH));
+          int iHint = vHitStsIds[pInputTrack->GetStsHitIndex(iH)];
+          track.Hits.push_back(iHint);
         }  // iH
       }    // iT
       break;
@@ -227,23 +282,11 @@ void TimeSliceReader::ReadRecoTracks()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void TimeSliceReader::RegisterHitDebugInfoContainer(L1Vector<CbmL1HitDebugInfo>& vDbgHits) { fpvDbgHits = &vDbgHits; }
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void TimeSliceReader::RegisterHitIndexContainer(L1Vector<CbmL1HitId>& vHitIds) { fpvHitIds = &vHitIds; }
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
 void TimeSliceReader::RegisterIODataManager(std::shared_ptr<L1IODataManager>& pIODataManager)
 {
   LOG_IF(fatal, !pIODataManager.get()) << "TimeSliceReader: passed null pointer as a L1IODataManager instance";
   fpIODataManager = pIODataManager;
 }
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void TimeSliceReader::RegisterTracksContainer(L1Vector<CbmL1Track>& vTracks) { fpvTracks = &vTracks; }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -260,17 +303,42 @@ void TimeSliceReader::SetDetector(L1DetectorID detID, bool flag)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void TimeSliceReader::SortQaHits()
+{
+  int nStationsActive = fpParameters->GetNstationsActive();
+  L1Vector<CbmL1HitDebugInfo> vNewHits(fpvQaHits->size());
+  std::vector<int> vHitFirstIndexes(nStationsActive + 1, 0);
+  std::vector<int> vNofHitsStored(nStationsActive, 0);
+
+  // Count number of hits in each station (NOTE: we could use here boarders from the IO data manager, but we would keep
+  // these two procedures independent)
+  for (const auto& hit : (*fpvQaHits)) {
+    ++vHitFirstIndexes[hit.GetStationId() + 1];
+  }
+
+  for (int iSt = 0; iSt < nStationsActive; ++iSt) {
+    vHitFirstIndexes[iSt + 1] += vHitFirstIndexes[iSt];
+  }
+
+  for (const auto& hit : (*fpvQaHits)) {
+    int iSt                                                   = hit.GetStationId();
+    vNewHits[vHitFirstIndexes[iSt] + (vNofHitsStored[iSt]++)] = hit;
+  }
+
+  std::swap(vNewHits, (*fpvQaHits));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void TimeSliceReader::StoreHitRecord(const HitRecord& hitRecord)
 {
-  int iHitGlob = static_cast<int>(fpIODataManager->GetNofHits());  // Current hit global index
-
   // Save the algo hit
   if (fpIODataManager.get()) {
     L1Hit aHit;
     aHit.iSt = hitRecord.fStaId;
     aHit.f   = hitRecord.fStripF;
     aHit.b   = hitRecord.fStripB;
-    aHit.ID  = -1;
+    aHit.ID  = static_cast<int>(fpIODataManager->GetNofHits());
     aHit.z   = hitRecord.fZ;
     aHit.u   = hitRecord.fU;
     aHit.v   = hitRecord.fV;
@@ -285,7 +353,7 @@ void TimeSliceReader::StoreHitRecord(const HitRecord& hitRecord)
   if (fpvHitIds) { fpvHitIds->emplace_back(hitRecord.fDet, hitRecord.fExtId); }
 
   // Save debug information
-  if (fpvDbgHits) {
+  if (fpvQaHits) {
     CbmL1HitDebugInfo hitDbg;
     hitDbg.Det      = hitRecord.fDet;
     hitDbg.ExtIndex = hitRecord.fExtId;
@@ -296,6 +364,6 @@ void TimeSliceReader::StoreHitRecord(const HitRecord& hitRecord)
     hitDbg.dy       = hitRecord.fDy;
     hitDbg.dxy      = hitRecord.fDxy;
     hitDbg.time     = hitRecord.fT;
-    fpvDbgHits->push_back(hitDbg);
+    fpvQaHits->push_back(hitDbg);
   }
 }

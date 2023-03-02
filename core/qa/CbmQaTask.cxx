@@ -65,8 +65,23 @@ void CbmQaTask::Finish()
 InitStatus CbmQaTask::Init()
 {
   LOG_IF(info, fVerbose > 0) << fName << ": initializing task ...";
-
   InitStatus res = kSUCCESS;
+
+  // ----- Open configuration file
+  YAML::Node config;
+  if (fsConfigName.Length()) {
+    LOG(info) << fName << ": reading configuration from file \"" << fsConfigName << "\"";
+    try {
+      config        = YAML::LoadFile(fsConfigName.Data())["qa"][fName.Data()];
+      fpCurrentNode = &config;
+    }
+    catch (const YAML::BadFile& exc) {
+      LOG(fatal) << fName << ": configuration file \"" << fsConfigName << "\" does not exist";
+    }
+    catch (const YAML::ParserException& exc) {
+      LOG(fatal) << fName << ": configuration file \"" << fsConfigName << "\" is formatted improperly";
+    }
+  }
 
   // ----- Clear map of the histograms (note)
   DeInitBase();
@@ -80,12 +95,13 @@ InitStatus CbmQaTask::Init()
   fpFolderRoot->SetOwner(true);                            // When true, TFolder owns all added objects
   fpFolderRoot->Add(&fNofEvents);
 
-  // ----- Initialize histograms and canvases
+  // ----- Initialize histograms
   LOG_IF(info, fVerbose > 1) << fName << ": initializing histograms";
   res = std::max(res, InitHistograms());
 
   fNofEvents.SetVal(0);
 
+  fpCurrentNode = nullptr;  // De-init pointer to
   return res;
 }
 
@@ -111,57 +127,3 @@ void CbmQaTask::DeInitBase()
   // De-initialize particular QA-task implementation
   DeInit();
 }
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// NOTE: Example
-void CbmQaTask::SetHistoProperties(TH1* pHisto)
-{
-  constexpr double kHdefTextSize = 0.04;
-
-  pHisto->SetStats(kTRUE);
-  pHisto->Sumw2();
-
-  // Axis property settings
-  std::array<TAxis*, 3> vpAxes = {pHisto->GetXaxis(), pHisto->GetYaxis(), pHisto->GetZaxis()};
-  for (auto* pAxis : vpAxes) {
-    pAxis->SetTitleSize(kHdefTextSize);
-    pAxis->SetLabelSize(kHdefTextSize);
-  }
-  vpAxes[0]->SetNdivisions(504);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-InitStatus CbmQaTask::InitDataBranches()
-{
-  LOG_IF(info, fVerbose > 1) << fName << ": data branches initialization function is not defined";
-  return kSUCCESS;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-InitStatus CbmQaTask::InitHistograms()
-{
-  LOG_IF(info, fVerbose > 1) << fName << ": histogram initialization function is not defined";
-  return kSUCCESS;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void CbmQaTask::FillHistograms()
-{
-  LOG_IF(info, fVerbose > 1) << fName << ": histogram filling function is not defined";
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-InitStatus CbmQaTask::InitCanvases()
-{
-  LOG_IF(info, fVerbose > 1) << fName << ": no initialization of canvases is provided";
-  return kSUCCESS;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void CbmQaTask::DeInit() { LOG_IF(info, fVerbose > 1) << fName << ": no extra de-initialization is provided"; }

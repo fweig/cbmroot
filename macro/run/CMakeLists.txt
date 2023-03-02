@@ -15,6 +15,11 @@ file(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc
 	DESTINATION ${CBMROOT_BINARY_DIR}/macro/run)
 # ============================================================================
 
+# =====   Copy configuration file for QA tasks to the build directory ========
+file(COPY ${CBMROOT_SOURCE_DIR}/macro/run/qa_config.cbm.yaml
+	DESTINATION ${CBMROOT_BINARY_DIR}/macro/run)
+# ============================================================================
+
 
 # =====   Define variables for tests   =======================================
 if(${CBM_TEST_MODEL} MATCHES Weekly)
@@ -223,7 +228,7 @@ foreach(setup IN LISTS cbm_setup)
   add_test(${testname} ${MACRODIR}/run_qa.sh
   	\"data/${sname}_coll\" \"data/${sname}_ts\"  \"data/${sname}_ts_eb_real\"
 	\"data/${sname}_coll\" \"data/${sname}_qa\" \"${setup}\" -1
-	\"data/${sname}_sign\" \"data/${sname}_beam\" )
+	\"data/${sname}_sign\" \"data/${sname}_beam\" \"qa_config.cbm.yaml\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
 	FAIL_REGULAR_EXPRESSION "segmentation violation"
@@ -481,7 +486,7 @@ EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )
 #####################
 # ============================================================================
 
-Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_digi.C run_reco.C run_unpack_online.C run_unpack_tsa.C
+Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_digi.C run_reco.C run_unpack_online.C run_unpack_tsa.C qa_config.cbm.yaml
         DESTINATION share/cbmroot/macro/run
        )
 Install(PROGRAMS run_tests.sh

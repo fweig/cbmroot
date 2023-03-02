@@ -37,34 +37,35 @@ class L1Parameters;
 
 namespace cbm::ca
 {
-  /// @brief A structure to store hits information from different detectors in a uniform manner
-  struct HitRecord {
-    double fX           = 0.;  ///< x component of hit position [cm]
-    double fY           = 0.;  ///< y component of hit position [cm]
-    double fDx          = 0.;  ///< error of x component of hit position [cm]
-    double fDy          = 0.;  ///< error of y component of hit position [cm]
-    double fDxy         = 0.;  ///< correlation between x and y components [cm]
-    double fU           = 0.;  ///< hit position in direction of front strips [cm]
-    double fV           = 0.;  ///< hit position in direction of back strips [cm]
-    double fDu          = 0.;  ///< hit position error in direction of front strips [cm]
-    double fDv          = 0.;  ///< hit position error in direction of back strips [cm]
-    double fZ           = 0.;  ///< z component of hit position [cm]
-    double fT           = 0.;  ///< time of hit [ns]
-    double fDt          = 0.;  ///< time error of hit [ns]
-    int64_t fDataStream = -1;  ///< Global index of detector module
-    int fExtId          = -1;  ///< external index of hit
-    int fStaId          = -1;  ///< index of active tracking station
-    int fStripF         = -1;  ///< index of front strip
-    int fStripB         = -1;  ///< index of back strip
-    int fDet            = -1;  ///< detector ID
-  };
-
   /// @brief A reader of time slice for CA tracker
   ///
   /// The class reads reconstructed hits and reconstructed tracks (optionally) and fills the CA tracking internal
   /// data structures.
   ///
   class TimeSliceReader {
+    /// @brief A structure to store hits information from different detectors in a uniform manner
+    ///
+    struct HitRecord {
+      double fX           = 0.;  ///< x component of hit position [cm]
+      double fY           = 0.;  ///< y component of hit position [cm]
+      double fDx          = 0.;  ///< error of x component of hit position [cm]
+      double fDy          = 0.;  ///< error of y component of hit position [cm]
+      double fDxy         = 0.;  ///< correlation between x and y components [cm]
+      double fU           = 0.;  ///< hit position in direction of front strips [cm]
+      double fV           = 0.;  ///< hit position in direction of back strips [cm]
+      double fDu          = 0.;  ///< hit position error in direction of front strips [cm]
+      double fDv          = 0.;  ///< hit position error in direction of back strips [cm]
+      double fZ           = 0.;  ///< z component of hit position [cm]
+      double fT           = 0.;  ///< time of hit [ns]
+      double fDt          = 0.;  ///< time error of hit [ns]
+      int64_t fDataStream = -1;  ///< Global index of detector module
+      int fExtId          = -1;  ///< external index of hit
+      int fStaId          = -1;  ///< index of active tracking station
+      int fStripF         = -1;  ///< index of front strip
+      int fStripB         = -1;  ///< index of back strip
+      int fDet            = -1;  ///< detector ID
+    };
+
   public:
     /// @brief Constructor from parameters
     /// @param mode  Tracking mode
@@ -88,14 +89,31 @@ namespace cbm::ca
     /// @brief Clears class content
     void Clear();
 
+    /// @brief Check class initialization
+    /// @note The function throws std::logic_error, if initialization is incomplete
+    void CheckInit() const;
+
+    /// @brief Gets reference to container of first hit indexes in a detector subsystem
+    /// @return Ref. to the container
+    const auto& GetHitFirstIndexDet() const { return fvHitFirstIndexDet; }
+
+    /// @brief Gets number of hits stored for a given detector
+    /// @param iDet  Detector ID
+    /// @return Number of hits
+    int GetNofHits(L1DetectorID iDet) const
+    {
+      return fvHitFirstIndexDet[int(iDet) + 1] - fvHitFirstIndexDet[int(iDet)];
+    }
+
     /// @brief Run initializer function
+    /// @return Success flag
     ///
     /// Initializes data branches and provides necessary checks in the beginning of the run
-    void InitRun();
+    bool InitRun();
 
     /// @brief Reads time slice
     ///
-    /// Reads hits from time slice
+    /// Reads hits and tracks (optionally) from time slice
     void InitTimeSlice();
 
     /// @brief Reads hits
@@ -105,20 +123,28 @@ namespace cbm::ca
     void ReadRecoTracks();
 
     /// @brief Registers hit debug info container
-    /// @param vDbgHits  Reference to debug hit container
-    void RegisterHitDebugInfoContainer(L1Vector<CbmL1HitDebugInfo>& vDbgHits);
+    /// @param vQaHits  Reference to Qa hit container
+    /// @note If no container is registered, all related routines are omitted
+    void RegisterQaHitContainer(L1Vector<CbmL1HitDebugInfo>& vQaHits) { fpvQaHits = &vQaHits; }
 
     /// @brief Registers hit index container
     /// @param vHitIds  Reference to hits indexes container
-    void RegisterHitIndexContainer(L1Vector<CbmL1HitId>& vHitIds);
+    /// @note If no container is registered, all related routines are omitted
+    void RegisterHitIndexContainer(L1Vector<CbmL1HitId>& vHitIds) { fpvHitIds = &vHitIds; }
+
+    /// @brief Registers CA parameters object
+    /// @param pParameters  A shared pointer to the parameters object
+    void RegisterParameters(std::shared_ptr<L1Parameters>& pParameters) { fpParameters = pParameters; }
 
     /// @brief Registers the CA IO data manager instance
     /// @param pIODataManager  Shared pointer to the IO data manager instance
+    /// @note If no container is registered, all related routines are omitted
     void RegisterIODataManager(std::shared_ptr<L1IODataManager>& ioDataManager);
 
     /// @brief Register the reconstructed tracks container
     /// @param vTracks  Reference to reconstructed tracks container
-    void RegisterTracksContainer(L1Vector<CbmL1Track>& vTracks);
+    /// @note If no container is registered, all related routines are omitted
+    void RegisterTracksContainer(L1Vector<CbmL1Track>& vTracks) { fpvTracks = &vTracks; }
 
     /// @brief Sets used detector subsystems
     /// @param  detID  Id of detector
@@ -135,7 +161,11 @@ namespace cbm::ca
     template<L1DetectorID DetID>
     int ReadHitsForDetector(const TClonesArray* pBrHits);
 
+    /// @brief Sorts QA hit objects by stations
+    void SortQaHits();
+
     /// @brief Saves hit to data structures
+    /// @param hitRecord  Filled hit record
     ///
     /// Stores recorded hit information into registered hit containers
     void StoreHitRecord(const HitRecord& hitRecord);
@@ -174,19 +204,31 @@ namespace cbm::ca
     TClonesArray* fpBrTrdTracks  = nullptr;  ///< Input branch for reconstructed TRD tracks ("TrdTrack")
     TClonesArray* fpBrTofTracks  = nullptr;  ///< Input branch for reconstructed TOF tracks ("TofTrack")
 
+
     // Pointers to output data containers
     L1Vector<CbmL1HitId>* fpvHitIds                  = nullptr;  ///< Pointer to array of hit index objects
-    L1Vector<CbmL1HitDebugInfo>* fpvDbgHits          = nullptr;  ///< Pointer to array of debug hits
+    L1Vector<CbmL1HitDebugInfo>* fpvQaHits           = nullptr;  ///< Pointer to array of debug hits
     L1Vector<CbmL1Track>* fpvTracks                  = nullptr;  ///< Pointer to array of reconstructed tracks
     std::shared_ptr<L1IODataManager> fpIODataManager = nullptr;  ///< Pointer to input data manager
+    std::shared_ptr<L1Parameters> fpParameters       = nullptr;  ///< Pointer to tracking parameters object
+
+    // Maps of hit indexes: ext -> int
+    L1Vector<int> vHitMvdIds {"CbmCaTimeSliceReader::vHitMvdIds"};
+    L1Vector<int> vHitStsIds {"CbmCaTimeSliceReader::vHitStsIds"};
+    L1Vector<int> vHitMuchIds {"CbmCaTimeSliceReader::vHitMuchIds"};
+    L1Vector<int> vHitTrdIds {"CbmCaTimeSliceReader::vHitTrdIds"};
+    L1Vector<int> vHitTofIds {"CbmCaTimeSliceReader::vHitTofIds"};
 
     // Additional
     ECbmTrackingMode fTrackingMode;  ///< Tracking mode
 
-    // Indexes
+    // Variables for storing cache
     int fNofHits     = 0;  ///< Stored number of hits
     int fNofHitKeys  = 0;  ///< Recorded number of hit keys
     int fFirstHitKey = 0;  ///< First index of hit key for the detector subsystem
+
+    std::array<int, L1Constants::size::kMaxNdetectors + 1> fvHitFirstIndexDet = {
+      0};  ///< First index of hit in detector
   };
 }  // namespace cbm::ca
 
@@ -206,7 +248,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
   fFirstHitKey = fNofHitKeys;
 
   for (int iH = 0; iH < nHitsTot; ++iH) {
-    cbm::ca::HitRecord hitRecord;  // Record of hits information
+    HitRecord hitRecord;  // Record of hits information
 
     CbmPixelHit* pPixelHit = nullptr;  // Pointer to hit object
     float phiF             = 0.;       // Stereo angle of front strips
@@ -269,12 +311,11 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       if (ECbmTrackingMode::kMCBM == fTrackingMode && pTofHit->GetZ() > 400) { continue; }
     }
 
-    //int iStActive = fpParameters->GetStationIndexActive(iStGeom);
-    int iStActive = iStGeom;            // !!!! Initialize fParameters
+    int iStActive = fpParameters->GetStationIndexActive(iStGeom, DetID);
     if (iStActive == -1) { continue; }  // Cut off inactive stations
 
     // Fill out data common for all the detectors
-    hitRecord.fStaId      = iStGeom;
+    hitRecord.fStaId      = iStActive;
     hitRecord.fX          = pPixelHit->GetX();
     hitRecord.fY          = pPixelHit->GetY();
     hitRecord.fZ          = pPixelHit->GetZ();
@@ -287,12 +328,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
     hitRecord.fDataStream = (static_cast<int64_t>(hitRecord.fDet) << 60) | pPixelHit->GetAddress();
     hitRecord.fU          = hitRecord.fX * cos(phiF) + hitRecord.fY * sin(phiF);
     hitRecord.fV          = hitRecord.fX * cos(phiB) + hitRecord.fY * sin(phiB);
-
-    // Update hit external index
-    if constexpr (L1DetectorID::kMvd == DetID) { hitRecord.fExtId = -(1 + iH); }
-    else {
-      hitRecord.fExtId = iH;
-    }
+    hitRecord.fExtId      = iH;
 
     // Update number of hit keys
     if constexpr (L1DetectorID::kSts == DetID) {

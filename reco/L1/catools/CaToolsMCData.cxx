@@ -26,7 +26,6 @@ MCData::MCData() {}
 MCData::MCData(const MCData& other)
   : fvPoints(other.fvPoints)
   , fvTracks(other.fvTracks)
-  , fvPointIndexOfHit(other.fvPointIndexOfHit)
   , fmPointLinkMap(other.fmPointLinkMap)
   , fmTrackLinkMap(other.fmTrackLinkMap)
 {
@@ -61,7 +60,6 @@ void MCData::Swap(MCData& other) noexcept
 {
   std::swap(fvPoints, other.fvPoints);
   std::swap(fvTracks, other.fvTracks);
-  std::swap(fvPointIndexOfHit, other.fvPointIndexOfHit);
   std::swap(fmPointLinkMap, other.fmPointLinkMap);
   std::swap(fmTrackLinkMap, other.fmTrackLinkMap);
 }
@@ -88,7 +86,6 @@ void MCData::Clear()
 {
   fvPoints.clear();
   fvTracks.clear();
-  fvPointIndexOfHit.clear();
   fmPointLinkMap.clear();
   fmTrackLinkMap.clear();
 }
@@ -126,20 +123,17 @@ std::string MCData::ToString(int verbose) const
   if (verbose > 1) {
     using std::setfill;
     using std::setw;
-    const int kNofTracksToPrint = 5;
-    msg << "\n Track sample (first 5 tracks):\n";
-    msg << setw(10) << setfill(' ') << "ID" << ' ' << setw(10) << setfill(' ') << "motherID" << ' ' << setw(10)
-        << setfill(' ') << "pdg" << ' ' << setw(10) << setfill(' ') << "zVTX [cm]" << ' ' << setw(10) << setfill(' ')
-        << "px [GeV/c]" << ' ' << setw(10) << setfill(' ') << "py [GeV/c]" << ' ' << setw(10) << setfill(' ')
-        << "pz [GeV/c]" << '\n';
+    constexpr int kNofTracksToPrint = 40;
+    constexpr int kNofPointsToPrint = 40;
+    msg << "\n Track sample (first " << kNofTracksToPrint << " tracks):";
+    msg << '\n' << setw(10) << setfill(' ') << fvTracks[0].ToString(verbose, true);  // header of the table
     for (int i = 0; i < kNofTracksToPrint; ++i) {
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetId() << ' ';
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetMotherId() << ' ';
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetPdgCode() << ' ';
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetStartZ() << ' ';
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetPx() << ' ';
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetPy() << ' ';
-      msg << setw(10) << setfill(' ') << fvTracks[i].GetPz() << '\n';
+      msg << '\n' << setw(10) << setfill(' ') << fvTracks[i].ToString(verbose);
+    }
+    msg << "\n Point sample (first " << kNofPointsToPrint << " points):";
+    msg << '\n' << setw(10) << setfill(' ') << fvPoints[0].ToString(verbose, true);  // header of the table
+    for (int i = 0; i < kNofPointsToPrint; ++i) {
+      msg << '\n' << setw(10) << setfill(' ') << fvPoints[i].ToString(verbose);
     }
   }
   return msg.str();

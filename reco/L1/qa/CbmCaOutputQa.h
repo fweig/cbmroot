@@ -13,6 +13,7 @@
 #include "CbmCaMCModule.h"
 #include "CbmCaTimeSliceReader.h"
 #include "CbmL1DetectorID.h"
+#include "CbmL1Hit.h"
 #include "CbmQaTask.h"
 
 #include "CaToolsDebugger.h"
@@ -79,20 +80,20 @@ namespace cbm::ca
     bool Check() { return true; }
 
     /// @brief Initializes canvases
-    InitStatus InitCanvases() { return kSUCCESS; }
+    InitStatus InitCanvases();
 
     /// @brief Initialises data branches in the beginning of the run
     InitStatus InitDataBranches();
 
     /// @brief Initializes histograms
-    InitStatus InitHistograms() { return kSUCCESS; }
+    InitStatus InitHistograms();
 
     /// @brief Initializes time slice
     /// @note  Is called in the FairTask::Exec function
     InitStatus InitTimeSlice();
 
-    /// @brief Fills histograms
-    void FillHistograms() {}
+    /// @brief Fills histograms from time slice or event
+    void FillHistograms();
 
     /// @brief De-initializes histograms
     void DeInit() {}
@@ -115,11 +116,60 @@ namespace cbm::ca
     std::shared_ptr<::ca::tools::Debugger> fpDebugger = nullptr;  ///< Debugger
     std::shared_ptr<L1Parameters> fpParameters        = nullptr;  ///< Tracking parameters object
 
-    L1Vector<CbmL1HitDebugInfo> fvHitIds {"CbmCaOutputQa::fvHitIds"};
-    L1Vector<CbmL1HitDebugInfo> fvDbgHits {"CbmCaOutputQa::fvDbgHits"};
+    L1Vector<CbmL1HitId> fvHitIds {"CbmCaOutputQa::fvHitIds"};
+    L1Vector<CbmL1HitDebugInfo> fvHits {"CbmCaOutputQa::fvHits"};
     L1Vector<CbmL1Track> fvRecoTracks {"CbmCaOutputQa::fvRecoTracks"};
-    L1InputData fInputData;       ///< Input hits to CA algo
     ::ca::tools::MCData fMCData;  ///< Input MC data (points and tracks)
+
+
+    // **  Pointers to histogram objects **
+    // Reconstructed tracks
+    TH1F* fph_reco_p        = nullptr;  ///< Total momentum over charge of reconstructed tracks
+    TH1F* fph_reco_pt       = nullptr;  ///< Transverse momentum over charge of reconstructed tracks
+    TH1F* fph_reco_phi      = nullptr;  ///< Azimuthal angle of reconstructed tracks
+    TH1F* fph_reco_tx       = nullptr;  ///< Slope along x-axis of reconstructed tracks
+    TH1F* fph_reco_ty       = nullptr;  ///< Slope along y-axis of reconstructed tracks
+    TH1F* fph_reco_fhitR    = nullptr;  ///< Distance of the first hit from z-axis for reconstructed tracks
+    TH1F* fph_reco_nhits    = nullptr;  ///< Hit number of reconstructed tracks
+    TH1F* fph_reco_fsta     = nullptr;  ///< First station index of reconstructed tracks
+    TH1F* fph_reco_purity   = nullptr;  ///< Purity of reconstructed tracks (\note purity requires MC information)
+    TH1F* fph_reco_chi2_ndf = nullptr;  ///< Fit chi2 over NDF of reconstructed tracks
+    TH1F* fph_reco_prob     = nullptr;  ///< Fit probability of reconstructed tracks
+    TH1F* fph_rest_chi2_ndf = nullptr;  ///< Fit chi2 over NDF of non-reconstructable tracks
+    TH1F* fph_rest_prob     = nullptr;  ///< Fit probability of non-reconstructable tracks
+
+    // Ghost tracks
+    TH1F* fph_ghost_p            = nullptr;  ///< Total momentum over charge of ghost tracks
+    TH1F* fph_ghost_pt           = nullptr;  ///< Transverse momentum over charge of ghost tracks
+    TH1F* fph_ghost_phi          = nullptr;  ///< Azimuthal angle of ghost tracks
+    TH1F* fph_ghost_nhits        = nullptr;  ///< Hit number of ghost tracks
+    TH1F* fph_ghost_fsta         = nullptr;  ///< First station index of ghost tracks
+    TH1F* fph_ghost_purity       = nullptr;  ///< Purity of ghost tracks
+    TH1F* fph_ghost_chi2_ndf     = nullptr;  ///< Fit chi2 over NDF of ghost tracks
+    TH1F* fph_ghost_prob         = nullptr;  ///< Fit probability of ghost tracks
+    TH1F* fph_ghost_tx           = nullptr;  ///< Slope along x-axis of ghost tracks
+    TH1F* fph_ghost_ty           = nullptr;  ///< Slope along y-axis of ghost tracks
+    TH1F* fph_ghost_fhitR        = nullptr;  ///< Distance of the first hit from z-axis for ghost tracks
+    TH2F* fph_ghost_nhits_vs_p   = nullptr;  ///< Hit number vs. total momentum over charge of ghost tracks
+    TH2F* fph_ghost_fsta_vs_p    = nullptr;  ///< First station index vs. total momentum over charge for ghost tracks
+    TH2F* fph_ghost_lsta_vs_fsta = nullptr;  ///< Last station index vs. first station index of ghost tracks
+
+    // Residuals and pulls at the first track point
+    TH1F* fph_fst_res_x    = nullptr;  ///< Residual of x at first track point [cm]
+    TH1F* fph_fst_res_y    = nullptr;  ///< Residual of y at first track point [cm]
+    TH1F* fph_fst_res_tx   = nullptr;  ///< Residual of tx at first track point
+    TH1F* fph_fst_res_ty   = nullptr;  ///< Residual of ty at first track point
+    TH1F* fph_fst_res_qp   = nullptr;  ///< Residual of q/p at first track point  [GeV/ec]
+    TH1F* fph_fst_res_time = nullptr;  ///< Residual of time at first track point [ns]
+    TH1F* fph_fst_res_v    = nullptr;  ///< Residual of velocity at first track point [c]
+
+    TH1F* fph_fst_pull_x    = nullptr;  ///< Pull of x at first track point [cm]
+    TH1F* fph_fst_pull_y    = nullptr;  ///< Pull of y at first track point [cm]
+    TH1F* fph_fst_pull_tx   = nullptr;  ///< Pull of tx at first track point
+    TH1F* fph_fst_pull_ty   = nullptr;  ///< Pull of ty at first track point
+    TH1F* fph_fst_pull_qp   = nullptr;  ///< Pull of q/p at first track point  [GeV/ec]
+    TH1F* fph_fst_pull_time = nullptr;  ///< Pull of time at first track point [ns]
+    TH1F* fph_fst_pull_v    = nullptr;  ///< Pull of velocity at first track point [c]
   };
 }  // namespace cbm::ca
 
