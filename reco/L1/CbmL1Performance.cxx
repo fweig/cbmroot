@@ -1903,7 +1903,7 @@ void CbmL1::InputPerformance()
 
   map<unsigned int, unsigned int>::iterator it;
 
-  if (fpStsHits && fpStsHitMatches) {
+  if (fpStsHits && fpStsHitMatches && fpStsPoints) {
     for (int iH = 0; iH < fpStsHits->GetEntriesFast(); iH++) {
 
       const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(iH));
@@ -1976,7 +1976,7 @@ void CbmL1::InputPerformance()
   }  // sts
 
 
-  if (fpMvdHits && fpMvdHitMatches) {
+  if (fpMvdHits && fpMvdHitMatches && fpMvdPoints) {
     Int_t nEnt = fpMvdHits->GetEntriesFast();
     for (int j = 0; j < nEnt; j++) {
 
@@ -2015,7 +2015,7 @@ void CbmL1::InputPerformance()
   }  // mvd
 
 
-  if (fpMuchPixelHits && fpMuchHitMatches) {
+  if (fpMuchPixelHits && fpMuchHitMatches && fpMuchPoints) {
     for (int iH = 0; iH < fpMuchPixelHits->GetEntriesFast(); iH++) {
 
       const CbmMuchPixelHit* sh = L1_DYNAMIC_CAST<CbmMuchPixelHit*>(fpMuchPixelHits->At(iH));
@@ -2072,7 +2072,7 @@ void CbmL1::InputPerformance()
   }  // much
 
 
-  if (fpTrdHits && fpTrdHitMatches) {
+  if (fpTrdHits && fpTrdHitMatches && fpTrdPoints) {
     for (int iH = 0; iH < fpTrdHits->GetEntriesFast(); iH++) {
 
       const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(iH));
@@ -2134,7 +2134,7 @@ void CbmL1::InputPerformance()
   }  // much
 
 
-  if (fpTofHits && fpTofHitMatches) {
+  if (fpTofHits && fpTofHitMatches && fpTofPoints) {
     for (int iH = 0; iH < fpTofHits->GetEntriesFast(); iH++) {
 
       const CbmTofHit* sh = L1_DYNAMIC_CAST<CbmTofHit*>(fpTofHits->At(iH));

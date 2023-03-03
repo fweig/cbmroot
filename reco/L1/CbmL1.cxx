@@ -943,7 +943,12 @@ void CbmL1::Reconstruct(CbmEvent* event)
     }
   }
 
-  if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
+  //
+  // tracker input performance is moved to external QA tasks.
+  // InputPerformance() method is not optimised to run with the event builder
+  // TODO: verify QA tasks and remove InputPerformance()
+  // if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
+  //
 
   //  FieldApproxCheck();
   //  FieldIntegralCheck();
