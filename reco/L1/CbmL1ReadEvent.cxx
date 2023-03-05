@@ -695,7 +695,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
       th.Det = 0;
-      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMvd>(th.ExtIndex) : -1;
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMvd>(hitIndex) : -1;
       if (1 == fMvdUseMcHit && th.iMC >= 0) {
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
       }
@@ -984,9 +984,9 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
       std::tie(th.u, th.v) = st.ConvXYtoUV<double>(th.x, th.y);
 
-      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(th.ExtIndex) : -1;
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(hitIndex) : -1;
 
-      if (1 == fTrdUseMcHit) {  // replace hit by MC points
+      if (1 == fTrdUseMcHit) {  // replace hit by MC point
 
         assert(fPerformance && fpTrdHitMatches);
 
@@ -995,11 +995,11 @@ void CbmL1::ReadEvent(CbmEvent* event)
         assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
         if (mcUsed[iMcTrd]) continue;  // one hit per MC point
         bool doSmear = true;
-        if (0) {  // SGtrd2d!! debug: artificial errors
-          th.dx = .1;
-          th.du = .1;
-          th.dy = .1;
-          th.dv = .1;
+        if (1) {  // SGtrd2d!! set artificial errors when the input errors are unrealistically large
+          if (th.dx > 0.3) { th.dx = 0.3; }
+          if (th.dy > 0.2) { th.dy = 0.2; }
+          th.du = th.dx;
+          th.dv = th.dy;
         }
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation), doSmear);
         mcUsed[iMcTrd] = 1;
@@ -1099,7 +1099,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
       th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
-      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTof>(th.ExtIndex) : -1;
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTof>(hitIndex) : -1;
 
       if (1 == fTofUseMcHit && th.iMC > -1) {
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
@@ -1235,9 +1235,8 @@ void CbmL1::Fill_vMCTracks()
     fvMCTracks.reserve(nMCTracks);
   }
 
-  int fileEvent = 0;
   /* Loop over MC event */
-  for (DFSET::iterator set_it = fvSelectedMcEvents.begin(); set_it != fvSelectedMcEvents.end(); ++set_it, ++fileEvent) {
+  for (DFSET::iterator set_it = fvSelectedMcEvents.begin(); set_it != fvSelectedMcEvents.end(); ++set_it) {
     Int_t iFile  = set_it->first;
     Int_t iEvent = set_it->second;
 
@@ -1253,6 +1252,14 @@ void CbmL1::Fill_vMCTracks()
       if (!MCTrack) { continue; }
 
       int mother_ID = MCTrack->GetMotherId();
+
+      int chainID     = iMCTrack;
+      int chainParent = mother_ID;
+      while (chainParent >= 0) {
+        chainID            = chainParent;
+        CbmMCTrack* parent = L1_DYNAMIC_CAST<CbmMCTrack*>(fpMcTracks->Get(iFile, iEvent, chainParent));
+        chainParent        = parent->GetMotherId();
+      }
 
       if (mother_ID < 0 && mother_ID != -2) mother_ID = -iEvent - 1;
       TVector3 vr;
@@ -1272,6 +1279,8 @@ void CbmL1::Fill_vMCTracks()
 
       Int_t iTrack = fvMCTracks.size();  //or iMCTrack?
       CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg, processID);
+      T.chainID = chainID;
+
       //        CbmL1MCTrack T(mass, q, vr, vp, iMCTrack, mother_ID, pdg);
       T.time   = eventTime + MCTrack->GetStartT();
       T.iFile  = iFile;
@@ -1283,8 +1292,8 @@ void CbmL1::Fill_vMCTracks()
       fmMCTracksLinksMap[CbmL1LinkKey(iMCTrack, iEvent, iFile)] = fvMCTracks.size() - 1;
     }  //iTracks
   }    //Links
-
 }  //Fill_vMCTracks
+
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -1298,8 +1307,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
   double eventTime = fpMcEventList->GetEventTime(event, file);
 
   if (iDet == 0) {
-    CbmMvdPoint* pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(fpMvdPoints->Get(file, event, iPoint));  // file, event, object
-    //CbmMvdPoint *pt = L1_DYNAMIC_CAST<CbmMvdPoint*> (Point);
+    CbmMvdPoint* pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(fpMvdPoints->Get(file, event, iPoint));
 
     if (!pt) return 1;
     pt->Position(xyzI);
@@ -1311,7 +1319,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
   }
 
   if (iDet == 1) {
-    CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fpStsPoints->Get(file, event, iPoint));  // file, event, object
+    CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fpStsPoints->Get(file, event, iPoint));
     if (!pt) return 1;
     {
       Double_t StartTime     = fTimeSlice->GetStartTime();
@@ -1335,7 +1343,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
 
 
   if (iDet == 2) {
-    CbmMuchPoint* pt = L1_DYNAMIC_CAST<CbmMuchPoint*>(fpMuchPoints->Get(file, event, iPoint));  // file, event, object
+    CbmMuchPoint* pt = L1_DYNAMIC_CAST<CbmMuchPoint*>(fpMuchPoints->Get(file, event, iPoint));
     if (!pt) return 1;
     {
       Double_t StartTime     = fTimeSlice->GetStartTime();
@@ -1359,13 +1367,13 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
 
 
   if (iDet == 3) {
-    CbmTrdPoint* pt = L1_DYNAMIC_CAST<CbmTrdPoint*>(fpTrdPoints->Get(file, event, iPoint));  // file, event, object
+    CbmTrdPoint* pt = L1_DYNAMIC_CAST<CbmTrdPoint*>(fpTrdPoints->Get(file, event, iPoint));
 
     if (!pt) return 1;
     {
-      Double_t StartTime     = fTimeSlice->GetStartTime();  // not used
-      Double_t EndTime       = fTimeSlice->GetEndTime();    // not used
-      Double_t Time_MC_point = eventTime + pt->GetTime();   // not used
+      Double_t StartTime     = fTimeSlice->GetStartTime();
+      Double_t EndTime       = fTimeSlice->GetEndTime();
+      Double_t Time_MC_point = eventTime + pt->GetTime();
 
       if (StartTime > 0)
         if (Time_MC_point < StartTime) return 1;
@@ -1384,7 +1392,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
   }
 
   if (iDet == 4) {
-    CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fpTofPoints->Get(file, event, iPoint));  // file, event, object
+    CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fpTofPoints->Get(file, event, iPoint));
     if (!pt) return 1;
     {
       Double_t StartTime     = fTimeSlice->GetStartTime();
@@ -1464,5 +1472,5 @@ void CbmL1::HitMatch()
       hit.mcPointIds.push_back_no_warning(iP);
       fvMCPoints[iP].hitIds.push_back_no_warning(iH);
     }
-  }  // for hits
+  }
 }

@@ -74,9 +74,8 @@ void CbmL1MCTrack::Init()
   }
 
   CalculateMCCont();
-  CalculateHitCont();
+  CountHitStations();
   CalculateMaxNStaMC();
-  CalculateMaxNStaHits();
   CalculateIsReconstructable();
 }
 
@@ -113,66 +112,38 @@ void CbmL1MCTrack::CalculateMCCont()
     istaold = ista;
   }
   if (nMCContStations < ncont) nMCContStations = ncont;
-};  // void CbmL1MCTrack::CalculateMCCont()
-
-void CbmL1MCTrack::CalculateHitCont()
-{
-  CbmL1* L1    = CbmL1::Instance();
-  L1Algo* algo = L1->fpAlgo;
-
-  int nhits        = Hits.size();
-  nHitContStations = 0;
-  int istaold = -1, ncont = 0;
-  {
-    for (int ih = 0; ih < nhits; ih++) {
-      int jh         = Hits[ih];
-      const L1Hit& h = algo->GetInputData().GetHit(jh);
-      int ista       = h.iSt;
-
-      if (ista - istaold == 1) ncont++;
-      else if (ista - istaold > 1) {
-        if (nHitContStations < ncont) nHitContStations = ncont;
-        ncont = 1;
-      }
-
-      if (!(ista >= istaold)) {  // tracks going in backward direction are not reconstructable
-        nHitContStations = 0;
-        return;
-      }
-      if (ista == istaold) continue;  // backward direction
-      istaold = ista;
-    }
-  }
-  if (nHitContStations < ncont) nHitContStations = ncont;
+}
 
 
-};  // void CbmL1MCTrack::CalculateHitCont()
-
-void CbmL1MCTrack::CalculateMaxNStaHits()
+void CbmL1MCTrack::CountHitStations()
 {
   CbmL1* L1 = CbmL1::Instance();
 
-  maxNStaHits         = 0;
-  nStations           = 0;
-  int lastSta         = -1;
-  int cur_maxNStaHits = 0;
+  int stationNhits[L1Constants::size::kMaxNstations] {0};
+
   for (unsigned int iH = 0; iH < Hits.size(); iH++) {
     CbmL1HitDebugInfo& sh = L1->fvHitDebugInfo[Hits[iH]];
-    if (sh.iStation == lastSta) { cur_maxNStaHits++; }
-    else {                             // new station
-      if (!(sh.iStation > lastSta)) {  // tracks going in backward direction are not reconstructable
-        maxNStaHits = 0;
-        return;
-      }
-      if (cur_maxNStaHits > maxNStaHits) maxNStaHits = cur_maxNStaHits;
-      cur_maxNStaHits = 1;
-      lastSta         = sh.iStation;
+    stationNhits[sh.iStation]++;
+  }
+
+  maxNStaHits      = 0;
+  nStations        = 0;
+  nHitContStations = 0;
+  int ncont        = 0;
+
+  for (int ista = 0; ista < L1->fpAlgo->GetParameters()->GetNstationsActive(); ista++) {
+    if (maxNStaHits < stationNhits[ista]) { maxNStaHits = stationNhits[ista]; }
+    if (stationNhits[ista] > 0) {
       nStations++;
+      ncont++;
     }
-  };
-  if (cur_maxNStaHits > maxNStaHits) maxNStaHits = cur_maxNStaHits;
-  //   cout << pdg << " " << p << " " << Hits.size() << " > " << maxNStaHits << endl;
-};  // void CbmL1MCTrack::CalculateHitCont()
+    else {
+      if (nHitContStations < ncont) { nHitContStations = ncont; }
+      ncont = 0;
+    }
+  }
+  if (nHitContStations < ncont) nHitContStations = ncont;
+}
 
 void CbmL1MCTrack::CalculateMaxNStaMC()
 {

@@ -54,6 +54,7 @@
 #include <map>
 #include <vector>
 
+#include "CaToolsDebugger.h"
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Def.h"
 #include "L1Algo/L1Fit.h"
@@ -74,12 +75,12 @@ void CbmL1::TrackMatch()
   // fill pMCTrackMap
   for (vector<CbmL1MCTrack>::iterator i = fvMCTracks.begin(); i != fvMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
-
     if (pMCTrackMap.find(MC.ID) == pMCTrackMap.end()) { pMCTrackMap.insert(pair<int, CbmL1MCTrack*>(MC.ID, &MC)); }
     else {
       cout << "*** L1: Track ID " << MC.ID << " encountered twice! ***" << endl;
     }
   }
+
   // -- prepare information about reconstructed tracks
   const int nRTracks = fvRecoTracks.size();
   for (int iR = 0; iR < nRTracks; iR++) {
@@ -91,6 +92,7 @@ void CbmL1::TrackMatch()
 
     // count how many hits from each mcTrack belong to current recoTrack
     map<int, int>& hitmap = prtra->hitMap;  // how many hits from each mcTrack belong to current recoTrack
+    map<int, int> hitmapChain;
     for (vector<int>::iterator ih = (prtra->Hits).begin(); ih != (prtra->Hits).end(); ++ih) {
 
       const int nMCPoints = fvHitDebugInfo[*ih].mcPointIds.size();
@@ -98,11 +100,19 @@ void CbmL1::TrackMatch()
         int iMC = fvHitDebugInfo[*ih].mcPointIds[iP];
 
         //     cout<<iMC<<" iMC"<<endl;
-        int ID = -1;
-        if (iMC >= 0) ID = fvMCPoints[iMC].ID;
+        int ID      = -1;
+        int chainID = -1;
+        if (iMC >= 0) {
+          ID      = fvMCPoints[iMC].ID;
+          chainID = fvMCTracks[ID].chainID;
+        }
         if (hitmap.find(ID) == hitmap.end()) hitmap[ID] = 1;
         else {
           hitmap[ID] += 1;
+        }
+        if (hitmapChain.find(chainID) == hitmapChain.end()) hitmapChain[chainID] = 1;
+        else {
+          hitmapChain[chainID] += 1;
         }
       }  // for iPoint
     }    // for iHit
@@ -130,6 +140,21 @@ void CbmL1::TrackMatch()
       }
     }  // for hitmap
     prtra->SetMaxPurity(max_percent);
+
+    if (0) {  // debug
+
+      double max_percentChain = 0.0;  // [%]. maximum persent of hits, which belong to one mcTrack.
+      for (map<int, int>::iterator posIt = hitmapChain.begin(); posIt != hitmapChain.end();
+           posIt++) {                    // loop over all touched MCTracks
+        if (posIt->first < 0) continue;  // not a MC track - based on fake hits
+        // count max-purity
+        if (double(posIt->second) > max_percentChain * double(hitsum)) {
+          max_percentChain = double(posIt->second) / double(hitsum);
+        }
+      }  // for hitmap
+      prtra->SetMaxPurity(max_percentChain);
+    }
+
   }  // for reco tracks
 }  //
 
@@ -291,10 +316,16 @@ void CbmL1::EfficienciesPerformance()
   ntra.fOutDir    = fTableDir;  // Setup a pointer for output directory
   L1_NTRA.fOutDir = fTableDir;  // Save average efficiencies
 
+  ca::tools::Debugger::Instance().AddNtuple("ghost", "it:ih:p:x:y:z:t:dx:dy");
+  static int statNghost = 0;
+
   for (vector<CbmL1Track>::iterator rtraIt = fvRecoTracks.begin(); rtraIt != fvRecoTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
     if (0 && rtraIt->IsGhost()) {  // Debug.
-      cout << " L1: ghost track: nhits " << rtraIt->GetNOfHits() << " p " << 1. / rtraIt->T[5] << " purity "
+      L1TrackPar tr;
+      tr.copyFromArrays(rtraIt->T, rtraIt->C);
+
+      cout << " L1: ghost track: nhits " << rtraIt->GetNOfHits() << " p " << 1. / rtraIt->T[4] << " purity "
            << rtraIt->GetMaxPurity() << " | hits ";
       for (map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++) {
         cout << " (" << posIt->second << " " << posIt->first << ") ";
@@ -302,9 +333,18 @@ void CbmL1::EfficienciesPerformance()
       cout << endl;
       for (map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++) {
         CbmL1MCTrack& t = fvMCTracks[posIt->first];
-        cout << "mc " << posIt->first << " pdg " << t.pdg << " mother: " << t.mother_ID;
+        cout << "mc " << posIt->first << " pdg " << t.pdg << " mother: " << t.mother_ID << " chain " << t.chainID;
         cout << " n mc stations: " << t.NMCStations() << endl;
       }
+      for (unsigned int i = 0; i < rtraIt->Hits.size(); i++) {
+        const L1Hit& h             = fpAlgo->fInputData.GetHit(rtraIt->Hits[i]);
+        const CbmL1HitDebugInfo& s = fvHitDebugInfo[rtraIt->Hits[i]];
+        cout << " x y z t " << s.x << " " << s.y << " " << h.z << " dx " << s.dx << " dy " << s.dy << std::endl;
+        ca::tools::Debugger::Instance().FillNtuple("ghost", statNghost, i, fabs(1. / tr.qp[0]), s.x, s.y, h.z, h.t,
+                                                   s.dx, s.dy);
+      }
+      tr.Print(0);
+      statNghost++;
     }
   }
 
@@ -798,7 +838,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFa
         h_ghost_chi2->Fill(prtra->chi2 / prtra->NDF);
         h_ghost_prob->Fill(TMath::Prob(prtra->chi2, prtra->NDF));
       }
-      else {
+      else if (prtra->GetNMCTracks() > 0) {
         if (prtra->GetMCTrack()[0].IsReconstructable()) {
           h_reco_chi2->Fill(prtra->chi2 / prtra->NDF);
           h_reco_prob->Fill(TMath::Prob(prtra->chi2, prtra->NDF));
@@ -1321,7 +1361,10 @@ void CbmL1::TrackFitPerformance()
       FillFitHistos(tr, mcP, isTimeFitted, h_fitL);
     }
 
-    {  // vertex
+    do {  // vertex
+
+      if (it->GetNMCTracks() < 1) { break; }
+
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       fit.SetTrack(it->T, it->C);
 
@@ -1452,13 +1495,15 @@ void CbmL1::TrackFitPerformance()
           h_fitPV[16]->Fill(tr.vi[0] * L1TrackPar::kClightNs);
         }
       }
-    }
+    } while (0);
 
     h_fit_chi2->Fill(it->chi2 / it->NDF);
 
     // last TRD point
     do {
       break;  // only produce these plots in debug mode
+      if (it->GetNMCTracks() < 1) { break; }
+
       if (!fpTrdPoints) break;
       const CbmL1MCTrack& mcTrack = *(it->GetMCTracks()[0]);
       int nTrdPoints              = fpTrdPoints->Size(mcTrack.iFile, mcTrack.iEvent);
@@ -1484,7 +1529,9 @@ void CbmL1::TrackFitPerformance()
     // last TOF point
     do {
       break;  // only produce these plots in debug mode
-      // only produce these plots in debug mode
+
+      if (it->GetNMCTracks() < 1) { break; }
+
       if (!fpTofPoints) break;
       const CbmL1MCTrack& mcTrack = *(it->GetMCTracks()[0]);
       int nTofPoints              = fpTofPoints->Size(mcTrack.iFile, mcTrack.iEvent);
@@ -2077,7 +2124,6 @@ void CbmL1::InputPerformance()
 
       const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(iH));
       const CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iH));
-
 
       if (hm->GetNofLinks() == 0) continue;
       if (hm->GetNofLinks() != 1) continue;  // only check single-linked hits

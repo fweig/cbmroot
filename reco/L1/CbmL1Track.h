@@ -22,6 +22,7 @@
 #ifndef CbmL1Track_H
 #define CbmL1Track_H
 
+#include "CbmL1Constants.h"
 #include "CbmL1MCTrack.h"
 #include "CbmL1TrackPar.h"
 
@@ -42,7 +43,7 @@ public:
   vector<CbmL1MCTrack*>& GetMCTracks() { return mcTracks; }
   CbmL1MCTrack* GetMCTrack() { return mcTracks[0]; }
   int GetNMCTracks() { return mcTracks.size(); }
-  bool IsGhost() { return !(mcTracks.size()); }
+  bool IsGhost() { return (maxPurity < CbmL1Constants::MinPurity); }
 
   void SetMaxPurity(double maxPurity_) { maxPurity = maxPurity_; }
   double GetMaxPurity() { return maxPurity; }
@@ -64,7 +65,7 @@ public:
   map<int, int> hitMap;  // how many hits from each mcTrack belong to current recoTrack
 private:
   // next members filled and used in Performance
-  vector<CbmL1MCTrack*> mcTracks;  // array of assosiated recoTracks. Should be only one.
+  vector<CbmL1MCTrack*> mcTracks;  // array of assosiated mc Tracks. Should be only one.
   double maxPurity;                // maximum persent of hits, which belong to one mcTrack.
 };
 

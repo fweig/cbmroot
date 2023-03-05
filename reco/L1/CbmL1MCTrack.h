@@ -69,8 +69,7 @@ public:
 
 private:
   void CalculateMCCont();
-  void CalculateHitCont();
-  void CalculateMaxNStaHits();
+  void CountHitStations();
   void CalculateMaxNStaMC();
   void CalculateIsReconstructable();
 
@@ -89,6 +88,7 @@ public:
   int iFile               = -1;
   int iEvent              = -1;
   int mother_ID           = -1;
+  int chainID             = -1;  // ID of the first particle in the decay chain
   int pdg                 = -1;
   unsigned int process_ID = (unsigned int) -1;
   bool isSignal {0};
