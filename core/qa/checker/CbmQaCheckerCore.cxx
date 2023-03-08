@@ -14,11 +14,10 @@
 #include "Logger.h"
 
 #include "TClonesArray.h"
+#include "TFile.h"
 #include "TFolder.h"
 //#include <boost/filesystem.hpp>
 #include <regex>
-
-#include <yaml-cpp/yaml.h>
 
 using cbm::qa::checker::Core;
 

@@ -13,13 +13,13 @@
 #include "CbmQaCheckerObjectDB.h"
 #include "CbmQaCheckerTypedefs.h"
 
-#include "TFile.h"
+#include "Rtypes.h"
 
-#include <bitset>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
+
+class TFile;
 
 namespace cbm::qa::checker
 {

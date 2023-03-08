@@ -19,7 +19,7 @@
 #include <vector>
 
 class TNamed;
-class TFolder;
+class TDirectory;
 class TFile;
 
 namespace cbm::qa::checker
@@ -72,7 +72,7 @@ namespace cbm::qa::checker
     /// @return  Pointer to created TDirectory object
     TDirectory* CreateNestedDirectory(const std::string& path);
 
-    /// @brief Reads object from file by the provided full path to the object.
+    /// @brief Iteratively reads object from file by the provided full path to the object
     /// @param pFile  Pointer to TFile instance
     /// @param path   Full path to the object inside the file
     /// @return A pointer to TNamed object

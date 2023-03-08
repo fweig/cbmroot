@@ -23,9 +23,9 @@
 int qa_compare( 
                 const char* configName         = "objects.yaml",
                 const char* datasetName        = "s100e",
-                const char* oldVersionInputDir = "../run/data",       // NOTE: Files from external repository
-                const char* newVersionInputDir = "../run/data",       // NOTE: Files from preceding fixture
-                const char* outputName         = "QACheckerOutput.h"  // TODO: Add tag of a merge request or commit
+                const char* oldVersionInputDir = "../run/data",          // NOTE: Files from external repository
+                const char* newVersionInputDir = "../run/data",          // NOTE: Files from preceding fixture
+                const char* outputName         = "QACheckerOutput.root"  // TODO: Add tag of a merge request or commit
               )
 /* clang-format on */
 {

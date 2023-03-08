@@ -12,23 +12,10 @@
 
 #include "CbmQaCheckerTypedefs.h"
 
-#include "Logger.h"
-
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <yaml-cpp/yaml.h>
-
-// TMP
-#include <boost/core/demangle.hpp>
-
-#include <typeinfo>
-template<typename T>
-std::string type_str()
-{
-  return boost::core::demangle(typeid(T).name());
-}
 
 namespace cbm::qa::checker
 {
@@ -70,27 +57,18 @@ namespace cbm::qa::checker
     /// @brief Gets name of dataset
     /// @param iDataset  Index of dataset
     /// @return  Name of dataset
-    const auto& GetDataset(int iDataset) const { return fvDatasets[iDataset]; }
-
-    /// @brief Gets reference to dataset name array
-    const auto& GetDatasets() const { return fvDatasets; }
+    const std::string& GetDataset(int iDataset) const { return fvDatasets[iDataset]; }
 
     /// @brief Gets index of default version
     /// @return  Index of default version
     int GetDefaultID() const { return fDefVersionID; }
 
-    /// @brief Gets label of the default version
-    const std::string& GetDefaultLabel() const
-    {
-      assert(fDefVersionID > -1);
-      return GetVersionLabel(fDefVersionID);
-    }
-
     /// @brief Gets label of file
     /// @param iFile  Index of file
     /// @return  Label of file
-    const auto& GetFileLabel(int iFile) const { return fvFileLabels[iFile]; }
+    const std::string& GetFileLabel(int iFile) const { return fvFileLabels[iFile]; }
 
+  private:
     /// @brief Gets iterator range for object names stored in a file
     /// @note  The iterator_range object behaves itself just like an ordinary STL container.
     /// @param iFile  Index of file
@@ -105,9 +83,11 @@ namespace cbm::qa::checker
 
       int iBegin = itBegin - fvGlobalToFileObject.begin();
       int iEnd   = itEnd - fvGlobalToFileObject.begin();
+
       return boost::make_iterator_range(fvObjects.begin() + iBegin, fvObjects.begin() + iEnd);
     }
 
+  public:
     /// @brief Gets comparison result
     /// @param iDS    Index of dataset
     /// @param iFile  Index of file
@@ -154,15 +134,9 @@ namespace cbm::qa::checker
     /// @param iVersion  Index of version
     const std::string& GetVersionLabel(int iVersion) const { return fvVersionLabels[iVersion]; }
 
-    /// @brief Gets reference to version label array
-    const auto& GetVersionLabels() const { return fvVersionLabels; }
-
     /// @brief Gets version path
     /// @param iVersion  Index of version
     const std::string& GetVersionPath(int iVersion) const { return fvVersionPaths[iVersion]; }
-
-    /// @brief Gets reference to version path array
-    const auto& GetVersionPaths() const { return fvVersionPaths; }
 
     /// @brief Initializes the database
     void Init();

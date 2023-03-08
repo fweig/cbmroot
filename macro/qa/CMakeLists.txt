@@ -49,11 +49,11 @@ endif()
 
 
 # =====   Cleanup the data directory   =======================================
-add_test(run_cleanup ${CMAKE_COMMAND}
+add_test(qa_cleanup ${CMAKE_COMMAND}
 	-P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
-set_tests_properties(run_cleanup PROPERTIES
+set_tests_properties(qa_cleanup PROPERTIES
 	TIMEOUT ${timeOutTime}
-	FIXTURES_SETUP run_cleanup
+	FIXTURES_SETUP qa_cleanup
 )
 # ============================================================================
 

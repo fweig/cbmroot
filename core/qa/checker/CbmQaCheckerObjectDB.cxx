@@ -15,6 +15,8 @@
 #include <regex>
 #include <sstream>
 
+#include <yaml-cpp/yaml.h>
+
 using cbm::qa::checker::ObjectDB;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -224,7 +226,7 @@ void ObjectDB::ReadFromYAML(const char* configName)
 std::string ObjectDB::ToString() const
 {
   std::stringstream msg;
-  msg << "*** CBM QA-Checker: defied files ****\n\n";
+  msg << "*** CBM QA-Checker: defined files ****\n\n";
 
   msg << "----- Versions:\n";
   for (size_t iV = 0; iV < fvVersionLabels.size(); ++iV) {

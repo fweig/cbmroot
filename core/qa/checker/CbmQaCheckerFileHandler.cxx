@@ -173,11 +173,12 @@ TNamed* FileHandler::ReadObjectFromFile(TFile* pFile, const std::string& path) c
   TObject* pObj = pFile;
   size_t iPos   = 0;  // Index of first symbol
   size_t iNext  = 0;  // Index of last symbol
+  // Read object iteratively, running throug directories or folders, provided by path
   while (iPos < path.size()) {
     // get name
     iNext = path.find_first_of('/', iPos);
     if (iNext > path.size()) { iNext = path.size(); }
-    std::string part = path.substr(iPos, iNext - iPos);
+    std::string part = path.substr(iPos, iNext - iPos);  // short name of next object/directory/folder in the path
     iPos             = iNext + 1;
     if (!part.size()) { continue; }
 
