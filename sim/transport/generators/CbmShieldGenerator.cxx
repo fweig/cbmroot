@@ -131,8 +131,9 @@ Bool_t CbmShieldGenerator::ReadEvent(FairPrimaryGenerator* primGen)
     // Case ion
     /*                       //SELIM
     if ( iPid == 1000 ) {       
-      char ionName[20];
-      sprintf(ionName, "Ion_%d_%d", iMass, iCharge);
+     size_t buf_size = 20;
+     char ionName[buf_size];
+      snprintf(ionName, buf_size-1, "Ion_%d_%d", iMass, iCharge);
       TParticlePDG* part = fPDG->GetParticle(ionName);
       if ( ! part ) {
 	cout << "-W- CbmShieldGenerator::ReadEvent: Cannot find "
@@ -199,9 +200,10 @@ Int_t CbmShieldGenerator::RegisterIons()
       *fInputFile >> pdgType >> iMass >> iCharge >> px >> py >> pz >> etot;  //SELIM: update of SHIELD file structure
                                                                              //if ( iPid == 1000 ) { // ion
       if (pdgType > 1000000000)                                              //SELIM
-      {                                                                      // ion
-        char buffer[20];
-        sprintf(buffer, "Ion_%d_%d", iMass, iCharge);
+      {
+        size_t buf_size = 20;  // ion
+        char buffer[buf_size];
+        snprintf(buffer, buf_size - 1, "Ion_%d_%d", iMass, iCharge);
         TString ionName(buffer);
         if (fIonMap.find(ionName) == fIonMap.end()) {  // new ion
           FairIon* ion     = new FairIon(ionName, iCharge, iMass, iCharge);

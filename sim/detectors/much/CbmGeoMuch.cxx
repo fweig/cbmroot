@@ -35,7 +35,7 @@ const char* CbmGeoMuch::getModuleName(Int_t m)
   //   if ( m < 9 ) sprintf(modName,"muchstation0%i",m+1);
   //   else  sprintf(modName,"muchstation%i",m+1);
 
-  sprintf(eleName, "much%i", m + 1);
+  snprintf(eleName, 19, "much%i", m + 1);
   //  cout << "DEBUG: modName(" << m << ")="<< modName << endl;
   //  CbmGeoMuchPar* fGeoPar = (CbmGeoMuchPar*) db->getContainer("CbmGeoMuchPar");
 
@@ -45,7 +45,7 @@ const char* CbmGeoMuch::getModuleName(Int_t m)
 const char* CbmGeoMuch::getEleName(Int_t m)
 {
   // Returns the element name of sts number m
-  sprintf(eleName, "much%i", m + 1);
+  snprintf(eleName, 19, "much%i", m + 1);
   return eleName;
 }
 

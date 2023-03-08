@@ -272,13 +272,14 @@ void CbmTrdHitRateFastQa::Exec(Option_t*)
   gFile      = oldFile;
   gDirectory = oldDir;
 
-  Char_t name[50];
-  Char_t title[50];
+  size_t buf_size = 50;
+  Char_t name[buf_size];
+  Char_t title[buf_size];
 
 
-  sprintf(name, "HA_S%d_L%d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "HA_S%d_L%d", fStation, fLayer);
   //  sprintf(title,"DataAsic_Station %d, Layer %d",fStation,fLayer);
-  sprintf(title, "Data_per_Asic");
+  snprintf(title, buf_size - 1, "Data_per_Asic");
   //  TH1F* h1HitAsic = new TH1F(name,title,50*fBitPerHit,1,10*fBitPerHit);
   //  TH1F* h1HitAsic = new TH1F(name,title,1000,1,2000);  // Mbit
 
@@ -302,9 +303,9 @@ void CbmTrdHitRateFastQa::Exec(Option_t*)
   h1HitAsic->SetYTitle("count");
   //  h1HitAsic->GetYaxis()->SetRangeUser(0,20);
 
-  sprintf(name, "HM_S%d_L%d", fStation, fLayer);
-  //  sprintf(title,"DataModule_Station %d, Layer %d",fStation,fLayer);
-  sprintf(title, "Data_per_Module");
+  snprintf(name, buf_size - 1, "HM_S%d_L%d", fStation, fLayer);
+  //  sprintf(title, buf_size-1, "DataModule_Station %d, Layer %d",fStation,fLayer);
+  snprintf(title, buf_size - 1, "Data_per_Module");
   //  h1DataModule = new TH1F(name,title,50*fBitPerHit,10,100*10*fBitPerHit);
   //  h1DataModule = new TH1F(name,title,1000,10,100*2000);
 
@@ -328,9 +329,9 @@ void CbmTrdHitRateFastQa::Exec(Option_t*)
   h1DataModule->SetYTitle("count");
   //  h1DataModule->GetYaxis()->SetRangeUser(0,20);
 
-  sprintf(name, "HO_S%d_L%d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "HO_S%d_L%d", fStation, fLayer);
   //  sprintf(title,"OptLinksModule_Station %d, Layer %d",fStation,fLayer);
-  sprintf(title, "5_Gbps_optical_links_per_Module");
+  snprintf(title, buf_size - 1, "5_Gbps_optical_links_per_Module");
   h1OptLinksModule = new TH1F(name, title, 20, 0.5, 20.5);
   h1OptLinksModule->SetXTitle("optical links");
   h1OptLinksModule->SetYTitle("count");
@@ -770,12 +771,13 @@ void CbmTrdHitRateFastQa::ScanModulePlane(const Int_t moduleAddress, TCanvas*& c
 void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TCanvas*& c3, TH2F*& Layer, TH1F*& HitPad,
                                     Double_t ZRangeL, Double_t ZRangeU, Double_t mm2bin)
 {
-  Char_t name[50];
-  Char_t title[50];
+  size_t buf_size = 50;
+  Char_t name[buf_size];
+  Char_t title[buf_size];
 
 
-  sprintf(name, "HP_S%d_L%d", fStation, fLayer);
-  sprintf(title, "HitPad_Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "HP_S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "HitPad_Station %d, Layer %d", fStation, fLayer);
 
   // set even bin size on logx scale
   const Int_t cnbins = 200;
@@ -796,8 +798,8 @@ void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TCanvas*& c3, TH
   HitPad->SetYTitle("count");
   HitPad->GetYaxis()->SetRangeUser(1, 1e04);
 
-  sprintf(name, "c2_S%d_L%d", fStation, fLayer);
-  sprintf(title, "c2 Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "c2_S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "c2 Station %d, Layer %d", fStation, fLayer);
   if (fDraw) {
     c2 = new TCanvas(name, title, 1600, 900);
     c2->Divide(2, 2);  // (3,1);
@@ -826,8 +828,8 @@ void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TCanvas*& c3, TH
     c2->cd(4)->SetGridy(1);
   }
 
-  sprintf(name, "S%d_L%d", fStation, fLayer);
-  sprintf(title, "Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "Station %d, Layer %d", fStation, fLayer);
   printf("%s\n", title);
 
   Layer =
@@ -849,15 +851,15 @@ void CbmTrdHitRateFastQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TCanvas*& c3, TH
   Layer->GetZaxis()->SetRangeUser(ZRangeL, ZRangeU);
   Layer->Fill(0., 0., 0.);
 
-  sprintf(name, "c1_S%d_L%d", fStation, fLayer);
-  sprintf(title, "c1 Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "c1_S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "c1 Station %d, Layer %d", fStation, fLayer);
   if (fDraw) {
     c1 = new TCanvas(name, title, 1000, 900);
     c1->Divide(1, 1);
     c1->cd(1)->SetLogz(1);
     Layer->DrawCopy("colz");
-    sprintf(name, "c3_S%d_L%d", fStation, fLayer);
-    sprintf(title, "c3 Station %d, Layer %d", fStation, fLayer);
+    snprintf(name, buf_size - 1, "c3_S%d_L%d", fStation, fLayer);
+    snprintf(title, buf_size - 1, "c3 Station %d, Layer %d", fStation, fLayer);
     c3 = new TCanvas(name, title, 1000, 900);
     c3->Divide(1, 1);
     c3->cd(1)->SetLogz(1);

@@ -140,8 +140,9 @@ void LxTBTrdFinder::HandleGeometry()
 
 static bool GetHistoRMS(const char* name, Double_t& retVal)
 {
-  char fileName[64];
-  sprintf(fileName, "%s.root", name);
+  size_t buf_size = 64;
+  char fileName[buf_size];
+  snprintf(fileName, buf_size - 1, "%s.root", name);
   bool result    = false;
   TFile* curFile = TFile::CurrentFile();
 
@@ -187,14 +188,15 @@ InitStatus LxTBTrdFinder::Init()
   }
 
   for (int i = 1; i < 4; ++i) {
-    char name[64];
-    sprintf(name, "trdDeltaThetaX_%d", i);
+    size_t buf_size = 64;
+    char name[buf_size];
+    snprintf(name, buf_size - 1, "trdDeltaThetaX_%d", i);
     Double_t deltaThetaX = 0;
 
     if (!GetHistoRMS(name, deltaThetaX)) return kFATAL;
 
     fFinder->stations[i].deltaThetaX = deltaThetaX;
-    sprintf(name, "trdDeltaThetaY_%d", i);
+    snprintf(name, buf_size - 1, "trdDeltaThetaY_%d", i);
     Double_t deltaThetaY = 0;
 
     if (!GetHistoRMS(name, deltaThetaY)) return kFATAL;

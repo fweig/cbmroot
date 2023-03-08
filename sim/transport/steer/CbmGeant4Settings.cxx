@@ -32,8 +32,13 @@ void CbmGeant4Settings::Init(TVirtualMC* vmc)
   }
 
   // --- Random seed and maximum number of steps
-  Text_t buffer[50];
-  sprintf(buffer, "/random/setSeeds %i  %i ", gRandom->GetSeed(), gRandom->GetSeed());
+  size_t buf_size = 100;
+  Text_t buffer[buf_size];
+  int result_length =
+    snprintf(buffer, buf_size - 1, "/random/setSeeds %i  %i ", gRandom->GetSeed(), gRandom->GetSeed());
+  if (!(result_length > 0 && result_length < static_cast<int>(buf_size))) {
+    LOG(fatal) << "Buffer overrun. Random seed for Geant4 would be improper.";
+  }
   vmcg4->ProcessGeantCommand(buffer);
 
   vmcg4->SetMaxNStep(fMaxNumSteps);

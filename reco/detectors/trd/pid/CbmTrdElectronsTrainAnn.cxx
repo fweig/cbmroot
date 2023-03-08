@@ -672,10 +672,11 @@ TTree* CbmTrdElectronsTrainAnn::CreateTree()
   fAnnInput.clear();
   fAnnInput.resize(fNofTrdLayers);
   TTree* simu = new TTree("MonteCarlo", "MontecarloData");
-  char txt1[100], txt2[100];
+  size_t buf_size = 100;
+  char txt1[buf_size], txt2[buf_size];
   for (Int_t i = 0; i < fNofTrdLayers; i++) {
-    sprintf(txt1, "x%d", i);
-    sprintf(txt2, "x%d/F", i);
+    snprintf(txt1, buf_size - 1, "x%d", i);
+    snprintf(txt2, buf_size - 1, "x%d/F", i);
     simu->Branch(txt1, &fAnnInput[i], txt2);
   }
   simu->Branch("xOut", &fXOut, "xOut/F");
@@ -686,14 +687,15 @@ TTree* CbmTrdElectronsTrainAnn::CreateTree()
 string CbmTrdElectronsTrainAnn::CreateAnnString()
 {
   string st = "";
-  char txt[50];
+  size_t buf_size = 50;
+  char txt[buf_size];
   for (Int_t i = 0; i < fNofTrdLayers - 1; i++) {
-    sprintf(txt, "x%d", i);
+    snprintf(txt, buf_size - 1, "x%d", i);
     st = st + txt + ",";
   }
-  sprintf(txt, "x%d", fNofTrdLayers - 1);
+  snprintf(txt, buf_size - 1, "x%d", fNofTrdLayers - 1);
   st = st + txt + "";
-  sprintf(txt, "%d", 2 * fNofTrdLayers);
+  snprintf(txt, buf_size - 1, "%d", 2 * fNofTrdLayers);
   st = st + ":" + txt + ":xOut";
   return st;
 }
@@ -709,9 +711,10 @@ TMVA::Factory* CbmTrdElectronsTrainAnn::CreateFactory(TTree*)
   TCut elCut = "xOut>0";
   //TMVA_API
   //factory->SetInputTrees(simu, elCut, piCut);
-  char txt1[100];
+  size_t buf_size = 100;
+  char txt1[buf_size];
   for (Int_t i = 0; i < fNofTrdLayers; i++) {
-    sprintf(txt1, "x%d", i);
+    snprintf(txt1, buf_size - 1, "x%d", i);
     ////TMVA_API
     //factory->AddVariable(txt1, 'F');
   }
@@ -728,9 +731,10 @@ TMVA::Reader* CbmTrdElectronsTrainAnn::CreateTmvaReader()
 
   TMVA::Reader* reader = new TMVA::Reader();
 
-  char txt1[100];
+  size_t buf_size = 100;
+  char txt1[buf_size];
   for (Int_t i = 0; i < fNofTrdLayers; i++) {
-    sprintf(txt1, "x%d", i);
+    snprintf(txt1, buf_size - 1, "x%d", i);
     reader->AddVariable(txt1, &fAnnInput[i]);
   }
   return reader;

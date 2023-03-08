@@ -54,10 +54,11 @@ void CbmStsDigitizeQaReport::Create()
   Double_t timeResolution = fAsicPar->GetTimeResol();
   Double_t deadTime       = fAsicPar->GetDeadTime();
   Double_t noise          = fAsicPar->GetNoise();
-  char eLossModelChar[15];
-  if (eLossModel == CbmStsELoss::kIdeal) sprintf(eLossModelChar, "ideal");
-  if (eLossModel == CbmStsELoss::kUniform) sprintf(eLossModelChar, "uniform");
-  if (eLossModel == CbmStsELoss::kUrban) sprintf(eLossModelChar, "non-uniform");
+  size_t buf_size         = 15;
+  char eLossModelChar[buf_size];
+  if (eLossModel == CbmStsELoss::kIdeal) snprintf(eLossModelChar, buf_size - 1, "ideal");
+  if (eLossModel == CbmStsELoss::kUniform) snprintf(eLossModelChar, buf_size - 1, "uniform");
+  if (eLossModel == CbmStsELoss::kUrban) snprintf(eLossModelChar, buf_size - 1, "non-uniform");
   Out().precision(1);
   Out() << R()->DocumentBegin();
   Out() << R()->Title(0, GetTitle());

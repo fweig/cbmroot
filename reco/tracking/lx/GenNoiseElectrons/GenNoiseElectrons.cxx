@@ -45,8 +45,9 @@ static Double_t y_rmss[4][3];
 static Double_t GetRMS(const char* name)
 {
   Double_t result = -1.;
-  char fileName[128];
-  sprintf(fileName, "%s.root", name);
+  size_t buf_size = 128;
+  char fileName[buf_size];
+  snprintf(fileName, buf_size - 1, "%s.root", name);
   TFile* curFile = TFile::CurrentFile();
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -83,23 +84,24 @@ InitStatus LxGenNoiseElectrons::Init()
 
   if (0 == fMCTracks || 0 == fMuchPoints || 0 == fTrdPoints) LOG(fatal) << "No MC tracks or points";
 
-  char name[128];
+  size_t buf_size = 128;
+  char name[buf_size];
 
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 3; ++j) {
-      sprintf(name, "noise_e_x_%d_%d", i, j);
+      snprintf(name, buf_size - 1, "noise_e_x_%d_%d", i, j);
       x_rmss[i][j] = GetRMS(name);
 
       if (x_rmss[i][j] < 0) {
-        sprintf(name, "Couldn't read noise_e_x_%d_%d", i, j);
+        snprintf(name, buf_size - 1, "Couldn't read noise_e_x_%d_%d", i, j);
         LOG(fatal) << name;
       }
 
-      sprintf(name, "noise_e_y_%d_%d", i, j);
+      snprintf(name, buf_size - 1, "noise_e_y_%d_%d", i, j);
       y_rmss[i][j] = GetRMS(name);
 
       if (y_rmss[i][j] < 0) {
-        sprintf(name, "Couldn't read noise_e_y_%d_%d", i, j);
+        snprintf(name, buf_size - 1, "Couldn't read noise_e_y_%d_%d", i, j);
         LOG(fatal) << name;
       }
     }

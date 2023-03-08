@@ -278,8 +278,9 @@ void CbmRecoTracks::Reset()
 
 TEveTrackList* CbmRecoTracks::GetTrGroup(TParticle* P)
 {
-  char name_buf[128];
-  sprintf(name_buf, "reco_%s", P->GetName());
+  size_t buf_size = 128;
+  char name_buf[buf_size];
+  snprintf(name_buf, buf_size - 1, "reco_%s", P->GetName());
   fTrList = 0;
   for (Int_t i = 0; i < fEveTrList->GetEntriesFast(); i++) {
     TEveTrackList* TrListIn = (TEveTrackList*) fEveTrList->At(i);

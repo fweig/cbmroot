@@ -42,21 +42,22 @@ InitStatus LxCalcStats::Init()
 
   if (0 == fMCTracks || (0 == fMuchPoints && 0 == fTrdPoints)) LOG(fatal) << "No MC tracks or points";
 
-  char buf[128];
+  size_t buf_size = 128;
+  char buf[buf_size];
 
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 3; ++j) {
-      sprintf(buf, "noise_e_x_%d_%d", i, j);
+      snprintf(buf, buf_size - 1, "noise_e_x_%d_%d", i, j);
       xHistos[i][j] = new TH1F(buf, buf, 240, -30., 30.);
-      sprintf(buf, "noise_e_y_%d_%d", i, j);
+      snprintf(buf, buf_size - 1, "noise_e_y_%d_%d", i, j);
       yHistos[i][j] = new TH1F(buf, buf, 240, -30., 30.);
     }
   }
 
   for (int i = 1; i < 4; ++i) {
-    sprintf(buf, "trdDeltaThetaX_%d", i);
+    snprintf(buf, buf_size - 1, "trdDeltaThetaX_%d", i);
     trdDeltaThetaXHistos[i - 1] = new TH1F(buf, buf, 100, -1.0, 1.0);
-    sprintf(buf, "trdDeltaThetaY_%d", i);
+    snprintf(buf, buf_size - 1, "trdDeltaThetaY_%d", i);
     trdDeltaThetaYHistos[i - 1] = new TH1F(buf, buf, 100, -1.0, 1.0);
   }
 
@@ -171,8 +172,9 @@ void LxCalcStats::Exec(Option_t* /*opt*/)
 static void SaveHisto(TH1F* h)
 {
   TFile* curFile = TFile::CurrentFile();
-  char name[128];
-  sprintf(name, "%s.root", h->GetName());
+  size_t buf_size = 128;
+  char name[buf_size];
+  snprintf(name, buf_size - 1, "%s.root", h->GetName());
   TFile fh(name, "RECREATE");
   h->Write();
   fh.Close();

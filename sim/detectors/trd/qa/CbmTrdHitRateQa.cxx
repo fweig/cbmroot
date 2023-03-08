@@ -354,8 +354,9 @@ void CbmTrdHitRateQa::Exec(Option_t*)
   LiSi.push_back(Plane09);
   LiSi.push_back(Plane10);
 
-  Char_t OutFile1[200];
-  Char_t OutFile2[200];
+  size_t buf_size = 200;
+  Char_t OutFile1[buf_size];
+  Char_t OutFile2[buf_size];
 
   TImage* Outimage1 = NULL;
   TImage* Outimage2 = NULL;
@@ -386,8 +387,8 @@ void CbmTrdHitRateQa::Exec(Option_t*)
     h2Topview[1]->Reset();
     h2Topview[2]->Reset();
 
-    sprintf(OutFile1, "pics/HitRateLayerPadView_S%d_L%d.png", fStation, fLayer);
-    sprintf(OutFile2, "pics/HitRateLayerSpectrum_S%d_L%d.png", fStation, fLayer);
+    snprintf(OutFile1, buf_size - 1, "pics/HitRateLayerPadView_S%d_L%d.png", fStation, fLayer);
+    snprintf(OutFile2, buf_size - 1, "pics/HitRateLayerSpectrum_S%d_L%d.png", fStation, fLayer);
 
     HistoInit(c1, c2, h2Layer, h1HitPad, ZRangeL, ZRangeU, mm2bin);
 
@@ -427,13 +428,13 @@ void CbmTrdHitRateQa::Exec(Option_t*)
     }
 
     /*
-	sprintf(OutFile1,"pics/%s_S%d_L%d.eps",trddigiparpath,fStation,fLayer);
+	snprintf(OutFile1,buf_size-1,"pics/%s_S%d_L%d.eps",trddigiparpath,fStation,fLayer);
 	c1->cd(1)->Print(OutFile1);
       */
     delete h2Layer;
 
     /*
-	sprintf(OutFile2,"pics/%s_HitPerPad_S%d_L%d.eps",trddigiparpath,fStation,fLayer);
+	snprintf(OutFile2,buf_size-1,"pics/%s_HitPerPad_S%d_L%d.eps",trddigiparpath,fStation,fLayer);
 	c2->cd(1)->Print(OutFile2);
       */
     delete h1HitPad;
@@ -459,11 +460,12 @@ void CbmTrdHitRateQa::Exec(Option_t*)
 void CbmTrdHitRateQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TH2F*& Layer, TH1F*& HitPad, Double_t ZRangeL,
                                 Double_t ZRangeU, Double_t mm2bin)
 {
-  Char_t name[50];
-  Char_t title[50];
+  size_t buf_size = 50;
+  Char_t name[buf_size];
+  Char_t title[buf_size];
 
-  sprintf(name, "S%d_L%d", fStation, fLayer);
-  sprintf(title, "Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "Station %d, Layer %d", fStation, fLayer);
   printf("%s\n", title);
 
   Layer =
@@ -484,23 +486,23 @@ void CbmTrdHitRateQa::HistoInit(TCanvas*& c1, TCanvas*& c2, TH2F*& Layer, TH1F*&
   Layer->GetZaxis()->SetTitleOffset(-2);
   Layer->GetZaxis()->SetRangeUser(ZRangeL, ZRangeU);
 
-  sprintf(name, "HP_S%d_L%d", fStation, fLayer);
-  sprintf(title, "HitPad_Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "HP_S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "HitPad_Station %d, Layer %d", fStation, fLayer);
   HitPad = new TH1F(name, title, 10000, 1e00, 1e06);
   HitPad->SetXTitle("Hits/Pad [Hz]");
   HitPad->SetYTitle("count");
   HitPad->GetYaxis()->SetRangeUser(1, 1e04);
 
-  sprintf(name, "c1_S%d_L%d", fStation, fLayer);
-  sprintf(title, "c1 Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "c1_S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "c1 Station %d, Layer %d", fStation, fLayer);
   if (fDraw) {
     c1 = new TCanvas(name, title, 1000, 900);
     c1->Divide(1, 1);
     c1->cd(1)->SetLogz(1);
     Layer->Draw();
   }
-  sprintf(name, "c2_S%d_L%d", fStation, fLayer);
-  sprintf(title, "c2 Station %d, Layer %d", fStation, fLayer);
+  snprintf(name, buf_size - 1, "c2_S%d_L%d", fStation, fLayer);
+  snprintf(title, buf_size - 1, "c2 Station %d, Layer %d", fStation, fLayer);
   if (fDraw) {
     c2 = new TCanvas(name, title, 1000, 900 / 2);
     c2->Divide(1, 1);

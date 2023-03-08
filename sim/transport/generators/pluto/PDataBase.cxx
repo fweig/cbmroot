@@ -748,10 +748,11 @@ Bool_t PDataBase ::ListEntries(Int_t key, Int_t option, const char* pattern)
             }
           }
           else {
-            char bla[1000];  //I dont know a better way to get the length
+            size_t buf_size = 1000;
+            char bla[buf_size];  //I dont know a better way to get the length
             // (if somebody has an idea -> help yourself)
-            sprintf(bla, "%f", *result);
-            sz[i][pat] = strlen(bla);
+            int results_length = snprintf(bla, buf_size - 1, "%f", *result);
+            sz[i][pat]         = results_length;
             if (sz[i][pat] > max_sz[pat]) max_sz[pat] = sz[i][pat];
             if (checkline && !invert) valid_key[i]++;
             else if (invert && checkline)
@@ -772,10 +773,11 @@ Bool_t PDataBase ::ListEntries(Int_t key, Int_t option, const char* pattern)
             }
           }
           else {
-            char bla[1000];  //I dont know a better way to get the length
+            size_t buf_size = 1000;
+            char bla[buf_size];  //I dont know a better way to get the length
             // (if somebody has an idea -> help yourself)
-            sprintf(bla, "%i", *result3);
-            sz[i][pat] = strlen(bla);
+            int result_length = snprintf(bla, buf_size - 1, "%i", *result3);
+            sz[i][pat]        = result_length;
             if (sz[i][pat] > max_sz[pat]) max_sz[pat] = sz[i][pat];
             if (checkline && !invert) valid_key[i]++;
             else if (invert && checkline)

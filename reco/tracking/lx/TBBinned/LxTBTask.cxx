@@ -1360,12 +1360,13 @@ static void PrintTrigger(list<pair<timetype, timetype>>& signalRecoTimes, list<t
   cout << "Triggered signals(" << name << "): " << eff << "% [ " << nofRecoSignals << " / " << signalMCTimes.size()
        << " ]" << endl;
 
-  char buf[256];
-  sprintf(buf, "triggerings_%s.txt", name);
+  size_t buf_size = 256;
+  char buf[buf_size];
+  snprintf(buf, buf_size - 1, "triggerings_%s.txt", name);
   ofstream triggeringsFile(buf, ios_base::out | ios_base::trunc);
   triggeringsFile << signalRecoTimes.size();
 
-  sprintf(buf, "signal_triggerings_%s.txt", name);
+  snprintf(buf, buf_size - 1, "signal_triggerings_%s.txt", name);
   ofstream signalTriggeringsFile(buf, ios_base::out | ios_base::trunc);
   signalTriggeringsFile << nofRecoSignals;
 

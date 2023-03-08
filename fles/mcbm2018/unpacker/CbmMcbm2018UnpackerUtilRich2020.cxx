@@ -13,13 +13,14 @@ std::string mRichSupport::GetBinaryRepresentation(size_t const size, uint8_t con
   unsigned char* b = (unsigned char*) ptr;
   unsigned char byte;
 
-  char cStr[2];
+  size_t buf_size = 2;
+  char cStr[buf_size];
   cStr[1] = '\0';
 
   for (int i = size - 1; i >= 0; i--) {
     for (int j = 7; j >= 0; j--) {
       byte = (b[i] >> j) & 1;
-      sprintf(cStr, "%u", byte);
+      snprintf(cStr, buf_size - 1, "%u", byte);
       outString.append(cStr);
     }
   }
@@ -37,12 +38,13 @@ std::string mRichSupport::GetHexRepresentation(size_t const size, uint8_t const*
   unsigned char* b = (unsigned char*) ptr;
   unsigned char byte;
 
-  char cStr[3];
+  size_t buf_size = 3;
+  char cStr[buf_size];
   cStr[2] = '\0';
 
   for (int i = size - 1; i >= 0; i--) {
     byte = b[i] & 0xff;
-    sprintf(cStr, "%02x", byte);
+    snprintf(cStr, buf_size - 1, "%02x", byte);
     outString.append(cStr);
   }
 
@@ -60,10 +62,11 @@ std::string mRichSupport::GetWordHexRepr(uint8_t const* const ptr)
   byte[2] = b[1] & 0xff;
   byte[3] = b[0] & 0xff;
 
-  char cStr[10];
+  size_t buf_size = 10;
+  char cStr[buf_size];
   cStr[9] = '\0';
 
-  sprintf(cStr, "%02x%02x %02x%02x", byte[0], byte[1], byte[2], byte[3]);
+  snprintf(cStr, buf_size - 1, "%02x%02x %02x%02x", byte[0], byte[1], byte[2], byte[3]);
 
   outString.append(cStr);
 
@@ -81,10 +84,11 @@ std::string mRichSupport::GetWordHexReprInv(uint8_t const* const ptr)
   byte[2] = b[2] & 0xff;
   byte[3] = b[3] & 0xff;
 
-  char cStr[10];
+  size_t buf_size = 10;
+  char cStr[buf_size];
   cStr[9] = '\0';
 
-  sprintf(cStr, "%02x%02x %02x%02x", byte[0], byte[1], byte[2], byte[3]);
+  snprintf(cStr, buf_size - 1, "%02x%02x %02x%02x", byte[0], byte[1], byte[2], byte[3]);
 
   outString.append(cStr);
 

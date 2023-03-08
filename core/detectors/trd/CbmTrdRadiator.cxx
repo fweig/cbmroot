@@ -156,7 +156,8 @@ void CbmTrdRadiator::CreateHistograms()
   Float_t SpLower = 1.0 - 0.5 * fSpBinWidth;
   Float_t SpUpper = SpLower + (Float_t) fSpRange;
 
-  Char_t name[50];
+  size_t buf_size = 50;
+  Char_t name[buf_size];
 
   if (fSpectrum) delete fSpectrum;
   fSpectrum = new TH1D("fSpectrum", "TR spectrum", fSpNBins, SpLower, SpUpper);
@@ -171,7 +172,7 @@ void CbmTrdRadiator::CreateHistograms()
   fDetSpectrumA = new TH1D("fDetSpectrumA", "TR spectrum absorbed in detector", fSpNBins, SpLower, SpUpper);
 
   for (Int_t i = 0; i < fNMom; i++) {
-    sprintf(name, "fFinal%d", i + 1);
+    snprintf(name, buf_size - 1, "fFinal%d", i + 1);
     //LOG(info) <<"name : "<<name;
     if (fFinal[i]) delete fFinal[i];
     fFinal[i] = new TH1D(name, name, fSpNBins, SpLower, SpUpper);

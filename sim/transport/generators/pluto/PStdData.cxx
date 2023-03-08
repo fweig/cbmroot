@@ -164,8 +164,9 @@ Bool_t PStdData::fillDataBase(void)
     if (!base->SetParamDouble(pkey, "ethreshold", dd)) return kFALSE;
 
     //Adding Fireballs!
-    char* name = new char[100];
-    sprintf(name, "Fireball: %s", PStdData::PName[i]);
+    size_t buf_size = 100;
+    char* name      = new char[buf_size];
+    snprintf(name, buf_size - 1, "Fireball: %s", PStdData::PName[i]);
     if ((pkey = base->AddListEntry("std_set", "snpart", "slink", name)) < 0) return kFALSE;
     ii = new int(i + 500);  //never destructed, but called only once!
     if (!base->SetParamInt(pkey, "pid", ii)) return kFALSE;

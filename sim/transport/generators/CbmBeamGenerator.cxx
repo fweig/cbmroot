@@ -52,8 +52,9 @@ CbmBeamGenerator::CbmBeamGenerator(UInt_t beamZ, UInt_t beamA, UInt_t beamQ, Dou
 {
 
   // --- Create the ion species and add it to the particle list
-  char name[20];
-  sprintf(name, "Beam_%d_%d_%d", beamZ, beamA, beamQ);
+  size_t buf_size = 20;
+  char name[buf_size];
+  snprintf(name, buf_size - 1, "Beam_%d_%d_%d", beamZ, beamA, beamQ);
   fIon            = new FairIon(name, beamZ, beamA, beamQ);
   FairRunSim* run = FairRunSim::Instance();
   assert(run);
