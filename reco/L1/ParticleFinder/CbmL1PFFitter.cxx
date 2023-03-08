@@ -444,8 +444,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, const vector<int>& pidHypo)
 {
 
   FairRootManager* fManger  = FairRootManager::Instance();
-  TClonesArray* mvdHitArray = (TClonesArray*) fManger->GetObject("MvdHit");
-  TClonesArray* stsHitArray = (TClonesArray*) fManger->GetObject("StsHit");
+  TClonesArray* mvdHitArray = static_cast<TClonesArray*>(fManger->GetObject("MvdHit"));
+  TClonesArray* stsHitArray = static_cast<TClonesArray*>(fManger->GetObject("StsHit"));
 
   std::vector<CbmMvdHit> vMvdHits;
   std::vector<CbmStsHit> vStsHits;
@@ -489,9 +489,9 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
   L1FieldValue fB[3], fB_temp _fvecalignment;
   fvec zField[3];
   FairRootManager* fManger  = FairRootManager::Instance();
-  TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
+  TClonesArray* listStsHits = static_cast<TClonesArray*>(fManger->GetObject("StsHit"));
   TClonesArray* listMvdHits = 0;
-  if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
+  if (NMvdStations > 0.) listMvdHits = static_cast<TClonesArray*>(fManger->GetObject("MvdHit"));
 
   unsigned short N_vTracks = Tracks.size();
   int ista;
@@ -638,10 +638,10 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<PFF
   L1FieldRegion fld _fvecalignment;
 
   FairRootManager* fManger  = FairRootManager::Instance();
-  TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
+  TClonesArray* listStsHits = static_cast<TClonesArray*>(fManger->GetObject("StsHit"));
   TClonesArray* listMvdHits = 0;
   int NMvdStations          = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
-  if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
+  if (NMvdStations > 0.) listMvdHits = static_cast<TClonesArray*>(fManger->GetObject("MvdHit"));
 
   int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -712,10 +712,10 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
   L1FieldRegion fld _fvecalignment;
 
   FairRootManager* fManger  = FairRootManager::Instance();
-  TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
+  TClonesArray* listStsHits = static_cast<TClonesArray*>(fManger->GetObject("StsHit"));
   TClonesArray* listMvdHits = 0;
   int NMvdStations          = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
-  if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
+  if (NMvdStations > 0.) listMvdHits = static_cast<TClonesArray*>(fManger->GetObject("MvdHit"));
 
   int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track

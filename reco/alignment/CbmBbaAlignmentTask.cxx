@@ -76,25 +76,25 @@ InitStatus CbmBbaAlignmentTask::Init()
 
   // Get hits
 
-  fInputMvdHits = (TClonesArray*) ioman->GetObject("MvdHit");
-  fInputStsHits = (TClonesArray*) ioman->GetObject("StsHit");
+  fInputMvdHits = static_cast<TClonesArray*>(ioman->GetObject("MvdHit"));
+  fInputStsHits = static_cast<TClonesArray*>(ioman->GetObject("StsHit"));
 
   // Get sts tracks
-  fInputStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
+  fInputStsTracks = static_cast<TClonesArray*>(ioman->GetObject("StsTrack"));
   if (!fInputStsTracks) {
     LOG(error) << "CbmBbaAlignmentTask::Init: Sts track-array not found!";
     return kERROR;
   }
 
   // MC track match
-  fInputMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
+  fInputMcTracks = static_cast<TClonesArray*>(ioman->GetObject("MCTrack"));
   if (!fInputMcTracks) {
     Warning("CbmBbaAlignmentTask::Init", "mc track array not found!");
     return kERROR;
   }
 
   // Track match
-  fInputStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
+  fInputStsTrackMatches = static_cast<TClonesArray*>(ioman->GetObject("StsTrackMatch"));
   if (fInputStsTrackMatches == 0) {
     LOG(error) << "CbmBbaAlignmentTask::Init: track match array not found!";
     return kERROR;
@@ -110,19 +110,19 @@ InitStatus CbmBbaAlignmentTask::Init()
 void CbmBbaAlignmentTask::Exec(Option_t* /*opt*/)
 {
 
-  std::cout << "BBA: exec event N " << fNEvents << std::endl;
+  LOG(info) << "BBA: exec event N " << fNEvents;
 
   fNEvents++;
 
-  if ((int) fTracks.size() >= fMaxNtracks) { return; }
+  if (static_cast<int>(fTracks.size()) >= fMaxNtracks) { return; }
 
   // select STS tracks for alignment and store them
 
   for (int iTr = 0; iTr < fInputStsTracks->GetEntriesFast(); iTr++) {
 
-    if ((int) fTracks.size() >= fMaxNtracks) { break; }
+    if (static_cast<int>(fTracks.size()) >= fMaxNtracks) { break; }
 
-    CbmStsTrack* stsTrack = ((CbmStsTrack*) fInputStsTracks->At(iTr));
+    CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fInputStsTracks->At(iTr));
 
     if (stsTrack->GetNofStsHits() < 8) continue;
     const auto* par = stsTrack->GetParamFirst();
@@ -211,10 +211,10 @@ double CbmBbaAlignmentTask::CostFunction(const std::vector<double>& par)
   }
 
   double cost = chi2Total / ndfTotal;
-  std::cout << "BBA: cost function:  n tracks " << nGoodTracks << ", cost " << cost
-            << ", diff to ideal cost: " << cost - fCostIdeal << std::endl;
+  LOG(info) << "BBA: cost function:  n tracks " << nGoodTracks << ", cost " << cost
+            << ", diff to ideal cost: " << cost - fCostIdeal;
   return cost;
-  if (nGoodTracks == (int) fTracks.size()) { return cost; }
+  if (nGoodTracks == static_cast<int>(fTracks.size())) { return cost; }
   return 1.e30;
 }
 
@@ -224,7 +224,7 @@ void CbmBbaAlignmentTask::Finish()
   // perform the alignment
   //
 
-  std::cout << "BBA: start the alignment procedure with " << fTracks.size() << " tracks ..." << std::endl;
+  LOG(info) << "BBA: start the alignment procedure with " << fTracks.size() << " tracks ...";
 
   // init auxiliary arrays
 
@@ -349,30 +349,28 @@ void CbmBbaAlignmentTask::Finish()
       ndfTotal += newTracks[iTr].GetNDF();
     }
 
-    std::cout << "Initial nTracks " << nGoodTracks << " chi2/ndf " << chi2Total / ndfTotal << std::endl;
+    LOG(info) << "Initial nTracks " << nGoodTracks << " chi2/ndf " << chi2Total / ndfTotal;
   }
 
   fCostIdeal = CostFunction(parAligned);
 
-  std::cout << " cost function for the true parameters: " << fCostIdeal << std::endl;
+  LOG(info) << " cost function for the true parameters: " << fCostIdeal;
 
   alignment.align();
 
-  std::cout << " cost function for the true parameters: " << fCostIdeal << std::endl;
+  LOG(info) << " cost function for the true parameters: " << fCostIdeal;
 
-  std::cout << " Misaligned parameters: " << std::endl;
+  LOG(info) << " Misaligned parameters: ";
   for (int is = 0; is < nStsStations; is++) {
     const std::vector<double>& r = parMisaligned;
-    std::cout << "Sts station " << is << ": x " << r[3 * is + 0] << " y " << r[3 * is + 1] << " z " << r[3 * is + 2]
-              << std::endl;
+    LOG(info) << "Sts station " << is << ": x " << r[3 * is + 0] << " y " << r[3 * is + 1] << " z " << r[3 * is + 2];
   }
 
-  std::cout << " Alignment results: " << std::endl;
+  LOG(info) << " Alignment results: ";
 
   for (int is = 0; is < nStsStations; is++) {
     const std::vector<double>& r = alignment.getResult();
-    std::cout << "Sts station " << is << ": x " << r[3 * is + 0] << " y " << r[3 * is + 1] << " z " << r[3 * is + 2]
-              << std::endl;
+    LOG(info) << "Sts station " << is << ": x " << r[3 * is + 0] << " y " << r[3 * is + 1] << " z " << r[3 * is + 2];
   }
 
   // store the histograms

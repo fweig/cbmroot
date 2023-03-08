@@ -18,6 +18,12 @@
 
 #include "FairTask.h"
 
+#include <TString.h>
+
+#include <vector>
+
+class TObject;
+class TH1F;
 class TClonesArray;
 class TFile;
 class TDirectory;
