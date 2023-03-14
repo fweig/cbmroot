@@ -16,7 +16,7 @@
 #include <cassert>  // for assert
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 
-namespace CbmStsAddress
+namespace CbmStsAddress::Detail
 {
 
   // clang-format off
@@ -69,13 +69,14 @@ namespace CbmStsAddress
   // -------------------------------------------------------------------------
   // clang-format on
 
-}  // Namespace CbmStsAddress
+}  // Namespace CbmStsAddress::Detail
 
 
 // -----   Construct address from element Ids   ------------------------------
 int32_t CbmStsAddress::GetAddress(uint32_t unit, uint32_t ladder, uint32_t halfladder, uint32_t module, uint32_t sensor,
                                   uint32_t side, uint32_t version)
 {
+  using namespace Detail;
 
   assert(version <= kCurrentVersion);
 
@@ -122,6 +123,7 @@ int32_t CbmStsAddress::GetAddress(uint32_t unit, uint32_t ladder, uint32_t halfl
 // -----   Construct address from array of element Ids   ----------------------
 int32_t CbmStsAddress::GetAddress(uint32_t* elementId, uint32_t version)
 {
+  using namespace Detail;
 
   assert(version <= kCurrentVersion);
 
@@ -144,6 +146,7 @@ int32_t CbmStsAddress::GetAddress(uint32_t* elementId, uint32_t version)
 // -----   Construct address from address of descendant element   ------------
 int32_t CbmStsAddress::GetMotherAddress(int32_t address, int32_t level)
 {
+  using namespace Detail;
   assert(level >= kStsSystem && level < kStsNofLevels);
   if (level == kStsNofLevels - 1) return address;
   uint32_t version  = GetVersion(address);
@@ -157,6 +160,7 @@ int32_t CbmStsAddress::GetMotherAddress(int32_t address, int32_t level)
 // -----   Get the index of an element   -------------------------------------
 uint32_t CbmStsAddress::GetElementId(int32_t address, int32_t level)
 {
+  using namespace Detail;
   assert(level >= kStsSystem && level < kStsNofLevels);
   uint32_t version = GetVersion(address);
   return (address & (kMask[version][level] << kShift[version][level])) >> kShift[version][level];
@@ -184,6 +188,7 @@ uint32_t CbmStsAddress::GetVersion(int32_t address)
 // -----  Construct address by changing the index of an element   ------------
 int32_t CbmStsAddress::SetElementId(int32_t address, int32_t level, uint32_t newId)
 {
+  using namespace Detail;
   assert(level >= kStsSystem && level < kStsNofLevels);
   uint32_t version = GetVersion(address);
   uint32_t maxId   = (1 << kBits[version][level]) - 1;
@@ -198,6 +203,7 @@ int32_t CbmStsAddress::SetElementId(int32_t address, int32_t level, uint32_t new
 // -----   Pack Digi Address    --------------------------------------------
 int32_t CbmStsAddress::PackDigiAddress(int32_t address)
 {
+  using namespace Detail;
   constexpr int32_t kDMask = kMask[1][kStsUnit] << kShift[1][kStsUnit] | kMask[1][kStsLadder] << kShift[1][kStsLadder]
                              | kMask[1][kStsHalfLadder] << kShift[1][kStsHalfLadder]
                              | kMask[1][kStsModule] << kShift[1][kStsModule];
@@ -214,6 +220,7 @@ int32_t CbmStsAddress::PackDigiAddress(int32_t address)
 // -----   Unpack Digi Address    -------------------------------------------
 int32_t CbmStsAddress::UnpackDigiAddress(int32_t digiAddress)
 {
+  using namespace Detail;
   return digiAddress << kShift[1][kStsUnit] | ToIntegralType(ECbmModuleId::kSts) << kShift[1][kStsSystem]
          | 1u << kVersionShift;
 }
