@@ -48,13 +48,13 @@ enum EStsElementLevel
 namespace CbmStsAddress
 {
 
-  const uint32_t kCurrentVersion = 1;
+  inline constexpr uint32_t kCurrentVersion = 1;
 
   // --- These values are not to be changed if backward compatibility
   // --- shall be maintained.
-  const int32_t kVersionSize  = 4;   // Bits for version number
-  const int32_t kVersionShift = 28;  // First bit for version number
-  const int32_t kVersionMask  = (1 << kVersionSize) - 1;
+  inline constexpr int32_t kVersionSize  = 4;   // Bits for version number
+  inline constexpr int32_t kVersionShift = 28;  // First bit for version number
+  inline constexpr int32_t kVersionMask  = (1 << kVersionSize) - 1;
 
 
   /** @brief Construct address

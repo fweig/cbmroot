@@ -21,7 +21,7 @@ namespace CbmStsAddress
 
   // clang-format off
   // -----    Definition of address bit field   ------------------------------
-  const uint16_t kBits[kCurrentVersion + 1][kStsNofLevels] = {
+  inline constexpr uint16_t kBits[kCurrentVersion + 1][kStsNofLevels] = {
 
     // Version 0 (until 23 August 2017)
     {
@@ -50,7 +50,7 @@ namespace CbmStsAddress
 
 
   // -----    Bit shifts -----------------------------------------------------
-  const int32_t kShift[kCurrentVersion + 1][kStsNofLevels] = {
+  inline constexpr int32_t kShift[kCurrentVersion + 1][kStsNofLevels] = {
     {0, kShift[0][0] + kBits[0][0], kShift[0][1] + kBits[0][1], kShift[0][2] + kBits[0][2], kShift[0][3] + kBits[0][3],
      kShift[0][4] + kBits[0][4], kShift[0][5] + kBits[0][5]},
 
@@ -60,7 +60,7 @@ namespace CbmStsAddress
 
 
   // -----    Bit masks  -----------------------------------------------------
-  const int32_t kMask[kCurrentVersion + 1][kStsNofLevels] = {
+  inline constexpr int32_t kMask[kCurrentVersion + 1][kStsNofLevels] = {
     {(1 << kBits[0][0]) - 1, (1 << kBits[0][1]) - 1, (1 << kBits[0][2]) - 1, (1 << kBits[0][3]) - 1,
      (1 << kBits[0][4]) - 1, (1 << kBits[0][5]) - 1, (1 << kBits[0][6]) - 1},
 
@@ -198,9 +198,9 @@ int32_t CbmStsAddress::SetElementId(int32_t address, int32_t level, uint32_t new
 // -----   Pack Digi Address    --------------------------------------------
 int32_t CbmStsAddress::PackDigiAddress(int32_t address)
 {
-  const int32_t kDMask = kMask[1][kStsUnit] << kShift[1][kStsUnit] | kMask[1][kStsLadder] << kShift[1][kStsLadder]
-                         | kMask[1][kStsHalfLadder] << kShift[1][kStsHalfLadder]
-                         | kMask[1][kStsModule] << kShift[1][kStsModule];
+  constexpr int32_t kDMask = kMask[1][kStsUnit] << kShift[1][kStsUnit] | kMask[1][kStsLadder] << kShift[1][kStsLadder]
+                             | kMask[1][kStsHalfLadder] << kShift[1][kStsHalfLadder]
+                             | kMask[1][kStsModule] << kShift[1][kStsModule];
 
   int32_t ret = (address & kDMask) >> kShift[1][kStsUnit];
 
