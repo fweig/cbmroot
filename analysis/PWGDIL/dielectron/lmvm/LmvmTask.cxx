@@ -152,8 +152,8 @@ void LmvmTask::InitHists()
               2.5);  // for UrQMD electrons only
 
   // Pair Yield histograms for combinatorial BG calculation
-  for (const string& comb : {"PM", "PP", "MM"}) {
-    for (const string& cat : {"", "_urqmdAll", "_urqmdEl"}) {
+  for (std::string comb : {"PM", "PP", "MM"}) {
+    for (std::string cat : {"", "_urqmdAll", "_urqmdEl"}) {
       string hName = "hMinvComb" + comb + cat;
       fH.CreateH1(hName, {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0., 2.5);
     }
@@ -172,7 +172,7 @@ void LmvmTask::InitHists()
   fH.CreateH2("hPtYPairSignal", fH.fAnaStepNames, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 20, 0., 2.);
   fH.CreateH1("hAnglePair", fH.fSrcNames, fH.fAnaStepNames, "#Theta_{1,2} [deg]", ax, 160, 0., 80.);
 
-  for (const string& suff : {"", "+", "-"}) {
+  for (std::string suff : {"", "+", "-"}) {
     fH.CreateH1("hMom" + suff, fH.fSrcNames, fH.fAnaStepNames, "P [GeV/c]", ax, 100, 0., 10.);
     fH.CreateH1("hMomPx" + suff, fH.fSrcNames, fH.fAnaStepNames, "Px [GeV/c]", ax, 100, -3., 3.);
     fH.CreateH1("hMomPy" + suff, fH.fSrcNames, fH.fAnaStepNames, "Py [GeV/c]", ax, 100, -3., 3.);
