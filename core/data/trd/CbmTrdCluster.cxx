@@ -49,10 +49,22 @@ CbmTrdCluster::CbmTrdCluster(int32_t address, int32_t idx, int32_t ch, int32_t r
 //____________________________________________________________________
 CbmTrdCluster::~CbmTrdCluster() {}
 
+CbmTrdCluster& CbmTrdCluster::operator=(const CbmTrdCluster& ref)
+{
+  if (this != &ref) {
+    CbmCluster::operator=(ref);
+    fNCols              = ref.fNCols;
+    fNRows              = ref.fNRows;
+    fStartCh            = ref.fStartCh;
+    fStartTime          = ref.fStartTime;
+  }
+  return *this;
+}
+
 //____________________________________________________________________
 bool CbmTrdCluster::AddDigi(int32_t idx, int32_t channel, int32_t terminator, int32_t dt)
 {
-  /** Extend basic functionality of CbmCluster::AddDigi(). 
+  /** Extend basic functionality of CbmCluster::AddDigi().
  * If channel>=0 add this info to channel map.
  */
 

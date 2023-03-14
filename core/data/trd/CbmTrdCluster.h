@@ -42,11 +42,11 @@ public:
   CbmTrdCluster(const std::vector<int32_t>& indices, int32_t address);
   /**
    * \brief Constructor starting from first digit.
-   * \param[in] address global module address 
+   * \param[in] address global module address
    * \param[in] idx global digi index in the TClonesArray
-   * \param[in] ch RO channel address within the module 
-   * \param[in] r module row for the RO channel 
-   * \param[in] time relative buffer DAQ time 
+   * \param[in] ch RO channel address within the module
+   * \param[in] r module row for the RO channel
+   * \param[in] time relative buffer DAQ time
    */
   CbmTrdCluster(int32_t address, int32_t idx, int32_t ch, int32_t r, int32_t time);
   /**
@@ -54,10 +54,12 @@ public:
    */
   virtual ~CbmTrdCluster();
 
+  CbmTrdCluster& operator=(const CbmTrdCluster& ref);
+
   /** \brief Append digi to cluster
    * \param[in] idx index of digi in TClonesArray
    * \param[in] channel RO channel for digi
-   * \param[in] terminator state of digi for triangular pads: 0 if complete, -/+ if T/R misses 
+   * \param[in] terminator state of digi for triangular pads: 0 if complete, -/+ if T/R misses
    * \param[in] dt update start time of cluster if current digi is prompt
    * \return true if successful
    */
@@ -76,14 +78,14 @@ public:
   bool HasOpenStart() const { return TESTBIT(fNRows, kProfileStart); }
   bool HasOpenStop() const { return TESTBIT(fNRows, kProfileStop); }
 
-  /** \brief Query on RO channel list 
+  /** \brief Query on RO channel list
    * \param[in] channel RO channel for digi
    * \return -1 before range; 0 in range; 1 after range; -2 cluster empty of digits
    */
   int32_t IsChannelInRange(int32_t ch) const;
-  /** \brief Merge current cluster with info from second 
+  /** \brief Merge current cluster with info from second
    * \param[in] second cluster to be added
-   * \param[in] typ the type of pad-plane of the source chamber; true if Trd2d 
+   * \param[in] typ the type of pad-plane of the source chamber; true if Trd2d
    * \return success or fail
    */
   bool Merge(CbmTrdCluster* second, bool typ = true);
