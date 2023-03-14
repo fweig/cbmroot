@@ -29,24 +29,6 @@ string CbmStsDigi::ToString() const
   return ss.str();
 }
 
-void CbmStsDigi::PackAddressAndTime(int32_t newAddress, uint32_t newTime)
-{
-  int32_t packedAddr = CbmStsAddress::PackDigiAddress(newAddress);
-
-  uint32_t highestBitAddr = packedAddr >> kNumLowerAddrBits;
-  uint32_t lowerAddr      = packedAddr & ((1 << kNumLowerAddrBits) - 1);
-
-  fAddress = lowerAddr;
-  fTime    = (highestBitAddr << kNumTimestampBits) | (kTimestampMask & newTime);
-}
-
-int32_t CbmStsDigi::UnpackAddress() const
-{
-  int32_t highestBitAddr = fTime >> kNumTimestampBits;
-  int32_t packedAddress  = (highestBitAddr << kNumLowerAddrBits) | int32_t(fAddress);
-  return CbmStsAddress::UnpackDigiAddress(packedAddress);
-}
-
 #ifndef NO_ROOT
 ClassImp(CbmStsDigi)
 #endif

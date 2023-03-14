@@ -12,7 +12,11 @@
 
 #include "CbmDefs.h"  // for ECbmModuleId
 
+#include <cassert>  // for assert
+#include <cstdint>  // for uint32_t
 #include <sstream>  // for string
+
+#include <xpu/defines.h>  // for XPU_D
 
 /** Enumerator for the hierarchy levels of the STS setup **/
 enum EStsElementLevel
@@ -55,6 +59,57 @@ namespace CbmStsAddress
   inline constexpr int32_t kVersionSize  = 4;   // Bits for version number
   inline constexpr int32_t kVersionShift = 28;  // First bit for version number
   inline constexpr int32_t kVersionMask  = (1 << kVersionSize) - 1;
+
+  namespace Detail
+  {
+    // clang-format off
+    // -----    Definition of address bit field   ------------------------------
+    inline constexpr uint16_t kBits[kCurrentVersion + 1][kStsNofLevels] = {
+
+      // Version 0 (until 23 August 2017)
+      {
+        4,  // system
+        4,  // unit / station
+        4,  // ladder
+        1,  // half-ladder
+        3,  // module
+        2,  // sensor
+        1   // side
+      },
+
+      // Version 1 (current, since 23 August 2017)
+      {
+        4,  // system
+        6,  // unit
+        5,  // ladder
+        1,  // half-ladder
+        5,  // module
+        4,  // sensor
+        1   // side
+      }
+
+    };
+    // -------------------------------------------------------------------------
+
+    // -----    Bit shifts -----------------------------------------------------
+    inline constexpr int32_t kShift[kCurrentVersion + 1][kStsNofLevels] = {
+      {0, kShift[0][0] + kBits[0][0], kShift[0][1] + kBits[0][1], kShift[0][2] + kBits[0][2], kShift[0][3] + kBits[0][3],
+      kShift[0][4] + kBits[0][4], kShift[0][5] + kBits[0][5]},
+
+      {0, kShift[1][0] + kBits[1][0], kShift[1][1] + kBits[1][1], kShift[1][2] + kBits[1][2], kShift[1][3] + kBits[1][3],
+      kShift[1][4] + kBits[1][4], kShift[1][5] + kBits[1][5]}};
+    // -------------------------------------------------------------------------
+
+    // -----    Bit masks  -----------------------------------------------------
+    inline constexpr int32_t kMask[kCurrentVersion + 1][kStsNofLevels] = {
+      {(1 << kBits[0][0]) - 1, (1 << kBits[0][1]) - 1, (1 << kBits[0][2]) - 1, (1 << kBits[0][3]) - 1,
+      (1 << kBits[0][4]) - 1, (1 << kBits[0][5]) - 1, (1 << kBits[0][6]) - 1},
+
+      {(1 << kBits[1][0]) - 1, (1 << kBits[1][1]) - 1, (1 << kBits[1][2]) - 1, (1 << kBits[1][3]) - 1,
+      (1 << kBits[1][4]) - 1, (1 << kBits[1][5]) - 1, (1 << kBits[1][6]) - 1}};
+    // -------------------------------------------------------------------------
+    // clang-format on
+  }  // Namespace Detail
 
 
   /** @brief Construct address
@@ -123,34 +178,35 @@ namespace CbmStsAddress
    **/
   int32_t SetElementId(int32_t address, int32_t level, uint32_t newId);
 
+  /** @brief Add version and system to compressed address that's stored in a digi
+   ** @param digiAddress Compressed address from digi
+   ** @return Full address
+   **/
+  XPU_D inline int32_t UnpackDigiAddress(int32_t digiAddress)
+  {
+    using namespace Detail;
+    return digiAddress << kShift[1][kStsUnit] | ToIntegralType(ECbmModuleId::kSts) << kShift[1][kStsSystem]
+           | 1u << kVersionShift;
+  }
 
   /** @brief Strip address to contain only unit, (half)ladder and module.
    ** @param address Full address
    ** @return 17 bit address that can be stored in a Digi
    **/
-  int32_t PackDigiAddress(int32_t address);
+  XPU_D inline int32_t PackDigiAddress(int32_t address)
+  {
+    using namespace Detail;
+    constexpr int32_t kDMask = kMask[1][kStsUnit] << kShift[1][kStsUnit] | kMask[1][kStsLadder] << kShift[1][kStsLadder]
+                               | kMask[1][kStsHalfLadder] << kShift[1][kStsHalfLadder]
+                               | kMask[1][kStsModule] << kShift[1][kStsModule];
 
+    int32_t ret = (address & kDMask) >> kShift[1][kStsUnit];
 
-  /** @brief Add version and system to compressed address that's stored in a digi
-   ** @param digiAddress Compressed address from digi
-   ** @return Full address
-   **/
-  int32_t UnpackDigiAddress(int32_t digiAddress);
+    // Check that no bits were set, that are stripped by this function.
+    assert(address == UnpackDigiAddress(ret));
 
-
-  /** @brief Strip address to contain only unit, (half)ladder and module.
-   ** @param address Full address
-   ** @return 17 bit address that can be stored in a Digi
-   **/
-  int32_t PackDigiAddress(int32_t address);
-
-
-  /** @brief Add version and system to compressed address that's stored in a digi
-   ** @param digiAddress Compressed address from digi
-   ** @return Full address
-   **/
-  int32_t UnpackDigiAddress(int32_t digiAddress);
-
+    return ret;
+  }
 
   /** @brief String output
    ** @param address Unique element address

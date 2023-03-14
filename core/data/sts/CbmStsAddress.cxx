@@ -16,62 +16,6 @@
 #include <cassert>  // for assert
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 
-namespace CbmStsAddress::Detail
-{
-
-  // clang-format off
-  // -----    Definition of address bit field   ------------------------------
-  inline constexpr uint16_t kBits[kCurrentVersion + 1][kStsNofLevels] = {
-
-    // Version 0 (until 23 August 2017)
-    {
-      4,  // system
-      4,  // unit / station
-      4,  // ladder
-      1,  // half-ladder
-      3,  // module
-      2,  // sensor
-      1   // side
-    },
-
-    // Version 1 (current, since 23 August 2017)
-    {
-      4,  // system
-      6,  // unit
-      5,  // ladder
-      1,  // half-ladder
-      5,  // module
-      4,  // sensor
-      1   // side
-    }
-
-  };
-  // -------------------------------------------------------------------------
-
-
-  // -----    Bit shifts -----------------------------------------------------
-  inline constexpr int32_t kShift[kCurrentVersion + 1][kStsNofLevels] = {
-    {0, kShift[0][0] + kBits[0][0], kShift[0][1] + kBits[0][1], kShift[0][2] + kBits[0][2], kShift[0][3] + kBits[0][3],
-     kShift[0][4] + kBits[0][4], kShift[0][5] + kBits[0][5]},
-
-    {0, kShift[1][0] + kBits[1][0], kShift[1][1] + kBits[1][1], kShift[1][2] + kBits[1][2], kShift[1][3] + kBits[1][3],
-     kShift[1][4] + kBits[1][4], kShift[1][5] + kBits[1][5]}};
-  // -------------------------------------------------------------------------
-
-
-  // -----    Bit masks  -----------------------------------------------------
-  inline constexpr int32_t kMask[kCurrentVersion + 1][kStsNofLevels] = {
-    {(1 << kBits[0][0]) - 1, (1 << kBits[0][1]) - 1, (1 << kBits[0][2]) - 1, (1 << kBits[0][3]) - 1,
-     (1 << kBits[0][4]) - 1, (1 << kBits[0][5]) - 1, (1 << kBits[0][6]) - 1},
-
-    {(1 << kBits[1][0]) - 1, (1 << kBits[1][1]) - 1, (1 << kBits[1][2]) - 1, (1 << kBits[1][3]) - 1,
-     (1 << kBits[1][4]) - 1, (1 << kBits[1][5]) - 1, (1 << kBits[1][6]) - 1}};
-  // -------------------------------------------------------------------------
-  // clang-format on
-
-}  // Namespace CbmStsAddress::Detail
-
-
 // -----   Construct address from element Ids   ------------------------------
 int32_t CbmStsAddress::GetAddress(uint32_t unit, uint32_t ladder, uint32_t halfladder, uint32_t module, uint32_t sensor,
                                   uint32_t side, uint32_t version)
@@ -197,32 +141,6 @@ int32_t CbmStsAddress::SetElementId(int32_t address, int32_t level, uint32_t new
     return 0;
   }
   return (address & (~(kMask[version][level] << kShift[version][level]))) | (newId << kShift[version][level]);
-}
-// -------------------------------------------------------------------------
-
-// -----   Pack Digi Address    --------------------------------------------
-int32_t CbmStsAddress::PackDigiAddress(int32_t address)
-{
-  using namespace Detail;
-  constexpr int32_t kDMask = kMask[1][kStsUnit] << kShift[1][kStsUnit] | kMask[1][kStsLadder] << kShift[1][kStsLadder]
-                             | kMask[1][kStsHalfLadder] << kShift[1][kStsHalfLadder]
-                             | kMask[1][kStsModule] << kShift[1][kStsModule];
-
-  int32_t ret = (address & kDMask) >> kShift[1][kStsUnit];
-
-  // Check that no bits were set, that are stripped by this function.
-  assert(address == UnpackDigiAddress(ret));
-
-  return ret;
-}
-// -------------------------------------------------------------------------
-
-// -----   Unpack Digi Address    -------------------------------------------
-int32_t CbmStsAddress::UnpackDigiAddress(int32_t digiAddress)
-{
-  using namespace Detail;
-  return digiAddress << kShift[1][kStsUnit] | ToIntegralType(ECbmModuleId::kSts) << kShift[1][kStsSystem]
-         | 1u << kVersionShift;
 }
 // -------------------------------------------------------------------------
 

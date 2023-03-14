@@ -44,14 +44,13 @@ public:
   CbmStsDigi() = default;
 
 
-#if XPU_IS_CPU
   /** Standard constructor
    ** @param  address  Unique element address
    ** @param  channel  Channel number
    ** @param  time     Measurement time [ns]
    ** @param  charge   Charge [ADC units]
    **/
-  CbmStsDigi(int32_t address, int32_t channel, double time, uint16_t charge)
+  XPU_D CbmStsDigi(int32_t address, int32_t channel, double time, uint16_t charge)
   {
     // StsDigi is not able to store negative timestamps.
     assert(time >= 0);
@@ -60,7 +59,6 @@ public:
     PackAddressAndTime(address, time);
     PackChannelAndCharge(channel, charge);
   }
-#endif
 
   /** Destructor **/
   ~CbmStsDigi() = default;
@@ -68,7 +66,7 @@ public:
   /** Unique detector element address  (see CbmStsAddress)
    ** @value Unique address of readout channel
    **/
-  int32_t GetAddress() const { return UnpackAddress(); }
+  XPU_D int32_t GetAddress() const { return UnpackAddress(); }
 
 
   /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
@@ -138,9 +136,7 @@ public:
 
   XPU_D void SetCharge(uint16_t charge) { PackChannelAndCharge(UnpackChannel(), charge); }
 
-#if XPU_IS_CPU
-  void SetAddress(int32_t address) { PackAddressAndTime(address, UnpackTime()); }
-#endif
+  XPU_D void SetAddress(int32_t address) { PackAddressAndTime(address, UnpackTime()); }
 
 
   /** Set new channel and charge.
@@ -153,7 +149,7 @@ public:
    **
    ** Slightly more efficient than calling both individual setters.
    **/
-  void SetAddressAndTime(int32_t address, uint32_t time) { PackAddressAndTime(address, time); }
+  XPU_D void SetAddressAndTime(int32_t address, uint32_t time) { PackAddressAndTime(address, time); }
 
 
   /** String output **/
@@ -197,9 +193,23 @@ private:
   XPU_D uint16_t UnpackChannel() const { return fChannelAndCharge >> kNumAdcBits; }
   XPU_D uint16_t UnpackCharge() const { return fChannelAndCharge & kAdcMask; }
 
-  // Packing / Unpacking address not available on GPU for now...
-  void PackAddressAndTime(int32_t address, uint32_t time);
-  int32_t UnpackAddress() const;
+  XPU_D void PackAddressAndTime(int32_t newAddress, uint32_t newTime)
+  {
+    int32_t packedAddr = CbmStsAddress::PackDigiAddress(newAddress);
+
+    uint32_t highestBitAddr = packedAddr >> kNumLowerAddrBits;
+    uint32_t lowerAddr      = packedAddr & ((1 << kNumLowerAddrBits) - 1);
+
+    fAddress = lowerAddr;
+    fTime    = (highestBitAddr << kNumTimestampBits) | (kTimestampMask & newTime);
+  }
+
+  XPU_D int32_t UnpackAddress() const
+  {
+    int32_t highestBitAddr = fTime >> kNumTimestampBits;
+    int32_t packedAddress  = (highestBitAddr << kNumLowerAddrBits) | int32_t(fAddress);
+    return CbmStsAddress::UnpackDigiAddress(packedAddress);
+  }
 
 #ifndef NO_ROOT
   ClassDefNV(CbmStsDigi, 8);

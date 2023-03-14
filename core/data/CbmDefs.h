@@ -12,10 +12,11 @@
 #ifndef CBMDEFS_H
 #define CBMDEFS_H 1
 
-#include <type_traits>  // for underlying_type
-
 #include <iostream>  // for ostream
 #include <string>
+#include <type_traits>  // for underlying_type
+
+#include <xpu/defines.h>  // for XPU_D
 
 // Convert an element of enum class to its underlying intergral type
 // since with C++11 the return type can't be deduced automatically it has
@@ -25,7 +26,7 @@
 // E.g. ToIntegralType(ECbmModuleId::KSts) should be evaluated at compile
 // time and should not affect the run time performance at all
 template<typename T>
-constexpr auto ToIntegralType(T enumerator) -> typename std::underlying_type<T>::type
+XPU_D constexpr auto ToIntegralType(T enumerator) -> typename std::underlying_type<T>::type
 {
   return static_cast<typename std::underlying_type<T>::type>(enumerator);
 }
