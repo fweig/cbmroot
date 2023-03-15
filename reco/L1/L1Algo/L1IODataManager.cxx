@@ -42,7 +42,7 @@ bool L1IODataManager::SendInputData(L1Algo* pAlgo)
 void L1IODataManager::ReadInputData(const std::string& fileName)
 {
   // Reset input data object
-  this->ResetInputData();
+  ResetInputData();
   LOG(info) << "L1: Input data will be read from file \"" << fileName << "\"";
 
   // Open input binary file
@@ -65,37 +65,29 @@ void L1IODataManager::ResetInputData() noexcept
 {
   L1InputData tmp;
   fInputData.Swap(tmp);
+  fLastStreamId = -1;
+  fInputData.fStreamStartIndices.reserve(2000);
+  fInputData.fStreamStopIndices.reserve(2000);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
 void L1IODataManager::InitData()
 {
-  // Sort hits within stations
-  L1Vector<L1Hit> fvHitsNew;
-  fvHitsNew.reset(fInputData.fvHits.size());
+  // set the end pointers to data streams
 
-  std::fill(fvHitIndex.begin(), fvHitIndex.end(), 0);
-  std::fill(fInputData.fvStartHitIndexes.begin(), fInputData.fvStartHitIndexes.end(), 0);
+  //std::cout << "N data streams: " << fInputData.fStreamStartIndices.size() << std::endl;
 
-  // Count number of hits in each station
-  for (const auto& hit : fInputData.fvHits) {
-    ++fInputData.fvStartHitIndexes[hit.iSt + 1];
+  if (fInputData.fStreamStartIndices.size() > 3000) {
+    LOG(warning) << "L1: unexpected order of input data: too many data streams!!! ";
+    fInputData.fStreamStartIndices.reduce(3000);
   }
-
-  // Fill bordering numbers of hits for each station
-  for (int iSt = 0; iSt < fpParameters->GetNstationsActive(); ++iSt) {
-    fInputData.fvStartHitIndexes[iSt + 1] += fInputData.fvStartHitIndexes[iSt];
+  int nStreams = fInputData.fStreamStartIndices.size();
+  fInputData.fStreamStopIndices.reset(nStreams);
+  for (int i = 0; i < nStreams - 1; i++) {
+    fInputData.fStreamStopIndices[i] = fInputData.fStreamStartIndices[i + 1];
   }
-
-  // Save ordered hits to new vector
-  for (const auto& hit : fInputData.fvHits) {
-    int iSt                                                            = hit.iSt;
-    fvHitsNew[fInputData.fvStartHitIndexes[iSt] + (fvHitIndex[iSt]++)] = hit;
-  }
-
-  // Swap contents of old and new hits vector
-  std::swap(fvHitsNew, fInputData.fvHits);
+  if (nStreams > 0) { fInputData.fStreamStopIndices[nStreams - 1] = fInputData.fHits.size(); }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

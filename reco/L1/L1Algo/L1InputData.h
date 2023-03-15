@@ -13,9 +13,6 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/array.hpp>
 
-#include <array>
-
-#include "L1Constants.h"
 #include "L1Hit.h"
 #include "L1Vector.h"
 
@@ -56,35 +53,38 @@ public:
   L1InputData& operator=(L1InputData&& other) noexcept;
 
   /// Gets hits sample size
-  L1HitIndex_t GetSampleSize() const { return fvHits.size(); }
+  L1HitIndex_t GetSampleSize() const { return fHits.size(); }
 
 
   // ** Accessors **
 
+  /// Gets number of data streams
+  int GetNdataStreams() const { return fStreamStartIndices.size(); }
+
   /// Gets reference to hit by its index
   /// \param  index  Index of hit in the hits sample
-  const L1Hit& GetHit(L1HitIndex_t index) const { return fvHits[index]; }
+  const L1Hit& GetHit(L1HitIndex_t index) const { return fHits[index]; }
 
   /// Gets reference to hits vector
-  const L1Vector<L1Hit>& GetHits() const { return fvHits; }
+  const L1Vector<L1Hit>& GetHits() const { return fHits; }
 
   /// Gets number of hits in the hits vector
-  L1HitIndex_t GetNhits() const { return fvHits.size(); }
+  L1HitIndex_t GetNhits() const { return fHits.size(); }
 
   /// Gets total number of stored keys
   int GetNhitKeys() const { return fNhitKeys; }
 
   /// Gets index of the first hit in the sorted hits vector
-  /// \param iStation  Index of the tracking station in the active stations array
-  L1HitIndex_t GetStartHitIndex(int iStation) const { return fvStartHitIndexes[iStation]; }
+  /// \param iStream  Index of the data stream
+  L1HitIndex_t GetStreamStartIndex(int iStream) const { return fStreamStartIndices[iStream]; }
 
   /// Gets index of (the last + 1) hit in the sorted hits vector
-  /// \param iStation  Index of the tracking station in the active stations array
-  L1HitIndex_t GetStopHitIndex(int iStation) const { return fvStartHitIndexes[iStation + 1]; }
+  /// \param iStream  Index of the data stream
+  L1HitIndex_t GetStreamStopIndex(int iStream) const { return fStreamStopIndices[iStream]; }
 
-  /// Gets n hits for the station
-  /// \param iStation  Index of the tracking station in the active stations array
-  L1HitIndex_t GetNhits(int iStation) const { return fvStartHitIndexes[iStation + 1] - fvStartHitIndexes[iStation]; }
+  /// Gets n hits for the data stream
+  /// \param iStream  Index of the data stream
+  L1HitIndex_t GetStreamNhits(int iStream) const { return fStreamStopIndices[iStream] - fStreamStartIndices[iStream]; }
 
 
 private:
@@ -95,8 +95,9 @@ private:
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*versino*/)
   {
-    ar& fvHits;
-    ar& fvStartHitIndexes;
+    ar& fHits;
+    ar& fStreamStartIndices;
+    ar& fStreamStopIndices;
     ar& fNhitKeys;
   }
 
@@ -105,10 +106,11 @@ private:
   // ***************************
 
   /// @brief Sample of input hits
-  L1Vector<L1Hit> fvHits = {"L1InputData::fvHits"};
+  L1Vector<L1Hit> fHits {"L1InputData::fHits"};
 
-  /// @brief Index of the first hit in the sorted hits vector for a given station
-  std::array<L1HitIndex_t, L1Constants::size::kMaxNstations + 1> fvStartHitIndexes = {0};
+  /// @brief Index of the first hit in the sorted hits vector for a given data stream
+  L1Vector<L1HitIndex_t> fStreamStartIndices {"L1InputData::fStreamStartIndices"};
+  L1Vector<L1HitIndex_t> fStreamStopIndices {"L1InputData::fStreamStopIndices"};
 
   /// @brief Number of hit keys used for rejecting fake STS hits
   int fNhitKeys = -1;
@@ -123,8 +125,9 @@ private:
 //
 [[gnu::always_inline]] inline void L1InputData::Swap(L1InputData& other) noexcept
 {
-  std::swap(fvHits, other.fvHits);
-  std::swap(fvStartHitIndexes, other.fvStartHitIndexes);
+  std::swap(fHits, other.fHits);
+  std::swap(fStreamStartIndices, other.fStreamStartIndices);
+  std::swap(fStreamStopIndices, other.fStreamStopIndices);
   std::swap(fNhitKeys, other.fNhitKeys);
 }
 

@@ -91,7 +91,10 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
 //
 void L1Algo::ResetSliceData()
 {
-  int nHits = fSliceHitIds.size();
+  int nHits = 0;
+  for (int iS = 0; iS < fParameters.GetNstationsActive(); iS++) {
+    nHits += fSliceHitIds[iS].size();
+  }
 
   fGridHits.reset(nHits);
   fGridHitsBuf.reset(nHits);
@@ -120,23 +123,23 @@ void L1Algo::ResetSliceData()
   fSliceRecoHits.clear();
   fSliceRecoHits.reserve(2 * nHits);
 
-  for (int i = 0; i < L1Constants::size::kMaxNstations; i++) {
-    int nHitsStation = fSliceHitIdsStopIndex[i] - fSliceHitIdsStartIndex[i] + 1;
-    fSingletPortionSize[i].clear();
-    fSingletPortionSize[i].reserve(2 * nHitsStation);
+  for (int iS = 0; iS < L1Constants::size::kMaxNstations; iS++) {
+    int nHitsStation = fSliceHitIds[iS].size();
+    fSingletPortionSize[iS].clear();
+    fSingletPortionSize[iS].reserve(2 * nHitsStation);
   }
 
-  for (int i = 0; i < fNThreads; i++) {
-    fSliceRecoTracks_thread[i].clear();
-    fSliceRecoTracks_thread[i].reserve(nHits / 10);
-    fSliceRecoHits_thread[i].clear();
-    fSliceRecoHits_thread[i].reserve(nHits);
-    fTrackCandidates[i].clear();
-    fTrackCandidates[i].reserve(nHits / 10);
-    for (unsigned int j = 0; j < L1Constants::size::kMaxNstations; j++) {
-      int nHitsStation = fSliceHitIdsStopIndex[i] - fSliceHitIdsStartIndex[i] + 1;
-      fTriplets[j][i].clear();
-      fTriplets[j][i].reserve(2 * nHitsStation);
+  for (int iT = 0; iT < fNThreads; iT++) {
+    fSliceRecoTracks_thread[iT].clear();
+    fSliceRecoTracks_thread[iT].reserve(nHits / 10);
+    fSliceRecoHits_thread[iT].clear();
+    fSliceRecoHits_thread[iT].reserve(nHits);
+    fTrackCandidates[iT].clear();
+    fTrackCandidates[iT].reserve(nHits / 10);
+    for (unsigned int iS = 0; iS < L1Constants::size::kMaxNstations; iS++) {
+      int nHitsStation = fSliceHitIds[iS].size();
+      fTriplets[iS][iT].clear();
+      fTriplets[iS][iT].reserve(2 * nHitsStation);
     }
   }
 }

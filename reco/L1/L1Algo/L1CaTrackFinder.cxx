@@ -41,8 +41,10 @@ void L1Algo::CaTrackFinder()
   fRecoHits.reserve(2 * fInputData.GetNhits());
   fRecoTracks.reserve(2 * fInputData.GetNhits() / fParameters.GetNstationsActive());
 
-  fSliceHitIds.clear();
-  fSliceHitIds.reserve(fInputData.GetNhits());
+  for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+    fSliceHitIds[iS].clear();
+    fSliceHitIds[iS].reserve(fInputData.GetNhits());
+  }
 
   fvHitKeyFlags.reset(fInputData.GetNhitKeys(), 0);
   fHitTimeInfo.reset(fInputData.GetNhits());
@@ -60,18 +62,19 @@ void L1Algo::CaTrackFinder()
 
   // calculate possible event time for the hits (fHitTimeInfo array)
 
-  for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+  const int nDataStreams = fInputData.GetNdataStreams();
 
-    const L1Station& st = fParameters.GetStation(iS);
-    int nStationHits    = fInputData.GetNhits(iS);
+  for (int iStream = 0; iStream < nDataStreams; ++iStream) {
 
     fscal maxTimeBeforeHit = std::numeric_limits<fscal>::min();
 
-    // loop in the reverse order to fill L1HitTimeInfo::fMinTimeAfterHit fields
+    int nStreamHits = fInputData.GetStreamNhits(iStream);
 
-    for (int ih = 0; ih < nStationHits; ++ih) {
-      L1HitIndex_t caHitId = fInputData.GetStartHitIndex(iS) + ih;
+    for (int ih = 0; ih < nStreamHits; ++ih) {
+
+      L1HitIndex_t caHitId = fInputData.GetStreamStartIndex(iStream) + ih;
       const L1Hit& h       = fInputData.GetHit(caHitId);
+      const L1Station& st  = fParameters.GetStation(h.iSt);
 
       auto [x, y] = st.ConvUVtoXY(h.u, h.v);
       fscal dx    = x - targX;
@@ -98,9 +101,10 @@ void L1Algo::CaTrackFinder()
     }
 
     fscal minTimeAfterHit = std::numeric_limits<fscal>::max();
+    // loop in the reverse order to fill L1HitTimeInfo::fMinTimeAfterHit fields
 
-    for (int ih = nStationHits - 1; ih >= 0; --ih) {
-      L1HitIndex_t caHitId = fInputData.GetStartHitIndex(iS) + ih;
+    for (int ih = nStreamHits - 1; ih >= 0; --ih) {
+      L1HitIndex_t caHitId = fInputData.GetStreamStartIndex(iStream) + ih;
       L1HitTimeInfo& info  = fHitTimeInfo[caHitId];
       if (minTimeAfterHit > info.fEventTimeMin) { minTimeAfterHit = info.fEventTimeMin; }
       info.fMinTimeAfterHit = minTimeAfterHit;
@@ -112,10 +116,10 @@ void L1Algo::CaTrackFinder()
   bool areDataLeft = true;  // is the whole TS processed
   int nSubSlices   = 0;
 
-  L1HitIndex_t sliceFirstHit[L1Constants::size::kMaxNstations] {0};
+  L1HitIndex_t sliceFirstHit[nDataStreams];
 
-  for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
-    sliceFirstHit[iS] = fInputData.GetStartHitIndex(iS);
+  for (int iStream = 0; iStream < nDataStreams; ++iStream) {
+    sliceFirstHit[iStream] = fInputData.GetStreamStartIndex(iStream);
   }
 
   while (areDataLeft) {
@@ -123,16 +127,17 @@ void L1Algo::CaTrackFinder()
     nSubSlices++;
 
     // select the sub-slice hits
-    fSliceHitIds.clear();
+    for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+      fSliceHitIds[iS].clear();
+    }
 
     areDataLeft = false;
 
-    // TODO: skip empty regions and start the subslice with the earliest hit
+    // TODO: SG: skip empty regions and start the subslice with the earliest hit
 
-    for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
-      fSliceHitIdsStartIndex[iS] = fSliceHitIds.size();
+    for (int iStream = 0; iStream < nDataStreams; ++iStream) {
 
-      for (L1HitIndex_t caHitId = sliceFirstHit[iS]; caHitId < fInputData.GetStopHitIndex(iS); ++caHitId) {
+      for (L1HitIndex_t caHitId = sliceFirstHit[iStream]; caHitId < fInputData.GetStreamStopIndex(iStream); ++caHitId) {
         L1HitTimeInfo& info = fHitTimeInfo[caHitId];
         const L1Hit& h      = fInputData.GetHit(caHitId);
         if (fvHitKeyFlags[h.f] || fvHitKeyFlags[h.b]) {  // the hit is already reconstructed
@@ -147,16 +152,14 @@ void L1Algo::CaTrackFinder()
         }
         else {
           if (tsStart <= info.fEventTimeMax) {  // the hit belongs to the sub-slice
-            fSliceHitIds.push_back(caHitId);
+            fSliceHitIds[h.iSt].push_back(caHitId);
             if (info.fMaxTimeBeforeHit < tsStart + tsLength - tsOverlap) {
               // this hit and all hits before are before the overlap
-              sliceFirstHit[iS] = caHitId + 1;
+              sliceFirstHit[iStream] = caHitId + 1;
             }
           }
         }  // else the hit has been alread processed in previous sub-slices
       }
-
-      fSliceHitIdsStopIndex[iS] = fSliceHitIds.size();
     }
 
     CaTrackFinderSlice();

@@ -167,9 +167,7 @@ void L1Grid::BuildBins(float xMin, float xMax, float yMin, float yMax, float tMi
 
 void L1Grid::StoreHits(L1Algo& algo, int iS, L1HitIndex_t& nGridHitsFilled)
 {
-
-  L1HitIndex_t firstHitIndex = algo.fSliceHitIdsStartIndex[iS];
-  L1HitIndex_t nHits         = algo.fSliceHitIdsStopIndex[iS] - firstHitIndex;
+  L1HitIndex_t nHits = algo.fSliceHitIds[iS].size();
 
   algo.fGridHitStartIndex[iS] = nGridHitsFilled;
 
@@ -179,7 +177,7 @@ void L1Grid::StoreHits(L1Algo& algo, int iS, L1HitIndex_t& nGridHitsFilled)
 #pragma omp parallel for
 #endif
   for (L1HitIndex_t ih = 0; ih < nHits; ih++) {
-    L1HitIndex_t caHitId = algo.fSliceHitIds[firstHitIndex + ih];
+    L1HitIndex_t caHitId = algo.fSliceHitIds[iS][ih];
     const L1Hit& h       = algo.GetInputData().GetHit(caHitId);
     fscal x, y;
     std::tie(x, y) = algo.GetHitCoorOnGrid(h, iS);
@@ -218,7 +216,7 @@ void L1Grid::StoreHits(L1Algo& algo, int iS, L1HitIndex_t& nGridHitsFilled)
 
 #pragma omp parallel for
   for (L1HitIndex_t ih = 0; ih < nHits; ih++) {
-    L1HitIndex_t caHitId = algo.fSliceHitIds[firstHitIndex + ih];
+    L1HitIndex_t caHitId = algo.fSliceHitIds[iS][ih];
     const L1Hit& h       = algo.GetInputData().GetHit(caHitId);
     fscal x, y;
     std::tie(x, y) = algo.GetHitCoorOnGrid(h, iS);

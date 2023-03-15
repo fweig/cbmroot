@@ -64,23 +64,24 @@ static bool compareMcPointZ(const int& a, const int& b)
 /// The structure is used to sort hits before writing them into L1 input arrays
 ///
 struct TmpHit {
-  int iStripF;         ///< index of front strip
-  int iStripB;         ///< index of back strip
-  int iStation;        ///< index of station
-  int ExtIndex;        ///< index of hit in the external TClonesArray array (NOTE: negative for MVD)
-  double u;            ///< position of hit along axis orthogonal to front strips [cm]
-  double v;            ///< position of hit along axis orthogonal to back strips [cm]
-  double x;            ///< position of hit along x axis [cm]
-  double y;            ///< position of hit along y axis [cm]
-  double z;            ///< position of hit along z axis [cm]
-  double dx;           ///< hit position uncertainty along x axis [cm]
-  double dy;           ///< hit position uncertainty along y axis [cm]
-  double dxy;          ///< hit position covariance along x and y axes [cm2]
-  double du;           ///< hit position uncertainty along axis orthogonal to front strips [cm]
-  double dv;           ///< hit position uncertainty along axis orthogonal to back strips [cm]
-  int iMC;             ///< index of MCPoint in the fvMCPoints array
-  double time = 0.;    ///< time of the hit [ns]
-  double dt   = 1.e4;  ///< time error of the hit [ns]
+  int iStripF;          ///< index of front strip
+  int iStripB;          ///< index of back strip
+  int iStation;         ///< index of station
+  int64_t fDataStream;  ///< global index of detector module
+  int ExtIndex;         ///< index of hit in the external TClonesArray array (NOTE: negative for MVD)
+  double u;             ///< position of hit along axis orthogonal to front strips [cm]
+  double v;             ///< position of hit along axis orthogonal to back strips [cm]
+  double x;             ///< position of hit along x axis [cm]
+  double y;             ///< position of hit along y axis [cm]
+  double z;             ///< position of hit along z axis [cm]
+  double dx;            ///< hit position uncertainty along x axis [cm]
+  double dy;            ///< hit position uncertainty along y axis [cm]
+  double dxy;           ///< hit position covariance along x and y axes [cm2]
+  double du;            ///< hit position uncertainty along axis orthogonal to front strips [cm]
+  double dv;            ///< hit position uncertainty along axis orthogonal to back strips [cm]
+  int iMC;              ///< index of MCPoint in the fvMCPoints array
+  double time = 0.;     ///< time of the hit [ns]
+  double dt   = 1.e4;   ///< time error of the hit [ns]
   int Det;
 
   /// Creates a hit from the CbmL1MCPoint object
@@ -93,12 +94,12 @@ struct TmpHit {
   void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int& NStrips, const L1Station& st, double du_,
                           double dv_, double dt_, bool doSmear)
   {
-    ExtIndex = 0;
-    Det      = det;
-    iStation = point.iStation;
-
-    dt   = dt_;
-    time = point.time;
+    ExtIndex    = 0;
+    Det         = det;
+    iStation    = point.iStation;
+    fDataStream = (static_cast<int64_t>(Det) << 60);
+    dt          = dt_;
+    time        = point.time;
 
     iStripF = NStrips;
     iStripB = iStripF;
@@ -663,10 +664,10 @@ void CbmL1::ReadEvent(CbmEvent* event)
       Int_t hitIndex = (readFromEvent ? event->GetIndex(ECbmDataType::kMvdHit, j) : j);
 
       TmpHit th;
+      CbmMvdHit* h = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(hitIndex));
       {
-        CbmMvdHit* h = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(hitIndex));
-        th.ExtIndex  = hitIndex;
-        th.iStation  = h->GetStationNr();
+        th.ExtIndex = hitIndex;
+        th.iStation = h->GetStationNr();
 
         int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetStationNr(), L1DetectorID::kMvd);
         if (stIdx == -1) continue;
@@ -699,6 +700,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       if (1 == fMvdUseMcHit && th.iMC >= 0) {
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
       }
+      th.fDataStream = (static_cast<int64_t>(th.Det) << 60) | h->GetAddress();
       //if(  th.iMC >=0 ) // DEBUG !!!!
       {
         tmpHits.push_back(th);
@@ -739,13 +741,13 @@ void CbmL1::ReadEvent(CbmEvent* event)
       // ***********************************
 
       TmpHit th;
+      CbmStsHit* h = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndex));
 
       // Fill reconstructed information
       {
-        CbmStsHit* h = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndex));
-        th.ExtIndex  = hitIndex;
-        th.Det       = 1;
-        int stIdx    = fpAlgo->GetParameters()->GetStationIndexActive(
+        th.ExtIndex = hitIndex;
+        th.Det      = 1;
+        int stIdx   = fpAlgo->GetParameters()->GetStationIndexActive(
           CbmStsSetup::Instance()->GetStationNumber(h->GetAddress()), L1DetectorID::kSts);
 
         if (stIdx == -1) continue;
@@ -786,7 +788,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       if (1 == fStsUseMcHit && th.iMC >= 0) {
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
       }
-
+      th.fDataStream = (static_cast<int64_t>(th.Det) << 60) | h->GetAddress();
       tmpHits.push_back(th);
       nStsHits++;
 
@@ -819,11 +821,9 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     for (int j = 0; j < nEnt; j++) {
       TmpHit th;
+      Int_t hitIndex     = (event ? event->GetIndex(ECbmDataType::kMuchPixelHit, j) : j);
+      CbmMuchPixelHit* h = static_cast<CbmMuchPixelHit*>(fpMuchPixelHits->At(hitIndex));
       {
-        Int_t hitIndex = (event ? event->GetIndex(ECbmDataType::kMuchPixelHit, j) : j);
-
-        CbmMuchPixelHit* h = static_cast<CbmMuchPixelHit*>(fpMuchPixelHits->At(hitIndex));
-
         th.ExtIndex = hitIndex;
         th.Det      = 2;
 
@@ -889,7 +889,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       //    }
       //  }
       //}
-
+      th.fDataStream = (static_cast<int64_t>(th.Det) << 60) | h->GetAddress();
       tmpHits.push_back(th);
       nMuchHits++;
 
@@ -912,7 +912,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
       double du = 100.e-4;
       double dt = 3.9;
       th.CreateHitFromPoint(p, ip, DetId, NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du, du, dt, true);
-
       tmpHits.push_back(th);
       nMuchHits++;
     }
@@ -935,8 +934,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       TmpHit th;
 
       Int_t hitIndex = (event ? event->GetIndex(ECbmDataType::kTrdHit, iHit) : iHit);
-
-      CbmTrdHit* h = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(hitIndex));
+      CbmTrdHit* h   = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(hitIndex));
 
       if ((L1Algo::TrackingMode::kGlobal == fTrackingMode) && (int) h->GetClassType() != 1) {
         // SGtrd2d!! skip TRD-1D hit
@@ -1014,7 +1012,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
         }
         if (mcP < 1.) continue;
       }
-
+      th.fDataStream = (static_cast<int64_t>(th.Det) << 60) | h->GetAddress();
       tmpHits.push_back(th);
       nTrdHits++;
     }  // for fpTrdHits
@@ -1104,7 +1102,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
       if (1 == fTofUseMcHit && th.iMC > -1) {
         th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
       }
-
+      th.fDataStream = (static_cast<int64_t>(th.Det) << 60) | h->GetAddress();
       tmpHits.push_back(th);
       nTofHits++;
 
@@ -1195,7 +1193,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     // TODO: Here one should fill in the fvExternalHits[iHit].mcPointIds
 
-    fIODataManager.PushBackHit(h);
+    fIODataManager.PushBackHit(h, th.fDataStream);
 
     fvHitDebugInfo.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);

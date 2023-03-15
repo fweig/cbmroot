@@ -94,6 +94,7 @@ set(NO_DICT_SRCS
 )
 
 set(HEADERS
+  CbmL1Constants.h
   CbmL1CATrdTrackFinderSA.h
   CbmL1MCPoint.h
   CbmL1Hit.h

@@ -17,8 +17,9 @@ L1InputData::L1InputData() {}
 // ---------------------------------------------------------------------------------------------------------------------
 //
 L1InputData::L1InputData(const L1InputData& other)
-  : fvHits(other.fvHits)
-  , fvStartHitIndexes(other.fvStartHitIndexes)
+  : fHits(other.fHits)
+  , fStreamStartIndices(other.fStreamStartIndices)
+  , fStreamStopIndices(other.fStreamStopIndices)
   , fNhitKeys(other.fNhitKeys)
 {
 }

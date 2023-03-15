@@ -441,9 +441,8 @@ public:
     "L1Algo::fSingletPortionSize"};  ///< Number of doublets in a portion
 
 
-  L1Vector<L1HitIndex_t> fSliceHitIds {"L1Algo::fSliceHitIds"};                   ///< indices of the sub-slice hits
-  L1HitIndex_t fSliceHitIdsStartIndex[L1Constants::size::kMaxNstations + 1] {0};  ///< start of station hit inices
-  L1HitIndex_t fSliceHitIdsStopIndex[L1Constants::size::kMaxNstations + 1] {0};   ///< stop of station hit inices
+  ///< indices of the sub-slice hits
+  L1Vector<L1HitIndex_t> fSliceHitIds[L1Constants::size::kMaxNstations] {"L1Algo::fSliceHitIds"};
 
   L1Vector<L1Hit> fGridHits {"L1Algo::fGridHits"};        ///< hits, ordered with respect to their grid bins
   L1Vector<L1Hit> fGridHitsBuf {"L1Algo::fGridHitsBuf"};  ///< hits, ordered with respect to their grid bins

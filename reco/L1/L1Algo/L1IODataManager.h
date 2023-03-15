@@ -56,14 +56,23 @@ public:
   /// Reserve number of hits
   /// \param  nHits  Number of hits to be stored
   /// \note   If one does not call this method, the underlying vector of hits will be filled with the time penalty
-  void ReserveNhits(L1HitIndex_t nHits) { fInputData.fvHits.reserve(nHits); }
+  void ReserveNhits(L1HitIndex_t nHits) { fInputData.fHits.reserve(nHits); }
 
   /// Resets the input data block
   void ResetInputData() noexcept;
 
   /// Pushes back a hit
   /// \param  hit  An L1Hit object
-  void PushBackHit(const L1Hit& hit) { fInputData.fvHits.push_back(hit); }
+  void PushBackHit(const L1Hit& hit, int64_t streamId)
+  {
+    if (fInputData.fStreamStartIndices.size() == 0 || fLastStreamId != streamId) {  // new data stream
+      fLastStreamId = streamId;
+      fInputData.fStreamStartIndices.push_back(fInputData.fHits.size());
+      // for a case.. it is fixed later in InitData()
+      fInputData.fStreamStopIndices.push_back(fInputData.fHits.size());
+    }
+    fInputData.fHits.push_back(hit);
+  }
 
   /// Sets the number of hit keys
   /// \param  nKeys  Number of hit keys
@@ -101,10 +110,9 @@ private:
 
   L1InputData fInputData {};  ///< Object of input data
 
-  const L1Parameters* fpParameters = nullptr;  ///< Pointer to the tracking parameters object
+  const L1Parameters* fpParameters {nullptr};  ///< Pointer to the tracking parameters object
 
-  /// @brief Utility array for sorting hits by stations
-  std::array<L1HitIndex_t, L1Constants::size::kMaxNstations + 1> fvHitIndex = {0};
+  int64_t fLastStreamId {-1};  ///< data stream Id of the last hit added
 };
 
 
@@ -122,7 +130,7 @@ inline bool L1IODataManager::CheckInputData() const
   if constexpr (Level == 0) { return true; }  // Level = 0 -> do nothing
   else if constexpr (Level > 0) {             // Level = 1 and higher
     // ----- Check if the hits container is not empty ------------------------------------------------------------------
-    if (fInputData.fvHits.size() == 0) {
+    if (fInputData.fHits.size() == 0) {
       LOG(warn) << "L1IODataManager [check input]: Sample contains empty hits, tracking will not be executed";
       return false;
     }

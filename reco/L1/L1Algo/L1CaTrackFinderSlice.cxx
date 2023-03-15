@@ -1552,7 +1552,9 @@ void L1Algo::CaTrackFinderSlice()
   static Tindex stat_nCalls[fNFindIterations]                                        = {0};  // n calls of CAFindTrack
   static Tindex stat_nTrCandidates[fNFindIterations]                                 = {0};
 
-  stat_nStartHits += fSliceHitIds.size();
+  for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+    stat_nStartHits += fSliceHitIds[iS].size();
+  }
 #endif
 
   /********************************/ /**
@@ -1567,7 +1569,6 @@ void L1Algo::CaTrackFinderSlice()
 
 
   L1HitIndex_t nGridHitsFilled = 0;
-
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
     const L1Station& st    = fParameters.GetStation(iS);
     fMaxDx[iS]             = 0.;
@@ -1583,8 +1584,8 @@ void L1Algo::CaTrackFinderSlice()
     fscal gridMinY = -0.1;
     fscal gridMaxY = 0.1;
 
-    for (L1HitIndex_t ih = fSliceHitIdsStartIndex[iS]; ih < fSliceHitIdsStopIndex[iS]; ++ih) {
-      const L1Hit& h = fInputData.GetHit(fSliceHitIds[ih]);
+    for (L1HitIndex_t ih = 0; ih < fSliceHitIds[iS].size(); ++ih) {
+      const L1Hit& h = fInputData.GetHit(fSliceHitIds[iS][ih]);
 
       auto [dxx, dxy, dyy] = st.FormXYCovarianceMatrix(h.du2, h.dv2);
       fscal dx             = sqrt(dxx);
@@ -1621,7 +1622,7 @@ void L1Algo::CaTrackFinderSlice()
       vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
     */
 
-    int nSliceHits = fSliceHitIdsStopIndex[iS] - fSliceHitIdsStartIndex[iS];
+    int nSliceHits = fSliceHitIds[iS].size();
     fscal sizeY    = gridMaxY - gridMinY;
     fscal sizeX    = gridMaxX - gridMinX;
     int nBins2D    = 1 + nSliceHits;

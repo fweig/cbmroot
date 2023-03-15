@@ -74,14 +74,15 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   //   algo = CbmL1::Instance()->algo;
   algo = algo_;
 
-  vHits.reserve(algo->GetInputData().GetNhits());
+  vHits.clear();
+  vHits.reserve(algo->fGridHits.size());
   for (unsigned int i = 0; i < algo->GetInputData().GetNhits(); i++) {
-    vHits.push_back(algo->GetInputData().GetHit(i));
+    vHits.push_back(algo->fGridHits[i]);
   }
   NStations = algo->GetParameters()->GetNstationsActive();
   for (int i = 0; i < NStations; i++) {
-    HitsStartIndex[i] = algo->GetInputData().GetStartHitIndex(i);
-    HitsStopIndex[i]  = algo->GetInputData().GetStopHitIndex(i);
+    HitsStartIndex[i] = algo->fGridHitStartIndex[i];
+    HitsStopIndex[i]  = algo->fGridHitStopIndex[i];
     vStations[i]      = algo->GetParameters()->GetStation(i);
   }
 }
