@@ -43,7 +43,8 @@ void mcbm_transport(Int_t nEvents = 10,
                     //                  const char* setupName = "mcbm_beam_2019_11",
                     //                  const char* setupName = "mcbm_beam_2019_03",
                     //                  const char* setupName = "sis18_mcbm_25deg_long",
-                    const char* output = "data/test", const char* inputFile = "", Bool_t overwrite = kTRUE)
+                    const char* output = "data/test", const char* inputFile = "", 
+                    Bool_t overwrite = kTRUE, int randomSeed = 0)
 {
   // --- Define the beam angle ----------------------------------------------
   Double_t beamRotY = 25.;
@@ -208,6 +209,7 @@ void mcbm_transport(Int_t nEvents = 10,
   run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
   if (nEvents <= 10)  // store only for small number of events
     run.StoreTrajectories();
+  run.SetRandomSeed(randomSeed);
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 

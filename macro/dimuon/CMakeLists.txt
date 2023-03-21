@@ -13,6 +13,7 @@ File(COPY ${CBMROOT_SOURCE_DIR}/parameters/much/TOF8gev_fitParam_sigma2.sis100_m
 
 # Define the number of events to run
 Set(NumEvents 1000)
+Set(randomSeed 1)
 
 # Define the different setups to be tested
 List(APPEND cbm_setup sis100_muon_lmvm)
@@ -36,7 +37,7 @@ ForEach(setup IN LISTS cbm_setup)
     # --- Transport run, using run_transport.C
     Set(testname dimuon_transport_${setup})
     Set(fixture_dimuon_digi fixture_dimuon_digi_${testname})
-    Add_Test(${testname} ${MACRO_DIR}/dimuon_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" kTRUE)
+    Add_Test(${testname} ${MACRO_DIR}/dimuon_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" kTRUE ${randomSeed})
     Set_Tests_Properties(${testname} PROPERTIES 
             TIMEOUT "600"
             PASS_REGULAR_EXPRESSION "Test Passed;All ok"

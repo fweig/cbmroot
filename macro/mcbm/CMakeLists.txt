@@ -22,6 +22,7 @@ File(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc DESTINATION ${CBMROOT_BINA
 # Define the number of events to run
 Set(NumEvents 10)
 Set(BeamAngle 25)
+Set(randomSeed 1)
 
 # Define the different setups to be tested
 # Default should always be tested in all case
@@ -53,7 +54,7 @@ ForEach(setup IN LISTS cbm_setup)
 
   Set(testname mcbm_transport_${setup})
   Set(fixture_mcbm_transport fixture_${testname})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" kTRUE)
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" kTRUE ${randomSeed})
   Set_Tests_Properties(${testname} PROPERTIES
           TIMEOUT "600"
           PASS_REGULAR_EXPRESSION "Test Passed;All ok"

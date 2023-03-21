@@ -10,6 +10,7 @@ GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_event.C ${MACR
 File(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc DESTINATION ${CBMROOT_BINARY_DIR}/macro/much)
 
 Set(NumEvents 3)
+Set(randomSeed 1)
 
 # =====   Cleanup the data directory   =======================================
 add_test(much_cleanup ${CMAKE_COMMAND}
@@ -19,10 +20,9 @@ set_tests_properties(much_cleanup PROPERTIES
         FIXTURES_SETUP much_cleanup
 )
 
-
 # --- Transport of UrQMD events
 Set(testname much_transport)
-add_test(${testname} ${MACRO_DIR}/run_transport.sh ${NumEvents} \"sis100_muon_lmvm\" \"data/muons\")
+add_test(${testname} ${MACRO_DIR}/run_transport.sh ${NumEvents} \"sis100_muon_lmvm\" \"data/muons\" \"\" \"\" kFALSE ${randomSeed})
 SET_TESTS_PROPERTIES(${testname} PROPERTIES
           TIMEOUT "1200"
           PASS_REGULAR_EXPRESSION "TestPassed;All ok"

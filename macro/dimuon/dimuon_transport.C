@@ -40,7 +40,7 @@
 //---------------------------------------------------
 
 void dimuon_transport(Int_t nEvents = 1000, const char* setupName = "sis100_muon_lmvm", const char* output = "test",
-                      const char* inputFile = "", Bool_t overwrite = kFALSE)
+                      const char* inputFile = "", Bool_t overwrite = kFALSE, int randomSeed = 0)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -86,6 +86,7 @@ void dimuon_transport(Int_t nEvents = 1000, const char* setupName = "sis100_muon
   run.SetTarget("Gold", 0.025, 2.5);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   run.SetEngine(kGeant3);
+  run.SetRandomSeed(randomSeed);
   // ------------------------------------------------------------------------
 
   run.Run(nEvents);

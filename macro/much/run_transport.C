@@ -40,7 +40,8 @@
 //---------------------------------------------------
 
 void run_transport(Int_t nEvents = 3, const char* setupName = "sis100_muon_lmvm", const char* output = "muons",
-                   const char* inputFile = "", const char* plutoFile = "", Bool_t overwrite = kFALSE)
+                   const char* inputFile = "", const char* plutoFile = "", Bool_t overwrite = kFALSE,
+                   int randomSeed = 0)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -119,6 +120,7 @@ void run_transport(Int_t nEvents = 3, const char* setupName = "sis100_muon_lmvm"
   run.SetTarget("Gold", 0.025, 2.5);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   run.SetEngine(kGeant3);
+  run.SetRandomSeed(randomSeed);
   //  run.GetStackFilter()->SetMinNofPoints(kSts,0);
   //  run.GetStackFilter()->SetMinNofPoints(kMuch,0);
   //  run.GetStackFilter()->SetMinNofPoints(kTrd,0);
