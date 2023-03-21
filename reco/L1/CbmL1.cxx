@@ -222,7 +222,7 @@ InitStatus CbmL1::Init()
     fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
-    //fInitManager.DevSetIgnoreHitSearchAreas(true); // uncomment for debug
+    fInitManager.DevSetIgnoreHitSearchAreas(true);  // uncomment for debug
   }
 
   if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
