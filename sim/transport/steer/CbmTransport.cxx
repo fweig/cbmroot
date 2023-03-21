@@ -22,28 +22,29 @@
 #include "CbmTarget.h"
 #include "CbmUnigenGenerator.h"
 
-#include "FairMonitor.h"
-#include "FairParRootFileIo.h"
-#include "FairRunSim.h"
-#include "FairRuntimeDb.h"
-#include "FairSystemInfo.h"
-#include "FairUrqmdGenerator.h"
+#include <FairMonitor.h>
+#include <FairParRootFileIo.h>
+#include <FairRootFileSink.h>
+#include <FairRunSim.h>
+#include <FairRuntimeDb.h>
+#include <FairSystemInfo.h>
+#include <FairUrqmdGenerator.h>
 #include <Logger.h>
 
-#include "TDatabasePDG.h"
-#include "TG4RunConfiguration.h"
-#include "TGeant3.h"
-#include "TGeant3TGeo.h"
-#include "TGeant4.h"
-#include "TGeoManager.h"
-#include "TPythia6Decayer.h"
-#include "TROOT.h"
-#include "TRandom.h"
-#include "TStopwatch.h"
-#include "TString.h"
-#include "TSystem.h"
-#include "TVector3.h"
-#include "TVirtualMC.h"
+#include <TDatabasePDG.h>
+#include <TG4RunConfiguration.h>
+#include <TGeant3.h>
+#include <TGeant3TGeo.h>
+#include <TGeant4.h>
+#include <TGeoManager.h>
+#include <TPythia6Decayer.h>
+#include <TROOT.h>
+#include <TRandom.h>
+#include <TStopwatch.h>
+#include <TString.h>
+#include <TSystem.h>
+#include <TVector3.h>
+#include <TVirtualMC.h>
 
 #include <boost/filesystem.hpp>
 
@@ -530,8 +531,10 @@ void CbmTransport::Run(Int_t nEvents)
   fRun->SetName(engineName);
 
 
-  // --- Set output file name
-  fRun->SetOutputFile(fOutFileName);
+  // --- Create file sink using output file name
+  // TODO: remove release after switching to FairRoot v18.8
+  //  fRun->SetSink(std::make_unique<FairRootFileSink>(fOutFileName));
+  fRun->SetSink(std::make_unique<FairRootFileSink>(fOutFileName).release());
 
   // --- Create and register the setup modules, field and media with FairRoot
   RegisterSetup();
@@ -607,7 +610,11 @@ void CbmTransport::Run(Int_t nEvents)
   TDirectory* oldDir = gDirectory;
 
   // Write Transport Settings to the output file
-  TFile* outfile = fRun->GetOutputFile();
+  auto sink = fRun->GetSink();
+  assert(sink->GetSinkType() == kFILESINK);
+  auto rootFileSink = static_cast<FairRootFileSink*>(sink);
+  TFile* outfile    = rootFileSink->GetRootFile();
+  ;
   outfile->cd();
 
   LOG(info) << "Here I am";

@@ -21,18 +21,19 @@
 #include "CbmTofDigitize.h"
 #include "CbmTrdDigitizer.h"
 
-#include "FairFileSource.h"
-#include "FairMCEventHeader.h"
-#include "FairMonitor.h"
-#include "FairParAsciiFileIo.h"
-#include "FairParRootFileIo.h"
-#include "FairRuntimeDb.h"
+#include <FairFileSource.h>
+#include <FairMCEventHeader.h>
+#include <FairMonitor.h>
+#include <FairParAsciiFileIo.h>
+#include <FairParRootFileIo.h>
+#include <FairRootFileSink.h>
+#include <FairRuntimeDb.h>
 #include <Logger.h>
 
-#include "TClonesArray.h"
-#include "TGeoManager.h"
-#include "TObjString.h"
-#include "TROOT.h"
+#include <TClonesArray.h>
+#include <TGeoManager.h>
+#include <TObjString.h>
+#include <TROOT.h>
 
 #include <cassert>
 
@@ -371,8 +372,10 @@ void CbmDigitization::Run(Int_t event1, Int_t event2)
   run->SetSource(fSource);
 
 
-  // --- Set output file
-  run->SetOutputFile(fOutFile);
+  // --- Create file sink using output file name
+  // TODO: remove release after switching to FairRoot v18.8
+  //run->SetSink(std::make_unique<FairRootFileSink>(fOutFile));
+  run->SetSink(std::make_unique<FairRootFileSink>(fOutFile).release());
   LOG(info) << fName << ": Output file is " << fOutFile;
 
 

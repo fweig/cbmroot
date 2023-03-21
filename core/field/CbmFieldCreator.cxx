@@ -28,7 +28,7 @@ using std::endl;
 
 static CbmFieldCreator gCbmFieldCreator;
 
-CbmFieldCreator::CbmFieldCreator() : FairFieldFactory(), fFieldPar(nullptr) { fCreator = this; }
+CbmFieldCreator::CbmFieldCreator() : FairFieldFactory(), fFieldPar(nullptr) {}
 
 CbmFieldCreator::~CbmFieldCreator() {}
 

@@ -37,23 +37,24 @@ using namespace std;
 #include "CbmTrdPoint.h"
 #include "CbmVertex.h"
 
-#include "FairMCEventHeader.h"
-#include "FairMCPoint.h"
-#include "FairRootManager.h"
-#include "FairRunAna.h"
+#include <FairMCEventHeader.h>
+#include <FairMCPoint.h>
+#include <FairRootFileSink.h>
+#include <FairRootManager.h>
+#include <FairRunAna.h>
 #include <Logger.h>
 
-#include "TClonesArray.h"
-#include "TFile.h"
-#include "TH1.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TH3.h"
-#include "TH3F.h"
-#include "TMath.h"
-#include "TROOT.h"
-#include "TRandom.h"
-#include "TString.h"
+#include <TClonesArray.h>
+#include <TFile.h>
+#include <TH1.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TH3.h>
+#include <TH3F.h>
+#include <TMath.h>
+#include <TROOT.h>
+#include <TRandom.h>
+#include <TString.h>
 
 CbmDigiManager* fDigiMan;   // TOF Input Digis
 TClonesArray* fEventsColl;  // CBMEvents (time based)
@@ -491,8 +492,11 @@ void CbmHadronAnalysis::CreateHistogramms()
 {
   // Create histogramms
   // gROOT->cd();
-  FairRunAna* fRun = FairRunAna::Instance();
-  fHist            = fRun->GetOutputFile();
+  auto sink = FairRunAna::Instance()->GetSink();
+  assert(sink->GetSinkType() == kFILESINK);
+  auto rootFileSink = static_cast<FairRootFileSink*>(sink);
+  fHist             = rootFileSink->GetRootFile();
+
   TString hname    = fHist->GetName();
   hname.Insert(hname.Length() - 5, ".HadAna");
   fHist = new TFile(hname, "recreate");
