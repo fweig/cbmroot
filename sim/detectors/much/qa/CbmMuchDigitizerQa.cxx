@@ -248,7 +248,7 @@ int CbmMuchDigitizerQa::InitChannelPadInfo()
     printf("---------------------------------------------------------\n");
   }
 
-  Int_t nTotSectors  = 0;
+  //  Int_t nTotSectors  = 0; // not used FU 23.03.23
   Int_t nTotChannels = 0;
   for (Int_t iStation = 0; iStation < fNstations; iStation++) {
     Int_t nChannels                = 0;
@@ -293,7 +293,7 @@ int CbmMuchDigitizerQa::InitChannelPadInfo()
     if (fPadMinLy > padMinLy) fPadMinLy = padMinLy;
     if (fPadMaxLx < padMaxLx) fPadMaxLx = padMaxLx;
     if (fPadMaxLy < padMaxLy) fPadMaxLy = padMaxLy;
-    nTotSectors += nSectors;
+    //  nTotSectors += nSectors; // not used FU 23.03.23
     nTotChannels += nChannels;
 
     if (fVerbose > 2) {

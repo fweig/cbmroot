@@ -526,7 +526,8 @@ void CbmMuchFindHitsGem::ExecClusteringPeaks(CbmMuchCluster* cluster, Int_t iClu
 void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster, Int_t iCluster, CbmEvent* event)
 {
   Int_t nDigis  = cluster->GetNofDigis();
-  Double_t sumq = 0, sumx = 0, sumy = 0, sumt = 0, sumdx2 = 0, sumdy2 = 0, sumdxy2 = 0, sumdt2 = 0;
+  Double_t sumq = 0, sumx = 0, sumy = 0, sumdx2 = 0, sumdy2 = 0, sumdxy2 = 0,
+           sumdt2 = 0;  // , sumt =0 // not used FU 22.03.23
   Double_t q = 0, x = 0, y = 0, t = 0, z = 0, dx = 0, dy = 0, dxy = 0, dt = 0;
   Double_t nX = 0, nY = 0, nZ = 0;
   Int_t address            = 0;
@@ -588,7 +589,7 @@ void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster, Int_t iCluster, Cbm
     sumq += q;
     sumx += q * x;
     sumy += q * y;
-    sumt += q * t;
+    // sumt += q * t; // not used FU 22.03.23
     sumdx2 += q * q * dx * dx;
     sumdy2 += q * q * dy * dy;
     sumdxy2 += q * q * dxy * dxy;

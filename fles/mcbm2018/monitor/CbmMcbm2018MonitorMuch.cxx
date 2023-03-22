@@ -1141,9 +1141,9 @@ Bool_t CbmMcbm2018MonitorMuch::DoUnpack(const fles::Timeslice& ts, size_t compon
       std::vector<Bool_t> vbCopyOnAnyAsicMs(fuNbFebs, kFALSE);
       std::vector<Bool_t> vbCopySameAdcOnAnyAsicMs(fuNbFebs, kFALSE);
       std::vector<Bool_t> vbFlagOnAnyAsicMs(fuNbFebs, kFALSE);
-      Bool_t bCopyOnAnyMs        = kFALSE;
-      Bool_t bCopySameAdcOnAnyMs = kFALSE;
-      Bool_t bFlagOnAnyMs        = kFALSE;
+      //      Bool_t bCopyOnAnyMs        = kFALSE; // not used FU 23.03.23
+      //      Bool_t bCopySameAdcOnAnyMs = kFALSE; // not used FU 23.03.23
+      //      Bool_t bFlagOnAnyMs        = kFALSE; // not used FU 23.03.23
       for (UInt_t uAsic = 0; uAsic < fuNbStsXyters; uAsic++) {
         UInt_t uFebIdx    = uAsic / fUnpackParMuch->GetNbAsicsPerFeb();
         UInt_t uAsicInFeb = uAsic % fUnpackParMuch->GetNbAsicsPerFeb();
@@ -1161,9 +1161,9 @@ Bool_t CbmMcbm2018MonitorMuch::DoUnpack(const fles::Timeslice& ts, size_t compon
         vbCopySameAdcOnAnyAsicMs[uFebIdx] = vbCopySameAdcOnAnyAsicMs[uFebIdx] || bHitCopySameAdcInThisMs[uAsic];
         vbFlagOnAnyAsicMs[uFebIdx]        = vbFlagOnAnyAsicMs[uFebIdx] || bFlagOnInThisMs[uAsic];
 
-        bCopyOnAnyMs |= bHitCopyInThisMs[uAsic];
-        bCopySameAdcOnAnyMs |= bHitCopySameAdcInThisMs[uAsic];
-        bFlagOnAnyMs |= bFlagOnInThisMs[uAsic];
+        //        bCopyOnAnyMs |= bHitCopyInThisMs[uAsic]; // not used FU 23.03.23
+        //        bCopySameAdcOnAnyMs |= bHitCopySameAdcInThisMs[uAsic]; // not used FU 23.03.23
+        //        bFlagOnAnyMs |= bFlagOnInThisMs[uAsic]; // not used FU 23.03.23
       }  // for( UInt_t uAsic = 0; uAsic < fuNbStsXyters; uAsic++)
 
       for (UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx) {
