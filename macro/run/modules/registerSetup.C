@@ -11,7 +11,6 @@
  ** @date  5 February 2016
  **/
 
-
 void registerSetup()
 {
 
@@ -48,11 +47,28 @@ void registerSetup()
 
   // --- Register beam pipe
   if (setup->GetGeoFileName(ECbmModuleId::kPipe, fileName)) {
+
     setup->GetGeoTag(ECbmModuleId::kPipe, geoTag);
     std::cout << "-I- registerSetup: Registering PIPE " << geoTag << " using " << fileName << std::endl;
-    FairModule* pipe = new CbmPipe("PIPE");
-    pipe->SetGeometryFileName(fileName.Data());
-    run->AddModule(pipe);
+
+    //  handle more than 1 beampipe;
+    FairModule* pipe;
+    int pipe_counter = 0;
+    char *file, *ptr;
+    file = (char*) malloc(500 * sizeof(char));
+    strncpy(file, fileName.Data(), 500);
+
+    do {
+      ptr  = strchr(file, ':');
+      pipe = new CbmPipe();
+      if (ptr) *ptr = '\0';
+      pipe->SetGeometryFileName(file);
+      std::cout << "Beampipe " << pipe_counter << " is " << file << std::endl;
+      pipe->SetTitle(("pipe" + std::to_string(pipe_counter)).c_str());
+      run->AddModule(pipe);
+      pipe_counter++;
+      file = (ptr + 1);
+    } while (ptr);
   }
 
   // --- Register other modules

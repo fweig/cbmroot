@@ -11,6 +11,9 @@
 // updated P.Sitzmann 22/11/2016
 
 // --------------------------------------------------------------------------
+
+#include "../../sim/transport/gconfig/g3Config.C"
+
 void mvd_sim(Int_t nEvents = 100, TString setup = "sis100_electron")
 {
   // ========================================================================
@@ -19,7 +22,6 @@ void mvd_sim(Int_t nEvents = 100, TString setup = "sis100_electron")
   // Input file
   TString inDir  = gSystem->Getenv("VMCWORKDIR");
   TString inFile = "";
-
 
   // Output file name
   TString outDir  = "data/";
@@ -36,11 +38,11 @@ void mvd_sim(Int_t nEvents = 100, TString setup = "sis100_electron")
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
   CbmSetup* cbmsetup = CbmSetup::Instance();
-  cbmsetup->RemoveModule(kSTS);
-  cbmsetup->RemoveModule(kRICH);
-  cbmsetup->RemoveModule(kTRD);
-  cbmsetup->RemoveModule(kTOF);
-  cbmsetup->RemoveModule(kPSD);
+  cbmsetup->RemoveModule(ECbmModuleId::kSts);
+  cbmsetup->RemoveModule(ECbmModuleId::kRich);
+  cbmsetup->RemoveModule(ECbmModuleId::kTrd);
+  cbmsetup->RemoveModule(ECbmModuleId::kTof);
+  cbmsetup->RemoveModule(ECbmModuleId::kPsd);
 
   // In general, the following parts need not be touched
   // ========================================================================
@@ -127,7 +129,7 @@ void mvd_sim(Int_t nEvents = 100, TString setup = "sis100_electron")
   CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
-  target->Print();
+  std::cout << "Register and Create: " << target->GetName() << std::endl;
   fRun->AddModule(target);
   // ------------------------------------------------------------------------
 
@@ -156,15 +158,13 @@ void mvd_sim(Int_t nEvents = 100, TString setup = "sis100_electron")
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
   // --- Get target parameters
-  Double_t tX  = 0.;
-  Double_t tY  = 0.;
-  Double_t tZ  = 0.;
+  TVector3 tXYZ(0, 0, -44.0);
   Double_t tDz = 0.;
   if (target) {
-    target->GetPosition(tX, tY, tZ);
+    tXYZ = target->GetPosition();
     tDz = target->GetThickness();
   }
-  primGen->SetTarget(tZ, tDz);
+  primGen->SetTarget(tXYZ[2], tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
   primGen->SmearGausVertexXY(smearVertexXY);
   primGen->SmearVertexZ(smearVertexZ);
