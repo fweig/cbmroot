@@ -707,8 +707,14 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
       digi = iv->first;
       if (!digi->IsMasked()) {  // no more digi processed
         if (digi->GetTime() < newStartTime) newStartTime = digi->GetTime();
+        if ((digi->GetTime() - timeMax) > 400) {
+          delete digi;
+          iv = fBuffer[padAddress].erase(iv);  // remove from saved buffer
+          continue;
+        }
         break;
       }
+
       if (digi->IsFlagged(0)) {  // phys digi didn't produce CS/FT update last digiMatch
         delete digi;
         if (digiMatch) {
