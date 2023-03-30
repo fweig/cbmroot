@@ -50,7 +50,7 @@ public:
   int32_t GetStationNr() { return (int32_t) GetAddress() / 1000; };
   int32_t GetRefId() { return fRefId; };
   int32_t GetDetectorId() { return DetectorId(GetStationNr()); };
-  int32_t GetSensorNr() { return GetAddress() - (((int32_t) GetAddress() / 1000) * 1000); };
+  int32_t GetSensorNr() { return (GetAddress() % 1000); };
 
   float GetClusterCharge() { return fClusterCharge; };
 
