@@ -11,6 +11,7 @@
 #include "CbmDigiManager.h"                        // for CbmDigiManager
 #include "CbmMvdCluster.h"                         // for CbmMvdCluster
 #include "CbmMvdDetector.h"                        // for CbmMvdDetector
+#include "CbmMvdDetectorId.h"                        // for CbmMvdDetector
 #include "CbmMvdDigi.h"                            // for CbmMvdDigi
 #include "CbmMvdSensor.h"                          // for CbmMvdSensor
 #include "CbmMvdSensorFindHitTask.h"               // for CbmMvdSensorFindHi...
@@ -131,11 +132,12 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
     {
 
 
+      CbmMvdDetectorId tmp;
       Int_t nEntries = fInputCluster->GetEntriesFast();
       for (Int_t i = 0; i < nEntries; i++) {
         cluster = (CbmMvdCluster*) fInputCluster->At(i);
         cluster->SetRefId(i);
-        fDetector->SendInputToSensorPlugin(cluster->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(cluster));
+        fDetector->SendInputToSensorPlugin(tmp.DetectorId(cluster->GetSensorNr()), nTargetPlugin, static_cast<TObject*>(cluster));
 
       }
     }
