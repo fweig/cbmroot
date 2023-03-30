@@ -167,29 +167,20 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       stsconfig->SetSystemTimeOffset(-970);  // [ns] value to be updated
     }
 
-    stsconfig->SetMinAdcCut(1, 1);
-    stsconfig->SetMinAdcCut(2, 1);
-    stsconfig->SetMinAdcCut(3, 1);
-    stsconfig->SetMinAdcCut(4, 1);
+    // Noise removal
+    stsconfig->SetMinAdcCut(1, 1); // ADC cut to Station 0 Ladder 0 Module 0
+    stsconfig->SetMinAdcCut(2, 1); // ADC cut to Station 0 Ladder 0 Module 0
+    stsconfig->SetMinAdcCut(3, 1); // ADC cut to Station 0 Ladder 0 Module 1
+    stsconfig->SetMinAdcCut(4, 1); // ADC cut to Station 0 Ladder 0 Module 1
 
-    stsconfig->MaskNoisyChannel(3, 56);
-    stsconfig->MaskNoisyChannel(3, 75);
-    stsconfig->MaskNoisyChannel(3, 79);
-    stsconfig->MaskNoisyChannel(3, 85);
-    stsconfig->MaskNoisyChannel(7, 123);
-    stsconfig->MaskNoisyChannel(7, 124);
-    stsconfig->MaskNoisyChannel(7, 125);
-    stsconfig->MaskNoisyChannel(7, 158);
-    stsconfig->MaskNoisyChannel(7, 159);
-    stsconfig->MaskNoisyChannel(7, 162);
-    stsconfig->MaskNoisyChannel(7, 715);
-    stsconfig->MaskNoisyChannel(9, 709);
-    stsconfig->MaskNoisyChannel(12, 119);
-
+    std::ifstream mask_channels(Form("%s/sts_mask_channels.par", parfilesbasepathSts.data()));
+    int feb_idx, feb_chn;
+    while (mask_channels >> feb_idx >> feb_chn){
+      stsconfig->MaskNoisyChannel(feb_idx, feb_chn);     // Mask noisy channels
+    }
     // Time Walk correction
     std::map<uint32_t, CbmStsParModule> walkMap;
     auto parAsic = new CbmStsParAsic(128, 31, 31., 1., 5., 800., 1000., 3.9789e-3);
-
     // Module params: number of channels, number of channels per ASIC
     auto parMod = new CbmStsParModule(2048, 128);
 
