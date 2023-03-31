@@ -381,20 +381,6 @@ Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
   CbmMvdDetector* detector= CbmMvdDetector::Instance();
   return detector->DetectPlugin(pluginID);
 
-  /*
-  CbmMvdSensor* sensor=detector->GetSensor(0);
-  TObjArray* pluginArray= sensor->GetPluginArray();
-
-  Int_t nPlugin=pluginArray->GetEntries();
-  for(Int_t i=0; i<nPlugin;i++) {
-    CbmMvdSensorPlugin* plugin= (CbmMvdSensorPlugin*) pluginArray->At(i);
-    cout << "CbmMvdDigitizer::DetectDigitizerPlugin: PlugInID = " << plugin->GetPluginIDNumber() << endl;
-    if (pluginID==plugin->GetPluginIDNumber()){return i;}
-  }
-
-
- return -1;
- */
 }
 
 // -----   Private method PrintParameters   --------------------------------
