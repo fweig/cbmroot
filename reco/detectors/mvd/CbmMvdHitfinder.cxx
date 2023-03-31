@@ -7,26 +7,26 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdHitfinder.h"
 
-#include "CbmDefs.h"                               // for ECbmModuleId
-#include "CbmDigiManager.h"                        // for CbmDigiManager
-#include "CbmMvdCluster.h"                         // for CbmMvdCluster
-#include "CbmMvdDetector.h"                        // for CbmMvdDetector
-#include "CbmMvdDetectorId.h"                        // for CbmMvdDetector
-#include "CbmMvdDigi.h"                            // for CbmMvdDigi
-#include "CbmMvdSensor.h"                          // for CbmMvdSensor
-#include "CbmMvdSensorFindHitTask.h"               // for CbmMvdSensorFindHi...
-#include "CbmMvdSensorHitfinderTask.h"             // for CbmMvdSensorHitfin...
+#include "CbmDefs.h"                    // for ECbmModuleId
+#include "CbmDigiManager.h"             // for CbmDigiManager
+#include "CbmMvdCluster.h"              // for CbmMvdCluster
+#include "CbmMvdDetector.h"             // for CbmMvdDetector
+#include "CbmMvdDetectorId.h"           // for CbmMvdDetector
+#include "CbmMvdDigi.h"                 // for CbmMvdDigi
+#include "CbmMvdSensor.h"               // for CbmMvdSensor
+#include "CbmMvdSensorFindHitTask.h"    // for CbmMvdSensorFindHi...
+#include "CbmMvdSensorHitfinderTask.h"  // for CbmMvdSensorHitfin...
 
-#include <FairTask.h>                              // for InitStatus, FairTask
-#include <FairRootManager.h>                       // for FairRootManager
-#include <Logger.h>                                // for Logger, LOG
+#include <FairRootManager.h>  // for FairRootManager
+#include <FairTask.h>         // for InitStatus, FairTask
+#include <Logger.h>           // for Logger, LOG
 
-#include <TClonesArray.h>                          // for TClonesArray
+#include <TClonesArray.h>  // for TClonesArray
 
-#include <iomanip>                                 // for setprecision, setw
-#include <iostream>                                // for operator<<, endl
-#include <map>                                     // for allocator, __map_i...
-#include <utility>                                 // for pair
+#include <iomanip>   // for setprecision, setw
+#include <iostream>  // for operator<<, endl
+#include <map>       // for allocator, __map_i...
+#include <utility>   // for pair
 
 using std::cout;
 using std::endl;
@@ -103,12 +103,12 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
 
   fHits->Clear();
   fTimer.Start();
-  Int_t nTargetPlugin= fDetector->DetectPlugin(fMyPluginID);
+  Int_t nTargetPlugin = fDetector->DetectPlugin(fMyPluginID);
   //Int_t nDigis=0;
   //CbmMvdDigi* digi=0;
-  CbmMvdCluster* cluster=0;
+  CbmMvdCluster* cluster = 0;
 
-  if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) { //checks if data sources are available
+  if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) {  //checks if data sources are available
     if (fVerbose) cout << endl << "//----------------------------------------//" << endl;
     if (!fUseClusterfinder) {
       /*
@@ -119,16 +119,15 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
 
         fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
         */
-      Fatal("CbmMvdHitFinder - Mode without cluster finder is currently not supported ", "CbmMvdHitFinder - Mode without cluster finder is currently not supported ");
-      }
+      Fatal("CbmMvdHitFinder - Mode without cluster finder is currently not supported ",
+            "CbmMvdHitFinder - Mode without cluster finder is currently not supported ");
+    }
 
 
-
-      //fDetector->SendInputDigis(fDigiMan);
-
+    //fDetector->SendInputDigis(fDigiMan);
 
 
-    else // of if (!fUseClusterfinder)
+    else  // of if (!fUseClusterfinder)
     {
 
 
@@ -137,12 +136,12 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
       for (Int_t i = 0; i < nEntries; i++) {
         cluster = (CbmMvdCluster*) fInputCluster->At(i);
         cluster->SetRefId(i);
-        fDetector->SendInputToSensorPlugin(tmp.DetectorId(cluster->GetSensorNr()), nTargetPlugin, static_cast<TObject*>(cluster));
-
+        fDetector->SendInputToSensorPlugin(tmp.DetectorId(cluster->GetSensorNr()), nTargetPlugin,
+                                           static_cast<TObject*>(cluster));
       }
     }
 
-        //fDetector->SendInputCluster(fInputCluster);
+    //fDetector->SendInputCluster(fInputCluster);
 
 
     if (fVerbose) cout << "Execute HitfinderPlugin Nr. " << fHitfinderPluginNr << endl;
@@ -186,7 +185,8 @@ InitStatus CbmMvdHitfinder::Init()
 
   // **********  Get input arrays
   if (!fUseClusterfinder) {
-    Fatal("CbmMvdHitFinder - Mode without cluster finder is currently not supported ", "CbmMvdHitFinder - Mode without cluster finder is currently not supported ");
+    Fatal("CbmMvdHitFinder - Mode without cluster finder is currently not supported ",
+          "CbmMvdHitFinder - Mode without cluster finder is currently not supported ");
     fDigiMan = CbmDigiManager::Instance();
     fDigiMan->Init();
     if (!fDigiMan->IsPresent(ECbmModuleId::kMvd)) {
@@ -214,9 +214,9 @@ InitStatus CbmMvdHitfinder::Init()
 
   // Add the hit finder plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-    /*
+  /*
   if (!fUseClusterfinder) {
 
     for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
@@ -229,17 +229,17 @@ InitStatus CbmMvdHitfinder::Init()
     }
 
   else {*/
-    for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
-      CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
+    CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
 
-      itr->second->AddPlugin(hitfinderTask);
-      itr->second->SetHitPlugin(plugincount);
-      fMyPluginID=300;
-    }
+    itr->second->AddPlugin(hitfinderTask);
+    itr->second->SetHitPlugin(plugincount);
+    fMyPluginID = 300;
+  }
   //}
 
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fHitfinderPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();

@@ -12,9 +12,9 @@
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmMvdDetector.h"
+#include "CbmMvdGeoHandler.h"
 #include "CbmMvdPoint.h"
 #include "CbmMvdSensorClusterfinderTask.h"
-#include "CbmMvdGeoHandler.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -147,17 +147,16 @@ InitStatus CbmMvdClusterfinderTB::Init()
 
   // Add the cluster finder plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
 
     itr->second->AddPlugin(clusterTask);
     itr->second->SetClusterPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fClusterPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();

@@ -12,20 +12,20 @@
 #ifndef CBMMVDDIGITIZER_H
 #define CBMMVDDIGITIZER_H 1
 
-#include "CbmDefs.h"         // for ECbmModuleId
-#include "CbmDigitize.h"     // for CbmDigitize
-#include "CbmMvdDigi.h"      // for CbmMvdDigi
+#include "CbmDefs.h"      // for ECbmModuleId
+#include "CbmDigitize.h"  // for CbmDigitize
+#include "CbmMvdDigi.h"   // for CbmMvdDigi
 
-#include <FairTask.h>        // for InitStatus
+#include <FairTask.h>  // for InitStatus
 
-#include <Rtypes.h>          // for ClassDef
-#include <RtypesCore.h>      // for Int_t, Float_t, Bool_t, kTRUE, Double_t
-#include <TStopwatch.h>      // for TStopwatch
-#include <TString.h>         // for TString
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Float_t, Bool_t, kTRUE, Double_t
+#include <TStopwatch.h>  // for TStopwatch
+#include <TString.h>     // for TString
 
-#include <utility>           // for pair
-#include <string>            // for string
-#include <vector>            // for vector
+#include <string>   // for string
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 class CbmMatch;
 class CbmMvdDetector;

@@ -15,21 +15,21 @@
 #include "CbmMvdSensor.h"               // for CbmMvdSensor
 #include "CbmMvdSensorDigitizerTask.h"  // for CbmMvdSensorDigitizerTask
 
-#include <FairRootManager.h>            // for FairRootManager
-#include <Logger.h>                     // for Logger, LOG
+#include <FairRootManager.h>  // for FairRootManager
+#include <Logger.h>           // for Logger, LOG
 
-#include <TClonesArray.h>               // for TClonesArray
-#include <TObject.h>                    // for TObject
-#include <TRandom.h>                    // for TRandom
-#include <TRandom3.h>                   // for gRandom
-#include <TStopwatch.h>                 // for TStopwatch
+#include <TClonesArray.h>  // for TClonesArray
+#include <TObject.h>       // for TObject
+#include <TRandom.h>       // for TRandom
+#include <TRandom3.h>      // for gRandom
+#include <TStopwatch.h>    // for TStopwatch
 
-#include <cassert>                      // for assert
-#include <iomanip>                      // for setprecision, setw, __iom_t5
-#include <iostream>                     // for operator<<, basic_ostream, endl
-#include <map>                          // for __map_iterator, map, operator!=
-#include <string>                       // for allocator, char_traits
-#include <vector>                       // for vector
+#include <cassert>   // for assert
+#include <iomanip>   // for setprecision, setw, __iom_t5
+#include <iostream>  // for operator<<, basic_ostream, endl
+#include <map>       // for __map_iterator, map, operator!=
+#include <string>    // for allocator, char_traits
+#include <vector>    // for vector
 
 using std::cout;
 using std::endl;
@@ -63,10 +63,8 @@ CbmMvdDigitizer::CbmMvdDigitizer()
   , fPileupManager(nullptr)
   , fDeltaManager(nullptr)
 {
-    fTmpDigi  = new TClonesArray("CbmMvdDigi", 1000);
-    fTmpMatch = new TClonesArray("CbmMatch", 1000);
-
-
+  fTmpDigi  = new TClonesArray("CbmMvdDigi", 1000);
+  fTmpMatch = new TClonesArray("CbmMatch", 1000);
 }
 // -------------------------------------------------------------------------
 
@@ -129,9 +127,9 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
   // Add points from BG and Delta files to the array if needed
   BuildEvent();
 
-  Int_t nPoints = fInputPoints->GetEntriesFast();
-  Int_t nDigis  = 0;
-  CbmMvdPoint* point=0;
+  Int_t nPoints      = fInputPoints->GetEntriesFast();
+  Int_t nDigis       = 0;
+  CbmMvdPoint* point = 0;
   fTmpDigi->Clear();
   fTmpMatch->Clear();
 
@@ -141,11 +139,11 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
     LOG(debug) << fName << ": Send Input";
 
 
-    Int_t nTargetPlugin=DetectPlugin(100);
+    Int_t nTargetPlugin = DetectPlugin(100);
 
     // Distribute the points from the input array to the sensors
-    for (Int_t i=0; i< nPoints; i++) {
-      point=(CbmMvdPoint*) fInputPoints->At(i);
+    for (Int_t i = 0; i < nPoints; i++) {
+      point = (CbmMvdPoint*) fInputPoints->At(i);
       fDetector->SendInputToSensorPlugin(point->GetDetectorID(), nTargetPlugin, static_cast<TObject*>(point));
     }
 
@@ -162,7 +160,7 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
     fDetector->GetOutputArray(nTargetPlugin, fTmpDigi);
     //cout << "CbmMvdDigitizer::Exec() - GetOutputArray completed" << endl;
 
-    fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
+    fDetector->GetMatchArray(nTargetPlugin, fTmpMatch);
     //cout << "CbmMvdDigitizer::Exec() - GetMatchArray data completed" << endl;
 
     //cout << "Length of Digi Array " << fTmpDigi->GetEntriesFast() << endl;
@@ -175,16 +173,16 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
       CbmMvdDigi* digi1 = new CbmMvdDigi(*digi);
       assert(digi1);
       fDigiVect.push_back(digi1);
-//      // Create new digi in the output digi outputfrom the one in the internal TClonesArray
-//      fDigiVect.emplace_back(new CbmMvdDigi(*(static_cast<CbmMvdDigi*>(fTmpDigi->At(index)))));
+      //      // Create new digi in the output digi outputfrom the one in the internal TClonesArray
+      //      fDigiVect.emplace_back(new CbmMvdDigi(*(static_cast<CbmMvdDigi*>(fTmpDigi->At(index)))));
 
       //     CbmMatch match{*(dynamic_cast<CbmMatch*>(fTmpMatch->At(index)))};
       //     CbmMatch* match1 = new CbmMatch(match);
       CbmMatch* match  = dynamic_cast<CbmMatch*>(fTmpMatch->At(index));
       CbmMatch* match1 = new CbmMatch(*match);
       fMatchVect.push_back(match1);
-//      // Create new match in the output match vector from the one in the internal TClonesArray
-//      fMatchVect.emplace_back(new CbmMatch(*(static_cast<CbmMatch*>(fTmpMatch->At(index)))));
+      //      // Create new match in the output match vector from the one in the internal TClonesArray
+      //      fMatchVect.emplace_back(new CbmMatch(*(static_cast<CbmMatch*>(fTmpMatch->At(index)))));
 
       //digi1->SetMatch(match1);
       SendData(digi1->GetTime(), digi1, match1);
@@ -245,7 +243,7 @@ InitStatus CbmMvdDigitizer::Init()
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    LOG(fatal) <<  "No FairRootManager!";
+    LOG(fatal) << "No FairRootManager!";
     return kFATAL;
   }
 
@@ -275,8 +273,8 @@ InitStatus CbmMvdDigitizer::Init()
     fPileupManager = new CbmMvdPileupManager(fBgFileName, fInputBranchName, fBgBufferSize);
     if (fPileupManager->GetNEvents() < 2 * fNPileup) {
       LOG(error) << "The size of your BG-File is insufficient to perform the requested pileup";
-      LOG(error) << " You need at least events > 2* fNPileup but there are only"
-                 << fNPileup << ", events in file " << fPileupManager->GetNEvents();
+      LOG(error) << " You need at least events > 2* fNPileup but there are only" << fNPileup << ", events in file "
+                 << fPileupManager->GetNEvents();
       LOG(fatal) << "The size of your BG-File is insufficient";
       return kFATAL;
     }
@@ -291,8 +289,8 @@ InitStatus CbmMvdDigitizer::Init()
     fDeltaManager = new CbmMvdPileupManager(fDeltaFileName, fInputBranchName, fDeltaBufferSize);
     if (fDeltaManager->GetNEvents() < 2 * fNDeltaElect) {
       LOG(error) << "The size of your Delta-File is insufficient to perform the requested pileup";
-      LOG(error) << " You need at least events > 2* fNDeltaElect but there are only"
-                 << fNDeltaElect << ", events in file " << fDeltaManager->GetNEvents();
+      LOG(error) << " You need at least events > 2* fNDeltaElect but there are only" << fNDeltaElect
+                 << ", events in file " << fDeltaManager->GetNEvents();
       LOG(fatal) << "The size of your Delta-File is insufficient";
       return kFATAL;
     }
@@ -301,17 +299,16 @@ InitStatus CbmMvdDigitizer::Init()
 
   // Add the digitizer plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorDigitizerTask* digiTask = new CbmMvdSensorDigitizerTask();
     if (fNoiseSensors) digiTask->SetProduceNoise();
     itr->second->AddPlugin(digiTask);
     itr->second->SetDigiPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fDigiPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();
@@ -345,7 +342,7 @@ InitStatus CbmMvdDigitizer::ReInit() { return kSUCCESS; }
 
 // -----   Virtual method Finish   -----------------------------------------
 void CbmMvdDigitizer::Finish()
-{ //Int_t i = DetectPlugin (100);
+{  //Int_t i = DetectPlugin (100);
   //cout << "CbmMvdDigitizer::Finish() Autodetect: " << i <<" Manual Detect " << fDigiPluginNr << endl;
   // cout<< endl << "finishing" << endl;
   fDetector->Finish();
@@ -378,9 +375,8 @@ void CbmMvdDigitizer::GetMvdGeometry() {}
 Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
 {
 
-  CbmMvdDetector* detector= CbmMvdDetector::Instance();
+  CbmMvdDetector* detector = CbmMvdDetector::Instance();
   return detector->DetectPlugin(pluginID);
-
 }
 
 // -----   Private method PrintParameters   --------------------------------

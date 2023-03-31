@@ -12,8 +12,13 @@
 #include "TClonesArray.h"
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorTask::CbmMvdSensorTask() : CbmMvdSensorPlugin(), fInputBuffer(nullptr), fOutputBuffer(nullptr), fSensor(nullptr) {
-fPluginIDNumber= -1;
+CbmMvdSensorTask::CbmMvdSensorTask()
+  : CbmMvdSensorPlugin()
+  , fInputBuffer(nullptr)
+  , fOutputBuffer(nullptr)
+  , fSensor(nullptr)
+{
+  fPluginIDNumber = -1;
 }
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
@@ -23,7 +28,7 @@ CbmMvdSensorTask::CbmMvdSensorTask(const char* name)
   , fOutputBuffer(nullptr)
   , fSensor(nullptr)
 {
-fPluginIDNumber= -1;
+  fPluginIDNumber = -1;
 }
 // -------------------------------------------------------------------------
 

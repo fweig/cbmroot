@@ -8,23 +8,22 @@
 // -------------------------------------------------------------------------
 #include "CbmMvd.h"
 
-#include <Logger.h>            // for Logger, LOG
-
 #include "CbmDefs.h"           // for ToIntegralType, ECbmModuleId
 #include "CbmMvdGeoHandler.h"  // for CbmMvdGeoHandler
 #include "CbmMvdPoint.h"       // for CbmMvdPoint
 #include "CbmStack.h"          // for CbmStack
 
-#include <FairRootManager.h>   // for FairRootManager
-#include <FairVolume.h>        // for FairVolume
+#include <FairRootManager.h>  // for FairRootManager
+#include <FairVolume.h>       // for FairVolume
+#include <Logger.h>           // for Logger, LOG
 
-#include <TClonesArray.h>      // for TClonesArray
-#include <TList.h>             // for TList
-#include <TString.h>           // for TString, operator<<
-#include <TVirtualMC.h>        // for TVirtualMC, gMC
-#include <TVirtualMCStack.h>   // for TVirtualMCStack
+#include <TClonesArray.h>     // for TClonesArray
+#include <TList.h>            // for TList
+#include <TString.h>          // for TString, operator<<
+#include <TVirtualMC.h>       // for TVirtualMC, gMC
+#include <TVirtualMCStack.h>  // for TVirtualMCStack
 
-#include <string>              // for allocator
+#include <string>  // for allocator
 
 // -----   Default constructor   -------------------------------------------
 CbmMvd::CbmMvd()

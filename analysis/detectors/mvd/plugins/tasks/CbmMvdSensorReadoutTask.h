@@ -19,8 +19,8 @@
 
 #include "CbmMvdSensorTask.h"  // for CbmMvdSensorTask
 
-#include <Rtypes.h>            // for ClassDef
-#include <RtypesCore.h>        // for Int_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t
 
 class CbmMvdDigi;
 class CbmMvdSensor;

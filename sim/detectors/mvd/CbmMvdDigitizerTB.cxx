@@ -9,11 +9,11 @@
 // Includes from MVD
 #include "CbmMvdDigitizerTB.h"
 
+#include "CbmDaqBuffer.h"
 #include "CbmMvdDetector.h"
+#include "CbmMvdGeoHandler.h"
 #include "CbmMvdPoint.h"
 #include "CbmMvdSensorDigitizerTBTask.h"
-#include "CbmMvdGeoHandler.h"
-#include "CbmDaqBuffer.h"
 
 #include "FairModule.h"
 #include "FairRootManager.h"
@@ -22,7 +22,6 @@
 // Includes from ROOT
 #include "TClonesArray.h"
 #include "TStopwatch.h"
-
 
 #include <iomanip>
 #include <iostream>
@@ -139,17 +138,16 @@ InitStatus CbmMvdDigitizerTB::Init()
 
   // Add the digitizer plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorDigitizerTBTask* digiTask = new CbmMvdSensorDigitizerTBTask();
 
     itr->second->AddPlugin(digiTask);
     itr->second->SetDigiPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fDigiPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   fDetector->Init();

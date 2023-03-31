@@ -14,15 +14,15 @@
 #include "CbmMvdCluster.h"     // for CbmMvdCluster
 #include "CbmMvdSensorTask.h"  // for CbmMvdSensorTask
 
-#include <FairTask.h>          // for InitStatus
+#include <FairTask.h>  // for InitStatus
 
-#include <Rtypes.h>            // for ClassDef
-#include <RtypesCore.h>        // for Int_t, Double_t, Bool_t, Float_t, kTRUE
-#include <TClonesArray.h>      // for TClonesArray
-#include <TString.h>           // for TString
+#include <Rtypes.h>        // for ClassDef
+#include <RtypesCore.h>    // for Int_t, Double_t, Bool_t, Float_t, kTRUE
+#include <TClonesArray.h>  // for TClonesArray
+#include <TString.h>       // for TString
 
-#include <map>                 // for map
-#include <utility>           // for pair
+#include <map>      // for map
+#include <utility>  // for pair
 
 class CbmMvdSensor;
 class TBuffer;

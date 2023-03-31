@@ -10,9 +10,9 @@
 #include "CbmMvdDigiToHit.h"
 
 #include "CbmMvdDetector.h"
+#include "CbmMvdGeoHandler.h"
 #include "CbmMvdPoint.h"
 #include "CbmMvdSensorDigiToHitTask.h"
-#include "CbmMvdGeoHandler.h"
 
 // Includes from FAIR
 #include "FairModule.h"
@@ -150,17 +150,16 @@ InitStatus CbmMvdDigiToHit::Init()
 
   // Add the digi2hit plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorDigiToHitTask* hitTask = new CbmMvdSensorDigiToHitTask();
 
     itr->second->AddPlugin(hitTask);
     itr->second->SetHitPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fHitPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();

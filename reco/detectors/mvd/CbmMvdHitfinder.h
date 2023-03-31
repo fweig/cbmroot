@@ -11,7 +11,7 @@
 #ifndef CBMMVDHITFINDER_H
 #define CBMMVDHITFINDER_H 1
 
-#include "FairTask.h"    // for InitStatus, FairTask
+#include "FairTask.h"  // for InitStatus, FairTask
 
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, UInt_t, kTRUE
@@ -46,10 +46,11 @@ public:
   {
     fUseClusterfinder = clusterfinderFlag;
   };  //* enable use of external clusterfinder
-    void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
+  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 protected:
   Int_t fMyPluginID;
+
 private:
   CbmMvdDetector* fDetector;
   CbmDigiManager* fDigiMan;  //!

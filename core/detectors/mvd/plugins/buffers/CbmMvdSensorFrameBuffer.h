@@ -22,10 +22,10 @@
 
 #include "CbmMvdSensorBuffer.h"  // for CbmMvdSensorBuffer
 
-#include <Logger.h>              // for LOG
+#include <Logger.h>  // for LOG
 
-#include <Rtypes.h>              // for ClassDef
-#include <RtypesCore.h>          // for Double_t, Int_t, Bool_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
 
 class CbmMvdPoint;
 class CbmMvdSensor;

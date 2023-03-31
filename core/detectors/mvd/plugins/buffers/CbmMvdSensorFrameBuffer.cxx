@@ -12,11 +12,9 @@
 #include "CbmMvdSensor.h"           // for CbmMvdSensor
 #include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
 
-#include <Logger.h>                 // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
-#include "TClonesArray.h"           // for TClonesArray
-
-
+#include "TClonesArray.h"  // for TClonesArray
 
 
 // -----   Default constructor   -------------------------------------------

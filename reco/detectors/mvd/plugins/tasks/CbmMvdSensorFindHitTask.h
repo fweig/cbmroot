@@ -11,17 +11,16 @@
 #ifndef CBMMVDSENSORFINDHITTASK_H
 #define CBMMVDSENSORFINDHITTASK_H 1
 
+#include "CbmMvdCluster.h"
 #include "CbmMvdDigi.h"
 #include "CbmMvdPoint.h"
 #include "CbmMvdSensor.h"
-#include "CbmMvdCluster.h"
 #include "CbmMvdSensorTask.h"
 
 #include "FairTask.h"
 
 #include "TArrayS.h"
 #include "TCanvas.h"
-#include <TClonesArray.h>
 #include "TH1.h"
 #include "TH1F.h"
 #include "TH2.h"
@@ -31,6 +30,7 @@
 #include "TRefArray.h"
 #include "TStopwatch.h"
 #include "TString.h"
+#include <TClonesArray.h>
 
 #include <list>
 #include <map>

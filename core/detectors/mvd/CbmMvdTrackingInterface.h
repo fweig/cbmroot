@@ -18,13 +18,13 @@
 #include "CbmPixelHit.h"                       // for CbmPixelHit
 #include "CbmTrackingDetectorInterfaceBase.h"  // for CbmTrackingDetectorInt...
 
-#include <FairTask.h>                          // for InitStatus, FairTask
+#include <FairTask.h>  // for InitStatus, FairTask
 
-#include <Rtypes.h>                            // for ClassDef
-#include <TMath.h>                             // for Pi
+#include <Rtypes.h>  // for ClassDef
+#include <TMath.h>   // for Pi
 
-#include <algorithm>                           // for min, max
-#include <string>                              // for string
+#include <algorithm>  // for min, max
+#include <string>     // for string
 
 class TBuffer;
 class TClass;

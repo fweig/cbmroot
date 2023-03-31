@@ -8,7 +8,7 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdPileupManager.h"
 
-#include <Logger.h>        // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TClonesArray.h>  // for TClonesArray
 #include <TDirectory.h>    // for TDirectoryAtomicAdapter, gDirectory, TDire...
@@ -17,8 +17,8 @@
 #include <TObjArray.h>     // for TObjArray
 #include <TTree.h>         // for TTree
 
-#include <iostream>        // for operator<<, endl, basic_ostream, char_traits
-#include <memory>          // for allocator
+#include <iostream>  // for operator<<, endl, basic_ostream, char_traits
+#include <memory>    // for allocator
 
 using std::cout;
 using std::endl;

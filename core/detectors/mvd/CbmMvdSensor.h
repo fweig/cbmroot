@@ -23,13 +23,14 @@
 #include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
 #include "CbmMvdSensorPlugin.h"     // for CbmMvdSensorPlugin
 
-#include <Rtypes.h>                 // for ClassDef
-#include <RtypesCore.h>             // for Int_t, Double_t, Float_t, UInt_t
-#include <TGeoBBox.h>               // for TGeoBBox
-#include <TNamed.h>                 // for TNamed
-#include <TObjArray.h>              // for TObjArray
-#include <TString.h>                // for TString
-#include <map>                      // for map
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Float_t, UInt_t
+#include <TGeoBBox.h>    // for TGeoBBox
+#include <TNamed.h>      // for TNamed
+#include <TObjArray.h>   // for TObjArray
+#include <TString.h>     // for TString
+
+#include <map>  // for map
 
 class TBuffer;
 class TClass;
@@ -88,7 +89,7 @@ public:
   Int_t GetDigiPlugin() const { return fDigiPlugin; };
   Int_t GetHitPlugin() const { return fHitPlugin; };
   Int_t GetClusterPlugin() const { return fClusterPlugin; }
-  TObjArray* GetPluginArray() {return fPluginArray;}
+  TObjArray* GetPluginArray() { return fPluginArray; }
 
   void SetDigiPlugin(const Int_t& nPlugin) { fDigiPlugin = nPlugin; };
   void SetHitPlugin(const Int_t& nPlugin) { fHitPlugin = nPlugin; };

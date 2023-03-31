@@ -9,8 +9,8 @@
 
 #include "CbmMvdSensor.h"
 
-#include "CbmMvdSensorPlugin.h"
 #include "CbmMvdSensorBuffer.h"
+#include "CbmMvdSensorPlugin.h"
 #include "CbmMvdSensorTask.h"
 
 #include <FairEventHeader.h>
@@ -45,7 +45,7 @@ CbmMvdSensor::CbmMvdSensor()
   , fClusterPlugin(-1)
   , fVolName("")
   , fNodeName("")
- /*
+  /*
   , foutputDigis(nullptr)
   , foutputCluster(nullptr)
   ,  //not needed khun
@@ -94,7 +94,7 @@ CbmMvdSensor::CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, T
   , fClusterPlugin(-1)
   , fVolName(volName)
   , fNodeName(nodeName)
- /*
+  /*
   , foutputDigis(nullptr)
   , foutputCluster(nullptr)
   ,  //not needed khun
@@ -263,7 +263,7 @@ void CbmMvdSensor::ShowDebugHistos()
 void CbmMvdSensor::SendInputToPlugin(Int_t nPlugin, TObject* input)
 {
   CbmMvdSensorPlugin* digitask;
-  digitask=(CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
+  digitask = (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
   digitask->SetInput(input);
 }
 
@@ -374,7 +374,7 @@ void CbmMvdSensor::ExecFrom(UInt_t nPlugin)
 TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
 {
 
-  CbmMvdSensorPlugin* plugin=(CbmMvdSensorPlugin*)fPluginArray->At(nPlugin);
+  CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
   return plugin->GetOutputArray();
 }
 
@@ -383,22 +383,20 @@ TClonesArray* CbmMvdSensor::GetOutputArray(Int_t nPlugin) const
 TClonesArray* CbmMvdSensor::GetMatchArray(Int_t nPlugin) const
 {
 
-  CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*)fPluginArray-> At (nPlugin);
+  CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
   return plugin->GetMatchArray();
 }
 // -------------------------------------------------------------------------
 Int_t CbmMvdSensor::GetOutputArrayLen(Int_t nPlugin) const
 {
-  TClonesArray* tempArray= GetOutputArray(nPlugin);  // make sure that the arrays are filled
-  if (tempArray){return tempArray->GetEntriesFast()-1;}
+  TClonesArray* tempArray = GetOutputArray(nPlugin);  // make sure that the arrays are filled
+  if (tempArray) { return tempArray->GetEntriesFast() - 1; }
   else {
     LOG(fatal) << "undefined plugin called";
     return -1;
   }
-
 }
 // -------------------------------------------------------------------------
-
 
 
 // -------------------------------------------------------------------------

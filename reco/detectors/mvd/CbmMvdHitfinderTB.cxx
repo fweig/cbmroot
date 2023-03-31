@@ -9,10 +9,10 @@
 // Includes from MVD
 #include "CbmMvdHitfinderTB.h"
 
+#include "CbmMvdGeoHandler.h"
 #include "CbmMvdPoint.h"
 #include "CbmMvdSensorFindHitTask.h"
 #include "CbmMvdSensorHitfinderTask.h"
-#include "CbmMvdGeoHandler.h"
 
 
 // Includes from FAIR
@@ -153,20 +153,18 @@ InitStatus CbmMvdHitfinderTB::Init()
   fDetector = CbmMvdDetector::Instance();
 
 
-
   // Add the hit finder plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorHitfinderTask* hitfinderTask = new CbmMvdSensorHitfinderTask();
 
     itr->second->AddPlugin(hitfinderTask);
     itr->second->SetHitPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fHitfinderPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();

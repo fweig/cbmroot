@@ -40,9 +40,8 @@ CbmMvdPixelCharge::CbmMvdPixelCharge(Float_t charge, Int_t channelNrX, Int_t cha
   fPointX.push_back(pointPosX);
   fPointY.push_back(pointPosY);
   fTime.push_back(time);
-//  fLink.push_back(); // TODO: pass link
-  fDominatorIndex        =  fPointWeight.size();
-
+  //  fLink.push_back(); // TODO: pass link
+  fDominatorIndex = fPointWeight.size();
 }
 
 // ------- DigestCharge ----------------------------------------------------#
@@ -69,14 +68,13 @@ void CbmMvdPixelCharge::DigestCharge(Float_t pointX, Float_t pointY, Double_t ti
     fPointY.push_back(pointY);
     fTime.push_back(time);
 
-//  fTime.push_back(time);
-//  fLink.push_back(); // TODO: pass link 
+    //  fTime.push_back(time);
+    //  fLink.push_back(); // TODO: pass link
 
     if (chargeContr > fMaxChargeContribution) {
-      fDominatorIndex        =  fPointWeight.size();
+      fDominatorIndex        = fPointWeight.size();
       fMaxChargeContribution = chargeContr;
     }
-
   }
 }
 

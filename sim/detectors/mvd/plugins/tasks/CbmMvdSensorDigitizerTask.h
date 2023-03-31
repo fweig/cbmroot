@@ -19,17 +19,17 @@
 
 #include "CbmMvdSensorTask.h"  // for CbmMvdSensorTask
 
-#include <FairTask.h>          // for InitStatus
+#include <FairTask.h>  // for InitStatus
 
-#include <Rtypes.h>            // for ClassDef
-#include <RtypesCore.h>        // for Double_t, Int_t, Float_t, Bool_t, kTRUE
-#include <TRandom3.h>          // for TRandom3
-#include <TStopwatch.h>        // for TStopwatch
-#include <TString.h>           // for TString
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Float_t, Bool_t, kTRUE
+#include <TRandom3.h>    // for TRandom3
+#include <TStopwatch.h>  // for TStopwatch
+#include <TString.h>     // for TString
 
-#include <map>                 // for map
-#include <utility>             // for pair
-#include <vector>              // for vector
+#include <map>      // for map
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 class CbmMvdPileupManager;
 class CbmMvdPixelCharge;
@@ -61,7 +61,7 @@ public:
 
   /** fill buffer **/
   void SetInputArray(TClonesArray* inputStream);
-  void SetInput(TObject*); //overwrite
+  void SetInput(TObject*);  //overwrite
 
   /** Execute **/
   void Exec();
@@ -75,8 +75,8 @@ public:
   void ProduceIonisationPoints(CbmMvdPoint* point);
   void ProducePixelCharge(CbmMvdPoint* point);
   void ProduceNoise();
-  Bool_t  GetSignalAboveThreshold (CbmMvdPixelCharge* myPixel, Double_t readoutTime);
-  Int_t   GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime);
+  Bool_t GetSignalAboveThreshold(CbmMvdPixelCharge* myPixel, Double_t readoutTime);
+  Int_t GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime);
 
   void SetProduceNoise() { fproduceNoise = kTRUE; };
 
@@ -96,10 +96,10 @@ public:
   // ----------   Protected data members  ------------------------------------
 
   // Information about event and sensor status
-  Int_t         fcurrentFrameNumber;
-  Int_t         fEventNr;
-  Int_t         fInputNr;
-  Double_t      fEventTime;
+  Int_t fcurrentFrameNumber;
+  Int_t fEventNr;
+  Int_t fInputNr;
+  Double_t fEventTime;
 
   // Information about sensor
   Double_t fEpiTh;

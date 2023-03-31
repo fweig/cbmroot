@@ -8,12 +8,12 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdSensorReadoutTask.h"
 
-#include "CbmMvdDigi.h"    // for CbmMvdDigi
+#include "CbmMvdDigi.h"  // for CbmMvdDigi
 
 #include <TClonesArray.h>  // for TClonesArray
 #include <TH1.h>           // for TH1I
 
-#include <iostream>        // for operator<<, basic_ostream, endl, cout, ost...
+#include <iostream>  // for operator<<, basic_ostream, endl, cout, ost...
 
 using std::cout;
 using std::endl;
@@ -27,7 +27,7 @@ CbmMvdSensorReadoutTask::CbmMvdSensorReadoutTask()
   , fSensorBanks()
 {
   //    fSensorBanks[maxBanks] = {0};
-    fPluginIDNumber= 600;
+  fPluginIDNumber = 600;
 }
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
@@ -39,7 +39,7 @@ CbmMvdSensorReadoutTask::CbmMvdSensorReadoutTask(const char* name)
   , fSensorBanks()
 {
   //    fSensorBanks[maxBanks] = {0};
-    fPluginIDNumber= 600;
+  fPluginIDNumber = 600;
 }
 // -------------------------------------------------------------------------
 

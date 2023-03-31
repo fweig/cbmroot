@@ -29,7 +29,7 @@ class TMemberInspector;
 
 enum class CbmMvdSensorTyp;
 
-#include <map>           // for map
+#include <map>  // for map
 
 enum CbmMvdGeoTyp
 {

@@ -23,7 +23,7 @@
 #include <RtypesCore.h>  // for Double_t, Int_t, Option_t
 #include <TNamed.h>      // for TNamed
 
-#include <vector>        // for vector
+#include <vector>  // for vector
 
 class TBuffer;
 class TClass;

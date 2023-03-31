@@ -11,7 +11,13 @@
 #include "TClonesArray.h"
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorBuffer::CbmMvdSensorBuffer() : CbmMvdSensorPlugin(), fBuffer(nullptr), fCurrentEvent(nullptr), fSensor(nullptr) {}
+CbmMvdSensorBuffer::CbmMvdSensorBuffer()
+  : CbmMvdSensorPlugin()
+  , fBuffer(nullptr)
+  , fCurrentEvent(nullptr)
+  , fSensor(nullptr)
+{
+}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------

@@ -8,21 +8,21 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdReadoutSimple.h"
 
-#include "CbmMvdPoint.h"      // for CbmMvdPoint
+#include "CbmMvdPoint.h"  // for CbmMvdPoint
 
 #include <FairRootManager.h>  // for FairRootManager
 #include <Logger.h>           // for Logger, LOG
 
-#include <TAxis.h>            // for TAxis
-#include <TCanvas.h>          // for TCanvas
-#include <TClonesArray.h>     // for TClonesArray
-#include <TF1.h>              // for TF1
-#include <TFile.h>            // for TFile
-#include <TH1.h>              // for TH1F, TH1I
-#include <TH2.h>              // for TH2F, TH2I
-#include <TString.h>          // for Form
+#include <TAxis.h>         // for TAxis
+#include <TCanvas.h>       // for TCanvas
+#include <TClonesArray.h>  // for TClonesArray
+#include <TF1.h>           // for TF1
+#include <TFile.h>         // for TFile
+#include <TH1.h>           // for TH1F, TH1I
+#include <TH2.h>           // for TH2F, TH2I
+#include <TString.h>       // for Form
 
-#include <iostream>           // for operator<<, basic_ostream, endl, cout
+#include <iostream>  // for operator<<, basic_ostream, endl, cout
 
 using std::cout;
 using std::endl;

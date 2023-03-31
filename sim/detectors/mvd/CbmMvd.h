@@ -18,15 +18,15 @@
 #ifndef CBMMVD_H
 #define CBMMVD_H 1
 
-#include <FairDetector.h>    // for FairDetector
+#include <FairDetector.h>  // for FairDetector
 
 #include <Rtypes.h>          // for ClassDef
 #include <RtypesCore.h>      // for Int_t, Bool_t, Double32_t, Double_t, Opt...
 #include <TLorentzVector.h>  // for TLorentzVector
 #include <TVector3.h>        // for TVector3
 
-#include <string>            // for string
-#include <map>               // for map
+#include <map>     // for map
+#include <string>  // for string
 
 class CbmMvdGeoHandler;
 class CbmMvdPoint;
@@ -140,10 +140,10 @@ private:
   Double32_t fLength;              //!  length
   Double32_t fELoss;               //!  energy loss
 
-  Int_t fPosIndex;                //!
-  TClonesArray* fCollection;      //!  The hit collection
-  Bool_t kGeoSaved;               //!
-  TList* fGeoPar;                 //!  List of geometry parameters
+  Int_t fPosIndex;                     //!
+  TClonesArray* fCollection;           //!  The hit collection
+  Bool_t kGeoSaved;                    //!
+  TList* fGeoPar;                      //!  List of geometry parameters
   std::map<Int_t, Int_t> fStationMap;  //! Map from MC volume ID to station number
 
   CbmMvdGeoHandler* fmvdHandler;

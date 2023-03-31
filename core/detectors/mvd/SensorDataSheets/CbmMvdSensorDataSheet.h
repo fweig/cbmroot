@@ -21,8 +21,8 @@
 
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Float_t, Bool_t, Option_t
-#include <TString.h>     // for TString
 #include <TNamed.h>      // for TNamed
+#include <TString.h>     // for TString
 
 class TBuffer;
 class TClass;
@@ -62,7 +62,6 @@ protected:
   Double_t fSignalFallTime;
 
 
-
   /** Description of the sensor for the digitizer **/
   Double_t fNoise;        // Noise of the sensor
   Double_t fLandauMPV;    // Landau for digitizer
@@ -90,7 +89,6 @@ protected:
   Int_t fAnalogThreshold;
 
 
-
   /** Self-organizsation **/
 
   Bool_t fValidData;
@@ -100,18 +98,17 @@ public:
   virtual TString* GetSensorName() { return &fMimosaName; };
   virtual Double_t GetPixelPitchX() { return fPixelPitchX; };
   virtual Double_t GetPixelPitchY() { return fPixelPitchY; };
-  virtual Int_t    GetNPixelsX() { return fNPixelsX; };
-  virtual Int_t    GetNPixelsY() { return fNPixelsY; };
-  virtual Int_t    GetNPixels() { return fNPixels; };
-  virtual Int_t    GetPixelSignX() { return fPixelSignX; };
-  virtual Int_t    GetPixelSignY() { return fPixelSignY; };
-  virtual Int_t    GetShutterSign() { return fShutterSign; };
+  virtual Int_t GetNPixelsX() { return fNPixelsX; };
+  virtual Int_t GetNPixelsY() { return fNPixelsY; };
+  virtual Int_t GetNPixels() { return fNPixels; };
+  virtual Int_t GetPixelSignX() { return fPixelSignX; };
+  virtual Int_t GetPixelSignY() { return fPixelSignY; };
+  virtual Int_t GetShutterSign() { return fShutterSign; };
   virtual Double_t GetIntegrationTime() { return fIntegrationTime; };
   virtual Double_t GetEpiThickness() { return fEpiTh; }
   virtual Double_t GetNoise() { return fNoise; };
-  virtual Double_t GetSignalRiseTime (){ return fSignalRiseTime;};
-  virtual Double_t GetSignalFallTime (){ return fSignalFallTime;};
-
+  virtual Double_t GetSignalRiseTime() { return fSignalRiseTime; };
+  virtual Double_t GetSignalFallTime() { return fSignalFallTime; };
 
 
   /** Description of the sensor for the digitizer **/
@@ -124,8 +121,7 @@ public:
 
 
   virtual Double_t GetChargeThreshold() { return fChargeThreshold; };
-  virtual Int_t GetAnalogThreshold () {return fAnalogThreshold;};
-
+  virtual Int_t GetAnalogThreshold() { return fAnalogThreshold; };
 
 
   /** ADC description **/

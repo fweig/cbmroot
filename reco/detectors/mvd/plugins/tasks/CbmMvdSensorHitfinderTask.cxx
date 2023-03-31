@@ -13,19 +13,19 @@
 #include "CbmMvdHit.h"      // for CbmMvdHit
 #include "CbmMvdSensor.h"   // for CbmMvdSensor
 
-#include <TClonesArray.h>   // for TClonesArray
-#include <TGeoMatrix.h>     // for TGeoHMatrix
-#include <TMath.h>          // for Power
-#include <TMathBase.h>      // for Abs
-#include <TObjArray.h>      // for TObjArray
-#include <TRandom.h>        // for TRandom
-#include <TRandom3.h>       // for gRandom
-#include <TVector3.h>       // for TVector3
+#include <TClonesArray.h>  // for TClonesArray
+#include <TGeoMatrix.h>    // for TGeoHMatrix
+#include <TMath.h>         // for Power
+#include <TMathBase.h>     // for Abs
+#include <TObjArray.h>     // for TObjArray
+#include <TRandom.h>       // for TRandom
+#include <TRandom3.h>      // for gRandom
+#include <TVector3.h>      // for TVector3
 
-#include <iomanip>          // for setprecision, setw
-#include <iostream>         // for operator<<, basic_ostream, char_traits, endl
-#include <map>              // for map, __map_iterator, operator!=, operator==
-#include <vector>           // for vector
+#include <iomanip>   // for setprecision, setw
+#include <iostream>  // for operator<<, basic_ostream, char_traits, endl
+#include <map>       // for map, __map_iterator, operator!=, operator==
+#include <vector>    // for vector
 
 using std::cout;
 using std::endl;
@@ -92,7 +92,7 @@ CbmMvdSensorHitfinderTask::CbmMvdSensorHitfinderTask()
   , fDigisInCluster(0)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 300;
+  fPluginIDNumber = 300;
 }
 // -------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ CbmMvdSensorHitfinderTask::CbmMvdSensorHitfinderTask(Int_t iMode)
   , fDigisInCluster(0)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 300;
+  fPluginIDNumber = 300;
 }
 // -------------------------------------------------------------------------
 
@@ -180,7 +180,9 @@ void CbmMvdSensorHitfinderTask::InitTask(CbmMvdSensor* mysensor)
 
 
   fSensor = mysensor;
-  if (gDebug>0){cout << "-Start- CbmMvdSensorHitfinderTask: Initialisation of sensor " << fSensor->GetName() << endl;}
+  if (gDebug > 0) {
+    cout << "-Start- CbmMvdSensorHitfinderTask: Initialisation of sensor " << fSensor->GetName() << endl;
+  }
   fInputBuffer  = new TClonesArray("CbmMvdCluster", 100);
   fOutputBuffer = new TClonesArray("CbmMvdHit", 100);
 

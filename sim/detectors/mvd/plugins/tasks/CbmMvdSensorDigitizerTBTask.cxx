@@ -171,7 +171,7 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
   fReadoutLast    = -1.;
   fReadoutCurrent = 0.;
 
-  fPluginIDNumber= 1100;
+  fPluginIDNumber = 1100;
 }
 // -------------------------------------------------------------------------
 

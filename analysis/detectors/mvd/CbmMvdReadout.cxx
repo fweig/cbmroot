@@ -7,17 +7,17 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdReadout.h"
 
-#include "CbmDefs.h"                               // for ECbmModuleId
-#include "CbmDigiManager.h"                        // for CbmDigiManager
-#include "CbmMvdDetector.h"                        // for CbmMvdDetector
-#include "CbmMvdDigi.h"                            // for CbmMvdDigi
-#include "CbmMvdSensor.h"                          // for CbmMvdSensor
-#include "CbmMvdSensorReadoutTask.h"               // for CbmMvdSensorReadoudoutTask
+#include "CbmDefs.h"                  // for ECbmModuleId
+#include "CbmDigiManager.h"           // for CbmDigiManager
+#include "CbmMvdDetector.h"           // for CbmMvdDetector
+#include "CbmMvdDigi.h"               // for CbmMvdDigi
+#include "CbmMvdSensor.h"             // for CbmMvdSensor
+#include "CbmMvdSensorReadoutTask.h"  // for CbmMvdSensorReadoudoutTask
 
-#include <FairRootManager.h>                       // for FairRootManager
-#include <Logger.h>                                // for LOG
+#include <FairRootManager.h>  // for FairRootManager
+#include <Logger.h>           // for LOG
 
-#include <iostream>                                // for operator<<, endl
+#include <iostream>  // for operator<<, endl
 
 using std::cout;
 using std::endl;
@@ -49,8 +49,8 @@ void CbmMvdReadout::Exec(Option_t* /*opt*/)
   if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd) > 0) {
     if (fVerbose) cout << "//----------------------------------------//";
     if (fVerbose) cout << endl << "Send Input" << endl;
-    Int_t nTargetPlugin=fDetector->DetectPlugin(200);
-    CbmMvdDigi* digi=0;
+    Int_t nTargetPlugin = fDetector->DetectPlugin(200);
+    CbmMvdDigi* digi    = 0;
 
     Int_t nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
 
@@ -103,10 +103,9 @@ InitStatus CbmMvdReadout::Init()
 
   // Add the readout plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorReadoutTask* readerTask = new CbmMvdSensorReadoutTask();
 
     itr->second->AddPlugin(readerTask);
@@ -116,7 +115,7 @@ InitStatus CbmMvdReadout::Init()
     itr->second->SetClusterPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
 
   fPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
   fDetector->Init();

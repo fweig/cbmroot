@@ -24,22 +24,23 @@
 #include "CbmTrackParam.h"     // for CbmTrackParam
 #include "CbmVertex.h"         // for CbmVertex
 
-#include <FairRootManager.h>   // for FairRootManager
-#include <FairTask.h>          // for InitStatus, FairTask
-#include <FairTrackParam.h>    // for FairTrackParam
-#include <Logger.h>            // for Logger, LOG
+#include <FairRootManager.h>  // for FairRootManager
+#include <FairTask.h>         // for InitStatus, FairTask
+#include <FairTrackParam.h>   // for FairTrackParam
+#include <Logger.h>           // for Logger, LOG
 
-#include <TAxis.h>             // for TAxis
-#include <TCanvas.h>           // for TCanvas
-#include <TClonesArray.h>      // for TClonesArray
-#include <TFile.h>             // for TFile
-#include <TH1.h>               // for TH1F
-#include <TH2.h>               // for TH2F
-#include <TObject.h>           // for TObject
-#include <TStyle.h>            // for TStyle, gStyle
+#include <TAxis.h>         // for TAxis
+#include <TCanvas.h>       // for TCanvas
+#include <TClonesArray.h>  // for TClonesArray
+#include <TFile.h>         // for TFile
+#include <TH1.h>           // for TH1F
+#include <TH2.h>           // for TH2F
+#include <TObject.h>       // for TObject
+#include <TStyle.h>        // for TStyle, gStyle
 
-#include <cmath>               // for sqrt, fabs
-#include <iostream>            // for operator<<, basic_ostream, char_traits
+#include <iostream>  // for operator<<, basic_ostream, char_traits
+
+#include <cmath>  // for sqrt, fabs
 
 using std::cout;
 using std::endl;

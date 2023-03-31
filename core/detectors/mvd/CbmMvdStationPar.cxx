@@ -11,9 +11,10 @@
 
 #include <Logger.h>  // for Logger, LOG
 
+#include <limits>  // for numeric_limits
+
 #include <assert.h>  // for assert
-#include <cmath>    // for fabs, isnan
-#include <limits>    // for numeric_limits
+#include <cmath>     // for fabs, isnan
 
 
 // -----   Default constructor   -------------------------------------------

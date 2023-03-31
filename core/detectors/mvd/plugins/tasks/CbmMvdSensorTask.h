@@ -19,13 +19,13 @@
 
 #include "CbmMvdSensorPlugin.h"  // for MvdSensorPluginType, CbmMvdSensorPlugin
 
-#include <Rtypes.h>              // for ClassDef
+#include <Rtypes.h>  // for ClassDef
 
 class CbmMvdDigi;
 class CbmMvdSensor;
 class TBuffer;
 class TClass;
-class TClonesArray; 
+class TClonesArray;
 class TMemberInspector;
 
 class CbmMvdSensorTask : public CbmMvdSensorPlugin {

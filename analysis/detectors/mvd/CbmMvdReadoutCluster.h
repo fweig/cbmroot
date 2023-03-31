@@ -18,7 +18,7 @@
 #ifndef CBMMVDREADOUTCLUSTER_H
 #define CBMMVDREADOUTCLUSTER_H 1
 
-#include <FairTask.h>    // for FairTask, InitStatus
+#include <FairTask.h>  // for FairTask, InitStatus
 
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, kTRUE

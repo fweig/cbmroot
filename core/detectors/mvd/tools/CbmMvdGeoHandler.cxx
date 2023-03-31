@@ -17,17 +17,17 @@
 #include "CbmMvdMimosis.h"      // for CbmMvdMimosis
 #include "CbmMvdStationPar.h"   // for CbmMvdStationPar
 
-#include <Logger.h>             // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
-#include <TGeoBBox.h>           // for TGeoBBox
-#include <TGeoManager.h>        // for TGeoManager, gGeoManager
-#include <TGeoMaterial.h>       // for TGeoMaterial
-#include <TGeoNode.h>           // for TGeoNode
-#include <TGeoVolume.h>         // for TGeoVolume
-#include <TObjArray.h>          // for TObjArray
-#include <TString.h>            // for TString, operator+, Form, operator<<
+#include <TGeoBBox.h>      // for TGeoBBox
+#include <TGeoManager.h>   // for TGeoManager, gGeoManager
+#include <TGeoMaterial.h>  // for TGeoMaterial
+#include <TGeoNode.h>      // for TGeoNode
+#include <TGeoVolume.h>    // for TGeoVolume
+#include <TObjArray.h>     // for TObjArray
+#include <TString.h>       // for TString, operator+, Form, operator<<
 
-#include <cmath>                // for fabs
+#include <cmath>  // for fabs
 
 //--------------------------------------------------------------------------
 CbmMvdGeoHandler::CbmMvdGeoHandler()

@@ -20,10 +20,10 @@ using std::pair;
 using std::vector;
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask() : CbmMvdSensorClusterfinderTask(0, 0) {
+CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask() : CbmMvdSensorClusterfinderTask(0, 0)
+{
 
-fPluginIDNumber= 200;
-
+  fPluginIDNumber = 200;
 }
 // -------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ CbmMvdSensorClusterfinderTask::CbmMvdSensorClusterfinderTask(Int_t iMode, Int_t 
   , fBranchName("MvdHit")
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 200;
+  fPluginIDNumber = 200;
 }
 // -------------------------------------------------------------------------
 
@@ -94,7 +94,9 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
 
 
   fSensor = mysensor;
-  if(gDebug>0){cout << "-Start- CbmMvdSensorClusterfinderTask : Initialisation of sensor " << fSensor->GetName() << endl;}
+  if (gDebug > 0) {
+    cout << "-Start- CbmMvdSensorClusterfinderTask : Initialisation of sensor " << fSensor->GetName() << endl;
+  }
   fInputBuffer  = new TClonesArray("CbmMvdDigi", 100);
   fOutputBuffer = new TClonesArray("CbmMvdCluster", 100);
 
@@ -188,9 +190,9 @@ void CbmMvdSensorClusterfinderTask::ExecChain() { Exec(); }
 // -----   Public method Exec   --------------
 void CbmMvdSensorClusterfinderTask::Exec()
 {
-  if(gDebug>0){
-  cout << "CbmMvdSensorClusterfinderTask::Exec - Running Sensor " << fSensor->GetName() << endl;
-  cout << "CbmMvdSensorClusterfinderTask::Exec - InputBufferSize " << fInputBuffer->GetEntriesFast() << endl;
+  if (gDebug > 0) {
+    cout << "CbmMvdSensorClusterfinderTask::Exec - Running Sensor " << fSensor->GetName() << endl;
+    cout << "CbmMvdSensorClusterfinderTask::Exec - InputBufferSize " << fInputBuffer->GetEntriesFast() << endl;
   }
   if (fInputBuffer->GetEntriesFast() > 0) {
     fOutputBuffer->Delete();
@@ -269,7 +271,7 @@ void CbmMvdSensorClusterfinderTask::Exec()
 
         pair<Int_t, Int_t> a(digi->GetPixelX(), digi->GetPixelY());
         fDigiMapIt = fDigiMap.find(a);
-        if(fDigiMapIt!= fDigiMap.end()) {fDigiMap.erase(fDigiMapIt);};
+        if (fDigiMapIt != fDigiMap.end()) { fDigiMap.erase(fDigiMapIt); };
 
         for (ULong64_t iCluster = 0; iCluster < clusterArray->size(); iCluster++) {
 

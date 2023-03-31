@@ -29,27 +29,28 @@
 #include "CbmMvdSensorDataSheet.h"  // for CbmMvdSensorDataSheet
 #include "CbmMvdSensorPlugin.h"     // for CbmMvdSensorPlugin
 
-#include <FairEventHeader.h>        // for FairEventHeader
-#include <FairRunAna.h>             // for FairRunAna
-#include <FairRootManager.h>        // for FairRootManager
-#include <FairRunSim.h>             // for FairRunSim
-#include <Logger.h>                 // for LOG, Logger
+#include <FairEventHeader.h>  // for FairEventHeader
+#include <FairRootManager.h>  // for FairRootManager
+#include <FairRunAna.h>       // for FairRunAna
+#include <FairRunSim.h>       // for FairRunSim
+#include <Logger.h>           // for LOG, Logger
 
-#include <TCanvas.h>                // for TCanvas
-#include <TClonesArray.h>           // for TClonesArray
-#include <TH1.h>                    // for TH1F
-#include <TH2.h>                    // for TH2F
-#include <TMath.h>                  // for Pi, ATan
-#include <TMathBase.h>              // for Abs, Max
-#include <TRandom.h>                // for TRandom
-#include <TRefArray.h>              // for TRefArray
-#include <TVector3.h>               // for TVector3, operator*, operator+
+#include <TCanvas.h>       // for TCanvas
+#include <TClonesArray.h>  // for TClonesArray
+#include <TH1.h>           // for TH1F
+#include <TH2.h>           // for TH2F
+#include <TMath.h>         // for Pi, ATan
+#include <TMathBase.h>     // for Abs, Max
+#include <TRandom.h>       // for TRandom
+#include <TRefArray.h>     // for TRefArray
+#include <TVector3.h>      // for TVector3, operator*, operator+
 
-#include <cmath>                    // for sqrt
-#include <iomanip>                  // for operator<<, setprecision, setw
-#include <iostream>                 // for operator<<, basic_ostream, endl
-#include <map>                      // for map, operator==, __map_iterator
-#include <vector>                   // for allocator, vector
+#include <iomanip>   // for operator<<, setprecision, setw
+#include <iostream>  // for operator<<, basic_ostream, endl
+#include <map>       // for map, operator==, __map_iterator
+#include <vector>    // for allocator, vector
+
+#include <cmath>  // for sqrt
 
 
 using std::cout;
@@ -157,8 +158,8 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , h_ElossVsMomIn(nullptr)
 {
   fRandGen.SetSeed(2736);
-  fproduceNoise = kFALSE;
-  fPluginIDNumber= 100;
+  fproduceNoise   = kFALSE;
+  fPluginIDNumber = 100;
 }
 // -------------------------------------------------------------------------
 
@@ -259,8 +260,9 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , h_LengthVsEloss(nullptr)
   , h_ElossVsMomIn(nullptr)
 
-{ fPluginIDNumber= 100;
-  if(gDebug>0){cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl;}
+{
+  fPluginIDNumber = 100;
+  if (gDebug > 0) { cout << "Starting CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask() " << endl; }
 
   fRandGen.SetSeed(2736);
   fEvent       = 0;
@@ -443,7 +445,7 @@ void CbmMvdSensorDigitizerTask::Exec()
       ProducePixelCharge(point);
     }  //loop on MCpoints
 
-    Int_t nDigis       = 0;
+    Int_t nDigis = 0;
     GetEventInfo(fInputNr, fEventNr, fEventTime);
 
     if (fproduceNoise) ProduceNoise();
@@ -454,13 +456,14 @@ void CbmMvdSensorDigitizerTask::Exec()
       if (pixel->GetCharge() > fChargeThreshold) {
         nDigis = fDigis->GetEntriesFast();
 
-        new ((*fDigis)[nDigis]) CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(),
-                                           fPixelSizeX, fPixelSizeY, fEventTime+pixel->GetPixelTime(), pixel->GetFrame());
+        new ((*fDigis)[nDigis])
+          CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(), fPixelSizeX, fPixelSizeY,
+                     fEventTime + pixel->GetPixelTime(), pixel->GetFrame());
 
 
         new ((*fOutputBuffer)[nDigis])
           CbmMvdDigi(fSensor->GetSensorNr(), pixel->GetX(), pixel->GetY(), pixel->GetCharge(), fPixelSizeX, fPixelSizeY,
-                     fEventTime+pixel->GetPixelTime(), pixel->GetFrame());
+                     fEventTime + pixel->GetPixelTime(), pixel->GetFrame());
 
         new ((*fDigiMatch)[nDigis]) CbmMatch();
         CbmMatch* match = (CbmMatch*) fDigiMatch->At(nDigis);
@@ -492,34 +495,42 @@ void CbmMvdSensorDigitizerTask::Exec()
 // -------------------------------------------------------------------------
 
 
+Int_t CbmMvdSensorDigitizerTask::GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime)
+{
 
-Int_t CbmMvdSensorDigitizerTask::GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime) {
-
-/**
+  /**
  * Get the analog signal created by each signal. Assumption: Signal rise and signal fall follows exponential. Contributions of the individual hits add up.
  **/
 
- Int_t pixelCharge=0;
- Double_t pixelSignalRiseTime=fsensorDataSheet->GetSignalRiseTime();
- Double_t pixelSignalFallTime=fsensorDataSheet->GetSignalFallTime();
- Int_t nHits=0; //=myPixel->GetNHits();
+  Int_t pixelCharge            = 0;
+  Double_t pixelSignalRiseTime = fsensorDataSheet->GetSignalRiseTime();
+  Double_t pixelSignalFallTime = fsensorDataSheet->GetSignalFallTime();
+  Int_t nHits                  = 0;  //=myPixel->GetNHits();
 
-  for(Int_t hitNr=0; hitNr<nHits; hitNr++){
-    Int_t hitCharge=0; //=pixel->GetHitCharge(hitNr);
-    Int_t hitTime=0; //=pixel->GetHitTime(hitNr);
+  for (Int_t hitNr = 0; hitNr < nHits; hitNr++) {
+    Int_t hitCharge = 0;  //=pixel->GetHitCharge(hitNr);
+    Int_t hitTime   = 0;  //=pixel->GetHitTime(hitNr);
 
-    pixelCharge=pixelCharge + hitCharge * (1- TMath::Exp(-(readoutTime-hitTime)/pixelSignalRiseTime)); //exponential signal rise of the analog charge
-    pixelCharge=pixelCharge - hitCharge * (1- TMath::Exp(-(readoutTime-hitTime)/pixelSignalFallTime)); //exponential signal fall of the analog charge
+    pixelCharge = pixelCharge
+                  + hitCharge
+                      * (1
+                         - TMath::Exp(-(readoutTime - hitTime)
+                                      / pixelSignalRiseTime));  //exponential signal rise of the analog charge
+    pixelCharge = pixelCharge
+                  - hitCharge
+                      * (1
+                         - TMath::Exp(-(readoutTime - hitTime)
+                                      / pixelSignalFallTime));  //exponential signal fall of the analog charge
   }
 
   return pixelCharge;
-
 }
 
 // ------------------------------------------------------------------------------
 
 
-Bool_t CbmMvdSensorDigitizerTask::GetSignalAboveThreshold (CbmMvdPixelCharge* myPixel, Double_t readoutTime) {
+Bool_t CbmMvdSensorDigitizerTask::GetSignalAboveThreshold(CbmMvdPixelCharge* myPixel, Double_t readoutTime)
+{
   /**
    * Checks if pixel is above threshold.
    **/
@@ -527,9 +538,7 @@ Bool_t CbmMvdSensorDigitizerTask::GetSignalAboveThreshold (CbmMvdPixelCharge* my
   CbmMvdSensor* mySensor;
 
 
-
-  return (GetPixelCharge(myPixel, readoutTime)>fsensorDataSheet->GetAnalogThreshold ());
-
+  return (GetPixelCharge(myPixel, readoutTime) > fsensorDataSheet->GetAnalogThreshold());
 }
 
 // ------------------------------------------------------------------------------
@@ -785,9 +794,7 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
   yLo = sPoint->y - fWidthOfCluster * sigmaY;
   yUp = sPoint->y + fWidthOfCluster * sigmaY;
 
-  if (fNumberOfSegments < 2) {
-    LOG(fatal) << "fNumberOfSegments < 2, this makes no sense, check parameters.";
-  }
+  if (fNumberOfSegments < 2) { LOG(fatal) << "fNumberOfSegments < 2, this makes no sense, check parameters."; }
 
   Int_t* lowerXArray = new Int_t[fNumberOfSegments];
   Int_t* upperXArray = new Int_t[fNumberOfSegments];
@@ -860,7 +867,7 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
       Double_t Current[3];
       fSensor->PixelToLocal(ix, iy, Current);
       pixel = nullptr;  //decouple pixel-pointer from previous pixel
-                  
+
       //loop over segments, check if the pad received some charge
       for (Int_t i = 0; i < fNumberOfSegments; ++i) {
         // 			cout << endl << "check segment nr. " << i << " from " << fNumberOfSegments << endl;
@@ -887,7 +894,6 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
                                                         / fPixelSize / fPixelSize
                                                       + 0.25 * fPar1 * fPar1)
                              + fPar2);
-
 
 
         if (totCharge < 1) {
@@ -948,8 +954,8 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
     CbmMvdPixelCharge* pixelCharge = fPixelChargeShort.at(f);
     if (pixelCharge) {
       pixelCharge->DigestCharge(((float) (point->GetX() + point->GetXOut()) / 2),
-                                ((float) (point->GetY() + point->GetYOut()) / 2), fEventTime + point->GetTime(),point->GetPointId(),
-                                point->GetTrackID());
+                                ((float) (point->GetY() + point->GetYOut()) / 2), fEventTime + point->GetTime(),
+                                point->GetPointId(), point->GetTrackID());
     }
     else {
       cout << endl << "Warning working on broken pixel " << endl;
@@ -1000,13 +1006,13 @@ void CbmMvdSensorDigitizerTask::ProduceNoise()
 
     if (fChargeMapIt == fChargeMap.end()) {
       pixel = new ((*fPixelCharge)[fPixelCharge->GetEntriesFast()])
-        CbmMvdPixelCharge(1000, xPix, yPix, 0, -4, Current[0], Current[1]); // TODO: Add time
-      pixel->DigestCharge(Current[0], Current[1],fEventTime, 0, -4);
+        CbmMvdPixelCharge(1000, xPix, yPix, 0, -4, Current[0], Current[1]);  // TODO: Add time
+      pixel->DigestCharge(Current[0], Current[1], fEventTime, 0, -4);
       fChargeMap[thispoint] = pixel;
     }
     else {
       pixel = fChargeMapIt->second;
-      pixel->AddCharge(1000); // TODO: Add time
+      pixel->AddCharge(1000);  // TODO: Add time
       pixel->DigestCharge(Current[0], Current[1], fEventTime, 0, -4);
     }
   }
@@ -1040,9 +1046,7 @@ void CbmMvdSensorDigitizerTask::InitTask(CbmMvdSensor* mySensor)
   fOutputBuffer = new TClonesArray("CbmMvdDigi", 100);
   fInputPoints  = new TClonesArray("CbmMvdPoint", 100);
 
-  if (!fSensor) {
-    LOG(fatal) << "Init(CbmMvdSensor*) called without valid pointer, don't know how to proceed.";
-  };
+  if (!fSensor) { LOG(fatal) << "Init(CbmMvdSensor*) called without valid pointer, don't know how to proceed."; };
 
   ReadSensorInformation();
 

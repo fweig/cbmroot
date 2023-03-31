@@ -113,7 +113,7 @@ CbmMvdSensorFindHitTask::CbmMvdSensorFindHitTask()
   , fDigisInCluster(-1)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 400;
+  fPluginIDNumber = 400;
 }
 // -------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ CbmMvdSensorFindHitTask::CbmMvdSensorFindHitTask(Int_t iMode)
   , fDigisInCluster(-1)
   , fAddNoise(kFALSE)
 {
-fPluginIDNumber= 400;
+  fPluginIDNumber = 400;
 }
 // -------------------------------------------------------------------------
 
@@ -245,7 +245,8 @@ void CbmMvdSensorFindHitTask::ExecChain() { Exec(); }
 
 // -----   Virtual public method Exec   --------------
 void CbmMvdSensorFindHitTask::Exec()
-{ cout << "Ich lebe auch" << endl;
+{
+  cout << "Ich lebe auch" << endl;
 
   // if(!inputSet)
   //  {

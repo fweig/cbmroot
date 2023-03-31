@@ -7,23 +7,23 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdClusterfinder.h"
 
-#include "CbmDefs.h"                               // for ECbmModuleId
-#include "CbmDigiManager.h"                        // for CbmDigiManager
-#include "CbmMvdDetector.h"                        // for CbmMvdDetector
-#include "CbmMvdDigi.h"                            // for CbmMvdDigi
-#include "CbmMvdSensor.h"                          // for CbmMvdSensor
-#include "CbmMvdSensorClusterfinderTask.h"         // for CbmMvdSensorCluste...
+#include "CbmDefs.h"                        // for ECbmModuleId
+#include "CbmDigiManager.h"                 // for CbmDigiManager
+#include "CbmMvdDetector.h"                 // for CbmMvdDetector
+#include "CbmMvdDigi.h"                     // for CbmMvdDigi
+#include "CbmMvdSensor.h"                   // for CbmMvdSensor
+#include "CbmMvdSensorClusterfinderTask.h"  // for CbmMvdSensorCluste...
 
-#include <FairRootManager.h>                       // for FairRootManager
-#include <FairTask.h>                              // for InitStatus, FairTask
-#include <Logger.h>                                // for Logger, LOG
+#include <FairRootManager.h>  // for FairRootManager
+#include <FairTask.h>         // for InitStatus, FairTask
+#include <Logger.h>           // for Logger, LOG
 
-#include <TClonesArray.h>                          // for TClonesArray
+#include <TClonesArray.h>  // for TClonesArray
 
-#include <iomanip>                                 // for setprecision, setw
-#include <iostream>                                // for operator<<, endl
-#include <map>                                     // for allocator, __map_i...
-#include <utility>                                 // for pair
+#include <iomanip>   // for setprecision, setw
+#include <iostream>  // for operator<<, endl
+#include <map>       // for allocator, __map_i...
+#include <utility>   // for pair
 
 
 using std::cout;
@@ -77,19 +77,19 @@ CbmMvdClusterfinder::~CbmMvdClusterfinder()
 void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 {
   // --- Start timer
- fTimer.Start();
- if (gDebug>0) {cout << "CbmMvdClusterfinder::Exec : Starting Exec "  << endl;}
- fCluster->Delete();
- if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd)) {
+  fTimer.Start();
+  if (gDebug > 0) { cout << "CbmMvdClusterfinder::Exec : Starting Exec " << endl; }
+  fCluster->Delete();
+  if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd)) {
     if (fVerbose) cout << "//----------------------------------------//";
     if (fVerbose) cout << endl << "Send Input" << endl;
 
-    Int_t nTargetPlugin=fDetector->DetectPlugin(200);
-    CbmMvdDigi* digi=0;
+    Int_t nTargetPlugin = fDetector->DetectPlugin(200);
+    CbmMvdDigi* digi    = 0;
 
     Int_t nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
 
-    if (gDebug>0) {cout << "CbmMvdClusterfinder::Exec - nDigis= " << nDigis << endl;}
+    if (gDebug > 0) { cout << "CbmMvdClusterfinder::Exec - nDigis= " << nDigis << endl; }
 
     for (Int_t i = 0; i < nDigis; i++) {
       digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
@@ -99,7 +99,7 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
     }
 
 
-    if (gDebug>0) {cout << "CbmMvdClusterfinder::Exec : Communicating with Plugin: " << nTargetPlugin << endl;}
+    if (gDebug > 0) { cout << "CbmMvdClusterfinder::Exec : Communicating with Plugin: " << nTargetPlugin << endl; }
 
 
     //fDetector->SendInputDigis(fDigiMan);
@@ -161,17 +161,16 @@ InitStatus CbmMvdClusterfinder::Init()
 
   // Add the cluster finder plugin to all sensors
   std::map<int, CbmMvdSensor*>& sensorMap = fDetector->GetSensorMap();
-  UInt_t plugincount=fDetector->GetPluginCount();
+  UInt_t plugincount                      = fDetector->GetPluginCount();
 
-  for (auto itr = sensorMap.begin();
-              itr != sensorMap.end(); itr++) {
+  for (auto itr = sensorMap.begin(); itr != sensorMap.end(); itr++) {
     CbmMvdSensorClusterfinderTask* clusterTask = new CbmMvdSensorClusterfinderTask();
 
     itr->second->AddPlugin(clusterTask);
     itr->second->SetClusterPlugin(plugincount);
   }
   fDetector->SetSensorArrayFilled(kTRUE);
-  fDetector->SetPluginCount(plugincount+1);
+  fDetector->SetPluginCount(plugincount + 1);
   fClusterPluginNr = (UInt_t)(fDetector->GetPluginArraySize());
 
   if (fShowDebugHistos) fDetector->ShowDebugHistos();

@@ -22,8 +22,8 @@
 
 #include "CbmMvdSensorPlugin.h"  // for MvdSensorPluginType, CbmMvdSensorPlugin
 
-#include <Rtypes.h>              // for ClassDef
-#include <RtypesCore.h>          // for Double_t, Option_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Option_t
 
 class CbmMvdSensor;
 class TBuffer;

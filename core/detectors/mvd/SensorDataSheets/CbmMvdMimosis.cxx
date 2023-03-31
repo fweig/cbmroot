@@ -10,8 +10,8 @@
 #include "CbmMvdMimosis.h"
 
 #include <RtypesCore.h>  // for kTRUE
-#include <TString.h>     // for TString
 #include <TMath.h>       // for Power
+#include <TString.h>     // for TString
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdMimosis::CbmMvdMimosis()
@@ -32,7 +32,7 @@ CbmMvdMimosis::CbmMvdMimosis()
   fEpiTh           = 18e-4;   // Thickness of the epitaxial layer
 
   fChargeThreshold = 1.;
-  fAnalogThreshold =150; //Threshold in electrons
+  fAnalogThreshold = 150;  //Threshold in electrons
 
   /** Description of the sensor for the digitizer //mesaured by melisa for Mimosa26AHR**/
   fNoise       = 13;

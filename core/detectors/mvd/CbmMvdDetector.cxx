@@ -16,15 +16,14 @@
 #include "CbmMvdSensorPlugin.h"  // for CbmMvdSensorPlugin, MvdSensorPluginType
 #include "CbmMvdSensorTask.h"    // for CbmMvdSensorTask
 
-#include <Logger.h>              // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
-#include <Rtypes.h>              // for TGenericClassInfo
-
-#include <TClonesArray.h>        // for TClonesArray
-#include <TNamed.h>              // for TNamed
-#include <TObjArray.h>           // for TObjArray
-#include <TRandom.h>             // for TRandom, gRandom
-#include <TString.h>             // for TString, operator==, operator<<
+#include <Rtypes.h>        // for TGenericClassInfo
+#include <TClonesArray.h>  // for TClonesArray
+#include <TNamed.h>        // for TNamed
+#include <TObjArray.h>     // for TObjArray
+#include <TRandom.h>       // for TRandom, gRandom
+#include <TString.h>       // for TString, operator==, operator<<
 
 //_____________________________________________________________________________
 CbmMvdDetector* CbmMvdDetector::fInstance = 0;
@@ -169,20 +168,23 @@ Int_t CbmMvdDetector::DetectPlugin(Int_t pluginID)
   // Detects the position of a plugin with a given Plugin-ID (set in the plugin implementation constructor) in the plugin-array of the sensors
 
 
+  if (!fSensorArrayFilled) {
+    LOG(warning)
+      << "CbmMvdDetector::DetectPlugin: You tried to access sensor plugins while the detector is not initialized yet.";
+    return -1;
+  }
+  CbmMvdSensor* sensor   = GetSensor(0);
+  TObjArray* pluginArray = sensor->GetPluginArray();
 
-  if (!fSensorArrayFilled) {LOG(warning) << "CbmMvdDetector::DetectPlugin: You tried to access sensor plugins while the detector is not initialized yet.";  return -1;}
-  CbmMvdSensor* sensor=GetSensor(0);
-  TObjArray* pluginArray= sensor->GetPluginArray();
-
-  Int_t nPlugin=pluginArray->GetEntries();
-  for(Int_t i=0; i<nPlugin;i++) {
-    CbmMvdSensorPlugin* plugin= (CbmMvdSensorPlugin*) pluginArray->At(i);
+  Int_t nPlugin = pluginArray->GetEntries();
+  for (Int_t i = 0; i < nPlugin; i++) {
+    CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) pluginArray->At(i);
     // LOG(info) <<"CbmMvdDetector::DetectPlugin: PlugInID = " << plugin->GetPluginIDNumber() << " Position: "<< i;
-    if (pluginID==plugin->GetPluginIDNumber()){return i;}
+    if (pluginID == plugin->GetPluginIDNumber()) { return i; }
   }
 
 
- return -1;
+  return -1;
 }
 
 //-----------------------------------------------------------------------
@@ -237,7 +239,7 @@ void CbmMvdDetector::ShowDebugHistos()
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInputToSensorPlugin(Int_t detectorid, Int_t nPlugin, TObject* input)
 {
-  fSensorMap[detectorid]->SendInputToPlugin(nPlugin,input);
+  fSensorMap[detectorid]->SendInputToPlugin(nPlugin, input);
 }
 //-----------------------------------------------------------------------
 
@@ -321,7 +323,8 @@ void CbmMvdDetector::ExecFrom(UInt_t nLevel)
 }
 //-----------------------------------------------------------------------
 
-void CbmMvdDetector::GetOutputArray(Int_t nPlugin, TClonesArray* outputArray){
+void CbmMvdDetector::GetOutputArray(Int_t nPlugin, TClonesArray* outputArray)
+{
   Int_t nSensors = fSensorArray->GetEntriesFast();
   CbmMvdSensor* sensor;
   TClonesArray* tmpArray;
@@ -329,17 +332,16 @@ void CbmMvdDetector::GetOutputArray(Int_t nPlugin, TClonesArray* outputArray){
 
   for (Int_t i = 0; i < nSensors; i++) {
     sensor       = (CbmMvdSensor*) fSensorArray->At(i);
-    tmpArray=sensor->GetOutputArray(nPlugin);
+    tmpArray     = sensor->GetOutputArray(nPlugin);
     Int_t length = tmpArray->GetEntriesFast();
     //LOG(info)<< "CbmMvdDetector::GetOutputArray - Length = " << length;
-    if (length >= 0) {
-      outputArray->AbsorbObjects(tmpArray);
-    }
+    if (length >= 0) { outputArray->AbsorbObjects(tmpArray); }
   }
 }
 
 //-----------------------------------------------------------------------
-void CbmMvdDetector::GetMatchArray(Int_t nPlugin, TClonesArray* matchArray){
+void CbmMvdDetector::GetMatchArray(Int_t nPlugin, TClonesArray* matchArray)
+{
   Int_t nSensors = fSensorArray->GetEntriesFast();
   CbmMvdSensor* sensor;
   TClonesArray* tmpArray;
@@ -347,12 +349,10 @@ void CbmMvdDetector::GetMatchArray(Int_t nPlugin, TClonesArray* matchArray){
 
   for (Int_t i = 0; i < nSensors; i++) {
     sensor       = (CbmMvdSensor*) fSensorArray->At(i);
-    tmpArray=sensor->GetMatchArray(nPlugin);
+    tmpArray     = sensor->GetMatchArray(nPlugin);
     Int_t length = tmpArray->GetEntriesFast();
 
-    if (length >= 0) {
-      matchArray->AbsorbObjects(tmpArray);
-    }
+    if (length >= 0) { matchArray->AbsorbObjects(tmpArray); }
   }
 }
 
