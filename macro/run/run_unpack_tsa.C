@@ -173,39 +173,55 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     stsconfig->SetMinAdcCut(3, 1); // ADC cut to Station 0 Ladder 0 Module 1
     stsconfig->SetMinAdcCut(4, 1); // ADC cut to Station 0 Ladder 0 Module 1
 
+    // Masking noisy channels
     std::ifstream mask_channels(Form("%s/sts_mask_channels.par", parfilesbasepathSts.data()));
     int feb_idx, feb_chn;
     while (mask_channels >> feb_idx >> feb_chn){
-      stsconfig->MaskNoisyChannel(feb_idx, feb_chn);     // Mask noisy channels
+      stsconfig->MaskNoisyChannel(feb_idx, feb_chn);
     }
+
     // Time Walk correction
-    std::map<uint32_t, CbmStsParModule> walkMap;
-    auto parAsic = new CbmStsParAsic(128, 31, 31., 1., 5., 800., 1000., 3.9789e-3);
-    // Module params: number of channels, number of channels per ASIC
-    auto parMod = new CbmStsParModule(2048, 128);
+    std::map<uint32_t, CbmStsParModule> moduleWalkMap;
+    auto parAsic = new CbmStsParAsic(128, 31, 31., 1., 5., 800., 1000., 3.9789e-3);   // Default ASIC parameters
+    auto parMod = new CbmStsParModule(2048, 128);                                     // Generic STS module parameter object
 
-    // default
-    double p0 = 0, p1 = 0, p2 = 0, p3 = 0;
-    parAsic->SetWalkCoef({p0, p1, p2, p3});
-    parMod->SetAllAsics(*parAsic);
+    std::array<double, 32> tw_map = {{0., 0., 0., 0.,   // Default time walk map
+                                      0., 0., 0., 0.,
+                                      0., 0., 0., 0.,
+                                      0., 0., 0., 0.,
+                                      0., 0., 0., 0.,
+                                      0., 0., 0., 0.,
+                                      0., 0., 0., 0.,
+                                      0., 0., 0., 0.}};
+    parAsic->SetWalkCoef(tw_map);   // Set generic ASIC par with no time walk correction
+    parMod->SetAllAsics(*parAsic);  // Set generic module ASIC as default ASIC parameter configuration
 
-    walkMap[0x10107C02] = CbmStsParModule(*parMod);  // Make a copy for storage
-    walkMap[0x101FFC02] = CbmStsParModule(*parMod);  // Make a copy for storage
+    moduleWalkMap[0x10107C02] = CbmStsParModule(*parMod);  // Make a copy for storage
+    moduleWalkMap[0x101FFC02] = CbmStsParModule(*parMod);  // Make a copy for storage
 
     /// To be replaced by a storage in a new parameter class later
     int sensor, asic;
     std::ifstream asicTimeWalk_par(Form("%s/mStsAsicTimeWalk.par", parfilesbasepathSts.data()));
-    while (asicTimeWalk_par >> std::hex >> sensor >> std::dec >> asic >> p0 >> p1 >> p2 >> p3) {
-      // std::cout << Form("Setting time-walk parameters for: module %x, ASIC %u\n", sensor, asic);
-      parAsic->SetWalkCoef({p0, p1, p2, p3});
+    while (asicTimeWalk_par >> std::hex >> sensor >> std::dec >> asic) {  // Read module and ASIC
+      LOG(info) << Form("[STS] Reading %x %u", sensor, asic);
+      for (int adc = 0; adc < 31; adc++){                                 // Read time offset by ADC
+        asicTimeWalk_par >> tw_map[adc];                                  // Set time walk map offset value for given ADC
+        if (std::fabs(tw_map[adc]) > 100){
+          LOG(warning) << "[STS] Very large time walk parameter";         // Large offset values could indicate par file malformation
+        }
+      }                                                                   // end ASIC idx loop
+      parAsic->SetWalkCoef(tw_map);                                       // Set time walk map for the ASIC par obj
 
-      if (walkMap.find(sensor) == walkMap.end()) { walkMap[sensor] = CbmStsParModule(*parMod); }
-      walkMap[sensor].SetAsic(asic, *parAsic);
-      // std::cout << Form("Done with time-walk parameters for: module %x, ASIC %u\n", sensor, asic);
+      if (!moduleWalkMap.count(sensor)) {                                 // No parameters obj for given module
+        moduleWalkMap[sensor] = CbmStsParModule(*parMod);                 // Create CbmStsParModule obj for the loaded module
+      }
+      moduleWalkMap[sensor].SetAsic(asic, *parAsic);                      // Set ASIC parameter
+
+      LOG(info) << Form("\n[STS] Time Walk parameters loaded for: module %x, ASIC %u\n", sensor, asic);
     }
 
-    stsconfig->SetWalkMap(walkMap);
-    walkMap.clear();
+    stsconfig->SetWalkMap(moduleWalkMap);
+    moduleWalkMap.clear();
     delete parMod;
     delete parAsic;
   }
