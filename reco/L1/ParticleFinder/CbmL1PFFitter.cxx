@@ -450,13 +450,17 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, const vector<int>& pidHypo)
   std::vector<CbmMvdHit> vMvdHits;
   std::vector<CbmStsHit> vStsHits;
 
-  for (int ih = 0; ih < mvdHitArray->GetEntriesFast(); ih++) {
-    CbmMvdHit hit = *dynamic_cast<const CbmMvdHit*>(mvdHitArray->At(ih));
-    vMvdHits.push_back(hit);
+  if (mvdHitArray) {
+    for (int ih = 0; ih < mvdHitArray->GetEntriesFast(); ih++) {
+      CbmMvdHit hit = *dynamic_cast<const CbmMvdHit*>(mvdHitArray->At(ih));
+      vMvdHits.push_back(hit);
+    }
   }
 
-  for (int ih = 0; ih < stsHitArray->GetEntriesFast(); ih++) {
-    vStsHits.push_back(*dynamic_cast<const CbmStsHit*>(stsHitArray->At(ih)));
+  if (stsHitArray) {
+    for (int ih = 0; ih < stsHitArray->GetEntriesFast(); ih++) {
+      vStsHits.push_back(*dynamic_cast<const CbmStsHit*>(stsHitArray->At(ih)));
+    }
   }
 
   Fit(Tracks, vMvdHits, vStsHits, pidHypo);
