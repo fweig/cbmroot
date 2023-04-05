@@ -694,6 +694,10 @@ void CbmL1::ReadEvent(CbmEvent* event)
         const L1Station& st = fpAlgo->GetParameters()->GetStation(th.iStation);
         th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+
+        // Get time
+        th.time = h->GetTime();       // currently ignored by the tracking
+        th.dt   = h->GetTimeError();  // currently ignored by the tracking
       }
       th.Det = 0;
       th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMvd>(hitIndex) : -1;

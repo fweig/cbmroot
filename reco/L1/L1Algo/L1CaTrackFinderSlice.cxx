@@ -271,7 +271,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     fvec txErr2 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
     fvec qpErr2 = fMaxInvMom * fMaxInvMom / fvec(9.);
 
-    T.ResetErrors(1., 1., txErr2, txErr2, qpErr2, timeEr2, 1.e2);
+    T.ResetErrors(1., 1., txErr2, txErr2, qpErr2, (stal.timeInfo ? timeEr2 : 1.e6), 1.e2);
 
     T.chi2 = 0.;
     T.NDF  = (fpCurrentIteration->GetPrimaryFlag()) ? fvec(2.) : fvec(0.);

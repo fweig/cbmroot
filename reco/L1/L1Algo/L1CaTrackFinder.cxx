@@ -66,7 +66,7 @@ void L1Algo::CaTrackFinder()
 
   for (int iStream = 0; iStream < nDataStreams; ++iStream) {
 
-    fscal maxTimeBeforeHit = std::numeric_limits<fscal>::min();
+    fscal maxTimeBeforeHit = std::numeric_limits<fscal>::lowest();
 
     int nStreamHits = fInputData.GetStreamNhits(iStream);
 
@@ -91,6 +91,11 @@ void L1Algo::CaTrackFinder()
       L1HitTimeInfo& info = fHitTimeInfo[caHitId];
       info.fEventTimeMin  = h.t - dt - timeOfFlightMax;
       info.fEventTimeMax  = h.t + dt - timeOfFlightMin;
+
+      if (!st.timeInfo) {
+        info.fEventTimeMin = std::numeric_limits<fscal>::lowest();
+        info.fEventTimeMax = std::numeric_limits<fscal>::max();
+      }
 
       if (maxTimeBeforeHit < info.fEventTimeMax) { maxTimeBeforeHit = info.fEventTimeMax; }
       info.fMaxTimeBeforeHit = maxTimeBeforeHit;
