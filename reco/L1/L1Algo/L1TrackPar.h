@@ -1,12 +1,13 @@
-/* Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2007-2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov [committer], Maksym Zyzak */
+   Authors: Igor Kulakov [committer], Maksym Zyzak, Sergei Zharko */
 
 #ifndef L1TrackPar_h
 #define L1TrackPar_h 1
 
 #include "CaSimd.h"
 #include "L1Def.h"
+#include "L1Undef.h"
 
 using namespace cbm::algo::ca;
 
@@ -41,7 +42,8 @@ public:
   template<typename T>
   L1TrackPar(const T* tr, const T* C)
   {
-    Set(tr, C);
+    //Set(tr, C); // Not implemented
+    copyFromArrays(tr, C);
   }
 
   //template<typename T>
@@ -63,8 +65,62 @@ public:
     return c[ind];
   }
 
+  // ** Parameter getters **
+
+  /// @brief Gets x position [cm]
+  fscal GetX() const { return x[0]; }
+
+  /// @brief Gets x position error [cm]
+  fscal GetXErr() const { return (std::isfinite(C00[0]) && C00[0] > 0) ? std::sqrt(C00[0]) : undef::kF; }
+
+  /// @brief Gets y position [cm]
+  fscal GetY() const { return y[0]; }
+
+  /// @brief Gets y position error [cm]
+  fscal GetYErr() const { return (std::isfinite(C11[0]) && C11[0] > 0) ? std::sqrt(C11[0]) : undef::kF; }
+
+  /// @brief Gets slope along x-axis
+  fscal GetTx() const { return tx[0]; }
+
+  /// @brief Gets error of slope along x-axis
+  fscal GetTxErr() const { return (std::isfinite(C22[0]) && C22[0] > 0) ? std::sqrt(C22[0]) : undef::kF; }
+
+  /// @brief Gets slope along y-axis
+  fscal GetTy() const { return ty[0]; }
+
+  /// @brief Gets error of slope along y-axis
+  fscal GetTyErr() const { return (std::isfinite(C33[0]) && C33[0] > 0) ? std::sqrt(C33[0]) : undef::kF; }
+
+  /// @brief Gets charge over momentum [ec/GeV]
+  fscal GetQp() const { return qp[0]; }
+
+  /// @brief Gets error of charge over momentum [ec/GeV]
+  fscal GetQpErr() const { return (std::isfinite(C44[0]) && C44[0] > 0) ? std::sqrt(C44[0]) : undef::kF; }
+
+  /// @brief Gets time [ns]
+  fscal GetTime() const { return t[0]; }
+
+  /// @brief Gets time error [ns]
+  fscal GetTimeErr() const { return (std::isfinite(C55[0]) && C55[0] > 0) ? std::sqrt(C55[0]) : undef::kF; }
+
+  /// @brief Gets inverse speed [ns/cm]
+  fscal GetInvSpeed() const { return vi[0]; }
+
+  /// @brief Gets inverse speed error [ns/cm]
+  fscal GetInvSpeedErr() const { return (std::isfinite(C66[0]) && C66[0] > 0) ? std::sqrt(C66[0]) : undef::kF; }
+
+  /// @brief Resets variances of track parameters
+  /// @param c00  Variance of x-position [cm2]
+  /// @param c11  Variance of y-position [cm2]
+  /// @param c22  Variance of slope along x-axis
+  /// @param c33  Variance of slope along y-axis
+  /// @param c44  Variance of charge over momentum [(ec/GeV)2]
+  /// @param c55  Variance of time [ns2]
+  /// @param c66  Variance of inverse speed [1/c2]
   void ResetErrors(fvec c00, fvec c11, fvec c22, fvec c33, fvec c44, fvec c55, fvec c66);
 
+  /// @brief Prints parameters
+  /// @param i  Index of SIMD vector element (if -1, the whole vector is printed out)
   void Print(int i = -1) const;
 
   void PrintCorrelations(int i = -1) const;

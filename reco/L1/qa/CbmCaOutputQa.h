@@ -12,9 +12,13 @@
 
 #include "CbmCaMCModule.h"
 #include "CbmCaTimeSliceReader.h"
+#include "CbmCaTrackTypeQa.h"
 #include "CbmL1DetectorID.h"
 #include "CbmL1Hit.h"
 #include "CbmQaTask.h"
+
+#include <array>
+#include <memory>
 
 #include "CaToolsDebugger.h"
 #include "L1Parameters.h"
@@ -25,6 +29,52 @@ namespace cbm::ca
   ///
   class OutputQa : public CbmQaTask {
   public:
+    /// @brief Enumeration of track category
+    enum ETrackType
+    {
+      kAll,   ///< all tracks
+      kPrim,  ///< primary tracks
+      kSec,   ///< secondary tracks
+      // kPrimEP,  ///< primary electron tracks
+      // kPrimEM,  ///< primary positron tracks
+      // kSecEP,   ///< secondary electron tracks
+      // kSecEM,   ///< secondary positron tracks
+      // kPrimMUP, ///< primary .....
+      // kPrimMUM,
+      // kSecMUP,
+      // kSecMUM,
+      kPrimPIP,
+      kPrimPIM,
+      kSecPIP,
+      kSecPIM,
+      // kPrimKP,
+      // kPrimKM,
+      // kSecKP,
+      // kSecKM,
+      // kPrimP,
+      // kPrimPBAR,
+      // kSecP,
+      // kSecPBAR,
+      // kPrimD,
+      // kPrimDBAR,
+      // kSecD,
+      // kSecDBAR,
+      // kPrimT,
+      // kPrimTBAR,
+      // kSecT,
+      // kSecTBAR,
+      // kPrim3HE,
+      // kPrim3HEBAR,
+      // kSec3HE,
+      // kSec3HEBAR,
+      // kPrim4HE,
+      // kPrim4HEBAR,
+      // kSec4HE,
+      // kSec4HEBAR,
+      kEND
+    };
+
+
     /// @brief  Constructor from parameters
     /// @param  verbose   Verbosity level
     /// @param  isMCUsed  Flag, if MC information is available for this task
@@ -122,7 +172,15 @@ namespace cbm::ca
     ::ca::tools::MCData fMCData;  ///< Input MC data (points and tracks)
 
 
-    // **  Pointers to histogram objects **
+    // *************************
+    // **  List of histograms **
+    // *************************
+
+    /// Histograms of different track types
+    std::array<std::unique_ptr<TrackTypeQa>, ETrackType::kEND> fvpTrackHistograms;
+
+    std::array<std::tuple<Style_t, Marker_t, Color_t>, ETrackType::kEND> fvpTrackHistogramStyles;
+
     // Reconstructed tracks
     TH1F* fph_reco_p        = nullptr;  ///< Total momentum over charge of reconstructed tracks
     TH1F* fph_reco_pt       = nullptr;  ///< Transverse momentum over charge of reconstructed tracks
@@ -132,7 +190,6 @@ namespace cbm::ca
     TH1F* fph_reco_fhitR    = nullptr;  ///< Distance of the first hit from z-axis for reconstructed tracks
     TH1F* fph_reco_nhits    = nullptr;  ///< Hit number of reconstructed tracks
     TH1F* fph_reco_fsta     = nullptr;  ///< First station index of reconstructed tracks
-    TH1F* fph_reco_purity   = nullptr;  ///< Purity of reconstructed tracks (\note purity requires MC information)
     TH1F* fph_reco_chi2_ndf = nullptr;  ///< Fit chi2 over NDF of reconstructed tracks
     TH1F* fph_reco_prob     = nullptr;  ///< Fit probability of reconstructed tracks
     TH1F* fph_rest_chi2_ndf = nullptr;  ///< Fit chi2 over NDF of non-reconstructable tracks
@@ -153,6 +210,12 @@ namespace cbm::ca
     TH2F* fph_ghost_nhits_vs_p   = nullptr;  ///< Hit number vs. total momentum over charge of ghost tracks
     TH2F* fph_ghost_fsta_vs_p    = nullptr;  ///< First station index vs. total momentum over charge for ghost tracks
     TH2F* fph_ghost_lsta_vs_fsta = nullptr;  ///< Last station index vs. first station index of ghost tracks
+
+    // Reco tracks vs MC variables
+    TH1F* fph_reco_pMC        = nullptr;  ///< Reconstructed track distribution vs MC momemntum
+    TH1F* fph_reco_yMC        = nullptr;  ///< Reconstructed track distribution vs MC rapidity
+    TH2F* fph_reco_pMC_vs_yMC = nullptr;  ///< Reconstructed track phase space (MC mom vs rapidity)
+    TH1F* fph_reco_purity     = nullptr;  ///< Purity of reconstructed tracks (\note purity requires MC information)
 
     // Residuals and pulls at the first track point
     TH1F* fph_fst_res_x    = nullptr;  ///< Residual of x at first track point [cm]

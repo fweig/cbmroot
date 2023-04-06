@@ -9,8 +9,12 @@ set(SRCS
   CbmQaHist.cxx
   CbmQaTable.cxx
   CbmQaTask.cxx
+  CbmQaIO.cxx
   )
 
+set(HEADERS
+  CbmQaConstants.h
+  )
 
 set(LIBRARY_NAME CbmQaBase)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
@@ -29,6 +33,6 @@ set(INTERFACE_DEPENDENCIES
 
 generate_cbm_library()
 
-Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h
+Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h CbmQaConstants.h
         DESTINATION include
        )

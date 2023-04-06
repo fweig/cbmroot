@@ -36,7 +36,8 @@ void OutputQa::FillHistograms()
   // ** Fill distributions for reconstructed tracks (including ghost ones) **
   // ************************************************************************
 
-  for (const auto& recoTrk : fvRecoTracks) {
+  for (size_t iTrkReco = 0; iTrkReco < fvRecoTracks.size(); ++iTrkReco) {
+    const auto& recoTrk = fvRecoTracks[iTrkReco];
     // Reject tracks, which do not contain hits
     if (recoTrk.GetNofHits() < 1) { continue; }
 
@@ -84,40 +85,90 @@ void OutputQa::FillHistograms()
       }
     }  // recoTrk.GetNDF() > 0: end
 
-    if (recoTrk.IsGhost()) {
-      fph_ghost_purity->Fill(100 * recoTrk.GetMaxPurity());
-      fph_ghost_p->Fill(recoTrk.GetP());
-      fph_ghost_pt->Fill(recoTrk.GetPt());
-      fph_ghost_phi->Fill(recoTrk.GetPhi());
-      fph_ghost_nhits->Fill(recoTrk.GetNofHits());
-      fph_ghost_fsta->Fill(hitFst.GetStationId());
-      fph_ghost_fhitR->Fill(hitFst.GetR());
+    if (IsMCUsed()) {
+      if (recoTrk.IsGhost()) {
+        fph_ghost_purity->Fill(100 * recoTrk.GetMaxPurity());
+        fph_ghost_p->Fill(recoTrk.GetP());
+        fph_ghost_pt->Fill(recoTrk.GetPt());
+        fph_ghost_phi->Fill(recoTrk.GetPhi());
+        fph_ghost_nhits->Fill(recoTrk.GetNofHits());
+        fph_ghost_fsta->Fill(hitFst.GetStationId());
+        fph_ghost_fhitR->Fill(hitFst.GetR());
 
-      // z-positions of the first and second hit stations
-      double z0 = fpParameters->GetStation(hitFst.GetStationId()).fZ[0];
-      double z1 = fpParameters->GetStation(hitSnd.GetStationId()).fZ[0];
+        // z-positions of the first and second hit stations
+        double z0 = fpParameters->GetStation(hitFst.GetStationId()).fZ[0];
+        double z1 = fpParameters->GetStation(hitSnd.GetStationId()).fZ[0];
 
-      if (fabs(z1 - z0) > 1.e-4) {  // test for z1 != z2
-        fph_ghost_tx->Fill((hitSnd.GetX() - hitFst.GetX()) / (z1 - z0));
-        fph_ghost_ty->Fill((hitSnd.GetY() - hitFst.GetY()) / (z1 - z0));
+        if (fabs(z1 - z0) > 1.e-4) {  // test for z1 != z2
+          fph_ghost_tx->Fill((hitSnd.GetX() - hitFst.GetX()) / (z1 - z0));
+          fph_ghost_ty->Fill((hitSnd.GetY() - hitFst.GetY()) / (z1 - z0));
+        }
+
+        fph_ghost_nhits_vs_p->Fill(recoTrk.GetP(), recoTrk.GetNofHits());
+        fph_ghost_fsta_vs_p->Fill(recoTrk.GetP(), hitFst.GetStationId());
+        if (hitFst.GetStationId() <= hitLst.GetStationId()) {
+          fph_ghost_lsta_vs_fsta->Fill(hitFst.GetStationId(), hitLst.GetStationId());
+        }
+      }  // recoTrk.IsGhost(): end
+    }
+
+    // ********************************
+    // ** Different track categories **
+    // ********************************
+
+    fvpTrackHistograms[ETrackType::kAll]->FillRecoTrack(iTrkReco);
+
+    if (IsMCUsed()) {
+      int iTrkMC = recoTrk.GetMatchedMCTrackIndex();
+      if (iTrkMC > -1) {
+        const auto& mcTrk = fMCData.GetTrack(iTrkMC);
+        int pdg           = mcTrk.GetPdgCode();
+        bool isPrimary    = mcTrk.IsPrimary();
+
+        if (isPrimary) {
+          fvpTrackHistograms[ETrackType::kPrim]->FillRecoTrack(iTrkReco);
+
+          if (pdg == +211) { fvpTrackHistograms[ETrackType::kPrimPIP]->FillRecoTrack(iTrkReco); }
+          if (pdg == -211) { fvpTrackHistograms[ETrackType::kPrimPIM]->FillRecoTrack(iTrkReco); }
+        }
+        else {
+          fvpTrackHistograms[ETrackType::kSec]->FillRecoTrack(iTrkReco);
+
+          if (pdg == +211) { fvpTrackHistograms[ETrackType::kSecPIP]->FillRecoTrack(iTrkReco); }
+          if (pdg == -211) { fvpTrackHistograms[ETrackType::kSecPIM]->FillRecoTrack(iTrkReco); }
+        }
       }
+    }
 
-      fph_ghost_nhits_vs_p->Fill(recoTrk.GetP(), recoTrk.GetNofHits());
-      fph_ghost_fsta_vs_p->Fill(recoTrk.GetP(), hitFst.GetStationId());
-      if (hitFst.GetStationId() <= hitLst.GetStationId()) {
-        fph_ghost_lsta_vs_fsta->Fill(hitFst.GetStationId(), hitLst.GetStationId());
-      }
-    }  // recoTrk.IsGhost(): end
-  }    // loop over recoTrk: end
+
+  }  // loop over recoTrk: end
 
 
   // *************************************
   // ** Fill distributions of MC-tracks **
   // *************************************
+  if (IsMCUsed()) {
+    for (int iTrkMC = 0; iTrkMC < fMCData.GetNofTracks(); ++iTrkMC) {
+      const auto& mcTrk = fMCData.GetTrack(iTrkMC);
+      fvpTrackHistograms[ETrackType::kAll]->FillMCTrack(iTrkMC);
 
-  //for (const auto& mcTrk: fpMCData->GetTrackContainer()) {
-  //
-  //}
+      int pdg        = mcTrk.GetPdgCode();
+      bool isPrimary = mcTrk.IsPrimary();
+
+      if (isPrimary) {
+        fvpTrackHistograms[ETrackType::kPrim]->FillMCTrack(iTrkMC);
+
+        if (pdg == +211) { fvpTrackHistograms[ETrackType::kPrimPIP]->FillMCTrack(iTrkMC); }
+        if (pdg == -211) { fvpTrackHistograms[ETrackType::kPrimPIM]->FillMCTrack(iTrkMC); }
+      }
+      else {
+        fvpTrackHistograms[ETrackType::kSec]->FillMCTrack(iTrkMC);
+
+        if (pdg == +211) { fvpTrackHistograms[ETrackType::kSecPIP]->FillMCTrack(iTrkMC); }
+        if (pdg == -211) { fvpTrackHistograms[ETrackType::kSecPIM]->FillMCTrack(iTrkMC); }
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -199,6 +250,25 @@ InitStatus OutputQa::InitDataBranches()
 //
 InitStatus OutputQa::InitHistograms()
 {
+  auto RegisterTrackQa = [&](const char* typeName, ETrackType type, bool bSuppressMC = false) {
+    bool bUseMC              = IsMCUsed() && !bSuppressMC;
+    fvpTrackHistograms[type] = std::make_unique<TrackTypeQa>(typeName, fsPrefix.Data(), bUseMC, fpFolderRoot);
+    fvpTrackHistograms[type]->RegisterParameters(fpParameters);
+    fvpTrackHistograms[type]->RegisterRecoHits(fvHits);
+    fvpTrackHistograms[type]->RegisterRecoTracks(fvRecoTracks);
+    fvpTrackHistograms[type]->RegisterMCData(fMCData);
+    fvpTrackHistograms[type]->Init();
+  };
+
+  RegisterTrackQa("all", ETrackType::kAll);
+  RegisterTrackQa("prim", ETrackType::kPrim);
+  RegisterTrackQa("sec", ETrackType::kSec);
+  RegisterTrackQa("prim_pip", ETrackType::kPrimPIP);
+  RegisterTrackQa("prim_pim", ETrackType::kPrimPIM);
+  RegisterTrackQa("sec_pip", ETrackType::kSecPIP);
+  RegisterTrackQa("sec_pim", ETrackType::kSecPIM);
+
+
   fph_reco_p     = MakeHistoFromConfig<TH1F>("reco_p");
   fph_reco_pt    = MakeHistoFromConfig<TH1F>("reco_pt");
   fph_reco_phi   = MakeHistoFromConfig<TH1F>("reco_phi");
@@ -229,6 +299,11 @@ InitStatus OutputQa::InitHistograms()
     fph_ghost_nhits_vs_p   = MakeHistoFromConfig<TH2F>("ghost_nhits_vs_p");
     fph_ghost_fsta_vs_p    = MakeHistoFromConfig<TH2F>("ghost_fsta_vs_p");
     fph_ghost_lsta_vs_fsta = MakeHistoFromConfig<TH2F>("ghost_lsta_vs_fsta");
+
+    // Reconstructed tracks vs. MC quantities
+    fph_reco_pMC        = MakeHistoFromConfig<TH1F>("reco_pMC");
+    fph_reco_yMC        = MakeHistoFromConfig<TH1F>("reco_yMC");
+    fph_reco_pMC_vs_yMC = MakeHistoFromConfig<TH2F>("reco_pMC_vs_yMC");
 
     // Residuals and pools of track parameters
     fph_fst_res_x    = MakeHistoFromConfig<TH1F>("fst_res_x");

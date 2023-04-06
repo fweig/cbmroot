@@ -16,6 +16,8 @@
 #include "FairRootManager.h"
 #include "Logger.h"
 
+#include <numeric>
+
 #include "L1Constants.h"
 #include "L1InputData.h"
 #include "L1Parameters.h"
@@ -161,76 +163,6 @@ void TimeSliceReader::InitTimeSlice()
   this->ReadRecoTracks();
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void TimeSliceReader::ReadHits()
-{
-  fNofHits     = 0;
-  fNofHitKeys  = 0;
-  fFirstHitKey = 0;
-
-  // Get total number of hits
-  int nHitsTot = 0;
-  if (fbUseMvd) { nHitsTot += fpBrMvdHits->GetEntriesFast(); }
-  if (fbUseSts) { nHitsTot += fpBrStsHits->GetEntriesFast(); }
-  if (fbUseMuch) { nHitsTot += fpBrMuchHits->GetEntriesFast(); }
-  if (fbUseTrd) { nHitsTot += fpBrTrdHits->GetEntriesFast(); }
-  if (fbUseTof) { nHitsTot += fpBrTofHits->GetEntriesFast(); }
-
-  // Resize the containers
-  if (fpvHitIds) {
-    fpvHitIds->clear();
-    fpvHitIds->reserve(nHitsTot);
-  }
-  if (fpvQaHits) {
-    fpvQaHits->clear();
-    fpvQaHits->reserve(nHitsTot);
-  }
-  if (fpIODataManager) {
-    fpIODataManager->ResetInputData();
-    fpIODataManager->ReserveNhits(nHitsTot);
-  }
-
-  std::fill(fvHitFirstIndexDet.begin(), fvHitFirstIndexDet.end(), 0);
-
-  // Save number of hits stored
-  std::array<int, L1Constants::size::kMaxNdetectors> vNofHits = {0};
-
-  // Read hits for different detectors
-  if (fbUseMvd) { vNofHits[int(L1DetectorID::kMvd)] += ReadHitsForDetector<L1DetectorID::kMvd>(fpBrMvdHits); }
-  if (fbUseSts) { vNofHits[int(L1DetectorID::kSts)] += ReadHitsForDetector<L1DetectorID::kSts>(fpBrStsHits); }
-  if (fbUseMuch) { vNofHits[int(L1DetectorID::kMuch)] += ReadHitsForDetector<L1DetectorID::kMuch>(fpBrMuchHits); }
-  if (fbUseTrd) { vNofHits[int(L1DetectorID::kTrd)] += ReadHitsForDetector<L1DetectorID::kTrd>(fpBrTrdHits); }
-  if (fbUseTof) { vNofHits[int(L1DetectorID::kTof)] += ReadHitsForDetector<L1DetectorID::kTof>(fpBrTofHits); }
-
-  // Save first hit index for different detector subsystems
-  for (uint32_t iDet = 0; iDet < vNofHits.size(); ++iDet) {
-    fvHitFirstIndexDet[iDet + 1] = fvHitFirstIndexDet[iDet] + vNofHits[iDet];
-    fNofHits += vNofHits[iDet];
-  }
-
-  // Update maps of ext->int hit indexes
-  // NOTE: fvpHitIds must be initialized, if we want to read tracks from the file
-  if (fpvHitIds) {
-    auto UpdateHitIndexMap = [&](L1Vector<int> & vIds, L1DetectorID detID) constexpr
-    {
-      vIds.reset(vNofHits[int(detID)]);
-      for (int iH = fvHitFirstIndexDet[int(detID)]; iH < fvHitFirstIndexDet[int(detID) + 1]; ++iH) {
-        vIds[(*fpvHitIds)[iH].hitId] = iH;
-      }
-    };
-    if (fbUseMvd) { UpdateHitIndexMap(vHitMvdIds, L1DetectorID::kMvd); }
-    if (fbUseSts) { UpdateHitIndexMap(vHitStsIds, L1DetectorID::kSts); }
-    if (fbUseMuch) { UpdateHitIndexMap(vHitMuchIds, L1DetectorID::kMuch); }
-    if (fbUseTrd) { UpdateHitIndexMap(vHitTrdIds, L1DetectorID::kTrd); }
-    if (fbUseTof) { UpdateHitIndexMap(vHitTofIds, L1DetectorID::kTof); }
-  }
-  // Update number of hit keys in input data object
-  if (fpIODataManager) { fpIODataManager->SetNhitKeys(fNofHitKeys); }
-
-  // Sort debug hits
-  if (fpvQaHits) { this->SortQaHits(); }
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -263,11 +195,13 @@ void TimeSliceReader::ReadRecoTracks()
         track.Hits.clear();
         track.Hits.reserve(pInputTrack->GetNofHits());
         for (int iH = 0; iH < pInputTrack->GetNofMvdHits(); ++iH) {
-          int iHint = vHitMvdIds[pInputTrack->GetMvdHitIndex(iH)];
-          track.Hits.push_back(iHint);  // !!!!
-        }                               // iH
+          int iHext = pInputTrack->GetMvdHitIndex(iH);
+          int iHint = vHitMvdIds[iHext];
+          track.Hits.push_back(iHint);
+        }  // iH
         for (int iH = 0; iH < pInputTrack->GetNofStsHits(); ++iH) {
-          int iHint = vHitStsIds[pInputTrack->GetStsHitIndex(iH)];
+          int iHext = pInputTrack->GetStsHitIndex(iH);
+          int iHint = vHitStsIds[iHext];
           track.Hits.push_back(iHint);
         }  // iH
       }    // iT
@@ -303,7 +237,8 @@ void TimeSliceReader::SetDetector(L1DetectorID detID, bool flag)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void TimeSliceReader::SortQaHits()
+template<>
+void TimeSliceReader::SortQaHits<true>()
 {
   int nStationsActive = fpParameters->GetNstationsActive();
   L1Vector<CbmL1HitDebugInfo> vNewHits(fpvQaHits->size());
@@ -326,6 +261,90 @@ void TimeSliceReader::SortQaHits()
   }
 
   std::swap(vNewHits, (*fpvQaHits));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<>
+void TimeSliceReader::SortQaHits<false>()
+{
+  std::sort(fpvQaHits->begin(), fpvQaHits->end(), [](const CbmL1HitDebugInfo& a, const CbmL1HitDebugInfo& b) {
+    return (a.iStation < b.iStation) || (a.iStation == b.iStation) && (a.y < b.y);
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void TimeSliceReader::ReadHits()
+{
+  fNofHits     = 0;
+  fNofHitKeys  = 0;
+  fFirstHitKey = 0;
+
+  // Get total number of hits
+  std::array<int, L1Constants::size::kMaxNdetectors> nHitsDet = {0};
+  if (fbUseMvd) { nHitsDet[int(L1DetectorID::kMvd)] = fpBrMvdHits->GetEntriesFast(); }
+  if (fbUseSts) { nHitsDet[int(L1DetectorID::kSts)] = fpBrStsHits->GetEntriesFast(); }
+  if (fbUseMuch) { nHitsDet[int(L1DetectorID::kMuch)] = fpBrMuchHits->GetEntriesFast(); }
+  if (fbUseTrd) { nHitsDet[int(L1DetectorID::kTrd)] = fpBrTrdHits->GetEntriesFast(); }
+  if (fbUseTof) { nHitsDet[int(L1DetectorID::kTof)] = fpBrTofHits->GetEntriesFast(); }
+
+  int nHitsTot = std::accumulate(nHitsDet.begin(), nHitsDet.end(), 0);
+
+  // Resize the containers
+  if (fpvHitIds) {
+    fpvHitIds->clear();
+    fpvHitIds->reserve(nHitsTot);
+  }
+  if (fpvQaHits) {
+    fpvQaHits->clear();
+    fpvQaHits->reserve(nHitsTot);
+  }
+  if (fpIODataManager) {
+    fpIODataManager->ResetInputData();
+    fpIODataManager->ReserveNhits(nHitsTot);
+  }
+
+  std::fill(fvHitFirstIndexDet.begin(), fvHitFirstIndexDet.end(), 0);
+
+  // Save number of hits stored
+  std::array<int, L1Constants::size::kMaxNdetectors> vNofHits = {0};
+
+  // Read hits for different detectors
+  if (fbUseMvd) { vNofHits[int(L1DetectorID::kMvd)] += ReadHitsForDetector<L1DetectorID::kMvd>(fpBrMvdHits); }
+  if (fbUseSts) { vNofHits[int(L1DetectorID::kSts)] += ReadHitsForDetector<L1DetectorID::kSts>(fpBrStsHits); }
+  if (fbUseMuch) { vNofHits[int(L1DetectorID::kMuch)] += ReadHitsForDetector<L1DetectorID::kMuch>(fpBrMuchHits); }
+  if (fbUseTrd) { vNofHits[int(L1DetectorID::kTrd)] += ReadHitsForDetector<L1DetectorID::kTrd>(fpBrTrdHits); }
+  if (fbUseTof) { vNofHits[int(L1DetectorID::kTof)] += ReadHitsForDetector<L1DetectorID::kTof>(fpBrTofHits); }
+
+  // Save first hit index for different detector subsystems
+  for (uint32_t iDet = 0; iDet < vNofHits.size(); ++iDet) {
+    fvHitFirstIndexDet[iDet + 1] = fvHitFirstIndexDet[iDet] + vNofHits[iDet];
+    fNofHits += vNofHits[iDet];
+  }
+
+  // Update number of hit keys in input data object
+  if (fpIODataManager) { fpIODataManager->SetNhitKeys(fNofHitKeys); }
+
+  // Sort debug hits
+  if (fpvQaHits) { this->SortQaHits<true>(); }  // false - old sort, true - new backet sort
+
+  // Update maps of ext->int hit indexes
+  // NOTE: fvpHitIds must be initialized, if we want to read tracks from the file
+  if (fpvHitIds) {
+    auto UpdateHitIndexMap = [&](L1Vector<int> & vIds, L1DetectorID detID) constexpr
+    {
+      vIds.reset(nHitsDet[int(detID)]);
+      for (int iH = fvHitFirstIndexDet[int(detID)]; iH < fvHitFirstIndexDet[int(detID) + 1]; ++iH) {
+        vIds[(*fpvQaHits)[iH].ExtIndex] = iH;
+      }
+    };
+    if (fbUseMvd) { UpdateHitIndexMap(vHitMvdIds, L1DetectorID::kMvd); }
+    if (fbUseSts) { UpdateHitIndexMap(vHitStsIds, L1DetectorID::kSts); }
+    if (fbUseMuch) { UpdateHitIndexMap(vHitMuchIds, L1DetectorID::kMuch); }
+    if (fbUseTrd) { UpdateHitIndexMap(vHitTrdIds, L1DetectorID::kTrd); }
+    if (fbUseTof) { UpdateHitIndexMap(vHitTofIds, L1DetectorID::kTof); }
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -357,6 +376,7 @@ void TimeSliceReader::StoreHitRecord(const HitRecord& hitRecord)
     CbmL1HitDebugInfo hitDbg;
     hitDbg.Det      = hitRecord.fDet;
     hitDbg.ExtIndex = hitRecord.fExtId;
+    hitDbg.IntIndex = static_cast<int>(fpvQaHits->size());
     hitDbg.iStation = hitRecord.fStaId;
     hitDbg.x        = hitRecord.fX;
     hitDbg.y        = hitRecord.fY;

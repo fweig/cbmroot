@@ -249,6 +249,10 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   // ------------------------------------------------------------------------
 
   // ----- Tracking QA ------------------------------------------------------
+  // KF is currently needed to access magnetic field. In future we will
+  // delegate track fit routines to CbmKF as well.
+  run->AddTask(new CbmKF());
+
   TString caParFile = recFile;
   caParFile.ReplaceAll(".root", ".L1Parameters.dat");
 

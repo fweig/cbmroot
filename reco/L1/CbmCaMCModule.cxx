@@ -427,7 +427,7 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
 
     // ----- Count number of hits from each MC track belonging to this reconstructed track
     auto& mNofHitsVsMCTrkID = trkRe.hitMap;
-    mNofHitsVsMCTrkID.clear();
+    //mNofHitsVsMCTrkID.clear();
     for (int iH : trkRe.Hits) {
       for (int iP : (*fpvQaHits)[iH].mcPointIds) {
         assert(iP > -1);  // Should never be triggered
@@ -436,7 +436,6 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
         else {
           mNofHitsVsMCTrkID[iTmc] += 1;
         }
-
       }  // loop over global point ids stored for hit: end
     }    // loop over hit ids stored for a reconstructed track: end
 
@@ -470,7 +469,9 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
       // Update max purity of the reconstructed track
       trkRe.SetMaxPurity(maxPurity);
     }  // loop over hit map: end
-  }    // loop over reconstructed tracks: end
+    assert(trkRe.GetNofMCTracks() < 2);
+
+  }  // loop over reconstructed tracks: end
 }
 
 
@@ -695,6 +696,7 @@ void CbmCaMCModule::ReadMCTracks()
     if (!pEvtHeader) {
       LOG(fatal) << "CbmCaMCModule: event header is not found for file " << iFile << " and event " << iEvent;
     }
+    double eventTime = fpMCEventList->GetEventTime(iEvent, iFile);
 
     // ----- Loop over MC tracks
     int nTracks = fpMCTracks->Size(iFile, iEvent);
@@ -712,7 +714,7 @@ void CbmCaMCModule::ReadMCTracks()
       aTrk.SetEventId(iEvent);
       aTrk.SetFileId(iFile);
 
-      aTrk.SetStartT(pExtMCTrk->GetStartT());
+      aTrk.SetStartT(pExtMCTrk->GetStartT() + eventTime);
       aTrk.SetStartX(pExtMCTrk->GetStartX());
       aTrk.SetStartY(pExtMCTrk->GetStartY());
       aTrk.SetStartZ(pExtMCTrk->GetStartZ());
@@ -735,11 +737,12 @@ void CbmCaMCModule::ReadMCTracks()
       // Set index of mother track. We assume, that mother track was recorded into the internal array before
       int extMotherId = pExtMCTrk->GetMotherId();
       if (extMotherId < 0) {
-        // This is a primary track, and it's mother ID equals -1 or -2. This value is taken also as internal mother ID
+        // This is a primary track, and it's mother ID equals -1 or -2. This value is taken also as an internal mother
+        // ID.
         aTrk.SetMotherId(extMotherId);
       }
       else {
-        // This is a secondary track, mother ID should be recalculated for the internal array
+        // This is a secondary track, mother ID should be recalculated for the internal track array.
         int motherId = fpMCData->FindInternalTrackIndex(extMotherId, iEvent, iFile);
         if (motherId == -1) { motherId = -3; }  // Mother is neutral particle, which is rejected
         aTrk.SetMotherId(motherId);

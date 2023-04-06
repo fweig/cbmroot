@@ -208,6 +208,28 @@ qa:
         miny:   -0.5
         maxy:   14.5
       #
+      #  -- Reconstructed tracks vs. MC quantities
+      # 
+      reco_pMC:
+        title:  "MC momentum of reconstructed tracks;p_{MC} [GeV/c]"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+      reco_yMC:
+        title:  "MC momentum of reconstructed tracks;p_{MC} [GeV/c]"
+        nbinsy: 40
+        miny:   -4.
+        maxy:   +4.   
+      reco_pMC_vs_yMC:
+        title:  "MC momentum vs. MC rapidity of reconstructed tracks;p_{MC} [GeV/c]"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+        nbinsy: 40
+        miny:   -4.
+        maxy:   +4.   
+
+      #
       #  -- Track residuals and pulls --
       #
       # Residuals and pulls at first station

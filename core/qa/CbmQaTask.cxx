@@ -26,9 +26,10 @@ ClassImp(CbmQaTask);
 //
 CbmQaTask::CbmQaTask(const char* name, const char* prefix, int verbose, bool isMCUsed)
   : FairTask(name, verbose)
-  , fsPrefix(prefix)
+  , CbmQaIO(name, prefix)
   , fbUseMC(isMCUsed)
 {
+  fStoringMode = CbmQaIO::EStoringMode::kSUBDIR;  // mode of objects arrangement in the output file
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ void CbmQaTask::Finish()
   // Write the root folder to sinker
   FairSink* pSink = FairRootManager::Instance()->GetSink();
   LOG_IF(fatal, !pSink) << fName << ": sink file was not found";
-  pSink->WriteObject(fpFolderRoot.get(), nullptr);
+  pSink->WriteObject(fpFolderRoot, nullptr);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -91,8 +92,6 @@ InitStatus CbmQaTask::Init()
   res = std::max(res, InitDataBranches());
 
   // ----- Initialize I/O
-  fpFolderRoot = std::make_unique<TFolder>(fName, fName);  // The name of the folder follows the name of the task
-  fpFolderRoot->SetOwner(true);                            // When true, TFolder owns all added objects
   fpFolderRoot->Add(&fNofEvents);
 
   // ----- Initialize histograms
@@ -120,9 +119,6 @@ void CbmQaTask::DeInitBase()
   LOG_IF(info, fVerbose > 2) << fName << "::DeInitBase() is called";
   // De-initialize basic data members
   // ...
-
-  delete fpFolderRoot.get();
-  fpFolderRoot = nullptr;
 
   // De-initialize particular QA-task implementation
   DeInit();

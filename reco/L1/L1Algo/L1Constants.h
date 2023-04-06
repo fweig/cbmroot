@@ -41,6 +41,8 @@ namespace L1Constants
     constexpr int kMaxNthreads   = 1u << kThreadBits;   ///< Max number of threads, 2^6  = 64
     constexpr int kMaxNtriplets  = 1u << kTripletBits;  ///< Max number of triplets, 2^20 = 1,048,576
 
+    constexpr uint8_t kDetBits = 4u;  // Max 16 detectors
+
     /// Max number of track groups
     /// NOTE: For a "track group" definition see L1Parameters.h, GetSearchWindow function
     constexpr int kMaxNtrackGroups = 4;
@@ -70,27 +72,35 @@ namespace L1Constants
 
   }  // namespace control
 
-  /// Physics constants
+  // Physics constants
   namespace phys
   {
     /* Particle masses used for track fit */
-    constexpr float kMuonMass     = 0.10565800f;  ///< Muon mass     [GeV/c2]
-    constexpr float kElectronMass = 0.000511f;    ///< Electron mass [GeV/c2]
+    constexpr float kMuonMass      = 0.10565800f;  ///< Muon mass     [GeV/c2]  !! TODO: discrepancy in last two digits
+    constexpr float kPionMass      = 0.13957039f;  ///< Pion mass     [GeV/c2]
+    constexpr float kElectronMass  = 0.000511f;    ///< Electron mass [GeV/c2]
+    constexpr float kProtonMass    = 0.93827209f;  ///< Proton mass [GeV/c2] (0.93827208816 - PDG 11.08.2022)
     constexpr double kSpeedOfLight = 29.9792458;   ///< Speed of light [cm/ns]
-  }                                               // namespace phys
+    constexpr float kSpeedOfLightF = 29.9792;      ///< Speed of light [cm/ns] (single precision)
+    constexpr double kSpeedOfLightInv = 1 / kSpeedOfLight;   ///< Inverse speed of light [cm/ns]
+    constexpr float kSpeedOfLightInvF = 1 / kSpeedOfLightF;  ///< Inverse speed of light [cm/ns] (single precision)
+  }                                                          // namespace phys
 
-  /// Math constants
+  // Math constants
   namespace math
   {
     constexpr double kPi = 3.14159265358979323846;  ///< Value of PI, used in ROOT TMath
   }
 
-  /// Miscellaneous constants
+  // Miscellaneous constants
   namespace misc
   {
     constexpr int kAssertionLevel = 0;   ///< Assertion level
     constexpr int kAlignment      = 16;  ///< Default alignment of data (bytes)
   }                                      // namespace misc
+
+  // Units
+
 
   // Colors of terminal log
   namespace clrs

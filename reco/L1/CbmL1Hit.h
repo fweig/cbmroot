@@ -23,6 +23,22 @@ public:
   CbmL1HitId() = default;
   CbmL1HitId(int det, int index) : detId(det), hitId(index) {};
 
+  /// @brief String representation of class object
+  /// @param header   If true, header will be printed
+  std::string ToString(bool header = false) const
+  {
+    std::stringstream msg;
+    if (header) {
+      msg << std::setw(8) << std::setfill(' ') << "det. id" << ' ';
+      msg << std::setw(8) << std::setfill(' ') << "ext. id";
+    }
+    else {
+      msg << std::setw(8) << std::setfill(' ') << detId << ' ';
+      msg << std::setw(8) << std::setfill(' ') << hitId;
+    }
+    return msg.str();
+  }
+
   int detId = -1;  ///< detector ID
   int hitId = -1;  ///< index of hit in the TClonesArray array
 };
@@ -76,6 +92,7 @@ public:
     std::stringstream msg;
     if (header) {
       msg << setw(8) << setfill(' ') << "ext. ID" << ' ';
+      msg << setw(8) << setfill(' ') << "int. ID" << ' ';
       msg << setw(8) << setfill(' ') << "st. ID" << ' ';
       msg << setw(12) << setfill(' ') << "x [cm]" << ' ';
       msg << setw(12) << setfill(' ') << "y [cm]" << ' ';
@@ -84,6 +101,7 @@ public:
     }
     else {
       msg << setw(8) << setfill(' ') << ExtIndex << ' ';
+      msg << setw(8) << setfill(' ') << IntIndex << ' ';
       msg << setw(8) << setfill(' ') << iStation << ' ';
       msg << setw(12) << setfill(' ') << x << ' ';
       msg << setw(12) << setfill(' ') << y << ' ';
@@ -101,6 +119,7 @@ public:
 
   // TODO: SZh 2.03.2023: make the variables private
   int ExtIndex;                                                ///< index of hit in the external branch
+  int IntIndex;                                                ///< index of hit in the internal array
   int iStation;                                                ///< index of station in active stations array
   double x;                                                    ///< x coordinate of position [cm]
   double y;                                                    ///< y coordinate of position [cm]

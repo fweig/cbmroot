@@ -28,7 +28,9 @@
 
 #include "TMath.h"
 
+#include <iterator>
 #include <map>
+#include <string>
 #include <vector>
 using std::map;
 using std::vector;
@@ -52,13 +54,24 @@ public:
     fvMcTrackIndexes.clear();
   }
 
+  int GetNMCTracks() { return mcTracks.size(); }
+
+  bool IsGhost() const { return (maxPurity < CbmL1Constants::MinPurity); }
+
+  /// Gets charge
+  int GetCharge() const { return (T[4] > 0) ? 1 : -1; }
+
   /// Gets Chi-square of track fit model
   double GetChiSq() const { return chi2; }
 
-  /// Gets a reference to hit indexes array
-  const vector<int>& GetHitIndexes() const { return Hits; }
+  /// @brief Gets first hit index
+  int GetFirstHitIndex() const { return Hits.front(); }
 
-  bool IsGhost() const { return (maxPurity < CbmL1Constants::MinPurity); }
+  /// @brief Gets last hit index
+  int GetLastHitIndex() const { return Hits.back(); }
+
+  /// Gets hit indexes
+  const auto& GetHitIndexes() const { return Hits; }
 
   /// Gets NDF of track fit model
   int GetNDF() const { return NDF; }
@@ -80,6 +93,11 @@ public:
   /// Gets pointer of the associated MC track
   CbmL1MCTrack* GetMCTrack() { return mcTracks[0]; }
 
+  /// @brief Gets index of matched MC track
+  /// @note  If two tracks are matched (should not happen, if purity > 50%), the first
+  ///
+  int GetMatchedMCTrackIndex() const { return fvMcTrackIndexes.size() ? fvMcTrackIndexes[0] : -1; }
+
   /// Gets number of hits of the track
   int GetNofHits() const { return Hits.size(); }
 
@@ -90,6 +108,7 @@ public:
   int GetNofStations() const { return nStations; }
 
   /// Gets absolute value of momentum divided by the charge (absolute value) of particle [GeV/ec]
+  // NOTE: 1.e-10 precision is used in the old performance, but in FairTrackParam the 1.e-4 is used
   double GetP() const { return fabs(T[4]) > 1.e-10 ? 1. / fabs(T[4]) : 1.e-10; }
 
   /// Gets transverse momentum
@@ -110,6 +129,9 @@ public:
   /// Gets z-component of momentum divided by the charge (absolute value) of particle [GeV/ec]
   double GetPz() const { return std::sqrt(GetP() * GetP() / (GetTx() * GetTx() + GetTy() * GetTy() + 1)); }
 
+  /// Gets track polar angle
+  double GetTheta() const { return std::acos(1. / std::sqrt(GetTx() * GetTx() + GetTy() * GetTy() + 1)); }
+
   /// Gets track slope along x-axis
   double GetTx() const { return T[2]; }
 
@@ -126,6 +148,10 @@ public:
 
   static bool comparePChi2(const CbmL1Track* a, const CbmL1Track* b) { return (a->chi2 < b->chi2); }
 
+  /// @brief Provides a string representation of object
+  /// @param verbose  Verbosity level
+  /// @param header   If true, header will be printed
+  std::string ToString(int verbose = 10, bool header = false) const;
 
   double Tpv[L1TrackPar::kNparTr];   ///< Track parameters at primary vertex
   double Cpv[L1TrackPar::kNparCov];  ///< Track covariance matrix at primary vertex

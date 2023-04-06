@@ -13,38 +13,39 @@
 #include <string>
 
 #include "CaToolsLinkKey.h"
+#include "L1Constants.h"
 #include "L1Undef.h"
 #include "L1Vector.h"
 
-
 enum class L1DetectorID;
 
-/// Class describes a Monte-Carlo point used in CA tracking QA analysis
 namespace ca::tools
 {
+  /// @brief Class describes a unified MC-point, used in CA tracking QA analysis
+  ///
   class MCPoint {
   public:
-    /// Default constructor
+    /// @brief Default constructor
     MCPoint() = default;
 
-    /// Destructor
+    /// @brief Destructor
     ~MCPoint() = default;
 
-    /// Copy constructor
+    /// @brief Copy constructor
     MCPoint(const MCPoint&) = default;
 
-    /// Move constructor
+    /// @brief Move constructor
     MCPoint(MCPoint&&) = default;
 
-    /// Copy assignment operator
+    /// @brief Copy assignment operator
     MCPoint& operator=(const MCPoint&) = default;
 
-    /// Move assignment operator
+    /// @brief Move assignment operator
     MCPoint& operator=(MCPoint&&) = default;
 
 
-    /// Adds index of hits from the container of hits of event/TS
-    /// \param  iH  A hit index in the external hits container of event/TS
+    /// @brief Adds index of hits from the container of hits of event/TS
+    /// @param  iH  A hit index in the external hits container of event/TS
     void AddHitID(int iH) { fvHitIndexes.push_back_no_warning(iH); }
 
 
@@ -52,211 +53,257 @@ namespace ca::tools
     // **     Getters     **
     // *********************
 
-    /// Gets charge of the particle [e]
+    /// @brief Gets charge of the particle [e]
     double GetCharge() const { return fCharge; }
 
-    /// Gets detector ID
+    /// @brief Gets detector ID
     L1DetectorID GetDetectorId() const { return fDetectorId; }
 
-    /// Gets MC event ID
+    /// @brief Gets MC event ID
     int GetEventId() const { return fLinkKey.fEvent; }
 
-    /// Gets MC file ID
+    /// @brief Gets MC file ID
     int GetFileId() const { return fLinkKey.fFile; }
 
-    /// Gets index of this point in internal CA container
+    /// @brief Gets index of this point in internal CA container
     int GetId() const { return fId; }
 
-    /// Gets container of matched hit indexes
+    /// @brief Gets inverse speed at reference z of station [ns/cm]
+    int GetInvSpeed() const
+    {
+      return std::sqrt(1. + GetMass() * GetMass() / GetP() / GetP()) * L1Constants::phys::kSpeedOfLightInv;
+    }
+
+    /// @brief Gets inverse speed at entrance to station [ns/cm]
+    int GetInvSpeedIn() const
+    {
+      return std::sqrt(1. + GetMass() * GetMass() / GetPIn() / GetPIn()) * L1Constants::phys::kSpeedOfLightInv;
+    }
+
+    /// @brief Gets inverse speed at exit of station [ns/cm]
+    int GetInvSpeedOut() const
+    {
+      return std::sqrt(1. + GetMass() * GetMass() / GetPOut() / GetPOut()) * L1Constants::phys::kSpeedOfLightInv;
+    }
+
+    /// @brief Gets container of matched hit indexes
     const auto& GetHitIndexes() const { return fvHitIndexes; }
 
-    /// Gets link key
+    /// @brief Gets link key
     LinkKey GetLinkKey() const { return fLinkKey; }
 
-    /// Gets mass of the particle [GeV/c2]
+    /// @brief Gets mass of the particle [GeV/c2]
     double GetMass() const { return fMass; }
 
-    /// Gets mother ID of the track
+    /// @brief Gets mother ID of the track
     int GetMotherId() const { return fMotherId; }
 
-    /// Gets track momentum absolute value at reference z of station [GeV/c]
+    /// @brief Gets track momentum absolute value at reference z of station [GeV/c]
     double GetP() const { return std::sqrt(fMom[0] * fMom[0] + fMom[1] * fMom[1] + fMom[2] * fMom[2]); }
 
-    /// Gets PDG code of the particle
+    /// @brief Gets PDG code of the particle
     int GetPdgCode() const { return fPdgCode; }
 
-    /// Gets track momentum absolute value at entrance to station [GeV/c]
+    /// @brief Gets track momentum absolute value at entrance to station [GeV/c]
     double GetPIn() const { return std::sqrt(fMomIn[0] * fMomIn[0] + fMomIn[1] * fMomIn[1] + fMomIn[2] * fMomIn[2]); }
 
-    /// Gets track momentum absolute value at exit of station [GeV/c]
+    /// @brief Gets track momentum absolute value at exit of station [GeV/c]
     double GetPOut() const
     {
       return std::sqrt(fMomOut[0] * fMomOut[0] + fMomOut[1] * fMomOut[1] + fMomOut[2] * fMomOut[2]);
     }
 
-    /// Gets track momentum x component at reference z of station [GeV/c]
+    /// @brief Gets track momentum x component at reference z of station [GeV/c]
     double GetPx() const { return fMom[0]; }
 
-    /// Gets track momentum x component at entrance to station [GeV/c]
+    /// @brief Gets track momentum x component at entrance to station [GeV/c]
     double GetPxIn() const { return fMomIn[0]; }
 
-    /// Gets track momentum x component at exit of station [GeV/c]
+    /// @brief Gets track momentum x component at exit of station [GeV/c]
     double GetPxOut() const { return fMomOut[0]; }
 
-    /// Gets track momentum y component at reference z of station [GeV/c]
+    /// @brief Gets track momentum y component at reference z of station [GeV/c]
     double GetPy() const { return fMom[1]; }
 
-    /// Gets track momentum y component at entrance to station [GeV/c]
+    /// @brief Gets track momentum y component at entrance to station [GeV/c]
     double GetPyIn() const { return fMomIn[1]; }
 
-    /// Gets track momentum y component at exit of station [GeV/c]
+    /// @brief Gets track momentum y component at exit of station [GeV/c]
     double GetPyOut() const { return fMomOut[1]; }
 
-    /// Gets track momentum z component at reference z of station [GeV/c]
+    /// @brief Gets track momentum z component at reference z of station [GeV/c]
     double GetPz() const { return fMom[2]; }
 
-    /// Gets track momentum z component at entrance to station [GeV/c]
+    /// @brief Gets track momentum z component at entrance to station [GeV/c]
     double GetPzIn() const { return fMomIn[2]; }
 
-    /// Gets track momentum z component at exit of station [GeV/c]
+    /// @brief Gets track momentum z component at exit of station [GeV/c]
     double GetPzOut() const { return fMomOut[2]; }
 
-    /// Gets global ID of the active tracking station
+    /// @brief Gets track charge over momentum at reference z of station [ec/GeV]
+    double GetQp() const { return fCharge / GetP(); }
+
+    /// @brief Gets track momentum absolute value at entrance to station [ec/GeV]
+    double GetQpIn() const { return fCharge / GetPIn(); }
+
+    /// @brief Gets track momentum absolute value at exit of station [ec/GeV]
+    double GetQpOut() const { return fCharge / GetPOut(); }
+
+    /// @brief Gets global ID of the active tracking station
     int GetStationId() const { return fStationId; }
 
-    /// Gets time [ns]
+    /// @brief Gets time [ns]
     double GetTime() const { return fTime; }
 
-    /// Gets ID of track from the internal CA MC track container (within event/TS)
+    /// @brief Gets ID of track from the internal CA MC track container (within event/TS)
     int GetTrackId() const { return fTrackId; }
 
-    /// Gets x coordinate at reference z of station [cm]
+    /// @brief Gets slope along x-axis at reference z of station
+    double GetTx() const { return fMom[0] / fMom[2]; }
+
+    /// @brief Gets slope along x-axis at entrance to station
+    double GetTxIn() const { return fMomIn[0] / fMomIn[2]; }
+
+    /// @brief Gets slope along x-axis at exit of station
+    double GetTxOut() const { return fMomOut[0] / fMomOut[2]; }
+
+    /// @brief Gets slope along x-axis at reference z of station
+    double GetTy() const { return fMom[1] / fMom[2]; }
+
+    /// @brief Gets slope along x-axis at entrance to station
+    double GetTyIn() const { return fMomIn[1] / fMomIn[2]; }
+
+    /// @brief Gets slope along x-axis at exit of station
+    double GetTyOut() const { return fMomOut[1] / fMomOut[2]; }
+
+    /// @brief Gets x coordinate at reference z of station [cm]
     double GetX() const { return fPos[0]; }
 
-    /// Gets x coordinate at entrance to station [cm]
+    /// @brief Gets x coordinate at entrance to station [cm]
     double GetXIn() const { return fPosIn[0]; }
 
-    /// Gets x coordinate at exit of station [cm]
+    /// @brief Gets x coordinate at exit of station [cm]
     double GetXOut() const { return fPosOut[0]; }
 
-    /// Gets y coordinate at reference z of station [cm]
+    /// @brief Gets y coordinate at reference z of station [cm]
     double GetY() const { return fPos[1]; }
 
-    /// Gets y coordinate at entrance to station [cm]
+    /// @brief Gets y coordinate at entrance to station [cm]
     double GetYIn() const { return fPosIn[1]; }
 
-    /// Gets y coordinate at exit of station [cm]
+    /// @brief Gets y coordinate at exit of station [cm]
     double GetYOut() const { return fPosOut[1]; }
 
-    /// Gets z coordinate at reference z of station [cm]
+    /// @brief Gets z coordinate at reference z of station [cm]
     double GetZ() const { return fPos[2]; }
 
-    /// Gets z coordinate at entrance to station [cm]
+    /// @brief Gets z coordinate at entrance to station [cm]
     double GetZIn() const { return fPosIn[2]; }
 
-    /// Gets z coordinate at exit of station [cm]
+    /// @brief Gets z coordinate at exit of station [cm]
     double GetZOut() const { return fPosOut[2]; }
 
     // *********************
     // **     Setters     **
     // *********************
 
-    /// Sets particle charge [e]
+    /// @brief Sets particle charge [e]
     void SetCharge(double charge) { fCharge = charge; }
 
-    /// Sets detector ID
+    /// @brief Sets detector ID
     void SetDetectorId(L1DetectorID detId) { fDetectorId = detId; }
 
-    /// Sets index of MC event containing this point
+    /// @brief Sets index of MC event containing this point
     void SetEventId(int eventId) { fLinkKey.fEvent = eventId; }
 
-    /// Sets index of this point in external data structures
+    /// @brief Sets index of this point in external data structures
     void SetExternalId(int id) { fLinkKey.fIndex = id; }
 
-    /// Sets index of MC file containing this point
+    /// @brief Sets index of MC file containing this point
     void SetFileId(int fileId) { fLinkKey.fFile = fileId; }
 
-    /// Sets index of this point in the CA internal structure
+    /// @brief Sets index of this point in the CA internal structure
     void SetId(int id) { fId = id; }
 
-    /// Sets particle mass [GeV/c2]
+    /// @brief Sets particle mass [GeV/c2]
     void SetMass(double mass) { fMass = mass; }
 
-    /// Sets index of mother track in the internal CA data structures
+    /// @brief Sets index of mother track in the internal CA data structures
     void SetMotherId(int motherId) { fMotherId = motherId; }
 
-    /// Sets PDG code
+    /// @brief Sets PDG code
     void SetPdgCode(int pdg) { fPdgCode = pdg; }
 
-    /// Sets track momentum x component at reference z of station [GeV/c]
+    /// @brief Sets track momentum x component at reference z of station [GeV/c]
     void SetPx(double px) { fMom[0] = px; }
 
-    /// Sets track momentum x component at entrance to station [GeV/c]
+    /// @brief Sets track momentum x component at entrance to station [GeV/c]
     void SetPxIn(double px) { fMomIn[0] = px; }
 
-    /// Sets track momentum x component at exit of station [GeV/c]
+    /// @brief Sets track momentum x component at exit of station [GeV/c]
     void SetPxOut(double px) { fMomOut[0] = px; }
 
-    /// Sets track momentum y component at reference z of station [GeV/c]
+    /// @brief Sets track momentum y component at reference z of station [GeV/c]
     void SetPy(double py) { fMom[1] = py; }
 
-    /// Sets track momentum y component at entrance to station [GeV/c]
+    /// @brief Sets track momentum y component at entrance to station [GeV/c]
     void SetPyIn(double py) { fMomIn[1] = py; }
 
-    /// Sets track momentum y component at exit of station [GeV/c]
+    /// @brief Sets track momentum y component at exit of station [GeV/c]
     void SetPyOut(double py) { fMomOut[1] = py; }
 
-    /// Sets track momentum z component at reference z of station [GeV/c]
+    /// @brief Sets track momentum z component at reference z of station [GeV/c]
     void SetPz(double pz) { fMom[2] = pz; }
 
-    /// Sets track momentum z component at entrance to station [GeV/c]
+    /// @brief Sets track momentum z component at entrance to station [GeV/c]
     void SetPzIn(double pz) { fMomIn[2] = pz; }
 
-    /// Sets track momentum z component at exit of station [GeV/c]
+    /// @brief Sets track momentum z component at exit of station [GeV/c]
     void SetPzOut(double pz) { fMomOut[2] = pz; }
 
-    /// Sets global index of active station
+
+    /// @brief Sets global index of active station
     void SetStationId(int stationId) { fStationId = stationId; }
 
-    /// Sets time [ns]
+    /// @brief Sets time [ns]
     void SetTime(double time) { fTime = time; }
 
-    /// Sets track ID in the CA internal track container (within event/TS)
+    /// @brief Sets track ID in the CA internal track container (within event/TS)
     void SetTrackId(int trackId) { fTrackId = trackId; }
 
-    /// Sets x coordinate at reference z of station [cm]
+    /// @brief Sets x coordinate at reference z of station [cm]
     void SetX(double x) { fPos[0] = x; }
 
-    /// Sets x coordinate at entrance to station [cm]
+    /// @brief Sets x coordinate at entrance to station [cm]
     void SetXIn(double x) { fPosIn[0] = x; }
 
-    /// Sets x coordinate at exit of station [cm]
+    /// @brief Sets x coordinate at exit of station [cm]
     void SetXOut(double x) { fPosOut[0] = x; }
 
-    /// Sets y coordinate at reference z of station [cm]
+    /// @brief Sets y coordinate at reference z of station [cm]
     void SetY(double y) { fPos[1] = y; }
 
-    /// Sets y coordinate at entrance to station [cm]
+    /// @brief Sets y coordinate at entrance to station [cm]
     void SetYIn(double y) { fPosIn[1] = y; }
 
-    /// Sets x coordinate at exit of station [cm]
+    /// @brief Sets x coordinate at exit of station [cm]
     void SetYOut(double y) { fPosOut[1] = y; }
 
-    /// Sets z coordinate at reference z of station [cm]
+    /// @brief Sets z coordinate at reference z of station [cm]
     void SetZ(double z) { fPos[2] = z; }
 
-    /// Sets z coordinate at entrance to station [cm]
+    /// @brief Sets z coordinate at entrance to station [cm]
     void SetZIn(double z) { fPosIn[2] = z; }
 
-    /// Sets z coordinate at exit of station [cm]
+    /// @brief Sets z coordinate at exit of station [cm]
     void SetZOut(double z) { fPosOut[2] = z; }
 
-    /// Prints content for a given verbosity level
-    /// \param  verbose  Verbosity level:
+    /// @brief Prints content for a given verbosity level
+    /// @param  verbose  Verbosity level:
     ///                  -#0: Prints nothing
     ///                  -#1: Prints track ID, station ID, time and position
     ///                  -#2: Also prints zIn, zOut, absolute momentum, as well as point, event and file IDs
-    /// \param  printHeader  If true, parameter names will be printed instead of the parameters themselves
+    /// @param  printHeader  If true, parameter names will be printed instead of the parameters themselves
     std::string ToString(int verbose, bool printHeader = false) const;
 
     // ****************************
@@ -285,7 +332,7 @@ namespace ca::tools
 
     L1DetectorID fDetectorId;  ///< Detector ID of MC point
 
-    L1Vector<int> fvHitIndexes {"ca::tools::MCPoint::fvHitIndexes"};
+    L1Vector<int> fvHitIndexes {"ca::tools::MCPoint::fvHitIndexes"};  ///< Indexes of hits, assigned to this point
   };
 }  // namespace ca::tools
 

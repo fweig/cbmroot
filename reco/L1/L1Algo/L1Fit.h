@@ -41,7 +41,7 @@ public:
   }
 
   template<typename T>
-  void SetTrack(const T p[7], const T c[28])
+  void SetTrack(const T p[8], const T c[28])
   {
     fTr.copyFromArrays(p, c);
     fQp0 = fTr.qp;

@@ -23,6 +23,9 @@
 #include "CbmL1.h"
 #include "CbmL1Constants.h"
 
+#include <iomanip>
+#include <sstream>
+
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Hit.h"
 
@@ -193,3 +196,67 @@ void CbmL1MCTrack::CalculateIsReconstructable()
   else
     isAdditional = 0;
 };  // bool CbmL1MCTrack::IsReconstructable()
+
+std::string CbmL1MCTrack::ToString(int verbose, bool header) const
+{
+  using std::setfill;
+  using std::setw;
+  std::stringstream msg;
+  if (header) {
+    if (verbose > 0) {
+      msg << setw(8) << setfill(' ') << "ID" << ' ';
+      msg << setw(8) << setfill(' ') << "Mother" << ' ';
+      msg << setw(8) << setfill(' ') << "PDG" << ' ';
+      if (verbose > 1) {
+        msg << setw(8) << setfill(' ') << "N h." << ' ';
+        msg << setw(8) << setfill(' ') << "N p." << ' ';
+        msg << setw(8) << setfill(' ') << "N r.tr." << ' ';
+        if (verbose > 2) { msg << setw(8) << setfill(' ') << "N t.tr." << ' '; }
+        msg << setw(12) << setfill(' ') << "zVTX [cm]" << ' ';
+        msg << setw(12) << setfill(' ') << "t [ns]" << ' ';
+        msg << setw(12) << setfill(' ') << "p [GeV/c]" << ' ';
+      }
+      msg << setw(8) << setfill(' ') << "rec-able" << ' ';
+      msg << setw(8) << setfill(' ') << "rec-ed" << ' ';
+    }
+  }
+  else {
+    if (verbose > 0) {
+      msg << setw(8) << setfill(' ') << ID << ' ';
+      msg << setw(8) << setfill(' ') << mother_ID << ' ';
+      msg << setw(8) << setfill(' ') << pdg << ' ';
+      if (verbose > 1) {
+        msg << setw(8) << setfill(' ') << Hits.size() << ' ';
+        msg << setw(8) << setfill(' ') << Points.size() << ' ';
+        msg << setw(8) << setfill(' ') << rTracks.size() << ' ';
+        if (verbose > 2) { msg << setw(8) << setfill(' ') << tTracks.size() << ' '; }
+        msg << setw(12) << setfill(' ') << z << ' ';
+        msg << setw(12) << setfill(' ') << time << ' ';
+        msg << setw(12) << setfill(' ') << p << ' ';
+      }
+      msg << setw(8) << setfill(' ') << IsReconstructable() << ' ';
+      msg << setw(8) << setfill(' ') << IsReconstructed() << ' ';
+      if (verbose > 1) {
+        msg << "\n\t- point indexes: ";
+        for (int index : Points) {
+          msg << index << ' ';
+        }
+        msg << "\n\t- hit indexes: ";
+        for (int index : Hits) {
+          msg << index << ' ';
+        }
+        msg << "\n\t- reconstructed track indexes: ";
+        for (auto* index : rTracks) {
+          msg << index << ' ';
+        }
+        if (verbose > 2) {
+          msg << "\n\t- touch track indexes: ";
+          for (auto* index : tTracks) {
+            msg << index << ' ';
+          }
+        }
+      }
+    }
+  }
+  return msg.str();
+}

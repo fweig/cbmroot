@@ -182,7 +182,9 @@ void L1FieldRegion::Get(const fvec& x, const fvec& y, const fvec& z, fvec* B) co
     for (size_t i = 0; i < fvec::size(); i++) {
       double inPos[3] = {x[i], y[i], z[i]};
       double outB[3];
-      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+      assert(CbmKF::Instance());
+      assert(CbmKF::Instance()->GetMagneticField());
+      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);  // TODO: replace with functional object
       B[0][i] = outB[0];
       B[1][i] = outB[1];
       B[2][i] = outB[2];

@@ -27,6 +27,7 @@
 #include "TVector3.h"
 
 #include <iostream>
+#include <string>
 
 #include "L1Vector.h"
 
@@ -69,6 +70,9 @@ public:
   friend class CbmL1;
 
   double pt() { return sqrt(px * px + py * py); }
+
+  /// @brief String representation of the contents
+  std::string ToString(int verbose = 10, bool header = false) const;
 
 private:
   void CalculateMCCont();

@@ -28,6 +28,7 @@
 
 #include "TClonesArray.h"
 
+#include "L1Constants.h"
 #include "L1Vector.h"
 
 
@@ -162,6 +163,7 @@ namespace cbm::ca
     int ReadHitsForDetector(const TClonesArray* pBrHits);
 
     /// @brief Sorts QA hit objects by stations
+    template<bool IsNewSortingApproach>
     void SortQaHits();
 
     /// @brief Saves hit to data structures
@@ -169,6 +171,7 @@ namespace cbm::ca
     ///
     /// Stores recorded hit information into registered hit containers
     void StoreHitRecord(const HitRecord& hitRecord);
+
 
     // Flags for detector subsystems being used
     bool fbUseMvd     = false;  ///< is MVD used
@@ -212,12 +215,14 @@ namespace cbm::ca
     std::shared_ptr<L1IODataManager> fpIODataManager = nullptr;  ///< Pointer to input data manager
     std::shared_ptr<L1Parameters> fpParameters       = nullptr;  ///< Pointer to tracking parameters object
 
+
     // Maps of hit indexes: ext -> int
     L1Vector<int> vHitMvdIds {"CbmCaTimeSliceReader::vHitMvdIds"};
     L1Vector<int> vHitStsIds {"CbmCaTimeSliceReader::vHitStsIds"};
     L1Vector<int> vHitMuchIds {"CbmCaTimeSliceReader::vHitMuchIds"};
     L1Vector<int> vHitTrdIds {"CbmCaTimeSliceReader::vHitTrdIds"};
     L1Vector<int> vHitTofIds {"CbmCaTimeSliceReader::vHitTofIds"};
+
 
     // Additional
     ECbmTrackingMode fTrackingMode;  ///< Tracking mode
@@ -247,7 +252,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
 
   fFirstHitKey = fNofHitKeys;
 
-  for (int iH = 0; iH < nHitsTot; ++iH) {
+  for (int iHext = 0; iHext < nHitsTot; ++iHext) {
     HitRecord hitRecord;  // Record of hits information
 
     CbmPixelHit* pPixelHit = nullptr;  // Pointer to hit object
@@ -257,7 +262,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
 
     // Fill out detector specific data
     if constexpr (L1DetectorID::kMvd == DetID) {
-      CbmMvdHit* pMvdHit = static_cast<CbmMvdHit*>(pBrHits->At(iH));
+      CbmMvdHit* pMvdHit = static_cast<CbmMvdHit*>(pBrHits->At(iHext));
       iStGeom            = fpMvdInterface->GetTrackingStationIndex(pMvdHit->GetStationNr());
       phiF               = fpMvdInterface->GetStripsStereoAngleFront(iStGeom);
       phiB               = fpMvdInterface->GetStripsStereoAngleBack(iStGeom);
@@ -266,7 +271,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       hitRecord.fDv      = pMvdHit->GetDy();
     }
     else if constexpr (L1DetectorID::kSts == DetID) {
-      CbmStsHit* pStsHit = static_cast<CbmStsHit*>(pBrHits->At(iH));
+      CbmStsHit* pStsHit = static_cast<CbmStsHit*>(pBrHits->At(iHext));
       iStGeom            = fpStsInterface->GetTrackingStationIndex(pStsHit->GetAddress());
       phiF               = fpStsInterface->GetStripsStereoAngleFront(iStGeom);
       phiB               = fpStsInterface->GetStripsStereoAngleBack(iStGeom);
@@ -277,7 +282,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       hitRecord.fDv      = pStsHit->GetDv();
     }
     else if constexpr (L1DetectorID::kMuch == DetID) {
-      CbmMuchPixelHit* pMuchHit = static_cast<CbmMuchPixelHit*>(pBrHits->At(iH));
+      CbmMuchPixelHit* pMuchHit = static_cast<CbmMuchPixelHit*>(pBrHits->At(iHext));
       iStGeom                   = fpMuchInterface->GetTrackingStationIndex(pMuchHit->GetAddress());
       phiF                      = fpMuchInterface->GetStripsStereoAngleFront(iStGeom);
       phiB                      = fpMuchInterface->GetStripsStereoAngleBack(iStGeom);
@@ -286,7 +291,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       hitRecord.fDv             = pMuchHit->GetDy();
     }
     else if constexpr (L1DetectorID::kTrd == DetID) {
-      CbmTrdHit* pTrdHit = static_cast<CbmTrdHit*>(pBrHits->At(iH));
+      CbmTrdHit* pTrdHit = static_cast<CbmTrdHit*>(pBrHits->At(iHext));
       iStGeom            = fpTrdInterface->GetTrackingStationIndex(pTrdHit->GetAddress());
       phiF               = fpTrdInterface->GetStripsStereoAngleFront(iStGeom);
       phiB               = fpTrdInterface->GetStripsStereoAngleBack(iStGeom);
@@ -295,7 +300,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       hitRecord.fDv      = pTrdHit->GetDy();
     }
     else if constexpr (L1DetectorID::kTof == DetID) {
-      CbmTofHit* pTofHit = static_cast<CbmTofHit*>(pBrHits->At(iH));
+      CbmTofHit* pTofHit = static_cast<CbmTofHit*>(pBrHits->At(iHext));
       iStGeom            = fpTofInterface->GetTrackingStationIndex(pTofHit->GetAddress());
       phiF               = fpTofInterface->GetStripsStereoAngleFront(iStGeom);
       phiB               = fpTofInterface->GetStripsStereoAngleBack(iStGeom);
@@ -328,7 +333,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
     hitRecord.fDataStream = (static_cast<int64_t>(hitRecord.fDet) << 60) | pPixelHit->GetAddress();
     hitRecord.fU          = hitRecord.fX * cos(phiF) + hitRecord.fY * sin(phiF);
     hitRecord.fV          = hitRecord.fX * cos(phiB) + hitRecord.fY * sin(phiB);
-    hitRecord.fExtId      = iH;
+    hitRecord.fExtId      = iHext;
 
     // Update number of hit keys
     if constexpr (L1DetectorID::kSts == DetID) {
@@ -336,7 +341,7 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       if (fNofHitKeys <= hitRecord.fStripB) { fNofHitKeys += hitRecord.fStripB; }
     }
     else {
-      hitRecord.fStripF = fFirstHitKey + iH;
+      hitRecord.fStripF = fFirstHitKey + iHext;
       hitRecord.fStripB = hitRecord.fStripF;
       if (fNofHitKeys <= hitRecord.fStripF) { fNofHitKeys += hitRecord.fStripF; }
     }

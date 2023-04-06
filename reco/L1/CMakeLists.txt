@@ -54,6 +54,7 @@ set(SRCS
   L1Algo/L1Fit.cxx
   L1Algo/L1MCEvent.cxx
   CbmL1MCTrack.cxx
+  CbmL1Track.cxx
   L1Algo/L1Material.cxx
   L1Algo/L1UMeasurementInfo.cxx
   L1Algo/L1XYMeasurementInfo.cxx
@@ -88,6 +89,8 @@ set(SRCS
   qa/CbmCaInputQaTrd.cxx
   qa/CbmCaInputQaTof.cxx
   qa/CbmCaOutputQa.cxx
+  qa/CbmCaTrackTypeQa.cxx
+  qa/CbmCaTrackFitQa.cxx
   qa/CbmTofInteraction.cxx # Tests
 )
 
