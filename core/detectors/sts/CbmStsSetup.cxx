@@ -31,6 +31,7 @@
 #include <TGeoPhysicalNode.h>   // for TGeoPhysicalNode
 #include <TGeoShapeAssembly.h>  // for TGeoShapeAssembly
 #include <TGeoVolume.h>         // for TGeoVolume
+#include <TGeoVoxelFinder.h>    // for TGeoVoxelFinder
 #include <TKey.h>               // for TKey
 #include <TList.h>              // for TList
 #include <TString.h>            // for TString, operator<<, operator+
@@ -380,20 +381,14 @@ Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo)
 
 void CbmStsSetup::RecomputePhysicalAssmbBbox(TGeoManager* geo)
 {
-  TObjArray* pPhysNodesArr = geo->GetListOfPhysicalNodes();
-
-  TGeoPhysicalNode* pPhysNode  = nullptr;
-  TGeoShapeAssembly* pShapeAsb = nullptr;
-
-  Int_t iNbNodes = pPhysNodesArr->GetEntriesFast();
-  for (Int_t iInd = 0; iInd < iNbNodes; ++iInd) {
-    pPhysNode = dynamic_cast<TGeoPhysicalNode*>(pPhysNodesArr->At(iInd));
-    if (pPhysNode) {
-      pShapeAsb = dynamic_cast<TGeoShapeAssembly*>(pPhysNode->GetShape());
-      if (pShapeAsb) {
-        // Should reach here only if the original node was a TGeoShapeAssembly
-        pShapeAsb->ComputeBBox();
-      }
+  TIter nextv(gGeoManager->GetListOfVolumes());
+  TGeoVolume* vol;
+  while ((vol = dynamic_cast<TGeoVolume*>(nextv()))) {
+    if (vol->IsAssembly()) vol->GetShape()->ComputeBBox();
+    auto finder = vol->GetVoxels();
+    if (finder && finder->NeedRebuild()) {
+      finder->Voxelize();
+      vol->FindOverlaps();
     }
   }
 }
