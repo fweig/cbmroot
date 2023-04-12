@@ -30,6 +30,7 @@ class CbmL1HitDebugInfo;
 class TH1F;
 class TH2F;
 class TProfile;
+class TProfile2D;
 
 namespace cbm::ca
 {
@@ -147,9 +148,17 @@ namespace cbm::ca
     TH1F* fph_mc_tyMC    = nullptr;  ///< Slope along y-axis of reconstructed tracks
 
     // ** Efficiencies **
-    TProfile* fph_eff_p     = nullptr;  ///< Track efficiency
-    TProfile* fph_eff_nhits = nullptr;
-    TProfile* fph_eff_pMC   = nullptr;
+    TProfile* fph_eff_int     = nullptr;  ///< Integrated efficiency
+    TProfile* fph_eff_pMC     = nullptr;  ///< Efficiency vs. MC momentum
+    TProfile* fph_eff_yMC     = nullptr;  ///< Efficiency vs. MC rapidity
+    TProfile* fph_eff_ptMC    = nullptr;  ///< Efficiency vs. MC transverse momentum
+    TProfile* fph_eff_thetaMC = nullptr;  ///< Efficiency vs. MC polar angle
+    TProfile* fph_eff_phiMC   = nullptr;  ///< Efficiency vs. MC azimuthal angle
+    TProfile* fph_eff_nhitsMC = nullptr;  ///< Efficiency vs. MC number of hits
+
+    TProfile2D* fph_eff_thetaMC_phiMC = nullptr;  ///< Efficiency vs. MC theta and MC phi
+    TProfile2D* fph_eff_pMC_yMC       = nullptr;  ///< Efficiency vs. MC momentum and MC rapidity
+    TProfile2D* fph_eff_tyMC_txMC     = nullptr;  ///< Efficiency vs. MC slopes
 
     // ** Fit QA **
     std::unique_ptr<TrackFitQa> fpFitQaFirstMCpoint = nullptr;

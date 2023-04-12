@@ -10,8 +10,8 @@
 #include "CbmCaMCModule.h"
 
 #include "CbmEvent.h"
-#include "CbmL1.h"  // for L1DetectorID
 #include "CbmL1Constants.h"
+#include "CbmL1DetectorID.h"
 #include "CbmL1Hit.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCDataObject.h"

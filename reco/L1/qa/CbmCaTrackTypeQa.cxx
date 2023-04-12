@@ -37,6 +37,9 @@ void TrackTypeQa::Init()
   assert(fpvHits);
   assert(!fbUseMC || fpMCData);
 
+  //
+  // ** Distributions of reconstructed tracks vs. reconstructed quantities **
+  //
   fph_reco_p     = MakeHisto<TH1F>("reco_p", "", kBinsP, kLoP, kUpP);
   fph_reco_pt    = MakeHisto<TH1F>("reco_pt", "", kBinsPT, kLoPT, kUpPT);
   fph_reco_eta   = MakeHisto<TH1F>("reco_eta", "", kBinsETA, kLoETA, kUpETA);
@@ -48,36 +51,68 @@ void TrackTypeQa::Init()
   fph_reco_nhits = MakeHisto<TH1F>("reco_nhits", "", kBinsNHITS, kLoNHITS, kUpNHITS);
   // TODO: ...
 
-  fph_reco_p->SetTitle("Total momentum of reconstructed track;p_{reco} [GeV/c]");
-  fph_reco_pt->SetTitle("Transverse momentum of reconstructed track;p_{T}_{reco} [GeV/c]");
-  fph_reco_phi->SetTitle("Azimuthal angle of reconstructed track;#phi_{reco} [rad]");
-  fph_reco_theta->SetTitle("Polar angle of reconstructed track;#theta_{reco} [rad]");
-  fph_reco_tx->SetTitle("Slope along x-axis of reconstructed tracks;t_{x}");
-  fph_reco_ty->SetTitle("Slope along y-axis of reconstructed tracks;t_{y}");
+  fph_reco_p->SetTitle("Total momentum of reconstructed track;p^{reco} [GeV/c]");
+  fph_reco_pt->SetTitle("Transverse momentum of reconstructed track;p_{T}^{reco} [GeV/c]");
+  fph_reco_phi->SetTitle("Azimuthal angle of reconstructed track;#phi^{reco} [rad]");
+  fph_reco_theta->SetTitle("Polar angle of reconstructed track;#theta^{reco} [rad]");
+  fph_reco_tx->SetTitle("Slope along x-axis of reconstructed tracks;t_{x}^{reco}");
+  fph_reco_ty->SetTitle("Slope along y-axis of reconstructed tracks;t_{y}^{reco}");
   fph_reco_fhitR->SetTitle("Distance of the first hit from z-axis for reconstructed tracks");
   fph_reco_nhits->SetTitle("Hit number of reconstructed tracks");
 
   if (fbUseMC) {
+    //
+    // ** Distributions of reconstructed tracks vs. MC quantities **
+    //
     fph_reco_pMC     = MakeHisto<TH1F>("reco_pMC", "", kBinsP, kLoP, kUpP);
     fph_reco_yMC     = MakeHisto<TH1F>("reco_yMC", "", kBinsY, kLoY, kUpY);
     fph_reco_pMC_yMC = MakeHisto<TH2F>("reco_pMC_yMC", "", kBinsY, kLoY, kUpY, kBinsP, kLoP, kUpP);
     fph_reco_phiMC   = MakeHisto<TH1F>("reco_phiMC", "", kBinsPHI, kLoPHI, kUpPHI);
     fph_reco_thetaMC = MakeHisto<TH1F>("reco_thetaMC", "", kBinsTHETA, kLoTHETA, kUpTHETA);
 
-    fph_reco_pMC->SetTitle("MC total momentum of reconstructed track;p_{MC} [GeV/c]");
-    fph_reco_yMC->SetTitle("MC rapidity of reconstructed track;y_{MC}");
-    fph_reco_pMC_yMC->SetTitle("Transverse momentum of reconstructed track;y_{MC};p_{T}_{MC} [GeV/c]");
-    fph_reco_phiMC->SetTitle("Azimuthal angle of reconstructed track;#phi_{reco} [rad]");
-    fph_reco_thetaMC->SetTitle("Polar angle of reconstructed track;#theta_{reco} [rad]");
+    fph_reco_pMC->SetTitle("MC total momentum of reconstructed track;p^{MC} [GeV/c]");
+    fph_reco_yMC->SetTitle("MC rapidity of reconstructed track;y^{MC}");
+    fph_reco_pMC_yMC->SetTitle("Transverse momentum of reconstructed track;y^{MC};p_{T}^{MC} [GeV/c]");
+    fph_reco_phiMC->SetTitle("Azimuthal angle of reconstructed track;#phi^{MC} [rad]");
+    fph_reco_thetaMC->SetTitle("Polar angle of reconstructed track;#theta^{MC} [rad]");
 
     fph_mc_pMC     = MakeHisto<TH1F>("mc_pMC", "", kBinsP, kLoP, kUpP);
     fph_mc_yMC     = MakeHisto<TH1F>("mc_yMC", "", kBinsY, kLoY, kUpY);
     fph_mc_pMC_yMC = MakeHisto<TH2F>("mc_pMC_yMC", "", kBinsY, kLoY, kUpY, kBinsP, kLoP, kUpP);
 
-    fph_mc_pMC->SetTitle("MC total momentum of MC tracks;p_{MC} [GeV/c]");
-    fph_mc_yMC->SetTitle("MC rapidity of MC tracks;y_{MC}");
-    fph_mc_pMC_yMC->SetTitle("MC total momentum vs. MC rapidity of MC tracks;y_{MC};p_{MC} [GeV/c]");
+    fph_mc_pMC->SetTitle("MC total momentum of MC tracks;p^{MC} [GeV/c]");
+    fph_mc_yMC->SetTitle("MC rapidity of MC tracks;y^{MC}");
+    fph_mc_pMC_yMC->SetTitle("MC total momentum vs. MC rapidity of MC tracks;y^{MC};p^{MC} [GeV/c]");
 
+    //
+    // ** Efficiencies **
+    //
+    fph_eff_int     = MakeHisto<TProfile>("eff_int", "", 1, -0.5, 0.5, 0., 1.);
+    fph_eff_pMC     = MakeHisto<TProfile>("eff_pMC", "", kBinsP, kLoP, kUpP, 0., 1.);
+    fph_eff_yMC     = MakeHisto<TProfile>("eff_yMC", "", kBinsY, kLoY, kUpY, 0., 1.);
+    fph_eff_ptMC    = MakeHisto<TProfile>("eff_ptMC", "", kBinsPT, kLoPT, kUpPT, 0., 1.);
+    fph_eff_thetaMC = MakeHisto<TProfile>("eff_thetaMC", "", kBinsTHETA, kLoTHETA, kUpTHETA, 0., 1.);
+    fph_eff_phiMC   = MakeHisto<TProfile>("eff_phiMC", "", kBinsPHI, kLoPHI, kUpPHI, 0., 1.);
+    fph_eff_nhitsMC = MakeHisto<TProfile>("eff_nhitsMC", "", kBinsNHITS, kLoNHITS, kUpNHITS, 0., 1.);
+
+    fph_eff_int->SetTitle("Integrated efficiency;;#epsilon_{CA}");
+    fph_eff_pMC->SetTitle("Efficiency vs. MC total momentum;p_{MC} [GeV/c];#epsilon_{CA}");
+    fph_eff_yMC->SetTitle("Efficiency vs. MC rapidity;y_{MC};#epsilon");
+    fph_eff_ptMC->SetTitle("Efficiency vs. MC total momentum;p_{T}^{MC} [GeV/c];#epsilon_{CA}");
+    fph_eff_thetaMC->SetTitle("Efficiency vs. MC polar angle;#theta^{MC};#epsilon_{CA}");
+    fph_eff_phiMC->SetTitle("Efficiency vs. MC azimuthal angle;#phi^{MC};#epsilon_{CA}");
+    fph_eff_nhitsMC->SetTitle("Efficiency vs. MC number of stations with hits;N_{hit}^{MC};#epsilon_{CA}");
+
+    fph_eff_pMC_yMC = MakeHisto<TProfile2D>("eff_pMC_yMC", "", kBinsY, kLoY, kUpY, kBinsP, kLoP, kUpP, 0., 1.);
+    fph_eff_thetaMC_phiMC =
+      MakeHisto<TProfile2D>("eff_theta_phi", "", kBinsPHI, kLoPHI, kUpPHI, kBinsTHETA, kLoTHETA, kUpTHETA, 0., 1.);
+
+    fph_eff_pMC_yMC->SetTitle("Efficiency vs. MC total momentum and MC rapidity;y^{MC};#epsilon_{CA};p^{MC} [GeV/c]");
+    fph_eff_thetaMC_phiMC->SetTitle(
+      "Efficiency vs. MC polar and azimuthal angles;#phi^{MC} [rad];#theta^{MC} [rad];#epsilon_{CA}");
+    //
+    // ** Track fit parameter properties (residuals and pulls) **
+    //
     fpFitQaFirstHit = std::make_unique<TrackFitQa>("fst_hit", fsPrefix, fpFolderRoot);
     fpFitQaFirstHit->SetTitle("First hit");
     fpFitQaFirstHit->Init();
@@ -151,7 +186,27 @@ void TrackTypeQa::FillMCTrack(int iTrkMC, double weight)
   assert(fbUseMC);
 
   const MCTrack& mcTrack = fpMCData->GetTrack(iTrkMC);
+
+  // Only reconstructable tracks are considered (?)
+  if (!mcTrack.IsReconstructable()) { return; }
+
+  // ** Distributions **
   fph_mc_pMC->Fill(mcTrack.GetP(), weight);
   fph_mc_yMC->Fill(mcTrack.GetRapidity(), weight);
   fph_mc_pMC_yMC->Fill(mcTrack.GetRapidity(), mcTrack.GetP(), weight);
+
+  // ** Efficiencies **
+  bool bReco = mcTrack.IsReconstructed();
+
+  // NOTE: Weight is ignored in efficiencies
+  fph_eff_int->Fill(0., bReco);
+  fph_eff_pMC->Fill(mcTrack.GetP(), bReco);
+  fph_eff_yMC->Fill(mcTrack.GetRapidity(), bReco);
+  fph_eff_ptMC->Fill(mcTrack.GetPt(), bReco);
+  fph_eff_thetaMC->Fill(mcTrack.GetTheta(), bReco);
+  fph_eff_phiMC->Fill(mcTrack.GetPhi(), bReco);
+  fph_eff_nhitsMC->Fill(mcTrack.GetTotNofStationsWithHit(), bReco);
+
+  fph_eff_pMC_yMC->Fill(mcTrack.GetRapidity(), mcTrack.GetP(), bReco);
+  fph_eff_thetaMC_phiMC->Fill(mcTrack.GetPhi(), mcTrack.GetPhi(), bReco);
 }

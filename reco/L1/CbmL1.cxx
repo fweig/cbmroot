@@ -955,12 +955,12 @@ void CbmL1::Reconstruct(CbmEvent* event)
   //  FieldApproxCheck();
   //  FieldIntegralCheck();
 
-  if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
+  if (fVerbose > 1) { LOG(info) << "L1 Track finder..."; }
   fpAlgo->CaTrackFinder();
   //       IdealTrackFinder();
   fTrackingTime = fpAlgo->fCaRecoTime;
 
-  if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
+  if (fVerbose > 1) { LOG(info) << "L1 Track finder ok"; }
 
   // save reconstructed tracks
 
@@ -1001,7 +1001,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     fvRecoTracks.push_back(t);
   }
 
-  LOG(debug) << "CA Track Finder: " << fpAlgo->fCaRecoTime << " s/sub-ts" << endl;
+  LOG(debug) << "CA Track Finder: " << fpAlgo->fCaRecoTime << " s/sub-ts";
 
 
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
@@ -1009,7 +1009,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   // output performance
   if (fPerformance) {
-    if (fVerbose > 1) { cout << "Performance..." << endl; }
+    if (fVerbose > 1) { LOG(info) << "Performance..."; }
     TrackMatch();
     EfficienciesPerformance();
     HistoPerformance();
@@ -1019,7 +1019,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
     ///    WriteSIMDKFData();
   }
   if (fVerbose > 1) { LOG(info) << "Tracking performance... done"; }
-  if (fVerbose > 1) { LOG(info) << "End of L1"; }
+  if (fVerbose > 1) { LOG(info) << "End of CA"; }
+
+  static bool ask = 0;
+  char symbol;
+  if (ask) {
+    LOG(info) << "\nCA run (any/r/q) > ";
+    do {
+      std::cin.get(symbol);
+      if (symbol == 'r') ask = false;
+      if ((symbol == 'e') || (symbol == 'q')) exit(0);
+    } while (symbol != '\n');
+  }
 }
 
 // -----   Finish CbmStsFitPerformanceTask task   -----------------------------

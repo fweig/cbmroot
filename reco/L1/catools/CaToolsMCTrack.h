@@ -188,6 +188,9 @@ namespace ca::tools
     /// Gets z component of the track vertex [cm]
     double GetStartZ() const { return fPos[2]; }
 
+    /// @brief Gets track polar angle
+    double GetTheta() const { return std::acos(fMom[2] / GetP()); }
+
     /// Gets total number of stations with hits
     int GetTotNofStationsWithHit() const { return fTotNofStationsWithHit; }
 

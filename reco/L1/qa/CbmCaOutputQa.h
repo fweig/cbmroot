@@ -32,9 +32,10 @@ namespace cbm::ca
     /// @brief Enumeration of track category
     enum ETrackType
     {
-      kAll,   ///< all tracks
-      kPrim,  ///< primary tracks
-      kSec,   ///< secondary tracks
+      kAll,    ///< all tracks
+      kGhost,  ///< ghost tracks (no MC is used)
+      kPrim,   ///< primary tracks
+      kSec,    ///< secondary tracks
       // kPrimEP,  ///< primary electron tracks
       // kPrimEM,  ///< primary positron tracks
       // kSecEP,   ///< secondary electron tracks
@@ -180,59 +181,6 @@ namespace cbm::ca
     std::array<std::unique_ptr<TrackTypeQa>, ETrackType::kEND> fvpTrackHistograms;
 
     std::array<std::tuple<Style_t, Marker_t, Color_t>, ETrackType::kEND> fvpTrackHistogramStyles;
-
-    // Reconstructed tracks
-    TH1F* fph_reco_p        = nullptr;  ///< Total momentum over charge of reconstructed tracks
-    TH1F* fph_reco_pt       = nullptr;  ///< Transverse momentum over charge of reconstructed tracks
-    TH1F* fph_reco_phi      = nullptr;  ///< Azimuthal angle of reconstructed tracks
-    TH1F* fph_reco_tx       = nullptr;  ///< Slope along x-axis of reconstructed tracks
-    TH1F* fph_reco_ty       = nullptr;  ///< Slope along y-axis of reconstructed tracks
-    TH1F* fph_reco_fhitR    = nullptr;  ///< Distance of the first hit from z-axis for reconstructed tracks
-    TH1F* fph_reco_nhits    = nullptr;  ///< Hit number of reconstructed tracks
-    TH1F* fph_reco_fsta     = nullptr;  ///< First station index of reconstructed tracks
-    TH1F* fph_reco_chi2_ndf = nullptr;  ///< Fit chi2 over NDF of reconstructed tracks
-    TH1F* fph_reco_prob     = nullptr;  ///< Fit probability of reconstructed tracks
-    TH1F* fph_rest_chi2_ndf = nullptr;  ///< Fit chi2 over NDF of non-reconstructable tracks
-    TH1F* fph_rest_prob     = nullptr;  ///< Fit probability of non-reconstructable tracks
-
-    // Ghost tracks
-    TH1F* fph_ghost_p            = nullptr;  ///< Total momentum over charge of ghost tracks
-    TH1F* fph_ghost_pt           = nullptr;  ///< Transverse momentum over charge of ghost tracks
-    TH1F* fph_ghost_phi          = nullptr;  ///< Azimuthal angle of ghost tracks
-    TH1F* fph_ghost_nhits        = nullptr;  ///< Hit number of ghost tracks
-    TH1F* fph_ghost_fsta         = nullptr;  ///< First station index of ghost tracks
-    TH1F* fph_ghost_purity       = nullptr;  ///< Purity of ghost tracks
-    TH1F* fph_ghost_chi2_ndf     = nullptr;  ///< Fit chi2 over NDF of ghost tracks
-    TH1F* fph_ghost_prob         = nullptr;  ///< Fit probability of ghost tracks
-    TH1F* fph_ghost_tx           = nullptr;  ///< Slope along x-axis of ghost tracks
-    TH1F* fph_ghost_ty           = nullptr;  ///< Slope along y-axis of ghost tracks
-    TH1F* fph_ghost_fhitR        = nullptr;  ///< Distance of the first hit from z-axis for ghost tracks
-    TH2F* fph_ghost_nhits_vs_p   = nullptr;  ///< Hit number vs. total momentum over charge of ghost tracks
-    TH2F* fph_ghost_fsta_vs_p    = nullptr;  ///< First station index vs. total momentum over charge for ghost tracks
-    TH2F* fph_ghost_lsta_vs_fsta = nullptr;  ///< Last station index vs. first station index of ghost tracks
-
-    // Reco tracks vs MC variables
-    TH1F* fph_reco_pMC        = nullptr;  ///< Reconstructed track distribution vs MC momemntum
-    TH1F* fph_reco_yMC        = nullptr;  ///< Reconstructed track distribution vs MC rapidity
-    TH2F* fph_reco_pMC_vs_yMC = nullptr;  ///< Reconstructed track phase space (MC mom vs rapidity)
-    TH1F* fph_reco_purity     = nullptr;  ///< Purity of reconstructed tracks (\note purity requires MC information)
-
-    // Residuals and pulls at the first track point
-    TH1F* fph_fst_res_x    = nullptr;  ///< Residual of x at first track point [cm]
-    TH1F* fph_fst_res_y    = nullptr;  ///< Residual of y at first track point [cm]
-    TH1F* fph_fst_res_tx   = nullptr;  ///< Residual of tx at first track point
-    TH1F* fph_fst_res_ty   = nullptr;  ///< Residual of ty at first track point
-    TH1F* fph_fst_res_qp   = nullptr;  ///< Residual of q/p at first track point  [GeV/ec]
-    TH1F* fph_fst_res_time = nullptr;  ///< Residual of time at first track point [ns]
-    TH1F* fph_fst_res_v    = nullptr;  ///< Residual of velocity at first track point [c]
-
-    TH1F* fph_fst_pull_x    = nullptr;  ///< Pull of x at first track point [cm]
-    TH1F* fph_fst_pull_y    = nullptr;  ///< Pull of y at first track point [cm]
-    TH1F* fph_fst_pull_tx   = nullptr;  ///< Pull of tx at first track point
-    TH1F* fph_fst_pull_ty   = nullptr;  ///< Pull of ty at first track point
-    TH1F* fph_fst_pull_qp   = nullptr;  ///< Pull of q/p at first track point  [GeV/ec]
-    TH1F* fph_fst_pull_time = nullptr;  ///< Pull of time at first track point [ns]
-    TH1F* fph_fst_pull_v    = nullptr;  ///< Pull of velocity at first track point [c]
   };
 }  // namespace cbm::ca
 

@@ -7,6 +7,9 @@
 /// @since  04.04.2023
 /// @author Sergei Zharko <s.zharko@gsi.de>
 
+#ifndef CbmQaConstants_h
+#define CbmQaConstants_h 1
+
 namespace CbmQaConstants
 {
 
@@ -21,3 +24,5 @@ namespace CbmQaConstants
   }  // namespace unit
 
 }  // namespace CbmQaConstants
+
+#endif  // CbmQaConstants_h
