@@ -123,16 +123,17 @@ std::string MCData::ToString(int verbose) const
   if (verbose > 1) {
     using std::setfill;
     using std::setw;
-    constexpr int kNofTracksToPrint = 40;
-    constexpr int kNofPointsToPrint = 40;
-    msg << "\n Track sample (first " << kNofTracksToPrint << " tracks):";
+    constexpr int kMaxLines = 100;
+    int nTracks             = std::min(kMaxLines, GetNofTracks());
+    int nPoints             = std::min(kMaxLines, GetNofPoints());
+    msg << "\n Track sample (first " << nTracks << " tracks):";
     msg << '\n' << setw(10) << setfill(' ') << fvTracks[0].ToString(verbose, true);  // header of the table
-    for (int i = 0; i < kNofTracksToPrint; ++i) {
+    for (int i = 0; i < nTracks; ++i) {
       msg << '\n' << setw(10) << setfill(' ') << fvTracks[i].ToString(verbose);
     }
-    msg << "\n Point sample (first " << kNofPointsToPrint << " points):";
+    msg << "\n Point sample (first " << nPoints << " points):";
     msg << '\n' << setw(10) << setfill(' ') << fvPoints[0].ToString(verbose, true);  // header of the table
-    for (int i = 0; i < kNofPointsToPrint; ++i) {
+    for (int i = 0; i < nPoints; ++i) {
       msg << '\n' << setw(10) << setfill(' ') << fvPoints[i].ToString(verbose);
     }
   }

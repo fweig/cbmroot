@@ -375,7 +375,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   run->AddTask(kalman);
 
   // L1 tracking
-  auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3, 0) : new CbmL1();
+  auto l1 = (debugWithMC) ? new CbmL1("CA", 5, 3, 4) : new CbmL1("CA", 0, 0, 4);
   l1->SetMcbmMode();
 
   if (strcmp(setupName, "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);

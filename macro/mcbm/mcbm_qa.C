@@ -35,7 +35,8 @@
 #include <TStopwatch.h>
 #endif
 
-void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test", TString setup = "mcbm_beam_2020_03")
+void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
+             TString setupName = "mcbm_beam_2020_03")
 {
 
   // ========================================================================
@@ -47,6 +48,8 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
+  bool bUseMC    = true;                           // flag: true - MC information is used
+  int verbose    = 6;                              // verbose level
   TString myName = "mcbm_qa";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
@@ -60,25 +63,46 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   // ------------------------------------------------------------------------
 
   // -----   Load the geometry setup   -------------------------------------
-  std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Loading setup " << setup << std::endl;
-  CbmSetup::Instance()->LoadSetup(setup);
-  // You can modify the pre-defined setup by using
-  // CbmSetup::Instance()->RemoveModule(ESystemId) or
-  // CbmSetup::Instance()->SetModule(ESystemId, const char*, Bool_t) or
-  // CbmSetup::Instance()->SetActive(ESystemId, Bool_t)
-  // See the class documentation of CbmSetup.
+  std::cout << '\n';
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFunct = "setup_";
+  setupFunct         = setupFunct + setupName + "()";
+  std::cout << "-I- " << myName << ": Loading macro " << setupFile << '\n';
+  gROOT->LoadMacro(setupFile);
+  gROOT->ProcessLine(setupFunct);
+  CbmSetup* setup = CbmSetup::Instance();
+  //  setup->RemoveModule(ECbmModuleId::kTrd);
+  // ------------------------------------------------------------------------
+
+  // -----   Some global switches   -----------------------------------------
+  if (setupName == "mcbm_beam_2022_05_23_nickel") { setup->RemoveModule(ECbmModuleId::kMuch); }
+
+  //bool eventBased = !sEvBuildRaw.IsNull();
+  bool bUseMvd  = setup->IsActive(ECbmModuleId::kMvd);
+  bool bUseSts  = setup->IsActive(ECbmModuleId::kSts);
+  bool bUseRich = setup->IsActive(ECbmModuleId::kRich);
+  bool bUseMuch = setup->IsActive(ECbmModuleId::kMuch);
+  bool bUseTrd  = setup->IsActive(ECbmModuleId::kTrd);
+  bool bUseTof  = setup->IsActive(ECbmModuleId::kTof);
+  bool bUsePsd  = setup->IsActive(ECbmModuleId::kPsd);
+  std::cout << "  MVD: " << (bUseMvd ? "ON" : "OFF") << '\n';
+  std::cout << "  STS: " << (bUseSts ? "ON" : "OFF") << '\n';
+  std::cout << "  RICH: " << (bUseRich ? "ON" : "OFF") << '\n';
+  std::cout << "  MUCH: " << (bUseMuch ? "ON" : "OFF") << '\n';
+  std::cout << "  TRD: " << (bUseTrd ? "ON" : "OFF") << '\n';
+  std::cout << "  TOF: " << (bUseTof ? "ON" : "OFF") << '\n';
+  std::cout << "  PSD: " << (bUsePsd ? "ON" : "OFF") << '\n';
   // ------------------------------------------------------------------------
 
   // -----   Parameter files as input to the runtime database   -------------
-  std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Defining paramete files " << std::endl;
+  std::cout << '\n';
+  std::cout << "-I- " << myName << ": Defining paramete files\n";
   TList* parFileList = new TList();
   TString geoTag;
 
   // - MUCH digitisation parameters
   TString muchParFile {};
-  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kMuch, geoTag)) {
+  if (setup->GetGeoTag(ECbmModuleId::kMuch, geoTag)) {
     bool mcbmFlag   = geoTag.Contains("mcbm", TString::kIgnoreCase);
     muchParFile     = srcDir + "/parameters/much/much_";
     muchParFile += (mcbmFlag) ? geoTag : geoTag(0, 4);
@@ -92,7 +116,7 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   }
 
   // - TRD digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
+  if (setup->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
@@ -103,7 +127,7 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   }
 
   // - TOF digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
+  if (setup->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
     TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
@@ -146,13 +170,36 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   // ------------------------------------------------------------------------
 
   // ----- MUCH QA  ---------------------------------
-  if (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {
+  if (setup->IsActive(ECbmModuleId::kMuch)) {
     run->AddTask(new CbmMuchTransportQa());
     run->AddTask(new CbmMuchDigitizerQa());
     CbmMuchHitFinderQa* muchHitFinderQa = new CbmMuchHitFinderQa();
     muchHitFinderQa->SetGeoFileName(muchParFile);
     run->AddTask(muchHitFinderQa);
   }
+  // ------------------------------------------------------------------------
+
+  // ----- CA tracking QA ---------------------------------------------------
+  // Tracking detector interface initialization
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+
+  // Kalman Filter (currently needed to access the magnetic filed, to be
+  // removed soon)
+  run->AddTask(new CbmKF());
+
+  // Tracking parameters file is required
+  TString caParFile = recFile;
+  caParFile.ReplaceAll(".root", ".L1Parameters.dat");
+
+  auto* pCaOutputQa = new cbm::ca::OutputQa(verbose, bUseMC);
+  pCaOutputQa->SetMcbmTrackingMode();
+  pCaOutputQa->ReadParameters(caParFile.Data());
+  pCaOutputQa->SetUseSts(bUseSts);
+  //pCaOutputQa->SetUseMuch(bUseMuch);
+  pCaOutputQa->SetUseTrd(bUseTrd);
+  pCaOutputQa->SetUseTof(bUseTof);
+  run->AddTask(pCaOutputQa);
+
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------

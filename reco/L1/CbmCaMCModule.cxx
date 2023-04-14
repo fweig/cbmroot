@@ -596,18 +596,11 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
 
       if (pExtPoint->GetTrackID() < 0) { continue; }  // Point does not have a track
 
-      // Cut on time-slice time
-      if (!fbLegacyEventMode) {
-        double pointT = pExtPoint->GetTime() + fpMCEventList->GetEventTime(iEvent, iFile);
-        double startT = fpTimeSlice->GetStartTime();
-        double endT   = fpTimeSlice->GetEndTime();
-        if ((startT > 0. && pointT < startT) || (endT > 0. && pointT > endT)) { continue; }  // does not fit into TS
-      }
-
       // Select station index for a point
       double zPos     = pExtPoint->GetZ();
       float bestDist  = 1000.;  // arbitrary large length [cm]
       int iStSelected = -1;     // local geometry index of TOF station
+
       for (int iStLocGeo = 0; iStLocGeo < nTofStationsGeo; ++iStLocGeo) {
         int iStActive = fpParameters->GetStationIndexActive(iStLocGeo, L1DetectorID::kTof);
         if (iStActive < 0) { continue; }  // station is not used in tracking

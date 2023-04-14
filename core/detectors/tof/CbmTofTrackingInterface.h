@@ -19,6 +19,7 @@
 #include "CbmTrackingDetectorInterfaceBase.h"
 
 #include "FairTask.h"
+#include "Logger.h"
 
 #include "TMath.h"
 
@@ -102,14 +103,20 @@ public:
   /// Gets a tracking station by the address of element
   /// \param  address  Unique element address
   /// \return Local index of the tracking station
-  int GetTrackingStationIndex(int /*address*/) const
+  int GetTrackingStationIndex(int address) const
   {
-    // int iSt = fDigiBdfPar->GetTrackingStation(CbmTofAddress::GetSmType(address),
-    //                                           CbmTofAddress::GetSmId(address),
-    //                                           CbmTofAddress::GetRpcId(address));
+    LOG(fatal) << "CbmTofTrackingInterface::GetTrackingStationIndex(int address): Unfortunately this function cannot be"
+               << " currently used. Please, use its overloaded version "
+               << "CbmTofTrackingInterface::GetTrackingStationIndex(const CbmPixelHit* hit) instead";
+    int iSt = fDigiBdfPar->GetTrackingStation(CbmTofAddress::GetSmType(address), CbmTofAddress::GetSmId(address),
+                                              CbmTofAddress::GetRpcId(address));
     // NOTE: Implement, when the "mcbm_beam_2021_07_surveyed" parameters will be fixed
     // TODO: Invesitgate problem in mcbm_beam_2021_07_surveyed
-    return -1;  // iSt;
+    //if (fIfMissingHits) {
+    //  // Recalculate station index for inconsistent hits
+    //  if (hit->GetX() > 20. && hit->GetZ() > 270. && 1 == iSt) { iSt = 2; }
+    //}
+    return iSt;
   }
 
 

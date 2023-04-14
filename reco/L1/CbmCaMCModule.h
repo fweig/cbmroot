@@ -400,24 +400,25 @@ bool CbmCaMCModule::FillMCPoint(int iExtId, int iEvent, int iFile, ca::tools::MC
     }
   }
 
+  // Update point time with event time
+  time += fpMCEventList->GetEventTime(iEvent, iFile);
+
   // ----- Reject MC points falling out of the time slice
   // STS, MuCh, TRD, TOF
   if constexpr (DetID != L1DetectorID::kMvd) {
-    if (!fbLegacyEventMode) {  // fpTimeSlice != nullptr
-      double startT  = fpTimeSlice->GetStartTime();
-      double endT    = fpTimeSlice->GetEndTime();
-      double mcGlobT = time + fpMCEventList->GetEventTime(iEvent, iFile);
+    double startT = fpTimeSlice->GetStartTime();
+    double endT   = fpTimeSlice->GetEndTime();
 
-      if ((startT > 0. && mcGlobT < startT) || (endT > 0. && mcGlobT > endT)) {
-        LOG(warn) << "CbmCaMCModule: MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
-                  << ", iFile = " << iFile << " and det id " << int(DetID) << " fell out of the TS duration [" << startT
-                  << ", " << endT << "] with measured time = " << mcGlobT << " [ns]";
-        return false;
-      }
+    if ((startT > 0. && time < startT) || (endT > 0. && time > endT)) {
+      LOG(warn) << "CbmCaMCModule: MC point with iExtId = " << iExtId << ", iEvent = " << iEvent
+                << ", iFile = " << iFile << " and det id " << int(DetID) << " fell out of the TS duration [" << startT
+                << ", " << endT << "] with measured time = " << time << " [ns]";
+      return false;
     }
   }
 
   // ----- Fill MC point
+  point.SetExternalId(iExtId);
   point.SetEventId(iEvent);
   point.SetFileId(iFile);
   point.SetTime(time);

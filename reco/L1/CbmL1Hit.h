@@ -1,6 +1,6 @@
-/* Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+/* Copyright (C) 2010-2023 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov [committer], Valentina Akishina, Maksym Zyzak */
+   Authors: Igor Kulakov [committer], Valentina Akishina, Maksym Zyzak, Sergei Zharko */
 
 #ifndef _CbmL1Hit_h_
 #define _CbmL1Hit_h_
@@ -85,7 +85,7 @@ public:
   /// @brief String representation of the object
   /// @param verbose  Verbosity level
   /// @param header   If true, header will be printed
-  std::string ToString(int verbose = 10, bool header = false) const
+  std::string ToString(int verbose = 0, bool header = false) const
   {
     using std::setfill;
     using std::setw;
@@ -94,24 +94,32 @@ public:
       msg << setw(8) << setfill(' ') << "ext. ID" << ' ';
       msg << setw(8) << setfill(' ') << "int. ID" << ' ';
       msg << setw(8) << setfill(' ') << "st. ID" << ' ';
-      msg << setw(12) << setfill(' ') << "x [cm]" << ' ';
-      msg << setw(12) << setfill(' ') << "y [cm]" << ' ';
-      msg << setw(12) << setfill(' ') << "time [ns]" << ' ';
       msg << setw(8) << setfill(' ') << "Det. ID" << ' ';
+      msg << setw(8) << setfill(' ') << "MC p. ID" << ' ';
+      msg << setw(14) << setfill(' ') << "x [cm]" << ' ';
+      msg << setw(14) << setfill(' ') << "y [cm]" << ' ';
+      msg << setw(14) << setfill(' ') << "time [ns]" << ' ';
+      if (verbose > 0) {
+        msg << setw(14) << setfill(' ') << "dx [cm]" << ' ';
+        msg << setw(14) << setfill(' ') << "dy [cm]" << ' ';
+        msg << setw(14) << setfill(' ') << "dxy [cm]" << ' ';
+        msg << setw(14) << setfill(' ') << "dt [ns]" << ' ';
+      }
     }
     else {
       msg << setw(8) << setfill(' ') << ExtIndex << ' ';
       msg << setw(8) << setfill(' ') << IntIndex << ' ';
       msg << setw(8) << setfill(' ') << iStation << ' ';
-      msg << setw(12) << setfill(' ') << x << ' ';
-      msg << setw(12) << setfill(' ') << y << ' ';
-      msg << setw(12) << setfill(' ') << time << ' ';
       msg << setw(8) << setfill(' ') << Det << ' ';
+      msg << setw(8) << setfill(' ') << GetMCPointIndex() << ' ';
+      msg << setw(14) << setfill(' ') << x << ' ';
+      msg << setw(14) << setfill(' ') << y << ' ';
+      msg << setw(14) << setfill(' ') << time << ' ';
       if (verbose > 0) {
-        msg << "\n\tMC point indexes: ";
-        for (int iP : mcPointIds) {
-          msg << iP << ' ';
-        }
+        msg << setw(14) << setfill(' ') << dx << ' ';
+        msg << setw(14) << setfill(' ') << dy << ' ';
+        msg << setw(14) << setfill(' ') << dxy << ' ';
+        msg << setw(14) << setfill(' ') << dt << ' ';
       }
     }
     return msg.str();

@@ -58,8 +58,8 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  bool bUseMC    = true;  // MC flag: used or not
-  int verbose    = 3;
+  bool bUseMC    = true;                           // MC flag: used or not
+  int verbose    = 3;                              // verbose level
   TString myName = "run_qa";                       // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------

@@ -73,7 +73,7 @@ struct CbmL1MCPoint {
   L1Vector<int> hitIds {"CbmL1MCPoint::hitIds"};  // indices of CbmL1Hits in L1->vStsHits array
 
   /// Temporary log function for debugging
-  std::string ToString(int verbose, bool printHeader = false) const
+  std::string ToString(int verbose = 3, bool printHeader = false) const
   {
     if (verbose < 1) { return std::string(); }
 

@@ -11,7 +11,10 @@
 
 #include "CbmGlobalTrack.h"
 #include "CbmKFMath.h"  // for CopyTrackParam2TC
+#include "CbmMuchTrack.h"
 #include "CbmStsTrack.h"
+#include "CbmTofTrack.h"
+#include "CbmTrdTrack.h"
 
 #include "FairRootManager.h"
 #include "Logger.h"
@@ -208,8 +211,76 @@ void TimeSliceReader::ReadRecoTracks()
       break;
 
     case ECbmTrackingMode::kMCBM:
-      LOG(fatal) << "Sorry, mCBM mode has not been implemented yet. Stay tuned :)";
-      //  TODO: fill Global track here
+      //LOG(fatal) << "Sorry, mCBM mode has not been implemented yet. Stay tuned :)";
+      // Fill tracks from GlobalTrack branch
+      for (int iT = 0; iT < nTracks; ++iT) {
+        auto* pInputTrack = static_cast<CbmGlobalTrack*>(fpBrRecoTracks->At(iT));
+        auto& track       = (*fpvTracks)[iT];
+        CbmKFMath::CopyTrackParam2TC(pInputTrack->GetParamFirst(), track.T, track.C);
+        CbmKFMath::CopyTrackParam2TC(pInputTrack->GetParamLast(), track.TLast, track.CLast);
+        track.chi2 = pInputTrack->GetChi2();
+        track.NDF  = pInputTrack->GetNDF();
+
+        // ** Fill information from local tracks **
+        // STS tracks (+ MVD)
+        if (fbUseSts) {
+          int iStsTrkId = pInputTrack->GetStsTrackIndex();
+          if (iStsTrkId > -1) {
+            auto* pStsTrack = static_cast<CbmStsTrack*>(fpBrStsTracks->At(iStsTrkId));
+            if (fbUseMvd) {
+              for (int iH = 0; iH < pStsTrack->GetNofMvdHits(); ++iH) {
+                int iHext = pStsTrack->GetMvdHitIndex(iH);
+                int iHint = vHitMvdIds[iHext];
+                track.Hits.push_back(iHint);
+              }
+            }
+            for (int iH = 0; iH < pStsTrack->GetNofStsHits(); ++iH) {
+              int iHext = pStsTrack->GetStsHitIndex(iH);
+              int iHint = vHitStsIds[iHext];
+              track.Hits.push_back(iHint);
+            }
+          }
+        }
+
+        // MUCH tracks
+        if (fbUseMuch) {
+          int iMuchTrkId = pInputTrack->GetMuchTrackIndex();
+          if (iMuchTrkId > -1) {
+            auto* pMuchTrack = static_cast<CbmMuchTrack*>(fpBrMuchTracks->At(iMuchTrkId));
+            for (int iH = 0; iH < pMuchTrack->GetNofHits(); ++iH) {
+              int iHext = pMuchTrack->GetHitIndex(iH);
+              int iHint = vHitMuchIds[iHext];
+              track.Hits.push_back(iHint);
+            }
+          }
+        }
+
+        // TRD tracks
+        if (fbUseTrd) {
+          int iTrdTrkId = pInputTrack->GetTrdTrackIndex();
+          if (iTrdTrkId > -1) {
+            const auto* pTrdTrack = static_cast<const CbmTrdTrack*>(fpBrTrdTracks->At(iTrdTrkId));
+            for (int iH = 0; iH < pTrdTrack->GetNofHits(); ++iH) {
+              int iHext = pTrdTrack->GetHitIndex(iH);
+              int iHint = vHitTrdIds[iHext];
+              track.Hits.push_back(iHint);
+            }  // iH
+          }
+        }
+
+        // TOF tracks
+        if (fbUseTof) {
+          int iTofTrkId = pInputTrack->GetTofTrackIndex();
+          if (iTofTrkId > -1) {
+            const auto* pTofTrack = static_cast<const CbmTofTrack*>(fpBrTofTracks->At(iTofTrkId));
+            for (int iH = 0; iH < pTofTrack->GetNofHits(); ++iH) {
+              int iHext = pTofTrack->GetHitIndex(iH);
+              int iHint = vHitTofIds[iHext];
+              track.Hits.push_back(iHint);
+            }  // iH
+          }    // if iTofTrkId > -1
+        }      // if fbUseTof
+      }        // iT
       break;
   }
 }

@@ -1010,6 +1010,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
   // output performance
   if (fPerformance) {
     if (fVerbose > 1) { LOG(info) << "Performance..."; }
+
+
     TrackMatch();
     EfficienciesPerformance();
     HistoPerformance();

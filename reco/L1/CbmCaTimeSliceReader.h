@@ -301,12 +301,15 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
     }
     else if constexpr (L1DetectorID::kTof == DetID) {
       CbmTofHit* pTofHit = static_cast<CbmTofHit*>(pBrHits->At(iHext));
-      iStGeom            = fpTofInterface->GetTrackingStationIndex(pTofHit->GetAddress());
-      phiF               = fpTofInterface->GetStripsStereoAngleFront(iStGeom);
-      phiB               = fpTofInterface->GetStripsStereoAngleBack(iStGeom);
-      pPixelHit          = static_cast<CbmPixelHit*>(pTofHit);
-      hitRecord.fDu      = pTofHit->GetDx();
-      hitRecord.fDv      = pTofHit->GetDy();
+      // NOTE: In TOF we can take station index only from hit, because the function needs information on x and z
+      //       of the hit in case of "beam_mcbm_2021_07_surveyed" (missingHits flag = true).
+      // TODO: Investigate this case or apply the hack to the TOF level
+      iStGeom       = fpTofInterface->GetTrackingStationIndex(pTofHit);
+      phiF          = fpTofInterface->GetStripsStereoAngleFront(iStGeom);
+      phiB          = fpTofInterface->GetStripsStereoAngleBack(iStGeom);
+      pPixelHit     = static_cast<CbmPixelHit*>(pTofHit);
+      hitRecord.fDu = pTofHit->GetDx();
+      hitRecord.fDv = pTofHit->GetDy();
 
       // *** Additional cuts for TOF ***
       // Skip T0 hits
