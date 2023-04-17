@@ -181,6 +181,33 @@ void TrackTypeQa::FillRecoTrack(int iTrkReco, double weight)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void TrackTypeQa::FillRecoTracks()
+{
+  for (int iTrkReco = 0; iTrkReco < (int) fpvRecoTracks->size(); ++iTrkReco) {
+    const auto& recoTrk = (*fpvRecoTracks)[iTrkReco];
+
+    // Reject tracks, which do not contain hits
+    if (recoTrk.GetNofHits() < 1) { continue; }
+
+    // Reject tracks, which do not pass the applied cuts
+    if (!fRecoTrackCut(recoTrk)) { continue; }
+
+    // Reject tracks, which have MC tracks not passing the applied cuts
+    if (fbUseMC) {
+      int iTrkMC = recoTrk.GetMatchedMCTrackIndex();
+      if (iTrkMC > -1) {
+        const auto& mcTrk = fpMCData->GetTrack(iTrkMC);
+        if (!fMCTrackCut(mcTrk)) { continue; }
+      }
+    }
+
+    // Fill histograms
+    this->FillRecoTrack(iTrkReco);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void TrackTypeQa::FillMCTrack(int iTrkMC, double weight)
 {
   assert(fbUseMC);
@@ -209,4 +236,26 @@ void TrackTypeQa::FillMCTrack(int iTrkMC, double weight)
 
   fph_eff_pMC_yMC->Fill(mcTrack.GetRapidity(), mcTrack.GetP(), bReco);
   fph_eff_thetaMC_phiMC->Fill(mcTrack.GetPhi(), mcTrack.GetPhi(), bReco);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void TrackTypeQa::FillMCTracks()
+{
+  assert(fbUseMC);
+  for (int iTrkMC = 0; iTrkMC < fpMCData->GetNofTracks(); ++iTrkMC) {
+    const auto& mcTrk = fpMCData->GetTrack(iTrkMC);
+
+    // Cut tracks, which did not leave hits in tracker
+    if (mcTrk.GetNofHits() == 0) { continue; }
+
+    // Cut tracks, which do not pass the applied cut
+    if (!fMCTrackCut(mcTrk)) { continue; }
+
+    // TODO: Investigate, how to apply reconstructed track cuts here
+    // NOTE: Reconstructed track cut analogs must be applied to mc tracks
+
+    // Fill histograms
+    this->FillMCTrack(iTrkMC);
+  }
 }

@@ -25,61 +25,91 @@
 
 namespace cbm::ca
 {
+  /// @brief Enumeration of track category
+  enum ETrackType
+  {
+    kAll,        ///< all tracks
+    kGhost,      ///< ghost tracks (no MC is used)
+    kPrim,       ///< primary
+    kSec,        ///< secondary
+    kAllE,       ///< all e-/e+
+    kPrimE,      ///< primary e-/e+
+    kPrimEP,     ///< primary e+
+    kPrimEM,     ///< primary e-
+    kSecE,       ///< secondary e-/e+
+    kSecEP,      ///< secondary e+
+    kSecEM,      ///< secondary e-
+    kAllMU,      ///< all mu+/mu-
+    kPrimMU,     ///< primary mu+/mu-
+    kPrimMUP,    ///< primary mu+
+    kPrimMUM,    ///< primary mu-
+    kSecMU,      ///< secondary mu+/mu-
+    kSecMUP,     ///< secondary mu+
+    kSecMUM,     ///< secondary mu-
+    kAllPI,      ///< all pi+/pi-
+    kPrimPI,     ///< primary pi+/pi-
+    kPrimPIP,    ///< primary pi+
+    kPrimPIM,    ///< primary pi-
+    kSecPI,      ///< secondary pi+/pi-
+    kSecPIP,     ///< secondary pi+
+    kSecPIM,     ///< secondary pi-
+    kAllK,       ///< all K+/K-
+    kPrimK,      ///< primary K+/K-
+    kPrimKP,     ///< primary K+
+    kPrimKM,     ///< primary K-
+    kSecK,       ///< secondary K+/K-
+    kSecKP,      ///< secondary K+
+    kSecKM,      ///< secondary K-
+    kAllPPBAR,   ///< all p/p-bar
+    kPrimPPBAR,  ///< primary p/p-bar
+    kPrimP,      ///< primary p
+    kPrimPBAR,   ///< primary p-bar
+    kSecPPBAR,   ///< secondary p/p-bar
+    kSecP,       ///< secondary p
+    kSecPBAR,    ///< secondary p-bar
+    // kPrimD,
+    // kPrimDBAR,
+    // kSecD,
+    // kSecDBAR,
+    // kPrimT,
+    // kPrimTBAR,
+    // kSecT,
+    // kSecTBAR,
+    // kPrim3HE,
+    // kPrim3HEBAR,
+    // kSec3HE,
+    // kSec3HEBAR,
+    // kPrim4HE,
+    // kPrim4HEBAR,
+    // kSec4HE,
+    // kSec4HEBAR,
+    kEND
+  };
+
   /// @brief  QA-task for CA tracking output results
   ///
   class OutputQa : public CbmQaTask {
+    // WIP: Temporary flag to switch between two different approaches of filling track type histograms
+    //
+    // 1) Experimental approach (kEXPTRACKFILL = true) utilizes unified filling based on defined reco and MC cuts.
+    // 2) Feature is to be studied more precisely (descrepancy in primary/secondary track with a standard approach)
+    // 3) Experimental approach runs in ~10% slower, then the standard
+    static constexpr bool kEXPTRACKFILL = false;
+
   public:
-    /// @brief Enumeration of track category
-    enum ETrackType
-    {
-      kAll,    ///< all tracks
-      kGhost,  ///< ghost tracks (no MC is used)
-      kPrim,   ///< primary tracks
-      kSec,    ///< secondary tracks
-      // kPrimEP,  ///< primary electron tracks
-      // kPrimEM,  ///< primary positron tracks
-      // kSecEP,   ///< secondary electron tracks
-      // kSecEM,   ///< secondary positron tracks
-      // kPrimMUP, ///< primary .....
-      // kPrimMUM,
-      // kSecMUP,
-      // kSecMUM,
-      kPrimPIP,
-      kPrimPIM,
-      kSecPIP,
-      kSecPIM,
-      // kPrimKP,
-      // kPrimKM,
-      // kSecKP,
-      // kSecKM,
-      // kPrimP,
-      // kPrimPBAR,
-      // kSecP,
-      // kSecPBAR,
-      // kPrimD,
-      // kPrimDBAR,
-      // kSecD,
-      // kSecDBAR,
-      // kPrimT,
-      // kPrimTBAR,
-      // kSecT,
-      // kSecTBAR,
-      // kPrim3HE,
-      // kPrim3HEBAR,
-      // kSec3HE,
-      // kSec3HEBAR,
-      // kPrim4HE,
-      // kPrim4HEBAR,
-      // kSec4HE,
-      // kSec4HEBAR,
-      kEND
-    };
-
-
     /// @brief  Constructor from parameters
     /// @param  verbose   Verbosity level
     /// @param  isMCUsed  Flag, if MC information is available for this task
     OutputQa(int verbose, bool isMCUsed);
+
+    /// @brief Adds track type
+    /// @param type  Track type
+    /// @param flag  Flag: true/false
+    ///
+    /// Adds a track type for building distributions. By default, only all, primary, secondary and ghost track
+    /// distributions are booked.
+    void AddTrackType(ETrackType type, bool flag = true);
+
 
     /// @brief Enables debugger
     /// @param filename  Name of output ROOT file
@@ -149,6 +179,11 @@ namespace cbm::ca
     /// @brief De-initializes histograms
     void DeInit() {}
 
+    /// @brief Fills histograms for a given track types
+    /// @param type  Track type
+    /// @param
+    void FillTrackTypeHistograms();
+
   private:
     // Flags for detector subsystems being used
     bool fbUseMvd  = false;  ///< is MVD used
@@ -179,8 +214,7 @@ namespace cbm::ca
 
     /// Histograms of different track types
     std::array<std::unique_ptr<TrackTypeQa>, ETrackType::kEND> fvpTrackHistograms;
-
-    std::array<std::tuple<Style_t, Marker_t, Color_t>, ETrackType::kEND> fvpTrackHistogramStyles;
+    std::array<bool, ETrackType::kEND> fvbTrackTypeOn = {0};  ///< Track type is on
   };
 }  // namespace cbm::ca
 

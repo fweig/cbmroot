@@ -36,7 +36,7 @@
 #endif
 
 void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
-             TString setupName = "mcbm_beam_2020_03")
+             TString setupName = "mcbm_beam_2020_03", Bool_t bUseMC = kTRUE)
 {
 
   // ========================================================================
@@ -48,7 +48,6 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  bool bUseMC    = true;                           // flag: true - MC information is used
   int verbose    = 6;                              // verbose level
   TString myName = "mcbm_qa";                      // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
@@ -164,9 +163,16 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   // ------------------------------------------------------------------------
 
   // -----   MCDataManager (legacy mode)  -----------------------------------
-  CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 1);
-  mcManager->AddFile(traFile);
-  run->AddTask(mcManager);
+  if (bUseMC) {
+    std::cout << "-I- " << myName << ": Adding MC manager and MC to reco matching tasks\n";
+
+    auto* mcManager = new CbmMCDataManager("MCDataManager", 1);
+    mcManager->AddFile(traFile);
+    run->AddTask(mcManager);
+
+    auto* matchRecoToMC = new CbmMatchRecoToMC();
+    run->AddTask(matchRecoToMC);
+  }
   // ------------------------------------------------------------------------
 
   // ----- MUCH QA  ---------------------------------
@@ -178,6 +184,7 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
     run->AddTask(muchHitFinderQa);
   }
   // ------------------------------------------------------------------------
+
 
   // ----- CA tracking QA ---------------------------------------------------
   // Tracking detector interface initialization

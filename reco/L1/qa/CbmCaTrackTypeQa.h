@@ -23,7 +23,8 @@
 namespace ca::tools
 {
   class MCData;
-}
+  class MCTrack;
+}  // namespace ca::tools
 class CbmL1Track;
 class CbmL1HitDebugInfo;
 
@@ -69,17 +70,30 @@ namespace cbm::ca
     /// @brief Initializes histograms
     void Init();
 
+    /// @brief Flag on MC usage by the track type
+    /// @return true  Histograms relied on MC info are filled
+    /// @return false Histograms relied on MC info are not filled
+    bool IsMCUsed() const { return fbUseMC; }
+
     /// @brief Fills histograms with various track information
     /// @note  To be called in the loop over reconstructed tracks full sample
     /// @param iTrkReco  Index of reconstructed track
     /// @param weight    Weight
     void FillRecoTrack(int iTrkReco, double weight = 1);
 
+    /// @brief Fills histograms with recon tracks
+    /// @note  To be called once per event/TS
+    void FillRecoTracks();
+
     /// @brief Fills histograms with mc track information
     /// @note  To be called in the loop over MC tracks full sample
     /// @param iTrkMC  Index of MC track
     /// @param weight  Weight
     void FillMCTrack(int iTrkMC, double weight = 1);
+
+    /// @brief Fills histograms with recon tracks
+    /// @note  To be called once per event/TS
+    void FillMCTracks();
 
     /// @brief Registers the reconstructed tracks container
     /// @param vTracks  Reference to reconstructed tracks container
@@ -100,6 +114,18 @@ namespace cbm::ca
     /// @brief Sets title, which is to be reflected on legends and titles
     /// @param title  Title of track type
     void SetTitle(const char* title) { fsTitle = title; }
+
+    /// @brief Sets selection cuts on MC tracks
+    /// @param cut  Functor <bool(const MCTrack&)> defining cut on MC track
+    ///
+    /// When function returns false,
+    void SetMCTrackCut(std::function<bool(const ::ca::tools::MCTrack&)> cut) { fMCTrackCut = cut; }
+
+    /// @brief Sets selection cuts on reconstructed tracks
+    /// @param cut  Functor <bool(const CbmL1Track&)> defining cut on reconstructed track
+    ///
+    /// When function returns false,
+    void SetRecoTrackCut(std::function<bool(const CbmL1Track&)> cut) { fRecoTrackCut = cut; }
 
     // ************************
     // ** List of histograms **
@@ -176,6 +202,15 @@ namespace cbm::ca
     L1Vector<CbmL1HitDebugInfo>* fpvHits       = nullptr;  ///< Pointer to vector of reconstructed hits
     ::ca::tools::MCData* fpMCData              = nullptr;  ///< Pointer to MC data object
     std::shared_ptr<L1Parameters> fpParameters = nullptr;  ///< Pointer to parameters object
+
+    // ** Cuts on tracks for a given track class **
+
+    /// Cut function on MC tracks
+    std::function<bool(const ::ca::tools::MCTrack&)> fMCTrackCut = [](const ::ca::tools::MCTrack&) { return true; };
+
+    /// Cut function on reconstructed tracks
+    std::function<bool(const CbmL1Track&)> fRecoTrackCut = [](const CbmL1Track&) { return true; };
+
 
     // **************************
     // ** Histogram properties **

@@ -470,7 +470,6 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
       trkRe.SetMaxPurity(maxPurity);
     }  // loop over hit map: end
     assert(trkRe.GetNofMCTracks() < 2);
-
   }  // loop over reconstructed tracks: end
 }
 

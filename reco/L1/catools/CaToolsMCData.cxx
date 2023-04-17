@@ -94,7 +94,6 @@ void MCData::Clear()
 //
 void MCData::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
 {
-  LOG(info) << "\033[1;32m!!!! FLAG a\033[0m";
   for (auto& aTrk : fvTracks) {
     // Assign hits to tracks
     aTrk.ClearHitIndexes();
@@ -109,7 +108,6 @@ void MCData::InitTrackInfo(const L1Vector<CbmL1HitDebugInfo>& vHits)
     aTrk.InitPointsInfo(fvPoints);
     aTrk.InitHitsInfo(vHits);
   }
-  LOG(info) << "\033[1;32m!!!! FLAG b\033[0m";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
