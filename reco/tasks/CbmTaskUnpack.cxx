@@ -264,14 +264,10 @@ InitStatus CbmTaskUnpack::Init()
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }  //# equipments
 
-  // --- Common parameters for all components for MUCH
-  uint32_t numChansPerAsicMuch = 128;  // R/O channels per ASIC for MUCH
-
   // Create one algorithm per component and configure it with parameters
   auto equipIdsMuch = fMuchConfig.GetEquipmentIds();
   for (auto& equip : equipIdsMuch) {
     std::unique_ptr<UnpackMuchPar> par(new UnpackMuchPar());
-    par->fNumChansPerAsic  = numChansPerAsicMuch;
     const size_t numElinks = fMuchConfig.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackMuchElinkPar elinkPar;

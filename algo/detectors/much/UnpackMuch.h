@@ -40,8 +40,6 @@ namespace cbm::algo
    ** @brief Parameters required for the STS unpacking (specific to one component)
    **/
   struct UnpackMuchPar {
-    uint32_t fNumChansPerAsic                    = 0;   ///< Number of channels per ASIC
-    uint32_t fNumAsicsPerModule                  = 0;   ///< Number of ASICS per module
     std::vector<UnpackMuchElinkPar> fElinkParams = {};  ///< Parameters for each eLink
   };
 
