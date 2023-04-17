@@ -330,14 +330,10 @@ InitStatus CbmTaskUnpack::Init()
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }
 
-  // --- Common parameters for all components for TOF
-  uint32_t numChansPerAsicTof = 4;  // R/O channels per ASIC for TOF
-
   // Create one algorithm per component and configure it with parameters
   auto equipIdsTof = fTofConfig.GetEquipmentIds();
   for (auto& equip : equipIdsTof) {
     std::unique_ptr<UnpackTofPar> par(new UnpackTofPar());
-    par->fNumChansPerAsic  = numChansPerAsicTof;
     const size_t numElinks = fTofConfig.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackTofElinkPar elinkPar;
@@ -349,14 +345,10 @@ InitStatus CbmTaskUnpack::Init()
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }
 
-  // --- Common parameters for all components for T0
-  uint32_t numChansPerAsicT0 = 4;  // R/O channels per ASIC for T0
-
   // Create one algorithm per component and configure it with parameters
   auto equipIdsT0 = fT0Config.GetEquipmentIds();
   for (auto& equip : equipIdsT0) {
     std::unique_ptr<UnpackT0Par> par(new UnpackT0Par());
-    par->fNumChansPerAsic  = numChansPerAsicT0;
     const size_t numElinks = fT0Config.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackT0ElinkPar elinkPar;
