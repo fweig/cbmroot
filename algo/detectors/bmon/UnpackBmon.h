@@ -2,11 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Dominik Smith [committer] */
 
-#ifndef CBM_ALGO_UNPACKT0_H
-#define CBM_ALGO_UNPACKT0_H 1
+#ifndef CBM_ALGO_UNPACKBMON_H
+#define CBM_ALGO_UNPACKBMON_H 1
 
 
-#include "CbmTofDigi.h"
+#include "CbmBmonDigi.h"
 
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
@@ -23,33 +23,33 @@ namespace cbm::algo
 {
 
 
-  /** @struct UnpackT0ElinkPar
+  /** @struct UnpackBmonElinkPar
    ** @author Volker Friese <v.friese@gsi.de>
    ** @since 25 November 2021
-   ** @brief T0 Unpacking parameters for one eLink / ASIC
+   ** @brief Bmon Unpacking parameters for one eLink / ASIC
    **/
-  struct UnpackT0ElinkPar {
-    std::vector<uint32_t> fChannelUId;  ///< CbmT0Address for different channels
+  struct UnpackBmonElinkPar {
+    std::vector<uint32_t> fChannelUId;  ///< CbmBmonAddress for different channels
     uint64_t fTimeOffset = 0.;          ///< Time calibration parameter
   };
 
 
-  /** @struct UnpackT0Par
+  /** @struct UnpackBmonPar
    ** @author Volker Friese <v.friese@gsi.de>
    ** @since 25 November 2021
    ** @brief Parameters required for the STS unpacking (specific to one component)
    **/
-  struct UnpackT0Par {
-    std::vector<UnpackT0ElinkPar> fElinkParams = {};  ///< Parameters for each eLink
+  struct UnpackBmonPar {
+    std::vector<UnpackBmonElinkPar> fElinkParams = {};  ///< Parameters for each eLink
   };
 
 
-  /** @struct UnpackT0Moni
+  /** @struct UnpackBmonMoni
    ** @author Volker Friese <v.friese@gsi.de>
    ** @since 2 December 2021
    ** @brief Monitoring data for STS unpacking
    **/
-  struct UnpackT0MonitorData {
+  struct UnpackBmonMonitorData {
     uint32_t fNumNonHitOrTsbMessage     = 0;
     uint32_t fNumErrElinkOutOfRange     = 0;  ///< Elink not contained in parameters
     uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not EPOCH
@@ -66,24 +66,24 @@ namespace cbm::algo
   };
 
 
-  /** @class UnpackT0
+  /** @class UnpackBmon
    ** @author Pierre-Alain Loizeau <p.-a.loizeau@gsi.de>
    ** @author Volker Friese <v.friese@gsi.de>
    ** @since 25 November 2021
    ** @brief Unpack algorithm for STS
    **/
-  class UnpackT0 {
+  class UnpackBmon {
 
   public:
-    typedef std::pair<std::vector<CbmTofDigi>, UnpackT0MonitorData> resultType;
+    typedef std::pair<std::vector<CbmBmonDigi>, UnpackBmonMonitorData> resultType;
 
 
     /** @brief Default constructor **/
-    UnpackT0() {};
+    UnpackBmon() {};
 
 
     /** @brief Destructor **/
-    ~UnpackT0() {};
+    ~UnpackBmon() {};
 
 
     /** @brief Algorithm execution
@@ -98,7 +98,7 @@ namespace cbm::algo
     /** @brief Set the parameter container
      ** @param params Pointer to parameter container
      **/
-    void SetParams(std::unique_ptr<UnpackT0Par> params) { fParams = *(std::move(params)); }
+    void SetParams(std::unique_ptr<UnpackBmonPar> params) { fParams = *(std::move(params)); }
 
 
   private:  // methods
@@ -107,8 +107,8 @@ namespace cbm::algo
      ** @param digiVec Vector to append the created digi to
      ** @param monitor Reference to monitor object
      **/
-    void ProcessHitMessage(const critof001::Message& message, std::vector<CbmTofDigi>& digiVec,
-                           UnpackT0MonitorData& monitor) const;
+    void ProcessHitMessage(const critof001::Message& message, std::vector<CbmBmonDigi>& digiVec,
+                           UnpackBmonMonitorData& monitor) const;
 
     /** @brief Process an epoch message (TS_MSB)
      ** @param message SMX message (32-bit word)
@@ -119,10 +119,10 @@ namespace cbm::algo
   private:                            // members
     uint64_t fCurrentTsTime    = 0;   ///< Unix time of timeslice in units of epoch length
     uint32_t fCurrentEpochInTs = 0;   ///< Current epoch number relative to timeslice start epoch
-    UnpackT0Par fParams        = {};  ///< Parameter container
+    UnpackBmonPar fParams      = {};  ///< Parameter container
   };
 
 
 } /* namespace cbm::algo */
 
-#endif /* CBM_ALGO_UNPACKT0_H */
+#endif /* CBM_ALGO_UNPACKBMON_H */

@@ -3,13 +3,13 @@
    Authors: Dominik Smith [committer] */
 
 // -------------------------------------------------------------------------
-// -----            T0ReadoutConfig header file                       -----
+// -----            BmonReadoutConfig header file                      -----
 // -----            Created 22/02/22  by P.-A. Loizeau                 -----
 // -----            Modified 07/12/18  by A Kumar                      -----
 // -------------------------------------------------------------------------
 
-#ifndef ALGO_DETECTORS_T0_T0READOUTCONFIG_H
-#define ALGO_DETECTORS_T0_T0READOUTCONFIG_H
+#ifndef ALGO_DETECTORS_BMON_BMONREADOUTCONFIG_H
+#define ALGO_DETECTORS_BMON_BMONREADOUTCONFIG_H
 
 #include <cstdint>
 #include <map>
@@ -17,14 +17,14 @@
 
 namespace cbm::algo
 {
-  class T0ReadoutConfig {
+  class BmonReadoutConfig {
 
   public:
     /** @brief Constructor **/
-    T0ReadoutConfig();
+    BmonReadoutConfig();
 
     /** @brief Destructor **/
-    virtual ~T0ReadoutConfig();
+    virtual ~BmonReadoutConfig();
 
     /** @brief Equipment in the configuration
      ** @return Vector of equipment IDs
@@ -82,4 +82,4 @@ namespace cbm::algo
 
 } /* namespace cbm::algo */
 
-#endif  //ALGO_DETECTORS_T0_T0READOUTCONFIG_H
+#endif  //ALGO_DETECTORS_BMON_BMONREADOUTCONFIG_H

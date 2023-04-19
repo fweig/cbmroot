@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Dominik Smith [committer] */
 
-#include "UnpackT0.h"
+#include "UnpackBmon.h"
 
 #include <cassert>
 #include <sstream>
@@ -18,8 +18,8 @@ namespace cbm::algo
 {
 
   // ----   Algorithm execution   ---------------------------------------------
-  UnpackT0::resultType UnpackT0::operator()(const uint8_t* msContent, const fles::MicrosliceDescriptor& msDescr,
-                                            const uint64_t tTimeslice)
+  UnpackBmon::resultType UnpackBmon::operator()(const uint8_t* msContent, const fles::MicrosliceDescriptor& msDescr,
+                                                const uint64_t tTimeslice)
   {
 
     // --- Output data
@@ -101,8 +101,8 @@ namespace cbm::algo
 
 
   // -----   Process hit message   --------------------------------------------
-  inline void UnpackT0::ProcessHitMessage(const critof001::Message& message, vector<CbmTofDigi>& digiVec,
-                                          UnpackT0MonitorData& monitor) const
+  inline void UnpackBmon::ProcessHitMessage(const critof001::Message& message, vector<CbmBmonDigi>& digiVec,
+                                            UnpackBmonMonitorData& monitor) const
   {
     // IGNORES:
     // - Duplicate messages
@@ -118,7 +118,7 @@ namespace cbm::algo
       monitor.fNumErrElinkOutOfRange++;
       return;
     }
-    const UnpackT0ElinkPar& elinkPar = fParams.fElinkParams.at(elink);
+    const UnpackBmonElinkPar& elinkPar = fParams.fElinkParams.at(elink);
 
     const uint32_t channel    = message.getGdpbHitChanId();
     const uint32_t channelUId = (elinkPar.fChannelUId)[channel];
@@ -139,7 +139,7 @@ namespace cbm::algo
 
 
   // -----   Process an epoch message   ---------------------------------------
-  inline void UnpackT0::ProcessEpochMessage(const critof001::Message& message)
+  inline void UnpackBmon::ProcessEpochMessage(const critof001::Message& message)
   {
     const uint64_t epoch = message.getGdpbEpEpochNb();
 

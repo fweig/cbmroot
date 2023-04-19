@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Dominik Smith [committer] */
 
-#include "T0ReadoutConfig.h"
+#include "BmonReadoutConfig.h"
 
 #include "CbmTofAddress.h"
 
@@ -18,15 +18,15 @@ using namespace std;
 namespace cbm::algo
 {
   // ---  Constructor  ------------------------------------------------------------------
-  T0ReadoutConfig::T0ReadoutConfig() { Init(); }
+  BmonReadoutConfig::BmonReadoutConfig() { Init(); }
   // ------------------------------------------------------------------------------------
 
   // ---   Destructor   -----------------------------------------------------------------
-  T0ReadoutConfig::~T0ReadoutConfig() {}
+  BmonReadoutConfig::~BmonReadoutConfig() {}
   // ------------------------------------------------------------------------------------
 
   // ---   Equipment IDs   --------------------------------------------------------------
-  std::vector<uint16_t> T0ReadoutConfig::GetEquipmentIds()
+  std::vector<uint16_t> BmonReadoutConfig::GetEquipmentIds()
   {
     std::vector<uint16_t> result;
     for (auto& entry : fReadoutMap)
@@ -36,7 +36,7 @@ namespace cbm::algo
   // ------------------------------------------------------------------------------------
 
   // ---   Number of elinks for a component / equipment   -------------------------------
-  size_t T0ReadoutConfig::GetNumElinks(uint16_t equipmentId)
+  size_t BmonReadoutConfig::GetNumElinks(uint16_t equipmentId)
   {
     size_t result = 0;
     auto it       = fReadoutMap.find(equipmentId);
@@ -47,7 +47,7 @@ namespace cbm::algo
 
 
   // ---  Mapping (equimentId, elink) -> address[channel]  ------------------------------
-  std::vector<uint32_t> T0ReadoutConfig::Map(uint16_t equipmentId, uint16_t elinkId)
+  std::vector<uint32_t> BmonReadoutConfig::Map(uint16_t equipmentId, uint16_t elinkId)
   {
     std::vector<uint32_t> result;
     auto equipIter = fReadoutMap.find(equipmentId);
@@ -58,7 +58,7 @@ namespace cbm::algo
   }
   // ------------------------------------------------------------------------------------
 
-  void T0ReadoutConfig::Init()
+  void BmonReadoutConfig::Init()
   {
     // This here refers to the mCBM 2022 setup.
     // Taken from CbmMcbm2018TofPar in combination with macro/beamtime/mcbm2022/mBmonCriPar.par
@@ -98,7 +98,7 @@ namespace cbm::algo
   }
 
   // -------------------------------------------------------------------------
-  void T0ReadoutConfig::BuildChannelsUidMap()
+  void BmonReadoutConfig::BuildChannelsUidMap()
   {
     const uint32_t numAsics = numComp * numFebsPerComp * numAsicsPerFeb;
     const uint32_t numChan  = numAsics * numChanPerAsic;
@@ -134,7 +134,7 @@ namespace cbm::algo
   }
 
   // -------------------------------------------------------------------------
-  void T0ReadoutConfig::BuildChannelsUidMapT0(uint32_t& uCh, uint32_t uGbtx)
+  void BmonReadoutConfig::BuildChannelsUidMapT0(uint32_t& uCh, uint32_t uGbtx)
   {
     LOG(info) << " Map diamond " << moduleId[uGbtx] << " at GBTX " << uGbtx << " -  uCh = " << uCh;
     for (uint32_t uGet4 = 0; uGet4 < numElinksPerCrob; ++uGet4) {
@@ -155,7 +155,7 @@ namespace cbm::algo
   }
 
   // -------------------------------------------------------------------------
-  void T0ReadoutConfig::BuildChannelsUidMapT0_2022(uint32_t& uCh, uint32_t uGbtx)
+  void BmonReadoutConfig::BuildChannelsUidMapT0_2022(uint32_t& uCh, uint32_t uGbtx)
   {
     LOG(info) << " Map 2022 diamond " << moduleId[uGbtx] << " at GBTX " << uGbtx << " -  uCh = " << uCh;
     for (uint32_t uGet4 = 0; uGet4 < numElinksPerCrob; ++uGet4) {

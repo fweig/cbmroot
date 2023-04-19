@@ -34,12 +34,12 @@
 
 
 using namespace std;
+using cbm::algo::UnpackBmonElinkPar;
+using cbm::algo::UnpackBmonPar;
 using cbm::algo::UnpackMuchElinkPar;
 using cbm::algo::UnpackMuchPar;
 using cbm::algo::UnpackStsElinkPar;
 using cbm::algo::UnpackStsPar;
-using cbm::algo::UnpackT0ElinkPar;
-using cbm::algo::UnpackT0Par;
 using cbm::algo::UnpackTofElinkPar;
 using cbm::algo::UnpackTofPar;
 
@@ -172,11 +172,11 @@ void CbmTaskUnpack::Exec(Option_t*)
       numCompUsed++;
     }  // system TOF
 
-    // T0
+    // Bmon
     if (systemId == fles::SubsystemIdentifier::T0) {
       const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
-      const auto algoIt          = fAlgoT0.find(equipmentId);
-      assert(algoIt != fAlgoT0.end());
+      const auto algoIt          = fAlgoBmon.find(equipmentId);
+      assert(algoIt != fAlgoBmon.end());
 
       // The current algorithm works for the T0 data format version XXXX used in 2021.
       // Other versions are not yet supported.
@@ -346,17 +346,17 @@ InitStatus CbmTaskUnpack::Init()
   }
 
   // Create one algorithm per component and configure it with parameters
-  auto equipIdsT0 = fT0Config.GetEquipmentIds();
-  for (auto& equip : equipIdsT0) {
-    std::unique_ptr<UnpackT0Par> par(new UnpackT0Par());
-    const size_t numElinks = fT0Config.GetNumElinks(equip);
+  auto equipIdsBmon = fBmonConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsBmon) {
+    std::unique_ptr<UnpackBmonPar> par(new UnpackBmonPar());
+    const size_t numElinks = fBmonConfig.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
-      UnpackT0ElinkPar elinkPar;
-      elinkPar.fChannelUId = fT0Config.Map(equip, elink);  // Vector of T0 addresses for this elink
+      UnpackBmonElinkPar elinkPar;
+      elinkPar.fChannelUId = fBmonConfig.Map(equip, elink);  // Vector of T0 addresses for this elink
       elinkPar.fTimeOffset = 0.;
       par->fElinkParams.push_back(elinkPar);
     }
-    fAlgoT0[equip].SetParams(std::move(par));
+    fAlgoBmon[equip].SetParams(std::move(par));
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }
 
@@ -365,7 +365,7 @@ InitStatus CbmTaskUnpack::Init()
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
   LOG(info) << "--- Configured " << fAlgoMuch.size() << " unpacker algorithms for MUCH.";
   LOG(info) << "--- Configured " << fAlgoTof.size() << " unpacker algorithms for TOF.";
-  LOG(info) << "--- Configured " << fAlgoT0.size() << " unpacker algorithms for T0.";
+  LOG(info) << "--- Configured " << fAlgoBmon.size() << " unpacker algorithms for T0.";
 
   LOG(info) << "==================================================";
 

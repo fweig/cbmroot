@@ -11,18 +11,18 @@
 
 #include <FairTask.h>
 
-#include "T0ReadoutConfig.h"
 #include "TofReadoutConfig.h"
 
 #include <sstream>
 #include <vector>
 
+#include "BmonReadoutConfig.h"
 #include "EventBuilder.h"
 #include "MuchReadoutConfig.h"
 #include "StsReadoutConfig.h"
+#include "UnpackBmon.h"
 #include "UnpackMuch.h"
 #include "UnpackSts.h"
-#include "UnpackT0.h"
 #include "UnpackTof.h"
 
 class CbmDigiManager;
@@ -85,8 +85,8 @@ private:  // members
   std::map<uint16_t, cbm::algo::UnpackTof> fAlgoTof = {};
   cbm::algo::TofReadoutConfig fTofConfig {};
 
-  std::map<uint16_t, cbm::algo::UnpackT0> fAlgoT0 = {};
-  cbm::algo::T0ReadoutConfig fT0Config {};
+  std::map<uint16_t, cbm::algo::UnpackBmon> fAlgoBmon = {};
+  cbm::algo::BmonReadoutConfig fBmonConfig {};
 
   size_t fNumTs                = 0;
   size_t fNumMs                = 0;
