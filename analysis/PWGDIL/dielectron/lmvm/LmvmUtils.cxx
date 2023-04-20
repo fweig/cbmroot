@@ -140,9 +140,9 @@ bool LmvmUtils::IsMcPairGamma(const CbmMCTrack* mctP, const CbmMCTrack* mctM, TC
 
 bool LmvmUtils::IsMcPairBg(const CbmMCTrack* mctP, const CbmMCTrack* mctM, TClonesArray* mcTracks)
 {
-  bool isGamma = IsMcPairGamma(mctP, mctM, mcTracks);
-  bool isEta   = IsMcPairEta(mctP, mctM, mcTracks);
-  bool isPi0   = IsMcPairPi0(mctP, mctM, mcTracks);
+  //bool isGamma = IsMcPairGamma(mctP, mctM, mcTracks);
+  bool isEta = IsMcPairEta(mctP, mctM, mcTracks);
+  bool isPi0 = IsMcPairPi0(mctP, mctM, mcTracks);
   //return (!isEta) && (!isGamma) && (!isPi0) && (!(IsMcSignalEl(mctP) && IsMcSignalEl(mctM))); // TODO: this line or next?
   return (!isEta) && (!isPi0) && (!(IsMcSignalEl(mctP) && IsMcSignalEl(mctM)));
 }
@@ -181,9 +181,9 @@ bool LmvmUtils::IsMcPairGamma(const LmvmCand& candP, const LmvmCand& candM)
 
 bool LmvmUtils::IsMcPairBg(const LmvmCand& candP, const LmvmCand& candM)
 {
-  bool isGamma = IsMcPairGamma(candP, candM);
-  bool isEta   = IsMcPairEta(candP, candM);
-  bool isPi0   = IsMcPairPi0(candP, candM);
+  //bool isGamma = IsMcPairGamma(candP, candM);
+  bool isEta = IsMcPairEta(candP, candM);
+  bool isPi0 = IsMcPairPi0(candP, candM);
   //return (!isEta) && (!isGamma) && (!isPi0) && (!(candP.IsMcSignal() && candM.IsMcSignal())); // TODO: this line or next?
   return (!isEta) && (!isPi0) && (!(candP.IsMcSignal() && candM.IsMcSignal()));
 }
@@ -251,8 +251,8 @@ void LmvmUtils::IsElectron(int globalTrackIndex, double momentum, double momentu
   // Additional TRD Cut
   //if (cand->fChi2Trd > 6.) trdEl = false;
 
-  bool tofEl     = CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, momentum);
-  cand->fMass2   = CbmLitGlobalElectronId::GetInstance().GetTofM2(globalTrackIndex, momentum);
+  bool tofEl   = CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, momentum);
+  cand->fMass2 = CbmLitGlobalElectronId::GetInstance().GetTofM2(globalTrackIndex, momentum);
   // Additional ToF Cut
   /*if (momentum >= 0.5 && momentum <= 2.) {
     double slope = 4.;

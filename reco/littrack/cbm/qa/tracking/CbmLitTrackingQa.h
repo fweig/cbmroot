@@ -305,8 +305,8 @@ private:
   map<string, LitPiSuppAcceptanceFunction>
     fPiSuppAcceptanceFunctions;  // maps pion supp. category name to piSupp acceptance function
                                  //#endif
-  Double_t fTrdAnnCut;
   Double_t fRichAnnCut;
+  Double_t fTrdAnnCut;
 
   CbmLitTrackingQa(const CbmLitTrackingQa&);
   CbmLitTrackingQa& operator=(const CbmLitTrackingQa&);
