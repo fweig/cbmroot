@@ -126,12 +126,6 @@ namespace cbm::algo
     double messageTime  = message.getMsgFullTimeD(fCurrentEpochInTs) - elinkPar.fTimeOffset;
     const double charge = (double) message.getGdpbHit32Tot();  //cast from uint32_t
 
-    /*
-    std::stringstream ss;
-    ss << " elink " << elink << " channel " << channel << " channelUId " << channelUId << " charge " << charge << " time " << message.getGdpbHitFullTs() << '\n';
-    std::cout << ss.str();
-    exit(0);
-*/
     // --- Create output digi
     digiVec.emplace_back(channelUId, messageTime, charge);
   }
