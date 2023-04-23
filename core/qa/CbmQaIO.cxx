@@ -34,3 +34,11 @@ CbmQaIO::~CbmQaIO()
     fpFolderRoot = nullptr;
   }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmQaIO::SetHistoProperties(TH1* pHist)
+{
+  pHist->SetStats(true);
+  pHist->Sumw2();
+}

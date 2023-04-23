@@ -39,7 +39,7 @@ namespace cbm::ca
   ///
   /// The class provides set of histograms, counters, and efficiencies for monitoring tracks of a particular type
   /// (reco_fast_long, mc_pi, reco_ghost)
-  class TrackTypeQa : public CbmQaIO {
+  class TrackTypeQa : virtual public CbmQaIO {
   public:
     /// @brief Constructor
     /// @param typeName   Name of tracks type (used as a prefix for histogram)
@@ -65,7 +65,7 @@ namespace cbm::ca
     TrackTypeQa& operator=(TrackTypeQa&&) = delete;
 
     /// @brief Gets title of track group
-    const char* GetTitle() const { return fsTitle; }
+    const char* GetTitle() const { return fsTitle.Data(); }
 
     /// @brief Initializes histograms
     void Init();
@@ -110,6 +110,13 @@ namespace cbm::ca
     /// @brief Registers CA parameters object
     /// @param pParameters  A shared pointer to the parameters object
     void RegisterParameters(std::shared_ptr<L1Parameters>& pParameters) { fpParameters = pParameters; }
+
+    /// @brief Sets drawing attributes for histograms
+    /// @param markerCol  Marker color
+    /// @param markerSty  Marker style
+    /// @param lineCol    Line color (-1: the same color as marker)
+    /// @param lineSty    Line style
+    void SetDrawAtt(Color_t markerCol = 1, Style_t markerSty = 20, Color_t lineCol = -1, Style_t lineSty = 1);
 
     /// @brief Sets title, which is to be reflected on legends and titles
     /// @param title  Title of track type
@@ -195,6 +202,11 @@ namespace cbm::ca
     // TODO: Provide integrated efficiencies
 
   private:
+    /// @brief Overrided virtual function of the CbmQaIO class, defines properties of the histograms
+    /// @param pHist Pointer to a histogram, which properties are to be set
+    virtual void SetHistoProperties(TH1* pHist);
+
+
     bool fbUseMC    = false;  ///< Flag: true - MC information is used
     TString fsTitle = "";     ///< Title of the track category
 
@@ -217,9 +229,9 @@ namespace cbm::ca
     // **************************
 
     // ** Binning **
-    static constexpr int kBinsP      = 150;   ///< Number of bins, total momentum
+    static constexpr int kBinsP      = 100;   ///< Number of bins, total momentum
     static constexpr double kLoP     = 0.;    ///< Lower boundary, total momentum [GeV/c]
-    static constexpr double kUpP     = 15.;   ///< Upper boundary, total momentum [GeV/c]
+    static constexpr double kUpP     = 10.;   ///< Upper boundary, total momentum [GeV/c]
     static constexpr int kBinsPT     = 100;   ///< Number of bins, transverse momentum
     static constexpr double kLoPT    = 0.;    ///< Lower boundary, transverse momentum [GeV/c]
     static constexpr double kUpPT    = 10.;   ///< Upper boundary, transverse momentum [GeV/c]
@@ -247,6 +259,12 @@ namespace cbm::ca
     static constexpr int kBinsFHITR  = 50;    ///< Number of bins, transverse distance of the 1st hit from z-axis
     static constexpr double kLoFHITR = 0.;    ///< Lower boundary, transverse distance of the 1st hit from z-axis [cm]
     static constexpr double kUpFHITR = 150.;  ///< Upper boundary, transverse distance of the 1st hit from z-axis [cm]
+
+    // ** Drawing attributes **
+    Color_t fMarkerColor = 1;   ///< Marker color
+    Style_t fMarkerStyle = 20;  ///< Marker style
+    Color_t fLineColor   = 1;   ///< Line color
+    Style_t fLineStyle   = 1;   ///< Line style
   };
 }  // namespace cbm::ca
 

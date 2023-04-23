@@ -15,6 +15,7 @@
 #include "CbmCaTrackTypeQa.h"
 #include "CbmL1DetectorID.h"
 #include "CbmL1Hit.h"
+#include "CbmQaCmpDrawer.h"
 #include "CbmQaTask.h"
 
 #include <array>
@@ -95,6 +96,16 @@ namespace cbm::ca
     // 2) Feature is to be studied more precisely (descrepancy in primary/secondary track with a standard approach)
     // 3) Experimental approach runs in ~10% slower, then the standard
     static constexpr bool kEXPTRACKFILL = false;
+
+    /// Array for track type properties
+    template<typename T>
+    using TTypeArr_t = std::array<T, ETrackType::kEND>;
+
+    /// @brief Structure to keep drawing attributes of histograms
+    struct DrawAtt {
+      Color_t fColor  = 1;  ///< Marker and line color
+      Style_t fMarker = 1;  ///< Marker style
+    };
 
   public:
     /// @brief  Constructor from parameters
@@ -185,6 +196,33 @@ namespace cbm::ca
     void FillTrackTypeHistograms();
 
   private:
+    /// @brief Fills reconstructed track by its index
+    /// @param type      Track type
+    /// @param iTrkReco  Index of reconstructed track
+    [[gnu::always_inline]] void FillRecoTrack(ETrackType type, int iTrkReco)
+    {
+      if (fvbTrackTypeOn[type]) { fvpTrackHistograms[type]->FillRecoTrack(iTrkReco); }
+    }
+
+    /// @brief Fills MC track by its index
+    /// @param type      Track type
+    /// @param iTrkReco  Index of MC track
+    [[gnu::always_inline]] void FillMCTrack(ETrackType type, int iTrkMC)
+    {
+      if (fvbTrackTypeOn[type]) { fvpTrackHistograms[type]->FillMCTrack(iTrkMC); }
+    }
+
+    /// @brief Utility function to draw a generic comparison of histograms from different track types
+    /// @tparam TObj    Type of ROOT object
+    /// @param  vTypes  Vector of types to draw
+    /// @param  GetObj  Function, returning an object of a given type
+    template<class TObj>
+    void DrawSetOf(const std::vector<ETrackType>& vTypes, std::function<TObj*(ETrackType)> GetObj);
+
+
+    /// @brief Defines drawing attributes for histograms of different track types
+    void InitDrawingAttributes();
+
     // Flags for detector subsystems being used
     bool fbUseMvd  = false;  ///< is MVD used
     bool fbUseSts  = false;  ///< is STS used
@@ -212,11 +250,36 @@ namespace cbm::ca
     // **  List of histograms **
     // *************************
 
-    /// Histograms of different track types
-    std::array<std::unique_ptr<TrackTypeQa>, ETrackType::kEND> fvpTrackHistograms;
-    std::array<bool, ETrackType::kEND> fvbTrackTypeOn = {0};  ///< Track type is on
+    TTypeArr_t<std::unique_ptr<TrackTypeQa>> fvpTrackHistograms;  ///< Histogrammers for different track types
+    TTypeArr_t<bool> fvbTrackTypeOn = {0};                        ///< Usage flag for different track types
+    TTypeArr_t<DrawAtt> fvTrackDrawAtts;                          ///< Drawing attributes for track types
+
+    // ************************************
+    // ** Drawing options and properties **
+    // ************************************
+
+    static constexpr int kCXSIZEPX = 600;  ///< Canvas size along x-axis [px]
+    static constexpr int kCYSIZEPX = 600;  ///< Canvas size along y-axis [px]
   };
 }  // namespace cbm::ca
+
+
+// **********************
+// **  Implementation  **
+// **********************
+
+template<class TObj>
+void cbm::ca::OutputQa::DrawSetOf(const std::vector<ETrackType>& vTypes, std::function<TObj*(ETrackType)> GetObj)
+{
+  CbmQaCmpDrawer<TObj> drawer;
+  for (auto type : vTypes) {
+    if (!fvbTrackTypeOn[type] || !fvpTrackHistograms[type]->IsMCUsed()) { continue; }
+    drawer.RegisterObject(GetObj(type), fvpTrackHistograms[type]->GetTitle());
+  }
+  if constexpr (std::is_same_v<TH1F, TObj>) { drawer.SetMinimum(1.e-1); }
+  drawer.Draw("");
+  drawer.Clear();
+}
 
 
 #endif  // CbmCaOutputQa_h

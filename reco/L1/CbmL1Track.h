@@ -64,6 +64,9 @@ public:
   /// Gets Chi-square of track fit model
   double GetChiSq() const { return chi2; }
 
+  /// @brief Gets pseudo-rapidity
+  double GetEta() const { return -std::log(std::tan(GetTheta() * 0.5)); }
+
   /// @brief Gets first hit index
   int GetFirstHitIndex() const { return Hits.front(); }
 

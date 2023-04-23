@@ -87,6 +87,10 @@ public:
   CbmQaTable* MakeTable(const char* name, Args... args);
 
 protected:
+  /// @brief Applies properties on the histogram created with MakeHisto funciton
+  /// @param pHist  Pointer to histogram
+  virtual void SetHistoProperties(TH1* /*pHits*/);
+
   TString fsRootFolderName = "";  ///< Name of root folder
   TString fsPrefix         = "";  ///< Unique prefix for all writeable root
 
@@ -172,8 +176,7 @@ T* CbmQaIO::MakeHisto(const char* nameBase, Args... args)
   }
 
   T* pHist = new T(name, args...);
-  pHist->SetStats(kTRUE);
-  pHist->Sumw2();
+  SetHistoProperties(pHist);
 
   // Register histogram in the folder
   if (fStoringMode == EStoringMode::kSUBDIR) {

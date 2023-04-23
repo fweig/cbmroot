@@ -92,6 +92,9 @@ namespace ca::tools
     /// Gets kinetic energy [GeV]
     double GetEkin() const { return GetE() - fMass; }
 
+    /// Gets pseudo-rapidity
+    double GetEta() const { return -std::log(std::tan(GetTheta() * 0.5)); }
+
     /// Gets index of MC event containing this track in external data structures
     int GetEventId() const { return fLinkKey.fEvent; }
 

@@ -9,8 +9,13 @@
 
 #include "CbmCaOutputQa.h"
 
+#include "CbmQaCanvas.h"
+
 #include "FairRootManager.h"
 #include "Logger.h"
+
+#include "THStack.h"
+#include "TPad.h"
 
 #include "L1InitManager.h"
 
@@ -27,20 +32,38 @@ OutputQa::OutputQa(int verbose, bool isMCUsed) : CbmQaTask("CbmCaOutputQa", "cao
   AddTrackType(ETrackType::kGhost);
   AddTrackType(ETrackType::kPrim);
   AddTrackType(ETrackType::kSec);
+  AddTrackType(ETrackType::kPrimE);
+  AddTrackType(ETrackType::kPrimPI);
+  AddTrackType(ETrackType::kPrimK);
+  AddTrackType(ETrackType::kPrimMU);
+  AddTrackType(ETrackType::kPrimPPBAR);
+  AddTrackType(ETrackType::kSecE);
+  AddTrackType(ETrackType::kSecPI);
+  AddTrackType(ETrackType::kSecK);
+  AddTrackType(ETrackType::kSecMU);
+  AddTrackType(ETrackType::kSecPPBAR);
+
   AddTrackType(ETrackType::kPrimPIP);
   AddTrackType(ETrackType::kPrimPIM);
   AddTrackType(ETrackType::kSecPIP);
   AddTrackType(ETrackType::kSecPIM);
-  AddTrackType(ETrackType::kPrimMUP);
-  AddTrackType(ETrackType::kPrimMUM);
-  AddTrackType(ETrackType::kSecMUP);
-  AddTrackType(ETrackType::kSecMUM);
+  AddTrackType(ETrackType::kPrimKP);
+  AddTrackType(ETrackType::kPrimKM);
+  AddTrackType(ETrackType::kSecKP);
+  AddTrackType(ETrackType::kSecKM);
+  AddTrackType(ETrackType::kPrimP);
+  AddTrackType(ETrackType::kPrimPBAR);
+  AddTrackType(ETrackType::kSecP);
+  AddTrackType(ETrackType::kSecPBAR);
 
   //AddTrackType(ETrackType::kAllE);
   //AddTrackType(ETrackType::kAllMU);
   //AddTrackType(ETrackType::kAllPI);
   //AddTrackType(ETrackType::kAllK);
   //AddTrackType(ETrackType::kAllPPBAR);
+
+  // Init track type histograms drawing attributes
+  InitDrawingAttributes();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -75,7 +98,7 @@ void OutputQa::FillHistograms()
         if (fvpTrackHistograms[iType]->IsMCUsed()) { fvpTrackHistograms[iType]->FillMCTracks(); }
       }  // if track type ID filled
     }    // track type ID
-  }
+  }      // kEXPTRACKFILL = true
   else {
     for (size_t iTrkReco = 0; iTrkReco < fvRecoTracks.size(); ++iTrkReco) {
       const auto& recoTrk = fvRecoTracks[iTrkReco];
@@ -83,12 +106,12 @@ void OutputQa::FillHistograms()
       // Reject tracks, which do not contain hits
       if (recoTrk.GetNofHits() < 1) { continue; }
 
-      if (fvbTrackTypeOn[ETrackType::kAll]) { fvpTrackHistograms[ETrackType::kAll]->FillRecoTrack(iTrkReco); }
+      FillRecoTrack(ETrackType::kAll, iTrkReco);
 
       if (IsMCUsed()) {
-        if (fvbTrackTypeOn[ETrackType::kGhost] && recoTrk.IsGhost()) {
-          fvpTrackHistograms[ETrackType::kGhost]->FillRecoTrack(iTrkReco);
-        }
+        // NOTE: The ghost status of track is now defined by its purity, thus it can still contain MC information
+        if (recoTrk.IsGhost()) { FillRecoTrack(ETrackType::kGhost, iTrkReco); }
+
         int iTrkMC = recoTrk.GetMatchedMCTrackIndex();
         if (iTrkMC > -1) {
           const auto& mcTrk = fMCData.GetTrack(iTrkMC);
@@ -98,33 +121,7 @@ void OutputQa::FillHistograms()
           // Cut tracks, which did not leave hits in tracker
           if (mcTrk.GetNofHits() == 0) { continue; }
 
-          if (isPrimary) {
-            if (fvbTrackTypeOn[ETrackType::kPrim]) { fvpTrackHistograms[ETrackType::kPrim]->FillRecoTrack(iTrkReco); }
-
-            if (fvbTrackTypeOn[ETrackType::kPrimPI] && std::abs(pdg) == 211) {
-              fvpTrackHistograms[ETrackType::kPrimPI]->FillRecoTrack(iTrkReco);
-            }
-
-            if (fvbTrackTypeOn[ETrackType::kPrimPIP] && pdg == +211) {
-              fvpTrackHistograms[ETrackType::kPrimPIP]->FillRecoTrack(iTrkReco);
-            }
-
-            if (fvbTrackTypeOn[ETrackType::kPrimPIM] && pdg == -211) {
-              fvpTrackHistograms[ETrackType::kPrimPIM]->FillRecoTrack(iTrkReco);
-            }
-
-            if (fvbTrackTypeOn[ETrackType::kPrimMU] && std::abs(pdg) == 13) {
-              fvpTrackHistograms[ETrackType::kPrimMU]->FillRecoTrack(iTrkReco);
-            }
-
-            if (fvbTrackTypeOn[ETrackType::kPrimMUP] && pdg == +13) {
-              fvpTrackHistograms[ETrackType::kPrimMUP]->FillRecoTrack(iTrkReco);
-            }
-
-            if (fvbTrackTypeOn[ETrackType::kPrimMUM] && pdg == -13) {
-              fvpTrackHistograms[ETrackType::kPrimMUM]->FillRecoTrack(iTrkReco);
-            }
-          }
+          if (isPrimary) { FillRecoTrack(ETrackType::kPrim, iTrkReco); }
           else {
             if (fvbTrackTypeOn[ETrackType::kSec]) { fvpTrackHistograms[ETrackType::kSec]->FillRecoTrack(iTrkReco); }
 
@@ -152,6 +149,65 @@ void OutputQa::FillHistograms()
               fvpTrackHistograms[ETrackType::kSecMUM]->FillRecoTrack(iTrkReco);
             }
           }
+
+          // Track distributions for different particle species
+          switch (std::abs(pdg)) {
+            case 211:  // pion
+              FillRecoTrack(ETrackType::kAllPI, iTrkReco);
+              if (isPrimary) {
+                FillRecoTrack(ETrackType::kPrimPI, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kPrimPIP : ETrackType::kPrimPIM, iTrkReco);
+              }
+              else {
+                FillRecoTrack(ETrackType::kSecPI, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kSecPIP : ETrackType::kSecPIM, iTrkReco);
+              }
+              break;
+            case 2212:  // proton
+              FillRecoTrack(ETrackType::kAllPPBAR, iTrkReco);
+              if (isPrimary) {
+                FillRecoTrack(ETrackType::kPrimPPBAR, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kPrimP : ETrackType::kPrimPBAR, iTrkReco);
+              }
+              else {
+                FillRecoTrack(ETrackType::kSecPPBAR, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kSecP : ETrackType::kSecPBAR, iTrkReco);
+              }
+              break;
+            case 321:  // kaon
+              FillRecoTrack(ETrackType::kAllK, iTrkReco);
+              if (isPrimary) {
+                FillRecoTrack(ETrackType::kPrimK, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kPrimKP : ETrackType::kPrimKM, iTrkReco);
+              }
+              else {
+                FillRecoTrack(ETrackType::kSecK, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kSecKP : ETrackType::kSecKM, iTrkReco);
+              }
+              break;
+            case 11:  // electron
+              FillRecoTrack(ETrackType::kAllE, iTrkReco);
+              if (isPrimary) {
+                FillRecoTrack(ETrackType::kPrimE, iTrkReco);
+                FillRecoTrack((pdg < 0) ? ETrackType::kPrimEP : ETrackType::kPrimEM, iTrkReco);
+              }
+              else {
+                FillRecoTrack(ETrackType::kSecE, iTrkReco);
+                FillRecoTrack((pdg < 0) ? ETrackType::kSecEP : ETrackType::kSecEM, iTrkReco);
+              }
+              break;
+            case 13:  // muon
+              FillRecoTrack(ETrackType::kAllMU, iTrkReco);
+              if (isPrimary) {
+                FillRecoTrack(ETrackType::kPrimMU, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kPrimMUP : ETrackType::kPrimMUM, iTrkReco);
+              }
+              else {
+                FillRecoTrack(ETrackType::kSecMU, iTrkReco);
+                FillRecoTrack((pdg > 0) ? ETrackType::kSecMUP : ETrackType::kSecMUM, iTrkReco);
+              }
+              break;
+          }  // switch abs(pdg): end
         }
       }
     }  // loop over recoTrk: end
@@ -161,86 +217,176 @@ void OutputQa::FillHistograms()
     // ** Fill distributions of MC-tracks **
     // *************************************
     if (IsMCUsed()) {
-
-
       for (int iTrkMC = 0; iTrkMC < fMCData.GetNofTracks(); ++iTrkMC) {
         const auto& mcTrk = fMCData.GetTrack(iTrkMC);
 
         // Cut tracks, which did not leave hits in tracker
         if (mcTrk.GetNofHits() == 0) { continue; }
 
-        // Fill different track categories
-        if (fvbTrackTypeOn[ETrackType::kAll]) { fvpTrackHistograms[ETrackType::kAll]->FillMCTrack(iTrkMC); }
-
         int pdg        = mcTrk.GetPdgCode();
         bool isPrimary = mcTrk.IsPrimary();
 
-        if (isPrimary) {
-          if (fvbTrackTypeOn[ETrackType::kPrim]) { fvpTrackHistograms[ETrackType::kPrim]->FillMCTrack(iTrkMC); }
-
-          if (fvbTrackTypeOn[ETrackType::kPrimPI] && std::abs(pdg) == 211) {
-            fvpTrackHistograms[ETrackType::kPrimPI]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kPrimPIP] && pdg == +211) {
-            fvpTrackHistograms[ETrackType::kPrimPIP]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kPrimPIM] && pdg == -211) {
-            fvpTrackHistograms[ETrackType::kPrimPIM]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kPrimMU] && std::abs(pdg) == 13) {
-            fvpTrackHistograms[ETrackType::kPrimMU]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kPrimMUP] && pdg == +13) {
-            fvpTrackHistograms[ETrackType::kPrimMUP]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kPrimMUM] && pdg == -13) {
-            fvpTrackHistograms[ETrackType::kPrimMUM]->FillMCTrack(iTrkMC);
-          }
-        }
+        // Fill different track categories
+        FillMCTrack(ETrackType::kAll, iTrkMC);
+        if (isPrimary) { FillMCTrack(ETrackType::kPrim, iTrkMC); }
         else {
-          if (fvbTrackTypeOn[ETrackType::kSec]) { fvpTrackHistograms[ETrackType::kSec]->FillMCTrack(iTrkMC); }
-
-          if (fvbTrackTypeOn[ETrackType::kSecPIP] && std::abs(pdg) == 211) {
-            fvpTrackHistograms[ETrackType::kSecPIP]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kSecPIP] && pdg == +211) {
-            fvpTrackHistograms[ETrackType::kPrimPIP]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kSecPIM] && pdg == -211) {
-            fvpTrackHistograms[ETrackType::kPrimPIM]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kSecMU] && std::abs(pdg) == 13) {
-            fvpTrackHistograms[ETrackType::kSecMU]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kSecMUP] && pdg == +13) {
-            fvpTrackHistograms[ETrackType::kSecMUP]->FillMCTrack(iTrkMC);
-          }
-
-          if (fvbTrackTypeOn[ETrackType::kSecMUM] && pdg == -13) {
-            fvpTrackHistograms[ETrackType::kSecMUM]->FillMCTrack(iTrkMC);
-          }
+          FillMCTrack(ETrackType::kSec, iTrkMC);
         }
-      }
-    }
-  }
+
+        // Track distributions for different particle species
+        switch (std::abs(pdg)) {
+          case 211:  // pion
+            FillMCTrack(ETrackType::kAllPI, iTrkMC);
+            if (isPrimary) {
+              FillMCTrack(ETrackType::kPrimPI, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kPrimPIP : ETrackType::kPrimPIM, iTrkMC);
+            }
+            else {
+              FillMCTrack(ETrackType::kSecPI, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kSecPIP : ETrackType::kSecPIM, iTrkMC);
+            }
+            break;
+          case 2212:  // proton
+            FillMCTrack(ETrackType::kAllPPBAR, iTrkMC);
+            if (isPrimary) {
+              FillMCTrack(ETrackType::kPrimPPBAR, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kPrimP : ETrackType::kPrimPBAR, iTrkMC);
+            }
+            else {
+              FillMCTrack(ETrackType::kSecPPBAR, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kSecP : ETrackType::kSecPBAR, iTrkMC);
+            }
+            break;
+          case 321:  // kaon
+            FillMCTrack(ETrackType::kAllK, iTrkMC);
+            if (isPrimary) {
+              FillMCTrack(ETrackType::kPrimK, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kPrimKP : ETrackType::kPrimKM, iTrkMC);
+            }
+            else {
+              FillMCTrack(ETrackType::kSecK, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kSecKP : ETrackType::kSecKM, iTrkMC);
+            }
+            break;
+          case 11:  // electron
+            FillMCTrack(ETrackType::kAllE, iTrkMC);
+            if (isPrimary) {
+              FillMCTrack(ETrackType::kPrimE, iTrkMC);
+              FillMCTrack((pdg < 0) ? ETrackType::kPrimEP : ETrackType::kPrimEM, iTrkMC);
+            }
+            else {
+              FillMCTrack(ETrackType::kSecE, iTrkMC);
+              FillMCTrack((pdg < 0) ? ETrackType::kSecEP : ETrackType::kSecEM, iTrkMC);
+            }
+            break;
+          case 13:  // muon
+            FillMCTrack(ETrackType::kAllMU, iTrkMC);
+            if (isPrimary) {
+              FillMCTrack(ETrackType::kPrimMU, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kPrimMUP : ETrackType::kPrimMUM, iTrkMC);
+            }
+            else {
+              FillMCTrack(ETrackType::kSecMU, iTrkMC);
+              FillMCTrack((pdg > 0) ? ETrackType::kSecMUP : ETrackType::kSecMUM, iTrkMC);
+            }
+            break;
+        }  // switch abs(pdg): end
+      }    // iTrkMC
+    }      // IsMCUsed()
+  }        // kEXPTRACKFILL = false
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
 InitStatus OutputQa::InitCanvases()
 {
-  // ***************************
-  // **  Track distributions
+  /// Set of track types to compare
+  std::vector<ETrackType> vCmpTypesGeneral = {kAll, kPrim, kSec};
+  std::vector<ETrackType> vCmpTypesPrim    = {kPrim, kPrimE, kPrimMU, kPrimPI, kPrimK, kPrimPPBAR};
+  std::vector<ETrackType> vCmpTypesSec     = {kSec, kSecE, kSecMU, kSecPI, kSecK, kSecPPBAR};
+  std::vector<ETrackType> vCmpTypesPions   = {kAllPI, kPrimPIP, kPrimPIM, kSecPIP, kSecPIM};
+  std::vector<ETrackType> vCmpTypesKaons   = {kAllK, kPrimKP, kPrimKM, kSecKP, kSecKM};
+  std::vector<ETrackType> vCmpTypesProtons = {kAllPPBAR, kPrimP, kPrimPBAR, kSecP, kSecPBAR};
 
+  /// @brief Function to draw generic canvas of histogram comparison
+  auto DrawTrackDistributions = [&](CbmQaCanvas* pCanv, std::function<TH1F*(ETrackType)> Hist) {
+    pCanv->Divide2D(6);
+    pCanv->cd(1);
+    gPad->SetLogy();
+    DrawSetOf<TH1F>(vCmpTypesGeneral, Hist);
+    pCanv->cd(2);
+    gPad->SetLogy();
+    DrawSetOf<TH1F>(vCmpTypesPrim, Hist);
+    pCanv->cd(3);
+    gPad->SetLogy();
+    DrawSetOf<TH1F>(vCmpTypesSec, Hist);
+    pCanv->cd(4);
+    gPad->SetLogy();
+    DrawSetOf<TH1F>(vCmpTypesPions, Hist);
+    pCanv->cd(5);
+    gPad->SetLogy();
+    DrawSetOf<TH1F>(vCmpTypesKaons, Hist);
+    pCanv->cd(6);
+    gPad->SetLogy();
+    DrawSetOf<TH1F>(vCmpTypesProtons, Hist);
+  };
+
+  /// @brief Function to draw generic canvas of efficiencies comparison
+  auto DrawTrackEfficiens = [&](CbmQaCanvas* pCanv, std::function<TProfile*(ETrackType)> Prof) {
+    pCanv->Divide2D(3);
+    pCanv->cd(1);
+    DrawSetOf<TProfile>(vCmpTypesGeneral, Prof);
+    pCanv->cd(2);
+    DrawSetOf<TProfile>(vCmpTypesPrim, Prof);
+    pCanv->cd(3);
+    DrawSetOf<TProfile>(vCmpTypesSec, Prof);
+  };
+
+
+  if (IsMCUsed()) {
+    // **  Reconstructed track distributions  **
+    // Reconstructed pseudorapidity
+    auto* pc_reco_eta =
+      MakeCanvas<CbmQaCanvas>("reco_eta", "Reconstructed track pseudorapidity", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawTrackDistributions(pc_reco_eta, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_reco_eta; });
+
+    // MC pseudorapidity
+    auto* pc_reco_etaMC =
+      MakeCanvas<CbmQaCanvas>("reco_etaMC", "Reconstructed track MC pseudorapidity", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawTrackDistributions(pc_reco_etaMC, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_reco_etaMC; });
+
+    // MC momentum
+    auto* pc_reco_pMC =
+      MakeCanvas<CbmQaCanvas>("reco_pMC", "Reconstructed track MC momentum", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawTrackDistributions(pc_reco_pMC, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_reco_pMC; });
+
+    // MC rapidity
+    auto* pc_reco_yMC =
+      MakeCanvas<CbmQaCanvas>("reco_yMC", "Reconstructed track MC rapidity", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawTrackDistributions(pc_reco_yMC, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_reco_yMC; });
+
+    // **  MC track distributions  **
+
+    // MC momentum
+    auto* pc_mc_pMC =
+      MakeCanvas<CbmQaCanvas>("mc_pMC", "MC reconstructable track MC momentum", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawTrackDistributions(pc_mc_pMC, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_mc_pMC; });
+
+    // MC rapidity
+    auto* pc_mc_yMC =
+      MakeCanvas<CbmQaCanvas>("mc_yMC", "MC reconstructable track MC rapidity", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawTrackDistributions(pc_mc_yMC, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_mc_yMC; });
+
+
+    // **  Efficiencies  **
+
+    // MC momentum
+    auto* pc_eff_pMC = MakeCanvas<CbmQaCanvas>("eff_pMC", "Tracking Eff. vs. MC momentum", kCXSIZEPX * 3, kCYSIZEPX);
+    DrawTrackEfficiens(pc_eff_pMC, [&](ETrackType t) -> TProfile* { return fvpTrackHistograms[t]->fph_eff_pMC; });
+
+    auto* pc_eff_yMC = MakeCanvas<CbmQaCanvas>("eff_yMC", "Tracking Eff. vs. MC rapidity", kCXSIZEPX * 3, kCYSIZEPX);
+    DrawTrackEfficiens(pc_eff_yMC, [&](ETrackType t) -> TProfile* { return fvpTrackHistograms[t]->fph_eff_yMC; });
+  }
 
   return kSUCCESS;
 }
@@ -313,15 +459,16 @@ InitStatus OutputQa::InitDataBranches()
 //
 InitStatus OutputQa::InitHistograms()
 {
-  auto RegisterTrackQa = [&](const char* typeName, ETrackType type, bool bSuppressMC = false) {
+  auto RegisterTrackQa = [&](const char* typeName, const char* title, ETrackType type, bool bSuppressMC = false) {
     if (!fvbTrackTypeOn[type]) { return; }
     bool bUseMC              = IsMCUsed() && !bSuppressMC;
     fvpTrackHistograms[type] = std::make_unique<TrackTypeQa>(typeName, fsPrefix.Data(), bUseMC, fpFolderRoot);
+    fvpTrackHistograms[type]->SetTitle(title);
     fvpTrackHistograms[type]->RegisterParameters(fpParameters);
     fvpTrackHistograms[type]->RegisterRecoHits(fvHits);
     fvpTrackHistograms[type]->RegisterRecoTracks(fvRecoTracks);
     fvpTrackHistograms[type]->RegisterMCData(fMCData);
-
+    fvpTrackHistograms[type]->SetDrawAtt(fvTrackDrawAtts[type].fColor, fvTrackDrawAtts[type].fMarker);
     if constexpr (kEXPTRACKFILL) {
       // Define track cuts
       switch (type) {
@@ -487,6 +634,7 @@ InitStatus OutputQa::InitHistograms()
           fvpTrackHistograms[type]->SetMCTrackCut(
             [](const MCTrack& t) -> bool { return !t.IsPrimary() && t.GetPdgCode() == -2212; });
           break;
+        case kEND: break;
       }
     }
 
@@ -497,46 +645,46 @@ InitStatus OutputQa::InitHistograms()
     LOG(info) << i << ' ' << fvpTrackHistograms[i].get() << ' ' << fvbTrackTypeOn[i];
   }
 
-  RegisterTrackQa("all", ETrackType::kAll);
+  RegisterTrackQa("all", "all", ETrackType::kAll);
   if (IsMCUsed()) {
-    RegisterTrackQa("ghost", ETrackType::kGhost, /*suppress MC*/ true);
-    RegisterTrackQa("prim", ETrackType::kPrim);
-    RegisterTrackQa("sec", ETrackType::kSec);
-    RegisterTrackQa("all_pi", ETrackType::kAllPI);
-    RegisterTrackQa("prim_pi", ETrackType::kPrimPI);
-    RegisterTrackQa("prim_pip", ETrackType::kPrimPIP);
-    RegisterTrackQa("prim_pim", ETrackType::kPrimPIM);
-    RegisterTrackQa("sec_pi", ETrackType::kSecPI);
-    RegisterTrackQa("sec_pip", ETrackType::kSecPIP);
-    RegisterTrackQa("sec_pim", ETrackType::kSecPIM);
-    RegisterTrackQa("all_e", ETrackType::kAllE);
-    RegisterTrackQa("prim_e", ETrackType::kPrimE);
-    RegisterTrackQa("prim_ep", ETrackType::kPrimEP);
-    RegisterTrackQa("prim_em", ETrackType::kPrimEM);
-    RegisterTrackQa("sec_e", ETrackType::kSecE);
-    RegisterTrackQa("sec_ep", ETrackType::kSecEP);
-    RegisterTrackQa("sec_em", ETrackType::kSecEM);
-    RegisterTrackQa("all_mu", ETrackType::kAllMU);
-    RegisterTrackQa("prim_mu", ETrackType::kPrimMU);
-    RegisterTrackQa("prim_mup", ETrackType::kPrimMUP);
-    RegisterTrackQa("prim_mum", ETrackType::kPrimMUM);
-    RegisterTrackQa("sec_mu", ETrackType::kSecMU);
-    RegisterTrackQa("sec_mup", ETrackType::kSecMUP);
-    RegisterTrackQa("sec_mum", ETrackType::kSecMUM);
-    RegisterTrackQa("all_k", ETrackType::kAllK);
-    RegisterTrackQa("prim_k", ETrackType::kPrimK);
-    RegisterTrackQa("prim_kp", ETrackType::kPrimKP);
-    RegisterTrackQa("prim_km", ETrackType::kPrimKM);
-    RegisterTrackQa("sec_k", ETrackType::kSecK);
-    RegisterTrackQa("sec_kp", ETrackType::kSecKP);
-    RegisterTrackQa("sec_km", ETrackType::kSecKM);
-    RegisterTrackQa("all_ppbar", ETrackType::kAllPPBAR);
-    RegisterTrackQa("prim_ppbar", ETrackType::kPrimPPBAR);
-    RegisterTrackQa("prim_p", ETrackType::kPrimP);
-    RegisterTrackQa("prim_pbar", ETrackType::kPrimPBAR);
-    RegisterTrackQa("sec_ppbar", ETrackType::kSecPPBAR);
-    RegisterTrackQa("sec_p", ETrackType::kSecP);
-    RegisterTrackQa("sec_pbar", ETrackType::kSecPBAR);
+    RegisterTrackQa("ghost", "ghost", ETrackType::kGhost, true);
+    RegisterTrackQa("prim", "primary", ETrackType::kPrim);
+    RegisterTrackQa("sec", "secondary", ETrackType::kSec);
+    RegisterTrackQa("all_pi", "all #pi^{#pm}", ETrackType::kAllPI);
+    RegisterTrackQa("prim_pi", "primary #pi^{#pm}", ETrackType::kPrimPI);
+    RegisterTrackQa("prim_pip", "primary #pi^{#plus}", ETrackType::kPrimPIP);
+    RegisterTrackQa("prim_pim", "primary #pi^{#minus}", ETrackType::kPrimPIM);
+    RegisterTrackQa("sec_pi", "secondary #pi^{#pm}", ETrackType::kSecPI);
+    RegisterTrackQa("sec_pip", "secondary #pi^{#plus}", ETrackType::kSecPIP);
+    RegisterTrackQa("sec_pim", "secondary #pi^{#minus}", ETrackType::kSecPIM);
+    RegisterTrackQa("all_e", "all e^{#pm}", ETrackType::kAllE);
+    RegisterTrackQa("prim_e", "primary e^{#pm}", ETrackType::kPrimE);
+    RegisterTrackQa("prim_ep", "primary e^{#plus}", ETrackType::kPrimEP);
+    RegisterTrackQa("prim_em", "primary e^{#minus}", ETrackType::kPrimEM);
+    RegisterTrackQa("sec_e", "secondary e^{#pm}", ETrackType::kSecE);
+    RegisterTrackQa("sec_ep", "secondary e^{#plus}", ETrackType::kSecEP);
+    RegisterTrackQa("sec_em", "secondary e^{#minus}", ETrackType::kSecEM);
+    RegisterTrackQa("all_mu", "all #mu^{#pm}", ETrackType::kAllMU);
+    RegisterTrackQa("prim_mu", "primary #mu^{#pm}", ETrackType::kPrimMU);
+    RegisterTrackQa("prim_mup", "primary #mu^{#plus}", ETrackType::kPrimMUP);
+    RegisterTrackQa("prim_mum", "primary #mu^{#minus}", ETrackType::kPrimMUM);
+    RegisterTrackQa("sec_mu", "secondary #mu^{#pm}", ETrackType::kSecMU);
+    RegisterTrackQa("sec_mup", "secondary #mu^{#plus}", ETrackType::kSecMUP);
+    RegisterTrackQa("sec_mum", "secondary #mu^{#minus}", ETrackType::kSecMUM);
+    RegisterTrackQa("all_k", "all K^{#pm}", ETrackType::kAllK);
+    RegisterTrackQa("prim_k", "primary K^{#pm}", ETrackType::kPrimK);
+    RegisterTrackQa("prim_kp", "primary K^{#plus}", ETrackType::kPrimKP);
+    RegisterTrackQa("prim_km", "primary K^{#minus}", ETrackType::kPrimKM);
+    RegisterTrackQa("sec_k", "secondary K^{#pm}", ETrackType::kSecK);
+    RegisterTrackQa("sec_kp", "secondary K^{#plus}", ETrackType::kSecKP);
+    RegisterTrackQa("sec_km", "secondary K^{#minus}", ETrackType::kSecKM);
+    RegisterTrackQa("all_ppbar", "all p/#bar{p}", ETrackType::kAllPPBAR);
+    RegisterTrackQa("prim_ppbar", "primary p/#bar{p}", ETrackType::kPrimPPBAR);
+    RegisterTrackQa("prim_p", "primary p", ETrackType::kPrimP);
+    RegisterTrackQa("prim_pbar", "primary #bar{p}", ETrackType::kPrimPBAR);
+    RegisterTrackQa("sec_ppbar", "secondary p/#bar{p}", ETrackType::kSecPPBAR);
+    RegisterTrackQa("sec_p", "secondary p", ETrackType::kSecP);
+    RegisterTrackQa("sec_pbar", "secondary #bar{p}", ETrackType::kSecPBAR);
   }
 
   return kSUCCESS;
@@ -581,4 +729,54 @@ void OutputQa::ReadParameters(const char* filename)
   manager.SendParameters(*fpParameters);
 
   LOG(info) << fpParameters->ToString(0);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void OutputQa::InitDrawingAttributes()
+{
+  fvTrackDrawAtts[ETrackType::kAll]   = {1, 20};
+  fvTrackDrawAtts[ETrackType::kGhost] = {kGray, 20};
+  fvTrackDrawAtts[ETrackType::kPrim]  = {kGray + 3, 21};
+  fvTrackDrawAtts[ETrackType::kSec]   = {kGray + 2, 25};
+
+  fvTrackDrawAtts[ETrackType::kAllPI]   = {kRed - 4, 20};
+  fvTrackDrawAtts[ETrackType::kPrimPI]  = {kRed - 2, 21};
+  fvTrackDrawAtts[ETrackType::kPrimPIP] = {kRed - 1, 22};
+  fvTrackDrawAtts[ETrackType::kPrimPIM] = {kRed - 3, 23};
+  fvTrackDrawAtts[ETrackType::kSecPI]   = {kRed - 8, 25};
+  fvTrackDrawAtts[ETrackType::kSecPIP]  = {kRed - 6, 26};
+  fvTrackDrawAtts[ETrackType::kSecPIM]  = {kRed - 10, 32};
+
+  fvTrackDrawAtts[ETrackType::kAllK]   = {kBlue - 4, 20};
+  fvTrackDrawAtts[ETrackType::kPrimK]  = {kBlue - 2, 21};
+  fvTrackDrawAtts[ETrackType::kPrimKP] = {kBlue - 1, 22};
+  fvTrackDrawAtts[ETrackType::kPrimKM] = {kBlue - 3, 23};
+  fvTrackDrawAtts[ETrackType::kSecK]   = {kBlue - 8, 25};
+  fvTrackDrawAtts[ETrackType::kSecKP]  = {kBlue - 6, 26};
+  fvTrackDrawAtts[ETrackType::kSecKM]  = {kBlue - 10, 32};
+
+  fvTrackDrawAtts[ETrackType::kAllPPBAR]  = {kGreen - 4, 20};
+  fvTrackDrawAtts[ETrackType::kPrimPPBAR] = {kGreen - 2, 21};
+  fvTrackDrawAtts[ETrackType::kPrimP]     = {kGreen - 1, 22};
+  fvTrackDrawAtts[ETrackType::kPrimPBAR]  = {kGreen - 3, 23};
+  fvTrackDrawAtts[ETrackType::kSecPPBAR]  = {kGreen - 8, 25};
+  fvTrackDrawAtts[ETrackType::kSecP]      = {kGreen - 6, 26};
+  fvTrackDrawAtts[ETrackType::kSecPBAR]   = {kGreen - 10, 32};
+
+  fvTrackDrawAtts[ETrackType::kAllE]   = {kCyan - 4, 20};
+  fvTrackDrawAtts[ETrackType::kPrimE]  = {kCyan - 2, 21};
+  fvTrackDrawAtts[ETrackType::kPrimEP] = {kCyan - 1, 22};
+  fvTrackDrawAtts[ETrackType::kPrimEM] = {kCyan - 3, 23};
+  fvTrackDrawAtts[ETrackType::kSecE]   = {kCyan - 8, 25};
+  fvTrackDrawAtts[ETrackType::kSecEP]  = {kCyan - 6, 26};
+  fvTrackDrawAtts[ETrackType::kSecEM]  = {kCyan - 10, 32};
+
+  fvTrackDrawAtts[ETrackType::kAllMU]   = {kMagenta - 4, 20};
+  fvTrackDrawAtts[ETrackType::kPrimMU]  = {kMagenta - 2, 21};
+  fvTrackDrawAtts[ETrackType::kPrimMUP] = {kMagenta - 1, 22};
+  fvTrackDrawAtts[ETrackType::kPrimMUM] = {kMagenta - 3, 23};
+  fvTrackDrawAtts[ETrackType::kSecMU]   = {kMagenta - 8, 25};
+  fvTrackDrawAtts[ETrackType::kSecMUP]  = {kMagenta - 6, 26};
+  fvTrackDrawAtts[ETrackType::kSecMUM]  = {kMagenta - 10, 32};
 }

@@ -48,41 +48,47 @@ void TrackTypeQa::Init()
   fph_reco_tx    = MakeHisto<TH1F>("reco_tx", "", kBinsTX, kLoTX, kUpTX);
   fph_reco_ty    = MakeHisto<TH1F>("reco_ty", "", kBinsTY, kLoTY, kUpTY);
   fph_reco_fhitR = MakeHisto<TH1F>("reco_fhitR", "", kBinsFHITR, kLoFHITR, kUpFHITR);
-  fph_reco_nhits = MakeHisto<TH1F>("reco_nhits", "", kBinsNHITS, kLoNHITS, kUpNHITS);
   // TODO: ...
 
-  fph_reco_p->SetTitle("Total momentum of reconstructed track;p^{reco} [GeV/c]");
-  fph_reco_pt->SetTitle("Transverse momentum of reconstructed track;p_{T}^{reco} [GeV/c]");
-  fph_reco_phi->SetTitle("Azimuthal angle of reconstructed track;#phi^{reco} [rad]");
-  fph_reco_theta->SetTitle("Polar angle of reconstructed track;#theta^{reco} [rad]");
-  fph_reco_tx->SetTitle("Slope along x-axis of reconstructed tracks;t_{x}^{reco}");
-  fph_reco_ty->SetTitle("Slope along y-axis of reconstructed tracks;t_{y}^{reco}");
-  fph_reco_fhitR->SetTitle("Distance of the first hit from z-axis for reconstructed tracks");
-  fph_reco_nhits->SetTitle("Hit number of reconstructed tracks");
+  fph_reco_p->SetTitle("Total momentum of reconstructed track;p^{reco} [GeV/c];Counts");
+  fph_reco_pt->SetTitle("Transverse momentum of reconstructed track;p_{T}^{reco} [GeV/c];Counts");
+  fph_reco_phi->SetTitle("Azimuthal angle of reconstructed track;#phi^{reco} [rad];Counts");
+  fph_reco_eta->SetTitle("Pseudorapidity of reconstructed track;#eta^{reco};Counts");
+  fph_reco_theta->SetTitle("Polar angle of reconstructed track;#theta^{reco} [rad];Counts");
+  fph_reco_tx->SetTitle("Slope along x-axis of reconstructed tracks;t_{x}^{reco};Counts");
+  fph_reco_ty->SetTitle("Slope along y-axis of reconstructed tracks;t_{y}^{reco};Counts");
+  fph_reco_fhitR->SetTitle("Distance of the first hit from z-axis for reconstructed tracks;R^{reco} [cm];Counts");
 
   if (fbUseMC) {
     //
     // ** Distributions of reconstructed tracks vs. MC quantities **
     //
     fph_reco_pMC     = MakeHisto<TH1F>("reco_pMC", "", kBinsP, kLoP, kUpP);
+    fph_reco_etaMC   = MakeHisto<TH1F>("reco_etaMC", "", kBinsETA, kLoETA, kUpETA);
     fph_reco_yMC     = MakeHisto<TH1F>("reco_yMC", "", kBinsY, kLoY, kUpY);
     fph_reco_pMC_yMC = MakeHisto<TH2F>("reco_pMC_yMC", "", kBinsY, kLoY, kUpY, kBinsP, kLoP, kUpP);
     fph_reco_phiMC   = MakeHisto<TH1F>("reco_phiMC", "", kBinsPHI, kLoPHI, kUpPHI);
     fph_reco_thetaMC = MakeHisto<TH1F>("reco_thetaMC", "", kBinsTHETA, kLoTHETA, kUpTHETA);
+    fph_reco_nhits   = MakeHisto<TH1F>("reco_nhits", "", kBinsNHITS, kLoNHITS, kUpNHITS);
 
-    fph_reco_pMC->SetTitle("MC total momentum of reconstructed track;p^{MC} [GeV/c]");
-    fph_reco_yMC->SetTitle("MC rapidity of reconstructed track;y^{MC}");
-    fph_reco_pMC_yMC->SetTitle("Transverse momentum of reconstructed track;y^{MC};p_{T}^{MC} [GeV/c]");
-    fph_reco_phiMC->SetTitle("Azimuthal angle of reconstructed track;#phi^{MC} [rad]");
-    fph_reco_thetaMC->SetTitle("Polar angle of reconstructed track;#theta^{MC} [rad]");
+    fph_reco_pMC->SetTitle("MC total momentum of reconstructed track;p^{MC} [GeV/c];Counts");
+    fph_reco_yMC->SetTitle("MC rapidity of reconstructed track;y^{MC};Counts");
+    fph_reco_etaMC->SetTitle("MC pseudorapidity of reconstructed track;#eta^{MC};Counts");
+    fph_reco_pMC_yMC->SetTitle("Transverse momentum of reconstructed track;y^{MC};p_{T}^{MC} [GeV/c];Counts");
+    fph_reco_phiMC->SetTitle("Azimuthal angle of reconstructed track;#phi^{MC} [rad];Counts");
+    fph_reco_thetaMC->SetTitle("Polar angle of reconstructed track;#theta^{MC} [rad];Counts");
+    fph_reco_nhits->SetTitle("Hit number of reconstructed tracks;N^{MC}_{hits};Counts");
+
 
     fph_mc_pMC     = MakeHisto<TH1F>("mc_pMC", "", kBinsP, kLoP, kUpP);
+    fph_mc_etaMC   = MakeHisto<TH1F>("mc_etaMC", "", kBinsETA, kLoETA, kUpETA);
     fph_mc_yMC     = MakeHisto<TH1F>("mc_yMC", "", kBinsY, kLoY, kUpY);
     fph_mc_pMC_yMC = MakeHisto<TH2F>("mc_pMC_yMC", "", kBinsY, kLoY, kUpY, kBinsP, kLoP, kUpP);
 
-    fph_mc_pMC->SetTitle("MC total momentum of MC tracks;p^{MC} [GeV/c]");
-    fph_mc_yMC->SetTitle("MC rapidity of MC tracks;y^{MC}");
-    fph_mc_pMC_yMC->SetTitle("MC total momentum vs. MC rapidity of MC tracks;y^{MC};p^{MC} [GeV/c]");
+    fph_mc_pMC->SetTitle("MC total momentum of MC tracks;p^{MC} [GeV/c];Counts");
+    fph_mc_yMC->SetTitle("MC rapidity of MC tracks;y^{MC};Counts");
+    fph_mc_etaMC->SetTitle("MC pseudorapidity of MC track;#eta^{MC};Counts");
+    fph_mc_pMC_yMC->SetTitle("MC total momentum vs. MC rapidity of MC tracks;y^{MC};p^{MC} [GeV/c];Counts");
 
     //
     // ** Efficiencies **
@@ -119,6 +125,10 @@ void TrackTypeQa::Init()
 
     fpFitQaLastHit = std::make_unique<TrackFitQa>("lst_hit", fsPrefix, fpFolderRoot);
     fpFitQaLastHit->SetTitle("Last hit");
+    fpFitQaLastHit->fLoRESX = -0.4;
+    fpFitQaLastHit->fUpRESX = +0.4;
+    fpFitQaLastHit->fLoRESY = -0.8;
+    fpFitQaLastHit->fUpRESY = +0.8;
     fpFitQaLastHit->Init();
 
     fpFitQaVertex = std::make_unique<TrackFitQa>("vertex", fsPrefix, fpFolderRoot);
@@ -134,6 +144,7 @@ void TrackTypeQa::FillRecoTrack(int iTrkReco, double weight)
   const auto& recoTrack = (*fpvRecoTracks)[iTrkReco];
   fph_reco_p->Fill(recoTrack.GetP(), weight);
   fph_reco_pt->Fill(recoTrack.GetPt(), weight);
+  fph_reco_eta->Fill(recoTrack.GetEta(), weight);
   fph_reco_phi->Fill(recoTrack.GetPhi(), weight);
   fph_reco_theta->Fill(recoTrack.GetTheta(), weight);
   fph_reco_tx->Fill(recoTrack.GetTx(), weight);
@@ -144,6 +155,7 @@ void TrackTypeQa::FillRecoTrack(int iTrkReco, double weight)
       /// TODO: fill mass hypothesis into CbmL1Track
       const auto& mcTrack = fpMCData->GetTrack(iTrkMC);
       fph_reco_pMC->Fill(mcTrack.GetP(), weight);
+      fph_reco_etaMC->Fill(mcTrack.GetEta(), weight);
       fph_reco_yMC->Fill(mcTrack.GetRapidity(), weight);
       fph_reco_pMC_yMC->Fill(mcTrack.GetRapidity(), mcTrack.GetP(), weight);
 
@@ -219,6 +231,7 @@ void TrackTypeQa::FillMCTrack(int iTrkMC, double weight)
 
   // ** Distributions **
   fph_mc_pMC->Fill(mcTrack.GetP(), weight);
+  fph_mc_etaMC->Fill(mcTrack.GetEta(), weight);
   fph_mc_yMC->Fill(mcTrack.GetRapidity(), weight);
   fph_mc_pMC_yMC->Fill(mcTrack.GetRapidity(), mcTrack.GetP(), weight);
 
@@ -247,7 +260,8 @@ void TrackTypeQa::FillMCTracks()
     const auto& mcTrk = fpMCData->GetTrack(iTrkMC);
 
     // Cut tracks, which did not leave hits in tracker
-    if (mcTrk.GetNofHits() == 0) { continue; }
+    //if (mcTrk.GetNofHits() == 0) { continue; }
+    if (!mcTrk.IsReconstructable()) { continue; }
 
     // Cut tracks, which do not pass the applied cut
     if (!fMCTrackCut(mcTrk)) { continue; }
@@ -258,4 +272,28 @@ void TrackTypeQa::FillMCTracks()
     // Fill histograms
     this->FillMCTrack(iTrkMC);
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void TrackTypeQa::SetDrawAtt(Color_t markerCol, Style_t markerSty, Color_t lineCol, Style_t lineSty)
+{
+  fMarkerColor = markerCol;
+  fMarkerStyle = markerSty;
+  fLineColor   = (lineCol > -1) ? lineCol : markerCol;
+  fLineStyle   = lineSty;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void TrackTypeQa::SetHistoProperties(TH1* pHist)
+{
+  pHist->SetStats(true);
+  pHist->Sumw2();
+  if (!pHist->InheritsFrom("TH2") && !pHist->InheritsFrom("TH3")) {
+    pHist->SetMarkerStyle(fMarkerStyle);
+    pHist->SetLineStyle(fLineStyle);
+  }
+  pHist->SetMarkerColor(fMarkerColor);
+  pHist->SetLineColor(fLineColor);
 }

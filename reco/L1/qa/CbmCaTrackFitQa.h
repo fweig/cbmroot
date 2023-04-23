@@ -129,11 +129,11 @@ namespace cbm::ca
     double fUpRESVI = +2.;     ///< Upper boundary, residual of inverse speed [1/c]
 
     int fBinsPULLX   = 200;   ///< Number of bins, pull of x
-    double fLoPULLX  = -1.;   ///< Lower boundary, pull of x [cm]
-    double fUpPULLX  = +1.;   ///< Upper boundary, pull of x [cm]
+    double fLoPULLX  = -4.;   ///< Lower boundary, pull of x [cm]
+    double fUpPULLX  = +4.;   ///< Upper boundary, pull of x [cm]
     int fBinsPULLY   = 200;   ///< Number of bins, pull of y
-    double fLoPULLY  = -1.;   ///< Lower boundary, pull of y [cm]
-    double fUpPULLY  = +1.;   ///< Upper boundary, pull of y [cm]
+    double fLoPULLY  = -4.;   ///< Lower boundary, pull of y [cm]
+    double fUpPULLY  = +4.;   ///< Upper boundary, pull of y [cm]
     int fBinsPULLTX  = 200;   ///< Number of bins, pull of slope along x-axis
     double fLoPULLTX = -4.;   ///< Lower boundary, pull of slope along x-axis
     double fUpPULLTX = +4.;   ///< Upper boundary, pull of slope along x-axis
