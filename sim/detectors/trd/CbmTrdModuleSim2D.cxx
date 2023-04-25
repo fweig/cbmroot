@@ -707,7 +707,7 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
       digi = iv->first;
       if (!digi->IsMasked()) {  // no more digi processed
         if (digi->GetTime() < newStartTime) newStartTime = digi->GetTime();
-        if ((digi->GetTime() - timeMax) > 400) {
+        if ((digi->GetTime() - timeMax) > 2 * FASP_WINDOW) {
           delete digi;
           iv = fBuffer[padAddress].erase(iv);  // remove from saved buffer
           continue;
