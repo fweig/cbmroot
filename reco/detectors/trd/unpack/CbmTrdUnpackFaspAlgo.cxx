@@ -219,88 +219,90 @@ void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspMessage* mess)
 //_________________________________________________________________________________
 bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messes)
 {
-  UChar_t lFasp(0xff);
-  Double_t r, t;
-  Int_t dt;
+  const UChar_t lFasp             = messes[0].fasp;
+  const CbmTrdParFasp* faspPar    = (CbmTrdParFasp*) fAsicPar.GetAsicPar(fMod * 1000 + lFasp);
+  const CbmTrdParModDigi* digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(fMod);
+
+  // link data to the position on the padplane
+  if (!faspPar) {
+    LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << fMod
+               << " missing. Skip.";
+    return false;
+  }
+  if (!digiPar) {
+    LOG(error) << GetName() << "::pushDigis - DIGI par for module " << fMod << " missing. Skip.";
+    return false;
+  }
+
+  // TODO temporary add DAQ time calibration for FASPRO.
+  // Should be absorbed in the ASIC parameter definition
   ULong64_t tdaqOffset(0);
-  CbmTrdParFasp* faspPar(nullptr);
-  CbmTrdParModDigi* digiPar(nullptr);
+  if (digiPar->GetPadRow(faspPar->GetPadAddress(messes[0].ch)) % 2 == 0) tdaqOffset = 3;
+
+  if (VERBOSE) faspPar->Print();
 
   for (auto imess : messes) {
-    if (lFasp == 0xff) {
-      lFasp = messes[0].fasp;
-      // link data to the position on the padplane
-      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar(fMod * 1000 + lFasp))) {
-        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << fMod
-                   << " missing. Skip.";
-        return false;
-      }
-      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(fMod))) {
-        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << fMod << " missing. Skip.";
-        return false;
-      }
-      // TODO temporary add DAQ time calibration for FASPRO.
-      // Should be absorbed in the ASIC parameter definition
-      if (digiPar->GetPadRow(faspPar->GetPadAddress(imess.ch)) % 2 == 0) tdaqOffset = 3;
-    }
-
-    Int_t pad                           = faspPar->GetPadAddress(imess.ch);
+    const Int_t pad                     = faspPar->GetPadAddress(imess.ch);
     const CbmTrdParFaspChannel* chCalib = faspPar->GetChannel(imess.ch);
-    ULong64_t lTime                     = fTime + tdaqOffset + imess.tlab;
-    UShort_t lchR                       = 0;
-    UShort_t lchT                       = 0;
-    if (chCalib->HasPairingR()) lchR = imess.data;
-    else
-      lchT = imess.data;
+    const ULong64_t lTime               = fTime + tdaqOffset + imess.tlab;
+    const UShort_t lchR                 = chCalib->HasPairingR() ? imess.data : 0;
+    const UShort_t lchT                 = chCalib->HasPairingR() ? 0 : imess.data;
 
-    if (fDigiBuffer[fCrob][pad].size()) {
-      // check if last digi has both R/T message components. Update if not and is within time window
-      auto id = fDigiBuffer[fCrob][pad].rbegin();  // Should always be valid here.
-                                                   // No need to extra check
-      Int_t dtime = (*id).GetTimeDAQ() - lTime;
-      bool use(false);
-      if (TMath::Abs(dtime) < 5) {  // test message part of (last) digi
-        r = (*id).GetCharge(t, dt);
-        if (lchR && r < 0.1) {  // set R charge on an empty slot
-          (*id).SetCharge(t, lchR, -dtime);
-          use = true;
-        }
-        else if (lchT && t < 0.1) {  // set T charge on an empty slot
-          (*id).SetCharge(lchT, r, +dtime);
-          (*id).SetTimeDAQ(ULong64_t((*id).GetTimeDAQ() - dtime));
-          use = true;
-        }
-      }
-
-      // build digi for message when update failed
-      if (!use) {
-        fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
-        fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
-        id = fDigiBuffer[fCrob][pad].rbegin();
-      }
-
-      if (id != fDigiBuffer[fCrob][pad].rend()) id++;
-
-      // update charge for previously allocated digis to account for FASPRO ADC buffering and read-out feature
-      use = false;
-      for (; id != fDigiBuffer[fCrob][pad].rend(); ++id) {
-        r = (*id).GetCharge(t, dt);
-        if (lchR && int(r)) {  // update R charge and mark on digi
-          (*id).SetCharge(t, lchR, dt);
-          (*id).SetFlag(1);
-          use = true;
-        }
-        else if (lchT && int(t)) {  // update T charge and mark on digi
-          (*id).SetCharge(lchT, r, dt);
-          (*id).SetFlag(0);
-          use = true;
-        }
-        if (use) break;
-      }
+    if (VERBOSE) {
+      const Int_t ch = 2 * pad + chCalib->HasPairingR();
+      mess_prt(&imess);
+      printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] %c[%4d]\n", lFasp, ch, imess.ch, pad,
+             digiPar->GetPadRow(pad), digiPar->GetPadColumn(pad), (chCalib->HasPairingT() ? 'T' : 'R'),
+             lchT > 0 ? lchT : lchR);
     }
-    else {  // init pad position in map and build digi for message
+
+    if (fDigiBuffer[fCrob][pad].size() == 0) {  // init pad position in map and build digi for message
       fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
       fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
+      continue;
+    }
+
+    // check if last digi has both R/T message components. Update if not and is within time window
+    auto id = fDigiBuffer[fCrob][pad].rbegin();  // Should always be valid here.
+                                                 // No need to extra check
+    Double_t r, t;
+    Int_t dt;
+    const Int_t dtime = (*id).GetTimeDAQ() - lTime;
+    bool use(false);
+
+    if (TMath::Abs(dtime) < 5) {  // test message part of (last) digi
+      r = (*id).GetCharge(t, dt);
+      if (lchR && r < 0.1) {  // set R charge on an empty slot
+        (*id).SetCharge(t, lchR, -dtime);
+        use = true;
+      }
+      else if (lchT && t < 0.1) {  // set T charge on an empty slot
+        (*id).SetCharge(lchT, r, +dtime);
+        (*id).SetTimeDAQ(ULong64_t((*id).GetTimeDAQ() - dtime));
+        use = true;
+      }
+    }
+
+    // build digi for message when update failed
+    if (!use) {
+      fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
+      fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
+      id = fDigiBuffer[fCrob][pad].rbegin();
+    }
+
+    // update charge for previously allocated digis to account for FASPRO ADC buffering and read-out feature
+    for (++id; id != fDigiBuffer[fCrob][pad].rend(); ++id) {
+      r = (*id).GetCharge(t, dt);
+      if (lchR && int(r)) {  // update R charge and mark on digi
+        (*id).SetCharge(t, lchR, dt);
+        (*id).SetFlag(1);
+        break;
+      }
+      else if (lchT && int(t)) {  // update T charge and mark on digi
+        (*id).SetCharge(lchT, r, dt);
+        (*id).SetFlag(0);
+        break;
+      }
     }
   }
   messes.clear();
