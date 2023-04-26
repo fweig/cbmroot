@@ -33,6 +33,6 @@ set(INTERFACE_DEPENDENCIES
 
 generate_cbm_library()
 
-Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h CbmQaConstants.h
+Install(FILES CbmQaTask.h CbmQaCanvas.h CbmQaTable.h CbmQaHist.h CbmQaEff.h CbmQaPie.h CbmQaConstants.h CbmQaCmpDrawer.h
         DESTINATION include
        )

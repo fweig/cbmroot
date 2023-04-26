@@ -186,6 +186,16 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   // appears, if the CbmMuchHitFinderQa task runs before the CbmCaInputQaSts
   // task.
 
+  // ----- STS QA -----------------------------------------------------------
+  if (bUseSts) {
+    // CA Input QA
+    auto* pCaInputSts = new CbmCaInputQaSts(verbose, bUseMC);
+    pCaInputSts->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputSts);
+  }
+  // ------------------------------------------------------------------------
+
+
   // ----- MUCH QA  ---------------------------------------------------------
   if (bUseMuch) {
     run->AddTask(new CbmMuchTransportQa());
@@ -194,21 +204,12 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
 
     CbmMuchHitFinderQa* muchHitFinderQa = new CbmMuchHitFinderQa();
     muchHitFinderQa->SetGeoFileName(muchParFile);
-    //run->AddTask(muchHitFinderQa);
+    run->AddTask(muchHitFinderQa);
 
     // CA Input QA
     auto* pCaInputMuch = new CbmCaInputQaMuch(verbose, bUseMC);
     pCaInputMuch->SetEfficiencyThrsh(0.5, 0, 100);
     run->AddTask(pCaInputMuch);
-  }
-  // ------------------------------------------------------------------------
-
-  // ----- STS QA -----------------------------------------------------------
-  if (bUseSts) {
-    // CA Input QA
-    auto* pCaInputSts = new CbmCaInputQaSts(verbose, bUseMC);
-    pCaInputSts->SetEfficiencyThrsh(0.5, 0, 100);
-    run->AddTask(pCaInputSts);
   }
   // ------------------------------------------------------------------------
 

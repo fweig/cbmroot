@@ -363,7 +363,6 @@ void CbmMuchHitFinderQa::FinishTask()
 // -------------------------------------------------------------------------
 void CbmMuchHitFinderQa::DrawCanvases()
 {
-
   for (Int_t i = 0; i < fNstations; i++) {
     fCanvPointsInCluster->cd(i + 1);
     fhPointsInCluster[i]->DrawCopy("", "");
@@ -386,13 +385,15 @@ void CbmMuchHitFinderQa::DrawCanvases()
     histo->Draw();  //necessary to create stats pointer
     fCanvPull->Update();
     TPaveStats* st = (TPaveStats*) histo->FindObject("stats");
-    st->SetX1NDC(0.621);
-    st->SetX2NDC(0.940);
-    st->SetY1NDC(0.657);
-    st->SetY2NDC(0.929);
-    st->SetOptStat(1110);
-    st->SetOptFit(11);
-    //st->SetTextSize(0.04);
+    if (st) {
+      st->SetX1NDC(0.621);
+      st->SetX2NDC(0.940);
+      st->SetY1NDC(0.657);
+      st->SetY2NDC(0.929);
+      st->SetOptStat(1110);
+      st->SetOptFit(11);
+      //st->SetTextSize(0.04);
+    }
     histo->DrawCopy("", "");
     //version below only changes canvas but not hist folder
     //TH1* hClone = histo->DrawCopy("", "");
@@ -413,13 +414,15 @@ void CbmMuchHitFinderQa::DrawCanvases()
     histo->Draw();  //necessary to create stats pointer
     fCanvResidual->Update();
     TPaveStats* st = (TPaveStats*) histo->FindObject("stats");
-    st->SetX1NDC(0.621);
-    st->SetX2NDC(0.940);
-    st->SetY1NDC(0.657);
-    st->SetY2NDC(0.929);
-    st->SetOptStat(1110);
-    st->SetOptFit(11);
-    //st->SetTextSize(0.04);
+    if (st) {
+      st->SetX1NDC(0.621);
+      st->SetX2NDC(0.940);
+      st->SetY1NDC(0.657);
+      st->SetY2NDC(0.929);
+      st->SetOptStat(1110);
+      st->SetOptFit(11);
+      //st->SetTextSize(0.04);
+    }
     histo->DrawCopy("", "");
   }
 }
