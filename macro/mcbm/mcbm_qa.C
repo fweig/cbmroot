@@ -175,21 +175,62 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   }
   // ------------------------------------------------------------------------
 
-  // ----- MUCH QA  ---------------------------------
-  if (setup->IsActive(ECbmModuleId::kMuch)) {
+  // ----- Tracking detector interface --------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+  // ------------------------------------------------------------------------
+
+  // NOTE (FIXME) SZh, 26.04.2023
+  // For some reason QA tasks interfere one with another. It leads to the
+  // segmentational violation in CbmMuchHitFinderQa::DrawCanvases() function,
+  // if this task is called after the CbmCaInputQaSts task. The problem dis-
+  // appears, if the CbmMuchHitFinderQa task runs before the CbmCaInputQaSts
+  // task.
+
+  // ----- MUCH QA  ---------------------------------------------------------
+  if (bUseMuch) {
     run->AddTask(new CbmMuchTransportQa());
     run->AddTask(new CbmMuchDigitizerQa());
+
+
     CbmMuchHitFinderQa* muchHitFinderQa = new CbmMuchHitFinderQa();
     muchHitFinderQa->SetGeoFileName(muchParFile);
-    run->AddTask(muchHitFinderQa);
+    //run->AddTask(muchHitFinderQa);
+
+    // CA Input QA
+    auto* pCaInputMuch = new CbmCaInputQaMuch(verbose, bUseMC);
+    pCaInputMuch->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputMuch);
   }
   // ------------------------------------------------------------------------
 
+  // ----- STS QA -----------------------------------------------------------
+  if (bUseSts) {
+    // CA Input QA
+    auto* pCaInputSts = new CbmCaInputQaSts(verbose, bUseMC);
+    pCaInputSts->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputSts);
+  }
+  // ------------------------------------------------------------------------
+
+  // ----- TRD QA -----------------------------------------------------------
+  if (bUseTrd) {
+    // CA Input QA
+    auto* pCaInputTrd = new CbmCaInputQaTrd(verbose, bUseMC);
+    pCaInputTrd->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputTrd);
+  }
+  // ------------------------------------------------------------------------
+
+  // ----- TOF QA -----------------------------------------------------------
+  if (bUseTof) {
+    // CA Input QA
+    auto* pCaInputTof = new CbmCaInputQaTof(verbose, bUseMC);
+    pCaInputTof->SetEfficiencyThrsh(0.5, 0, 100);
+    run->AddTask(pCaInputTof);
+  }
+  // ------------------------------------------------------------------------
 
   // ----- CA tracking QA ---------------------------------------------------
-  // Tracking detector interface initialization
-  run->AddTask(new CbmTrackingDetectorInterfaceInit());
-
   // Kalman Filter (currently needed to access the magnetic filed, to be
   // removed soon)
   run->AddTask(new CbmKF());

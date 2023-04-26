@@ -147,19 +147,18 @@ bool CbmCaInputQaTof::Check()
 
     // Function to fit a residual distribution, returns a structure
     auto FitResidualsAndGetMean = [&](TH1* pHist) {
-      auto* pFit = (TF1*) gROOT->FindObject("gausn");
-      LOG_IF(fatal, !pFit) << fName << ": residuals fit function is not found";
+      auto fit        = TF1("fitres", "gausn");
       double statMean = pHist->GetMean();
       double statSigm = pHist->GetStdDev();
-      pFit->SetParameters(100., statMean, statSigm);
-      pHist->Fit(pFit, "MQ");
-      pHist->Fit(pFit, "MQ");
-      pHist->Fit(pFit, "MQ");
+      fit.SetParameters(100., statMean, statSigm);
+      pHist->Fit("fitres", "MQ");
+      pHist->Fit("fitres", "MQ");
+      pHist->Fit("fitres", "MQ");
       // NOTE: Several fit procedures are made to avoid empty fit results
       std::array<double, 3> result;
-      result[0] = pFit->GetParameter(1);
-      result[1] = -pFit->GetParameter(2) * fResMeanThrsh;
-      result[2] = +pFit->GetParameter(2) * fResMeanThrsh;
+      result[0] = fit.GetParameter(1);
+      result[1] = -fit.GetParameter(2) * fResMeanThrsh;
+      result[2] = +fit.GetParameter(2) * fResMeanThrsh;
       return result;
     };
 
@@ -200,11 +199,10 @@ bool CbmCaInputQaTof::Check()
     //TF1* pPullFit = new TF1("pullFitGausn", "[0] * Expk(-[2] * (x - [1]) * (x - [1]), [3])", -10., 10.);
 
     auto FitPullsAndGetSigma = [&](TH1* pHist) {
-      auto* pFit = (TF1*) gROOT->FindObject("gausn");
-      LOG_IF(fatal, !pFit) << fName << ": pulls fit function is not found";
-      pFit->SetParameters(100, 0.001, 1.000);
-      pHist->Fit(pFit, "Q");
-      return pFit->GetParameter(2);
+      auto fit = TF1("fitpull", "gausn(0)");
+      fit.SetParameters(100, 0.001, 1.000);
+      pHist->Fit("fitpull", "Q");
+      return fit.GetParameter(2);
     };
 
     auto* pPullsTable = MakeTable("pulls_rms", "Pulls std. dev. values in different stations", nSt, 4);
@@ -304,6 +302,8 @@ void CbmCaInputQaTof::FillHistograms()
     // FIXME: Is this cut still needed??
     int32_t address = pHit->GetAddress();
     if (0x00202806 == address || 0x00002806 == address) { continue; }
+
+    if (5 == CbmTofAddress::GetSmType(pHit->GetAddress())) { continue; }
 
     // *************************
     // ** Reconstructed hit QA

@@ -143,19 +143,18 @@ bool CbmCaInputQaTrd::Check()
 
     // Function to fit a residual distribution, returns a structure
     auto FitResidualsAndGetMean = [&](TH1* pHist) {
-      auto* pFit = (TF1*) gROOT->FindObject("gausn");
-      LOG_IF(fatal, !pFit) << fName << ": residuals fit function is not found";
+      auto fit        = TF1("fitres", "gausn");
       double statMean = pHist->GetMean();
       double statSigm = pHist->GetStdDev();
-      pFit->SetParameters(100., statMean, statSigm);
-      pHist->Fit(pFit, "MQ");
-      pHist->Fit(pFit, "MQ");
-      pHist->Fit(pFit, "MQ");
+      fit.SetParameters(100., statMean, statSigm);
+      pHist->Fit("fitres", "MQ");
+      pHist->Fit("fitres", "MQ");
+      pHist->Fit("fitres", "MQ");
       // NOTE: Several fit procedures are made to avoid empty fit results
       std::array<double, 3> result;
-      result[0] = pFit->GetParameter(1);
-      result[1] = -pFit->GetParameter(2) * fResMeanThrsh;
-      result[2] = +pFit->GetParameter(2) * fResMeanThrsh;
+      result[0] = fit.GetParameter(1);
+      result[1] = -fit.GetParameter(2) * fResMeanThrsh;
+      result[2] = +fit.GetParameter(2) * fResMeanThrsh;
       return result;
     };
 
@@ -196,11 +195,10 @@ bool CbmCaInputQaTrd::Check()
     //TF1* pPullFit = new TF1("pullFitGausn", "[0] * Expk(-[2] * (x - [1]) * (x - [1]), [3])", -10., 10.);
 
     auto FitPullsAndGetSigma = [&](TH1* pHist) {
-      auto* pFit = (TF1*) gROOT->FindObject("gausn");
-      LOG_IF(fatal, !pFit) << fName << ": pulls fit function is not found";
-      pFit->SetParameters(100, 0.001, 1.000);
-      pHist->Fit(pFit, "Q");
-      return pFit->GetParameter(2);
+      auto fit = TF1("fitpull", "gausn(0)");
+      fit.SetParameters(100, 0.001, 1.000);
+      pHist->Fit("fitpull", "Q");
+      return fit.GetParameter(2);
     };
 
     auto* pPullsTable = MakeTable("pulls_rms", "Pulls std. dev. values in different stations", nSt, 4);
@@ -393,7 +391,6 @@ void CbmCaInputQaTrd::FillHistograms()
       double t0MC = fpMCEventList->GetEventTime(bestPointLink);
       LOG_IF(fatal, t0MC < 0) << fName << ": MC time zero is lower then 0 ns: " << t0MC;
 
-
       // ----- MC point properties
       //
       double mass = pMCTrack->GetMass();
@@ -433,7 +430,6 @@ void CbmCaInputQaTrd::FillHistograms()
 
       if (std::fabs(pMCPoint->GetPzOut()) < fMinMomentum) { continue; }  // CUT ON MINIMUM MOMENTUM
       //if (pMCo < cuts::kMinP) { continue; }  // Momentum threshold
-
 
       fvph_point_ypos_vs_xpos[iSt]->Fill(xMC, yMC);
       fvph_point_xpos_vs_zpos[iSt]->Fill(zMC, xMC);
@@ -932,7 +928,7 @@ InitStatus CbmCaInputQaTrd::InitHistograms()
     fvpe_reco_eff_vs_xy.resize(nSt + 2, nullptr);
     fvpe_reco_eff_vs_r.resize(nSt + 2, nullptr);
 
-    for (int iSt = 0; iSt <= nSt; ++iSt) {
+    for (int iSt = 0; iSt < nSt + 2; ++iSt) {
       TString nsuff = "";  // Histogram name suffix
       TString tsuff = "";  // Histogram title suffix
 

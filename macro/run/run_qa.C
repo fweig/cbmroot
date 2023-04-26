@@ -217,7 +217,6 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     }
     run->AddTask(trdHitProducerQa);
     run->AddTask(new CbmTrdCalibTracker());
-    run->AddTask(new CbmTrackerInputQaTrd());  // Tracker requirements to TRD
     auto* pCaInputQaTrd = new CbmCaInputQaTrd(verbose, bUseMC);
     pCaInputQaTrd->SetEfficiencyThrsh(0.5, 0, 100);
     run->AddTask(pCaInputQaTrd);
@@ -226,7 +225,6 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
 
   // ----- TOF QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kTof)) {
-    //run->AddTask(new CbmTrackerInputQaTof());  // Tracker requirements to TOF
     auto* pCaInputQaTof = new CbmCaInputQaTof(verbose, bUseMC);
     pCaInputQaTof->SetEfficiencyThrsh(0.5, 0, 100);
     run->AddTask(pCaInputQaTof);
