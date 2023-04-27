@@ -204,8 +204,8 @@ private:
   void prt_wd(uint32_t w);
   std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap  = nullptr;  ///> FASP mapping update wrt the default setting
   std::map<uint32_t, uint16_t[NCROBMOD]>* fCrobMap = nullptr;  ///> CRI mapping setting
-  std::map<uint16_t, std::array<std::vector<CbmTrdDigi>, NFASPMOD* NFASPCH>> fDigiBuffer = {
-    {{}}};  ///> Buffered digi for each pad in CROB component
+  std::array<std::vector<CbmTrdDigi>, NFASPMOD* NFASPCH> fDigiBuffer = {
+    {}};  ///> Buffered digi for each pad in CROB component
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
   uint16_t fCrob                                    = 0xffff;  //! current crob being processed

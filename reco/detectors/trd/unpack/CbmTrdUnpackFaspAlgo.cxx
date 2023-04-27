@@ -247,6 +247,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
     const ULong64_t lTime               = fTime + tdaqOffset + imess.tlab;
     const UShort_t lchR                 = chCalib->HasPairingR() ? imess.data : 0;
     const UShort_t lchT                 = chCalib->HasPairingR() ? 0 : imess.data;
+    std::vector<CbmTrdDigi>& digiBuffer = fDigiBuffer[pad];
 
     if (VERBOSE) {
       const Int_t ch = 2 * pad + chCalib->HasPairingR();
@@ -256,15 +257,15 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
              lchT > 0 ? lchT : lchR);
     }
 
-    if (fDigiBuffer[fCrob][pad].size() == 0) {  // init pad position in map and build digi for message
-      fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
-      fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
+    if (digiBuffer.size() == 0) {  // init pad position in map and build digi for message
+      digiBuffer.emplace_back(pad, lchT, lchR, lTime);
+      digiBuffer.back().SetAddressModule(fMod);
       continue;
     }
 
     // check if last digi has both R/T message components. Update if not and is within time window
-    auto id = fDigiBuffer[fCrob][pad].rbegin();  // Should always be valid here.
-                                                 // No need to extra check
+    auto id = digiBuffer.rbegin();  // Should always be valid here.
+                                    // No need to extra check
     Double_t r, t;
     Int_t dt;
     const Int_t dtime = (*id).GetTimeDAQ() - lTime;
@@ -285,13 +286,13 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
     // build digi for message when update failed
     if (!use) {
-      fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
-      fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
-      id = fDigiBuffer[fCrob][pad].rbegin();
+      digiBuffer.emplace_back(pad, lchT, lchR, lTime);
+      digiBuffer.back().SetAddressModule(fMod);
+      id = digiBuffer.rbegin();
     }
 
     // update charge for previously allocated digis to account for FASPRO ADC buffering and read-out feature
-    for (++id; id != fDigiBuffer[fCrob][pad].rend(); ++id) {
+    for (++id; id != digiBuffer.rend(); ++id) {
       r = (*id).GetCharge(t, dt);
       if (lchR && int(r)) {  // update R charge and mark on digi
         (*id).SetCharge(t, lchR, dt);
@@ -312,21 +313,8 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
 uint32_t CbmTrdUnpackFaspAlgo::ResetTimeslice()
 {
-  uint32_t uNbLostDigis = 0;
-  /// PAL 03/08/2022: clear internal buffer at latest between two timeslices (TS are self contained!)
-
-  for (auto crobBuffer : fDigiBuffer) {
-    for (auto pad_id(0); pad_id < NFASPMOD * NFASPCH; pad_id++) {
-      if (!crobBuffer.second[pad_id].size()) continue;
-
-      LOG(warn) << fName << "::ResetTimeslice - buffered digi @ CROB=" << crobBuffer.first << " / pad=" << pad_id
-                << " store " << crobBuffer.second[pad_id].size() << " unprocessed digi.";
-      uNbLostDigis += crobBuffer.second[pad_id].size();
-
-      crobBuffer.second[pad_id].clear();
-    }
-  }
-  return uNbLostDigis;
+  /// D.Smith: As of 27.4.2023 nothing to do here as FinalizeComponent() takes care of everything.
+  return 0;
 }
 
 void CbmTrdUnpackFaspAlgo::FinalizeComponent()
@@ -335,9 +323,9 @@ void CbmTrdUnpackFaspAlgo::FinalizeComponent()
   Int_t dt;
   // push finalized digits to the next level
   for (uint16_t ipad(0); ipad < NFASPMOD * NFASPCH; ipad++) {
-    if (!fDigiBuffer[fCrob][ipad].size()) continue;
+    if (!fDigiBuffer[ipad].size()) continue;
     uint nIncomplete(0);
-    for (auto id = fDigiBuffer[fCrob][ipad].begin(); id != fDigiBuffer[fCrob][ipad].end(); id++) {
+    for (auto id = fDigiBuffer[ipad].begin(); id != fDigiBuffer[ipad].end(); id++) {
       r = (*id).GetCharge(t, dt);
       // check if digi has all signals CORRECTED
       if (((t > 0) != (*id).IsFlagged(0)) || ((r > 0) != (*id).IsFlagged(1))) {
@@ -351,7 +339,7 @@ void CbmTrdUnpackFaspAlgo::FinalizeComponent()
       fOutputVec.emplace_back(std::move((*id)));
     }
     // clear digi buffer wrt the digi which was forwarded to higher structures
-    fDigiBuffer[fCrob][ipad].clear();
+    fDigiBuffer[ipad].clear();
     if (nIncomplete > 2) {
       LOG(warn) << fName << "FinalizeComponent(" << fCrob << ") skip " << nIncomplete << " incomplete digi at pad "
                 << ipad << ".\n";
@@ -360,7 +348,8 @@ void CbmTrdUnpackFaspAlgo::FinalizeComponent()
   fCrob = 0xffff;  // reset current crob id
 }
 
-/ ----unpack-- --bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
+// ----unpack----
+bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
 {
   if (VERBOSE) printf("CbmTrdUnpackFaspAlgo::unpack 0x%04x %d\n", icomp, imslice);
   // LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
