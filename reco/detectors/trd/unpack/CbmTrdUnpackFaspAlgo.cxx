@@ -360,12 +360,15 @@ void CbmTrdUnpackFaspAlgo::FinalizeComponent()
   fCrob = 0xffff;  // reset current crob id
 }
 
-// ---- unpack ----
-bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
+/ ----unpack-- --bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
 {
+  if (VERBOSE) printf("CbmTrdUnpackFaspAlgo::unpack 0x%04x %d\n", icomp, imslice);
+  // LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
+
   uint8_t crob_id = 0;
   uint16_t eq_id;
   bool unpackOk = true;
+  //Double_t fdMsSizeInNs = 1.28e6;
 
   auto msdesc = ts->descriptor(icomp, imslice);
   // Cast required to silence a warning on macos (there a uint64_t is a llu)
@@ -386,12 +389,18 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
     // buffer module configuration
     if (fMod == 0xffff || fMod != mod_id) {
       fMod = mod_id;
-      if (!init()) { return false; }
+      if (!init()) {
+        LOG(error) << GetName() << "::unpack - init mod_id=" << mod_id << " failed.";
+        return false;
+      }
     }
     mapped = true;
     break;
   }
-  if (!mapped) { return false; }
+  if (!mapped) {
+    LOG(error) << GetName() << "::unpack - CROB eq_id=" << eq_id << " not registered in the unpacker.";
+    return false;
+  }
   if (fCrob == 0xffff) fCrob = icomp;
 
   // Get the µslice size in bytes to calculate the number of completed words
@@ -411,17 +420,32 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   UChar_t lFaspOld(0xff);
   vector<CbmTrdFaspMessage> vMess;
   for (uint64_t j = 0; j < nwords; j++, wd++) {
+    //     // Select the appropriate conversion type of the word according to the message type
+    //     switch(mess_type(*wd)){
+    //       case CbmTrdFaspMessageType::kData:
+    //         mess_readDW(*wd, &mess);
+    //         break;
+    //       case CbmTrdFaspMessageType::kEpoch:
+    //         mess_readEW(*wd, &mess);
+    //         break;
+    //     }
     uint32_t w      = *wd;
     uint8_t ch_id   = w & 0xf;
     uint8_t isaux   = (w >> 4) & 0x1;
     uint8_t slice   = (w >> 5) & 0x7f;
     uint16_t data   = (w >> 12) & 0x3fff;
+    uint32_t epoch  = (w >> 5) & 0x1fffff;
     uint8_t fasp_id = ((w >> 26) & 0x3f) + crob_id * NFASPCROB;
+    // std::cout<<"fasp_id="<<static_cast<unsigned int>(fasp_id)<<" ch_id="<<static_cast<unsigned int>(ch_id)<<" isaux="<<static_cast<unsigned int>(isaux)<<std::endl;
     if (isaux) {
       if (!ch_id) {
         // clear buffer
         if (vMess.size()) { pushDigis(vMess); }
         vMess.clear();
+
+        if (VERBOSE)
+          cout << boost::format("    EE : fasp_id=%02d ch_id=%02d epoch=%03d\n") % static_cast<unsigned int>(fasp_id)
+                    % static_cast<unsigned int>(ch_id) % static_cast<unsigned int>(epoch);
 
         lFaspOld = 0xff;
         fTime += FASP_EPOCH_LENGTH;
@@ -439,10 +463,21 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
         vMess.clear();
         lFaspOld = fasp_id;
       }
-      if (data & 0x1) { continue; }
-      if (data & 0x2000) { data &= 0x1fff; }
+      if (data & 0x1) {
+        LOG(warn) << GetName() << "::unpack - Data corrupted : detect end bit set.";
+        continue;
+      }
+      if (VERBOSE)
+        cout << boost::format("    DD : fasp_id=%02d ch_id=%02d slice=%03d data=%4d\n")
+                  % static_cast<unsigned int>(fasp_id) % static_cast<unsigned int>(ch_id)
+                  % static_cast<unsigned int>(slice) % static_cast<unsigned int>(data >> 1);
+      if (data & 0x2000) {
+        LOG(debug) << GetName() << "::unpack - Self-triggered data.";
+        data &= 0x1fff;
+      }
       vMess.emplace_back(ch_id, kData, slice, data >> 1, crob_id, lFaspOld);
     }
+    //prt_wd(*wd);
   }
   return unpackOk;
 }
