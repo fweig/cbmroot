@@ -109,6 +109,18 @@ public:
   /// @brief Gets inverse speed error [ns/cm]
   fscal GetInvSpeedErr() const { return (std::isfinite(C66[0]) && C66[0] > 0) ? std::sqrt(C66[0]) : undef::kF; }
 
+  /// @brief Gets azimuthal angle [rad]
+  fscal GetPhi() const { return std::atan2(-GetTy(), -GetTx()); }
+
+  /// @brief Gets azimuthal angle error [rad]
+  fscal GetPhiErr() const;
+
+  /// @brief Gets polar angle [rad]
+  fscal GetTheta() const { return std::acos(1. / sqrt(GetTx() * GetTx() + GetTy() * GetTy() + 1.)); }
+
+  /// @brief Gets polar angle error [rad]
+  fscal GetThetaErr() const;
+
   /// @brief Resets variances of track parameters
   /// @param c00  Variance of x-position [cm2]
   /// @param c11  Variance of y-position [cm2]
@@ -149,8 +161,46 @@ public:
 
 } _fvecalignment;
 
-// =============================================================================================
+// ***************************************************
+// **  Inline and template function implementation  **
+// ***************************************************
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+inline fscal L1TrackPar::GetPhiErr() const
+{
+  fscal phiDFactor = 1. / (GetTx() * GetTx() + GetTy() * GetTy());
+  fscal phiDTx     = -phiDFactor * GetTy();  // partial derivative of phi over Tx
+  fscal phiDTy     = +phiDFactor * GetTx();  // partial derivative of phi over Ty
+  
+  fscal varTx   = (std::isfinite(C22[0]) && C22[0] > 0) ? C22[0] : undef::kF;  // variance of Tx
+  fscal varTy   = (std::isfinite(C33[0]) && C33[0] > 0) ? C33[0] : undef::kF;  // variance of Ty
+  fscal covTxTy = std::isfinite(C32[0]) ? C32[0] : undef::kF;                 // covariance of Tx and Ty
+
+  fscal varPhi = phiDTx * phiDTx * varTx + phiDTy * phiDTy * varTy + 2 * phiDTx * phiDTy * covTxTy;
+  return std::sqrt(varPhi);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+inline fscal L1TrackPar::GetThetaErr() const
+{
+  fscal sumSqSlopes    = GetTx() * GetTx() + GetTy() * GetTy();
+  fscal thetaDFactor = 1. / ((sumSqSlopes + 1) * sqrt(sumSqSlopes));
+  fscal thetaDTx     = thetaDFactor * GetTx();
+  fscal thetaDTy     = thetaDFactor * GetTy();
+
+  fscal varTx   = (std::isfinite(C22[0]) && C22[0] > 0) ? C22[0] : undef::kF;  // variance of Tx
+  fscal varTy   = (std::isfinite(C33[0]) && C33[0] > 0) ? C33[0] : undef::kF;  // variance of Ty
+  fscal covTxTy = std::isfinite(C32[0]) ? C32[0] : undef::kF;                 // covariance of Tx and Ty
+
+  fscal varTheta = thetaDTx * thetaDTx * varTx + thetaDTy * thetaDTy * varTy + 2 * thetaDTx * thetaDTy * covTxTy;
+  return std::sqrt(varTheta);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 template<typename T>
 inline void L1TrackPar::copyToArrays(const int iVec, T p[kNparTr], T c[kNparCov]) const
 {
@@ -169,6 +219,8 @@ inline void L1TrackPar::copyToArrays(const int iVec, T p[kNparTr], T c[kNparCov]
   }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 template<typename T>
 inline void L1TrackPar::copyFromArrays(const int iVec, const T p[kNparTr], const T c[kNparCov])
 {
@@ -190,6 +242,8 @@ inline void L1TrackPar::copyFromArrays(const int iVec, const T p[kNparTr], const
   NDF  = 0.;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 template<typename T>
 inline void L1TrackPar::copyFromArrays(const T p[kNparTr], const T c[kNparCov])
 {
@@ -211,7 +265,8 @@ inline void L1TrackPar::copyFromArrays(const T p[kNparTr], const T c[kNparCov])
   NDF  = 0.;
 }
 
-
+// ---------------------------------------------------------------------------------------------------------------------
+//
 inline void L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const int i1)
 {
   x[i0]  = T1.x[i1];
@@ -256,6 +311,8 @@ inline void L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const in
   NDF[i0]  = T1.NDF[i1];
 }  // SetOneEntry
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 inline void L1TrackPar::ResetErrors(fvec c00, fvec c11, fvec c22, fvec c33, fvec c44, fvec c55, fvec c66)
 {
   C10 = 0.;
@@ -278,6 +335,8 @@ inline void L1TrackPar::ResetErrors(fvec c00, fvec c11, fvec c22, fvec c33, fvec
   nTimeMeasurements = 0.;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 inline void L1TrackPar::InitVelocityRange(fscal minP)
 {
   // initialise the velocity range with respect to the minimal momentum minP {GeV/c}

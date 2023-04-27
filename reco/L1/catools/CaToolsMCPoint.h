@@ -104,6 +104,15 @@ namespace ca::tools
     /// @brief Gets PDG code of the particle
     int GetPdgCode() const { return fPdgCode; }
 
+    /// @brief Gets track azimuthal angle at reference z of station [rad]
+    double GetPhi() const { return std::atan2(-fMom[1], fMom[0]); }
+
+    /// @brief Gets track azimuthal angle at entrance to station [rad]
+    double GetPhiIn() const { return std::atan2(-fMomIn[1], fMomIn[0]); }
+
+    /// @brief Gets track azimuthal angle at exit of station [rad]
+    double GetPhiOut() const { return std::atan2(-fMomOut[1], fMomOut[0]); }
+
     /// @brief Gets track momentum absolute value at entrance to station [GeV/c]
     double GetPIn() const { return std::sqrt(fMomIn[0] * fMomIn[0] + fMomIn[1] * fMomIn[1] + fMomIn[2] * fMomIn[2]); }
 
@@ -151,6 +160,15 @@ namespace ca::tools
 
     /// @brief Gets global ID of the active tracking station
     int GetStationId() const { return fStationId; }
+
+    /// @brief Gets polar angle at reference z of station [rad]
+    double GetTheta() const { return std::acos(GetPz() / GetP()); }
+
+    /// @brief Gets polar angle at entrance to station [rad]
+    double GetThetaIn() const { return std::acos(GetPzIn() / GetPIn()); }
+
+    /// @brief Gets polar angle at exit of station [rad]
+    double GetThetaOut() const { return std::acos(GetPzOut() / GetPOut()); }
 
     /// @brief Gets time [ns]
     double GetTime() const { return fTime; }

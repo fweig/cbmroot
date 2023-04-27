@@ -28,6 +28,7 @@ class CbmL1HitDebugInfo;
 
 class TFolder;
 class TH1F;
+class TProfile;
 
 namespace cbm::ca
 {
@@ -100,6 +101,10 @@ namespace cbm::ca
     TH1F* fph_pull_t  = nullptr;  ///< Pull of time
     TH1F* fph_pull_vi = nullptr;  ///< Pull of inverse speed
 
+    // ** Resolution profiles **
+    TProfile* fph_res_p_vs_pMC         = nullptr;  ///< Resolution of momentum [GeV/c]
+    TProfile* fph_res_theta_vs_thetaMC = nullptr;  ///< Resolution of polar angle [rad]
+    TProfile* fph_res_phi_vs_phiMC     = nullptr;  ///< Resolution of azimuthal angle [rad]
 
     // **************************
     // ** Histogram properties **

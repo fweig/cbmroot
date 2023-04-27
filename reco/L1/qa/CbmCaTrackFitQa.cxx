@@ -14,6 +14,8 @@
 #include "CaToolsMCData.h"
 #include "L1Field.h"
 #include "L1Fit.h"
+#include "TProfile.h"
+#include "TH1.h"
 
 using cbm::ca::TrackFitQa;
 
@@ -37,6 +39,11 @@ void TrackFitQa::Init()
   fph_res_qp = MakeHisto<TH1F>("res_qp", "", fBinsRESQP, fLoRESQP, fUpRESQP);
   fph_res_vi = MakeHisto<TH1F>("res_vi", "", fBinsRESVI, fLoRESVI, fUpRESVI);
 
+  // FIXME: Replace hardcoded parameters with variables
+  fph_res_p_vs_pMC         = MakeHisto<TProfile>("res_p_vs_pMC", "", 100, 0.0, 10.0, -2., 2.);
+  fph_res_phi_vs_phiMC     = MakeHisto<TProfile>("res_phi_vs_phiMC", "", 100, -3.2, 3.2, -2., 2.);
+  fph_res_theta_vs_thetaMC = MakeHisto<TProfile>("res_theta_vs_phiMC", "", 100, 0., 3.2, -2., 2.);
+
   fph_pull_x  = MakeHisto<TH1F>("pull_x", "", fBinsPULLX, fLoPULLX, fUpPULLX);
   fph_pull_y  = MakeHisto<TH1F>("pull_y", "", fBinsPULLY, fLoPULLY, fUpPULLY);
   fph_pull_t  = MakeHisto<TH1F>("pull_t", "", fBinsPULLT, fLoPULLT, fUpPULLT);
@@ -54,6 +61,10 @@ void TrackFitQa::Init()
   fph_res_ty->SetTitle(sPrefix + " residual for slope along y-axis;T_{y}^{reco} - T_{y}^{MC}");
   fph_res_qp->SetTitle(sPrefix + " residual for q/p;(q/p)_{reco} - (q/p)_{MC} [ec/GeV]");
   fph_res_vi->SetTitle(sPrefix + " residual for inverse speed;v^{-1}_{reco} - v^{-1}_{MC} [c^{-1}]");
+
+  fph_res_p_vs_pMC->SetTitle(sPrefix + " resolution of momentum;p^{MC} [GeV/c];#delta p [GeV/c]");
+  fph_res_phi_vs_phiMC->SetTitle(sPrefix + " resolution of polar angle;#phi^{MC} [rad];#delta#phi [rad]");
+  fph_res_theta_vs_thetaMC->SetTitle(sPrefix + " resolution of polar angle;#theta^{MC} [rad];#delta#theta [rad]");
 
   fph_pull_x->SetTitle(sPrefix + " pull for x-coordinate;(x_{reco} - x_{MC}) / #sigma_{x}");
   fph_pull_y->SetTitle(sPrefix + " pull for y-coordinate;(y_{reco} - y_{MC}) / #sigma_{y}");
@@ -87,6 +98,12 @@ void TrackFitQa::Fill(const L1TrackPar& trPar, const ::ca::tools::MCPoint& mcPoi
   double resTx = trParExtr.GetTx() - mcPoint.GetTxOut();  // residual of slope along x-axis [1]
   double resTy = trParExtr.GetTy() - mcPoint.GetTyOut();  // residual of slope along y-axis [1]
   double resQp = trParExtr.GetQp() - mcPoint.GetQpOut();  // residual of q/p [ec/GeV]
+  
+  // TODO: in which point do we calculate MC parameters (center, in, out)??
+  double recoP    = std::fabs(mcPoint.GetCharge() / trParExtr.GetQp());  // reco mom. (with MC charge)
+  double resP     = recoP - mcPoint.GetPOut();                           // residual of total momentum
+  double resPhi   = trParExtr.GetPhi() - mcPoint.GetPhiOut();            // residual of azimuthal angle
+  double resTheta = trParExtr.GetTheta() - mcPoint.GetThetaOut();        // residual of polar angle
 
   double pullX  = resX / trParExtr.GetXErr();    // pull of x-position
   double pullY  = resY / trParExtr.GetYErr();    // pull of y-position
@@ -99,6 +116,10 @@ void TrackFitQa::Fill(const L1TrackPar& trPar, const ::ca::tools::MCPoint& mcPoi
   fph_res_tx->Fill(resTx, weight);
   fph_res_ty->Fill(resTy, weight);
   fph_res_qp->Fill(resQp, weight);
+
+  fph_res_p_vs_pMC->Fill(mcPoint.GetPOut(), resP);
+  fph_res_phi_vs_phiMC->Fill(mcPoint.GetPhiOut(), resPhi);
+  fph_res_theta_vs_thetaMC->Fill(mcPoint.GetThetaOut(), resTheta);
 
   fph_pull_x->Fill(pullX, weight);
   fph_pull_y->Fill(pullY, weight);
