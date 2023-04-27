@@ -313,8 +313,20 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
 uint32_t CbmTrdUnpackFaspAlgo::ResetTimeslice()
 {
-  /// D.Smith: As of 27.4.2023 nothing to do here as FinalizeComponent() takes care of everything.
-  return 0;
+  uint32_t uNbLostDigis = 0;
+  /// PAL 03/08/2022: clear internal buffer at latest between two timeslices (TS are self contained!)
+  /// D.Smith: As of 27.4.2023 only loops over pads of a single component.
+
+  for (auto pad_id(0); pad_id < NFASPMOD * NFASPCH; pad_id++) {
+    if (!fDigiBuffer[pad_id].size()) continue;
+
+    LOG(warn) << fName << "::ResetTimeslice - buffered digi @ CROB=" << fCrob << " / pad=" << pad_id << " store "
+              << fDigiBuffer[pad_id].size() << " unprocessed digi.";
+    uNbLostDigis += fDigiBuffer[pad_id].size();
+
+    fDigiBuffer[pad_id].clear();
+  }
+  return uNbLostDigis;
 }
 
 void CbmTrdUnpackFaspAlgo::FinalizeComponent()
