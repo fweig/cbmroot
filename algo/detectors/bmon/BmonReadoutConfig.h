@@ -11,6 +11,7 @@
 #ifndef ALGO_DETECTORS_BMON_BMONREADOUTCONFIG_H
 #define ALGO_DETECTORS_BMON_BMONREADOUTCONFIG_H
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <vector>

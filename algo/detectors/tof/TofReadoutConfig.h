@@ -5,6 +5,7 @@
 #ifndef ALGO_DETECTORS_TOF_TOFREADOUTCONFIG_H
 #define ALGO_DETECTORS_TOF_TOFREADOUTCONFIG_H
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <vector>
