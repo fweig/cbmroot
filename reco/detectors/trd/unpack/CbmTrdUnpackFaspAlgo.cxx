@@ -367,8 +367,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   // LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
 
   uint8_t crob_id = 0;
-  uint16_t eq_id;
-  bool unpackOk = true;
+  bool unpackOk   = true;
   //Double_t fdMsSizeInNs = 1.28e6;
 
   auto msdesc = ts->descriptor(icomp, imslice);
@@ -378,23 +377,14 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   fTime = ULong64_t((msdesc.idx - fTsStartTime - fSystemTimeOffset) / 12.5);
 
   // get MOD_id and CROB id from the equipment
-  bool mapped = false;
-  eq_id       = msdesc.eq_id;
+  const uint16_t eq_id = msdesc.eq_id;
+  bool mapped          = false;
   for (auto mod_id : fModuleId) {
     for (crob_id = 0; crob_id < NCROBMOD; crob_id++) {
       if (((*fCrobMap)[mod_id])[crob_id] == eq_id) break;
     }
     if (crob_id == NCROBMOD) continue;
-
-    // found module-cri pair
-    // buffer module configuration
-    if (fMod == 0xffff || fMod != mod_id) {
-      fMod = mod_id;
-      if (!init()) {
-        LOG(error) << GetName() << "::unpack - init mod_id=" << mod_id << " failed.";
-        return false;
-      }
-    }
+    fMod   = mod_id;
     mapped = true;
     break;
   }
