@@ -141,8 +141,20 @@ void CbmTrdUnpackFaspAlgo::SetAsicMapping(const std::map<uint32_t, uint8_t[NFASP
 //_________________________________________________________________________________
 void CbmTrdUnpackFaspAlgo::SetCrobMapping(const std::map<uint32_t, uint16_t[NCROBMOD]>& map)
 {
-  if (fCrobMap) delete fCrobMap;
-  fCrobMap = new std::map<uint32_t, uint16_t[NCROBMOD]>(map);
+  if (fCompMap) delete fCompMap;
+  fCompMap = new std::map<uint16_t, std::pair<uint16_t, uint16_t>>;  /// map eq_id -> (mod_id, crob_id)
+
+  for (auto& entry : map) {
+    uint16_t mod_id = entry.first;
+    for (uint8_t crob_id = 0; crob_id < NCROBMOD; crob_id++) {
+      uint16_t eq_id = entry.second[crob_id];
+      if (fCompMap->find(eq_id) != fCompMap->end()) {
+        LOG(error) << GetName() << "::SetCrobMapping: multiple entries for eq_id " << (int) eq_id << " found.";
+        return;
+      }
+      (*fCompMap)[eq_id] = std::make_pair(mod_id, crob_id);
+    }
+  }
 }
 
 //_________________________________________________________________________________
@@ -366,32 +378,30 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   if (VERBOSE) printf("CbmTrdUnpackFaspAlgo::unpack 0x%04x %d\n", icomp, imslice);
   // LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
 
-  uint8_t crob_id = 0;
-  bool unpackOk   = true;
+  bool unpackOk = true;
   //Double_t fdMsSizeInNs = 1.28e6;
 
   auto msdesc = ts->descriptor(icomp, imslice);
+
   // Cast required to silence a warning on macos (there a uint64_t is a llu)
   if (VERBOSE) printf("time start %lu\n", static_cast<size_t>(msdesc.idx));
+
   // define time wrt start of time slice in TRD/FASP clks [80 MHz]
   fTime = ULong64_t((msdesc.idx - fTsStartTime - fSystemTimeOffset) / 12.5);
 
-  // get MOD_id and CROB id from the equipment
+  // get MOD_id and CROB id from the equipment, using the comp map: eq_id -> (mod_id, crob_id)
   const uint16_t eq_id = msdesc.eq_id;
-  bool mapped          = false;
-  for (auto mod_id : fModuleId) {
-    for (crob_id = 0; crob_id < NCROBMOD; crob_id++) {
-      if (((*fCrobMap)[mod_id])[crob_id] == eq_id) break;
-    }
-    if (crob_id == NCROBMOD) continue;
-    fMod   = mod_id;
-    mapped = true;
-    break;
-  }
-  if (!mapped) {
+  const auto it        = fCompMap->find(eq_id);
+  if (it == fCompMap->end() || std::find(fModuleId.begin(), fModuleId.end(), it->second.first) == fModuleId.end()) {
     LOG(error) << GetName() << "::unpack - CROB eq_id=" << eq_id << " not registered in the unpacker.";
     return false;
   }
+  fMod                  = (*fCompMap)[eq_id].first;
+  const uint8_t crob_id = (*fCompMap)[eq_id].second;
+
+
+  ///////// To do: Make fMod a local variable
+
   if (fCrob == 0xffff) fCrob = icomp;
 
   // Get the µslice size in bytes to calculate the number of completed words
