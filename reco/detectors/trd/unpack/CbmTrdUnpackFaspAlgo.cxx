@@ -51,7 +51,6 @@ CbmTrdUnpackFaspAlgo::~CbmTrdUnpackFaspAlgo() {}
 //_________________________________________________________________________________
 Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
 {
-  FairParamList parList;
   Int_t nModules(0);
   if (strcmp(parset->ClassName(), "CbmTrdParSetAsic") == 0) {
     CbmTrdParSetAsic* setPar = static_cast<CbmTrdParSetAsic*>(parset);
@@ -229,20 +228,20 @@ void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspMessage* mess)
 }
 
 //_________________________________________________________________________________
-bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messes)
+bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messes, const uint16_t mod_id)
 {
   const UChar_t lFasp             = messes[0].fasp;
-  const CbmTrdParFasp* faspPar    = (CbmTrdParFasp*) fAsicPar.GetAsicPar(fMod * 1000 + lFasp);
-  const CbmTrdParModDigi* digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(fMod);
+  const CbmTrdParFasp* faspPar    = (CbmTrdParFasp*) fAsicPar.GetAsicPar(mod_id * 1000 + lFasp);
+  const CbmTrdParModDigi* digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(mod_id);
 
   // link data to the position on the padplane
   if (!faspPar) {
-    LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << fMod
+    LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << mod_id
                << " missing. Skip.";
     return false;
   }
   if (!digiPar) {
-    LOG(error) << GetName() << "::pushDigis - DIGI par for module " << fMod << " missing. Skip.";
+    LOG(error) << GetName() << "::pushDigis - DIGI par for module " << mod_id << " missing. Skip.";
     return false;
   }
 
@@ -271,7 +270,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
     if (digiBuffer.size() == 0) {  // init pad position in map and build digi for message
       digiBuffer.emplace_back(pad, lchT, lchR, lTime);
-      digiBuffer.back().SetAddressModule(fMod);
+      digiBuffer.back().SetAddressModule(mod_id);
       continue;
     }
 
@@ -299,7 +298,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
     // build digi for message when update failed
     if (!use) {
       digiBuffer.emplace_back(pad, lchT, lchR, lTime);
-      digiBuffer.back().SetAddressModule(fMod);
+      digiBuffer.back().SetAddressModule(mod_id);
       id = digiBuffer.rbegin();
     }
 
@@ -396,11 +395,8 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
     LOG(error) << GetName() << "::unpack - CROB eq_id=" << eq_id << " not registered in the unpacker.";
     return false;
   }
-  fMod                  = (*fCompMap)[eq_id].first;
+  const uint16_t mod_id = (*fCompMap)[eq_id].first;
   const uint8_t crob_id = (*fCompMap)[eq_id].second;
-
-
-  ///////// To do: Make fMod a local variable
 
   if (fCrob == 0xffff) fCrob = icomp;
 
@@ -441,7 +437,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
     if (isaux) {
       if (!ch_id) {
         // clear buffer
-        if (vMess.size()) { pushDigis(vMess); }
+        if (vMess.size()) { pushDigis(vMess, mod_id); }
         vMess.clear();
 
         if (VERBOSE)
@@ -454,30 +450,30 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
       else if (ch_id == 1) {
         if (VERBOSE) cout << boost::format("    PAUSE: fasp_id=%02d\n") % static_cast<unsigned int>(fasp_id);
       }
+      continue;
     }
-    else {
-      if (fFaspMap) fasp_id = ((*fFaspMap)[fMod])[fasp_id];
 
-      if (lFaspOld != fasp_id) {
-        // push
-        if (vMess.size()) { pushDigis(vMess); }
-        vMess.clear();
-        lFaspOld = fasp_id;
-      }
-      if (data & 0x1) {
-        LOG(warn) << GetName() << "::unpack - Data corrupted : detect end bit set.";
-        continue;
-      }
-      if (VERBOSE)
-        cout << boost::format("    DD : fasp_id=%02d ch_id=%02d slice=%03d data=%4d\n")
-                  % static_cast<unsigned int>(fasp_id) % static_cast<unsigned int>(ch_id)
-                  % static_cast<unsigned int>(slice) % static_cast<unsigned int>(data >> 1);
-      if (data & 0x2000) {
-        LOG(debug) << GetName() << "::unpack - Self-triggered data.";
-        data &= 0x1fff;
-      }
-      vMess.emplace_back(ch_id, kData, slice, data >> 1, crob_id, lFaspOld);
+    if (fFaspMap) fasp_id = ((*fFaspMap)[mod_id])[fasp_id];
+
+    if (lFaspOld != fasp_id) {
+      // push
+      if (vMess.size()) { pushDigis(vMess, mod_id); }
+      vMess.clear();
+      lFaspOld = fasp_id;
     }
+    if (data & 0x1) {
+      LOG(warn) << GetName() << "::unpack - Data corrupted : detect end bit set.";
+      continue;
+    }
+    if (VERBOSE)
+      cout << boost::format("    DD : fasp_id=%02d ch_id=%02d slice=%03d data=%4d\n")
+                % static_cast<unsigned int>(fasp_id) % static_cast<unsigned int>(ch_id)
+                % static_cast<unsigned int>(slice) % static_cast<unsigned int>(data >> 1);
+    if (data & 0x2000) {
+      LOG(debug) << GetName() << "::unpack - Self-triggered data.";
+      data &= 0x1fff;
+    }
+    vMess.emplace_back(ch_id, kData, slice, data >> 1, crob_id, lFaspOld);
     //prt_wd(*wd);
   }
   return unpackOk;

@@ -134,7 +134,7 @@ protected:
   void mess_readEW(uint32_t wd, CbmTrdFaspMessage* mess);
   /** @brief Print FASP message */
   void mess_prt(CbmTrdFaspMessage* mess);
-  bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messages);
+  bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messages, const uint16_t mod_id);
   /** @brief Time offset for digi wrt the TS start, expressed in 80 MHz clks. It contains:
    *  - relative offset of the MS wrt the TS
    *  - FASP epoch offset for current CROB
@@ -209,7 +209,6 @@ private:
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
   uint16_t fCrob                                    = 0xffff;  //! current crob being processed
-  uint16_t fMod                                     = 0xffff;  //! current module being processed
   std::vector<uint16_t> fModuleId = {};  ///> list of modules for which there is are calibration parameters
   CbmTrdParSetAsic fAsicPar;
   CbmTrdParSetDigi* fDigiSet = nullptr;
