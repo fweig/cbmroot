@@ -38,12 +38,8 @@
 #include <TObject.h>       // for TObject
 #include <TStyle.h>        // for TStyle, gStyle
 
-#include <iostream>  // for operator<<, basic_ostream, char_traits
-
 #include <cmath>  // for sqrt, fabs
 
-using std::cout;
-using std::endl;
 using std::flush;
 
 // -----   Default constructor   -------------------------------------------
@@ -113,19 +109,11 @@ CbmMvdQa::~CbmMvdQa() { ; }
 // -------------------------------------------------------------------------
 InitStatus CbmMvdQa::Init()
 {
-  cout << "--------------------------------------------------------------------"
-          "-----"
-       << endl
-       << "-I- " << GetName() << "::Init: "
-       << " Start Initilisation " << endl
-       << "--------------------------------------------------------------------"
-          "-----"
-       << endl;
+  LOG(info) << GetName() << "::Init: Start Initilisation ";
 
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: "
-         << "RootManager not instantised!" << endl;
+    LOG(error) << GetName() << "::Init: RootManager not instantised!";
     return kFATAL;
   }
   fBadTracks = new TClonesArray("CbmStsTrack", 5000);
@@ -145,7 +133,7 @@ InitStatus CbmMvdQa::Init()
   fMvdDigiMatchArray = (TClonesArray*) ioman->GetObject("MvdDigiMatch");
 
   if (fMvdHits->GetEntriesFast() != fMvdHitMatchArray->GetEntriesFast())
-    cout << endl << "MvdHit and MvdHitMatch Arrays do not have the same size" << endl;
+    LOG(error) << "MvdHit and MvdHitMatch Arrays do not have the same size";
 
   //    fPrimVtx         = (CbmVertex*) ioman->GetObject("PrimaryVertex");
   // Get pointer to PrimaryVertex object from IOManager if it exists
@@ -160,7 +148,7 @@ InitStatus CbmMvdQa::Init()
   fListMCTracks = (TClonesArray*) ioman->GetObject("MCTrack");
 
   if (!fMcPoints) {
-    cout << endl << "Mvd Pile Up Mc array missing";
+    LOG(error) << "Mvd Pile Up Mc array missing";
     return kFATAL;
   }
   fDetector = CbmMvdDetector::Instance();
@@ -177,14 +165,7 @@ InitStatus CbmMvdQa::Init()
 
   SetupHistograms();
 
-  cout << "--------------------------------------------------------------------"
-          "-----"
-       << endl
-       << "-I- " << GetName() << "::Init: "
-       << " Finished Initialisation " << endl
-       << "--------------------------------------------------------------------"
-          "-----"
-       << endl;
+  LOG(info) << GetName() << "::Init: Finished Initialisation ";
   return kSUCCESS;
 }
 
@@ -1299,7 +1280,7 @@ Double_t  CbmMvdQa::GetAngle( CbmLitTrackParam t ){
     Float_t angle_rad = std::atan(GetTransverseMomentum(t) / GetMomentumZ(t));
     Float_t rad_to_grad = ( 180 / TMath::Pi() );
     Float_t angle_grad = angle_rad * rad_to_grad;
-//cout << endl << "calc angle of " << angle_grad << " from rad angle " << angle_rad << endl;
+    //LOG(debug) << "calc angle of " << angle_grad << " from rad angle " << angle_rad;
     return  angle_grad;
 }
 //-----------------------------------------------------------------------------------------

@@ -24,6 +24,7 @@
 #include <TNamed.h>      // for TNamed
 #include <TString.h>     // for TString
 
+#include <string>  // for string
 class TBuffer;
 class TClass;
 class TMemberInspector;
@@ -34,6 +35,7 @@ public:
   /** Default constructor **/
   CbmMvdSensorDataSheet();
   virtual void Print(Option_t* opt = "") const;
+  std::string ToString() const;
 
   /** Destructor **/
   ~CbmMvdSensorDataSheet();

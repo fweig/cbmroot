@@ -22,11 +22,6 @@
 #include <TH2.h>           // for TH2F, TH2I
 #include <TString.h>       // for Form
 
-#include <iostream>  // for operator<<, basic_ostream, endl, cout
-
-using std::cout;
-using std::endl;
-
 // -----   Default constructor   -------------------------------------------
 CbmMvdReadoutSimple::CbmMvdReadoutSimple() : CbmMvdReadoutSimple::CbmMvdReadoutSimple("MvdReadoutSimple", 0) {}
 // -------------------------------------------------------------------------
@@ -278,8 +273,8 @@ void CbmMvdReadoutSimple::WriteHistograms()
     Double_t param1 = func->GetParameter(1);
     Double_t param2 = func->GetParameter(2);
     Double_t chi2   = func->GetChisquare();
-    cout << " // - " << i << " -- param 0 = " << param0 << " -- param 1 = " << param1 << " -- param 2 = " << param2
-         << " -- chi2 = " << chi2 << endl;
+    LOG(info) << " // - " << i << " -- param 0 = " << param0 << " -- param 1 = " << param1 << " -- param 2 = " << param2
+              << " -- chi2 = " << chi2;
     fWordsPerRegion2->Fill(i, param1);
     fWordsPerRegion2->SetBinError(i, 0, param1, param2);
     fMvdDataPerRegion[i]->Write();
@@ -326,7 +321,7 @@ for(Int_t pad = 0; pad < 63; pad++)
       mcCanvas4->cd(pad+1);
       fMvdMCBank[pad]->Draw("COL");
       fMvdMCBank[pad]->Write();
-      cout << "Bank " << pad << " avarage Entries " << fMvdMCBank[pad]->GetEntries()/fEventNumber << endl;
+      LOG(info) << "Bank " << pad << " avarage Entries " << fMvdMCBank[pad]->GetEntries()/fEventNumber;
       fMvdBankDist->Fill(pad, fMvdMCBank[pad]->GetEntries()/fEventNumber);
   }
 TCanvas* mcCanvas5 = new TCanvas();

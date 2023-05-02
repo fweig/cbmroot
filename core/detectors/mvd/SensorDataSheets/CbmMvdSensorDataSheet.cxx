@@ -9,12 +9,11 @@
 
 #include "CbmMvdSensorDataSheet.h"
 
+#include <Logger.h>
+
 #include "TMath.h"
 
-#include <iostream>
-
-
-using std::cout;
+#include <ostream>  // for operator<<, stringstream, basic_ostream
 using std::endl;
 
 
@@ -64,37 +63,41 @@ CbmMvdSensorDataSheet::~CbmMvdSensorDataSheet() {}
 
 
 // -----   Public method Print   -------------------------------------------
-void CbmMvdSensorDataSheet::Print(Option_t* /*opt*/) const
+void CbmMvdSensorDataSheet::Print(Option_t* /*opt*/) const { LOG(info) << ToString(); }
+
+std::string CbmMvdSensorDataSheet::ToString() const
 {
-  cout << " --- " << GetName() << "--------------------------------" << endl;
-  cout << " Technical Data:" << endl;
-  cout << "--------------------------" << endl;
-  cout << "Name of the sensor: " << fMimosaName << endl;
-  cout << "Pixel pitch (x/y) [µm]: " << fPixelPitchY * 1e4 << "/" << fPixelPitchY * 1e-4 << endl;
-  cout << "N Pixels (rows/cols): " << fNPixelsX << "/" << fNPixelsY << endl;
-  cout << "Thickness of active volume[µm]: " << fEpiTh * 1e4 << endl;
-  cout << "Integration time [µs]: " << fIntegrationTime * 1e6 << endl;
-  cout << "ADC resolution: " << fAdcBits << "bit ADC (1 = discriminator)" << endl;
-  cout << "Default noise [e ENC]: " << fNoise << endl;
-  cout << "Matrix size (x/y) [cm]: " << fPixelPitchX * fNPixelsX << " / " << fPixelPitchY * fNPixelsY << endl;
-  cout << endl;
-  cout << "Readout system: " << endl;
-  cout << "----------------" << endl;
-  cout << "PixelNmb X from left to right?: " << fPixelSignX << endl;
-  cout << "PixelNmb Y from up to down?: " << fPixelSignY << endl;
-  cout << "Rolling shutter from up to down?: " << fShutterSign << endl;
-  cout << endl;
-  cout << "ADC / SUZE -Settings: " << endl;
-  cout << "----------------" << endl;
-  cout << "ADC Range [e]: " << fAdcDynamic << endl;
-  cout << "ADC offset [e]: " << fAdcOffset << endl;
-  cout << "ADC stepsize [e]: " << fAdcStepSize << endl;
-  cout << "SUZE states per banks: " << fStatesPerBank << endl;
-  cout << "SUZE states per line : " << fStatesPerLine << endl;
-  cout << "SUZE states per frame: " << fStatesPerFrame << endl;
-  cout << "SUZE pixels per bank: " << fPixelsPerBank << endl;
-  cout << endl;
-  cout << "Data card properly initialized: " << fValidData << endl;
+  std::stringstream ss;
+  ss << " --- " << GetName() << "--------------------------------" << endl;
+  ss << " Technical Data:" << endl;
+  ss << "--------------------------" << endl;
+  ss << "Name of the sensor: " << fMimosaName << endl;
+  ss << "Pixel pitch (x/y) [µm]: " << fPixelPitchY * 1e4 << "/" << fPixelPitchY * 1e-4 << endl;
+  ss << "N Pixels (rows/cols): " << fNPixelsX << "/" << fNPixelsY << endl;
+  ss << "Thickness of active volume[µm]: " << fEpiTh * 1e4 << endl;
+  ss << "Integration time [µs]: " << fIntegrationTime * 1e6 << endl;
+  ss << "ADC resolution: " << fAdcBits << "bit ADC (1 = discriminator)" << endl;
+  ss << "Default noise [e ENC]: " << fNoise << endl;
+  ss << "Matrix size (x/y) [cm]: " << fPixelPitchX * fNPixelsX << " / " << fPixelPitchY * fNPixelsY << endl;
+  ss << endl;
+  ss << "Readout system: " << endl;
+  ss << "----------------" << endl;
+  ss << "PixelNmb X from left to right?: " << fPixelSignX << endl;
+  ss << "PixelNmb Y from up to down?: " << fPixelSignY << endl;
+  ss << "Rolling shutter from up to down?: " << fShutterSign << endl;
+  ss << endl;
+  ss << "ADC / SUZE -Settings: " << endl;
+  ss << "----------------" << endl;
+  ss << "ADC Range [e]: " << fAdcDynamic << endl;
+  ss << "ADC offset [e]: " << fAdcOffset << endl;
+  ss << "ADC stepsize [e]: " << fAdcStepSize << endl;
+  ss << "SUZE states per banks: " << fStatesPerBank << endl;
+  ss << "SUZE states per line : " << fStatesPerLine << endl;
+  ss << "SUZE states per frame: " << fStatesPerFrame << endl;
+  ss << "SUZE pixels per bank: " << fPixelsPerBank << endl;
+  ss << endl;
+  ss << "Data card properly initialized: " << fValidData << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

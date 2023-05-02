@@ -30,7 +30,8 @@
 #include <TObjArray.h>   // for TObjArray
 #include <TString.h>     // for TString
 
-#include <map>  // for map
+#include <map>     // for map
+#include <string>  // for string
 
 class TBuffer;
 class TClass;
@@ -121,7 +122,7 @@ public:
 
   /** Output to screen **/
   virtual void Print(Option_t* opt = "") const;
-
+  std::string ToString() const;
   /** Run control */
 
 

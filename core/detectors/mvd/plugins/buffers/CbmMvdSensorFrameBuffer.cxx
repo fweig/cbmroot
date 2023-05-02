@@ -166,10 +166,10 @@ void CbmMvdSensorFrameBuffer::BuildMimosaFrame(Int_t frameNumber)
       myEvent = (CbmMvdPoint*) fCurrentEvent->At(nPoints);
       myEvent->SetTime(((pixelY * (115e3 / 576)) + (115000 * (frameNumber))));
       myEvent->SetFrameNr(frameNumber);
-      //       cout << endl << "new Point in frame " << frameNumber << " in row " << pixelY << endl;
-      //       cout << "at time " << point->GetAbsTime() << endl;
-      //       cout << "readouttime is " << myEvent->GetTime() << " ns" << endl;
-      //       cout << "at station " << point->GetStationNr() << endl << endl;
+      //       LOG(info) << "new Point in frame " << frameNumber << " in row " << pixelY;
+      //       LOG(info) << "at time " << point->GetAbsTime();
+      //       LOG(info) << "readouttime is " << myEvent->GetTime() << " ns";
+      //       LOG(info) << "at station " << point->GetStationNr();
     }
   };
 };
@@ -208,7 +208,7 @@ void CbmMvdSensorFrameBuffer::ClearFrame(Int_t frameNumber)
 
     if (pointFrameNumber == frameNumber) {
       fBuffer->RemoveAt(i);
-      //cout << endl << "new Point in frame " << frameNumber << " removed from Buffer" << endl;
+      //LOG(info) << "new Point in frame " << frameNumber << " removed from Buffer";
     };
   };
 

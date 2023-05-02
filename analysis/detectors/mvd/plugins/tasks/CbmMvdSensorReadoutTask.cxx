@@ -10,13 +10,10 @@
 
 #include "CbmMvdDigi.h"  // for CbmMvdDigi
 
+#include <Logger.h>
+
 #include <TClonesArray.h>  // for TClonesArray
 #include <TH1.h>           // for TH1I
-
-#include <iostream>  // for operator<<, basic_ostream, endl, cout, ost...
-
-using std::cout;
-using std::endl;
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorReadoutTask::CbmMvdSensorReadoutTask()
@@ -122,7 +119,7 @@ void CbmMvdSensorReadoutTask::Reset() {}
 void CbmMvdSensorReadoutTask::Finish()
 {
   for (Int_t iBank = 0; iBank < maxBanks; ++iBank) {
-    cout << "Number of fired pixels in bank : " << iBank << " is " << fSensorBanks[iBank] << endl;
+    LOG(info) << "Number of fired pixels in bank : " << iBank << " is " << fSensorBanks[iBank];
     TH1I* hist = (TH1I*) fOutputBuffer->ConstructedAt(0);
     hist->Fill(iBank, fSensorBanks[iBank]);
   }

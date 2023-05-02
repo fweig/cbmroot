@@ -19,12 +19,9 @@
 #include <TH1.h>           // for TH1F
 #include <TString.h>       // for Form
 
-#include <iostream>  // for cout, endl
-#include <map>       // for allocator, map, operator!=, __map_iterator
-#include <utility>   // for pair
+#include <map>      // for allocator, map, operator!=, __map_iterator
+#include <utility>  // for pair
 
-using std::cout;
-using std::endl;
 using std::map;
 using std::pair;
 

@@ -15,6 +15,8 @@
 #include "TStopwatch.h"
 #include "TString.h"
 
+#include <string>
+
 class FairTask;
 class CbmMvdDetector;
 class CbmMvdPileupManager;
@@ -99,7 +101,8 @@ private:
 
 
   /** Print digitisation parameters **/
-  void PrintParameters();
+  void PrintParameters() const;
+  std::string ParametersToString() const;
 
 private:
   CbmMvdDigitizerTB(const CbmMvdDigitizerTB&);

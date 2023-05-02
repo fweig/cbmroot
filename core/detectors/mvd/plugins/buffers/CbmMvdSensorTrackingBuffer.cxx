@@ -8,6 +8,7 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdSensorTrackingBuffer.h"
 
+#include <Logger.h>
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensorTrackingBuffer::CbmMvdSensorTrackingBuffer()
@@ -50,7 +51,7 @@ void CbmMvdSensorTrackingBuffer::ExecChain()
   Int_t lastEntrie = fBuffer->GetLast();
   CbmMvdHit* myHit;
   Int_t time;
-  // cout << endl << "exec output buffer" << endl;
+  // LOG(debug)<< "exec output buffer";
   if (lastEntrie > -1) {
     myHit = (CbmMvdHit*) fBuffer->At(lastEntrie);
     time  = myHit->GetTimeStamp();
@@ -64,7 +65,7 @@ void CbmMvdSensorTrackingBuffer::ExecChain()
       if (fCurrentEvent->GetEntriesFast() > 0) {
         SetPluginReady(true);
 
-        cout << endl << "OutputBuffer is ready for readout on sensor " << fSensor->GetName() << endl;
+        LOG(info) << "OutputBuffer is ready for readout on sensor " << fSensor->GetName();
         //fCurrentEvent->Print();
       }
     }
@@ -87,7 +88,7 @@ void CbmMvdSensorTrackingBuffer::BuildTimeSlice(Double_t tStart, Double_t tStop)
     {
       nHits = fCurrentEvent->GetEntriesFast();
       new ((*fCurrentEvent)[nHits]) CbmMvdHit(*myHit);
-      //cout << endl << "new Hits in Output" << endl;
+      //LOG(debug) << "new Hits in Output";
     }
   }
   ClearTimeSlice(tStart, tStop);
@@ -119,7 +120,7 @@ void CbmMvdSensorTrackingBuffer::SetInputArray(TClonesArray* inputStream)
 
   fBuffer->AbsorbObjects(inputStream);
   fBuffer->Compress();
-  //cout << endl << "new Objects in Output buffer" << endl;
+  //LOG(debug) << "new Objects in Output buffer";
 };
 //--------------------------------------------------------------------------
 

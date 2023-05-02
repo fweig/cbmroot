@@ -44,7 +44,6 @@
 #include <map>
 #include <vector>
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::ios_base;
@@ -262,13 +261,13 @@ void CbmMvdSensorDigitizerTBTask::Exec()
       CbmMvdPoint* point = (CbmMvdPoint*) fInputPoints->At(iPoint);
 
       if (!point) {
-        cout << "-W-" << GetName() << ":: Exec:" << endl;
-        cout << "    -received bad MC-Point. Ignored." << endl;
+        LOG(warning) << GetName() << ":: Exec:";
+        LOG(warning << "    -received bad MC-Point. Ignored.";
         continue;
       }
       if (point->GetStationNr() != fSensor->GetSensorNr()) {
-        cout << "-W-" << GetName() << ":: Exec:" << endl;
-        cout << "    -received bad MC-Point which doesn't belong here. Ignored." << endl;
+        LOG(warning) << GetName() << ":: Exec:";
+        LOG(warning) << "    -received bad MC-Point which doesn't belong here. Ignored.";
         continue;
       }
       //The digitizer acts only on particles, which crossed the station.
@@ -454,7 +453,7 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point)
   if (rawLength < 1.0e+3) { trackLength = rawLength; }
 
   else {
-    cout << "-W- " << GetName() << " : rawlength > 1.0e+3 : " << rawLength << endl;
+    LOG(warning) << GetName() << " : rawlength > 1.0e+3 : " << rawLength;
     trackLength = 1.0e+3;
   }
 
@@ -464,9 +463,9 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point)
   if (charge > (12000 / fLandauMPV)) { charge = 12000 / fLandauMPV; }  //limit Random generator behaviour
   //Translate the charge to normalized energy
 
-  //     cout << endl << "charge after random generator " << charge << endl;
+  //     LOG(debug) << "charge after random generator " << charge;
   Double_t dEmean = charge / (fElectronsPerKeV * 1e6);
-  //   cout << endl << "dEmean " << dEmean << endl;
+  //   LOG(debug) << "dEmean " << dEmean;
   fNumberOfSegments = int(trackLength / fSegmentLength) + 1;
 
   dEmean = dEmean * ((Double_t) trackLength / fEpiTh);  //scale the energy to the track length
@@ -489,7 +488,7 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point)
   }
   else {  //condition added 05/08/08
     fSegmentDepth = 0;
-    cout << "-W- " << GetName() << " Length of track in detector (z-direction) is 0!!!" << endl;
+    LOG(warning) << GetName() << " Length of track in detector (z-direction) is 0!!!";
   }
 
 
@@ -520,7 +519,7 @@ void CbmMvdSensorDigitizerTBTask::ProduceIonisationPoints(CbmMvdPoint* point)
     sPoint->y     = y;
     sPoint->z     = z;
     charge        = 1.0e+6 * dEmean * fElectronsPerKeV;
-    //cout << endl << "charge " << charge << endl;
+    //LOG(debug) << "charge " << charge;
     sPoint->sigmaX     = fPixelSize;
     sPoint->sigmaY     = fPixelSize;
     sPoint->charge     = charge;
@@ -672,7 +671,7 @@ void CbmMvdSensorDigitizerTBTask::ProducePixelCharge(CbmMvdPoint* point)
                                 point->GetTrackID());
     }
     else {
-      cout << endl << "Warning working on broken pixel " << endl;
+      LOG(warning) << "Warning working on broken pixel ";
     }
   }
 
@@ -690,7 +689,7 @@ void CbmMvdSensorDigitizerTBTask::InitTask(CbmMvdSensor* mySensor)
   //Read information on the sensor von data base
   fSensor = mySensor;
 
-  // cout << "-I- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
+  // LOG(info) << GetName() << ": Initialisation of sensor " << fSensor->GetName();
 
   fDigis     = new TClonesArray("CbmMvdDigi", 10000);
   fDigiMatch = new TClonesArray("CbmMatch", 10000);

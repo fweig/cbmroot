@@ -31,7 +31,6 @@
 #include <string>    // for allocator, char_traits
 #include <vector>    // for vector
 
-using std::cout;
 using std::endl;
 using std::vector;
 
@@ -158,13 +157,13 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
     //fTmpMatch = fDetector->GetOutputDigiMatchs();
 
     fDetector->GetOutputArray(nTargetPlugin, fTmpDigi);
-    //cout << "CbmMvdDigitizer::Exec() - GetOutputArray completed" << endl;
+    //LOG(debug) << "CbmMvdDigitizer::Exec() - GetOutputArray completed";
 
     fDetector->GetMatchArray(nTargetPlugin, fTmpMatch);
-    //cout << "CbmMvdDigitizer::Exec() - GetMatchArray data completed" << endl;
+    //LOG(debug) << "CbmMvdDigitizer::Exec() - GetMatchArray data completed";
 
-    //cout << "Length of Digi Array " << fTmpDigi->GetEntriesFast() << endl;
-    //cout << "Length of Digi Match Array " << fTmpMatch->GetEntriesFast() << endl;
+    //LOG(debug) << "Length of Digi Array " << fTmpDigi->GetEntriesFast();
+    //LOG(debug) << "Length of Digi Match Array " << fTmpMatch->GetEntriesFast();
 
     Int_t nEntries = fTmpDigi->GetEntriesFast();
     for (Int_t index = 0; index < nEntries; index++) {
@@ -215,9 +214,9 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
 
     //fDigis->AbsorbObjects(fDetector->GetOutputDigis(),0,fDetector->GetOutputArray(fDigiPluginNr)->GetEntriesFast()-1);
     //LOG(debug) << "Total of " << fDigis->GetEntriesFast() << " digis in this Event";
-    //if(fVerbose) cout << "Start writing DigiMatchs" << endl;
+    //LOG(dfVerbose)  << "Start writing DigiMatchs";
     //fDigiMatch->AbsorbObjects(fDetector->GetOutputDigiMatchs(),0,fDetector->GetOutputDigiMatchs()->GetEntriesFast()-1);
-    //if(fVerbose) cout << "Total of " << fDigiMatch->GetEntriesFast() << " digisMatch in this Event" << endl;
+    //if(fVerbose) LOG(debug) << "Total of " << fDigiMatch->GetEntriesFast() << " digisMatch in this Event";
     LOG(debug) << "//----------------------------------------//";
     //LOG(info) << "+ " << setw(20) << GetName() << ": Created: "
     //          << fDigis->GetEntriesFast() << " digis in "
@@ -235,10 +234,7 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdDigitizer::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -327,9 +323,8 @@ InitStatus CbmMvdDigitizer::Init()
   }
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
 
 
   return kSUCCESS;
@@ -343,8 +338,8 @@ InitStatus CbmMvdDigitizer::ReInit() { return kSUCCESS; }
 // -----   Virtual method Finish   -----------------------------------------
 void CbmMvdDigitizer::Finish()
 {  //Int_t i = DetectPlugin (100);
-  //cout << "CbmMvdDigitizer::Finish() Autodetect: " << i <<" Manual Detect " << fDigiPluginNr << endl;
-  // cout<< endl << "finishing" << endl;
+  //LOG(debug) << "CbmMvdDigitizer::Finish() Autodetect: " << i <<" Manual Detect " << fDigiPluginNr;
+  // LOG(debug) << "finishing";
   fDetector->Finish();
   PrintParameters();
 }
@@ -379,17 +374,19 @@ Int_t CbmMvdDigitizer::DetectPlugin(Int_t pluginID)
   return detector->DetectPlugin(pluginID);
 }
 
+void CbmMvdDigitizer::PrintParameters() const { LOG(info) << ParametersToString(); }
+
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigitizer::PrintParameters()
+
+std::string CbmMvdDigitizer::ParametersToString() const
 {
-
-  using namespace std;
-
-  cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================" << endl;
-  cout << "============== Parameters MvdDigitizer =====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+  std::stringstream ss;
+  ss.setf(std::ios_base::fixed, std::ios_base::floatfield);
+  ss << "============================================================" << endl;
+  ss << "============== Parameters MvdDigitizer =====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

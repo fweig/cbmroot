@@ -102,18 +102,17 @@ void CbmMvdDigitizerTB::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdDigitizerTB::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   eventNumber = 0;
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
-    return kFATAL;
+    LOG(error)
+    " << GetName() << " ::Init :
+      No FairRootManager !";
+      return kFATAL;
   }
 
   // **********  Get input arrays
@@ -153,9 +152,8 @@ InitStatus CbmMvdDigitizerTB::Init()
   fDetector->Init();
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
 
 
   return kSUCCESS;
@@ -169,7 +167,7 @@ InitStatus CbmMvdDigitizerTB::ReInit() { return kSUCCESS; }
 // -----   Virtual method Finish   -----------------------------------------
 void CbmMvdDigitizerTB::Finish()
 {
-  // cout<< endl << "finishing" << endl;
+  // LOG(debug) << "finishing";
   fDetector->Finish();
   PrintParameters();
 }
@@ -184,18 +182,19 @@ void CbmMvdDigitizerTB::Reset() { fDigis->Delete(); }
 void CbmMvdDigitizerTB::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
+void CbmMvdDigitizerTB::PrintParameters() const { LOG(info) << ParametersToString(); }
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigitizerTB::PrintParameters()
+void CbmMvdDigitizerTB::ParametersToString() const
 {
 
-  using namespace std;
-
-  cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================" << endl;
-  cout << "============== Parameters MvdDigitizer =====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+  std::stringstream ss;
+  ss.setf(std::ios_base::fixed, std::ios_base::floatfield);
+  ss << "============================================================" << endl;
+  ss << "============== Parameters MvdDigitizer =====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

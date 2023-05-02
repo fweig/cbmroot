@@ -27,7 +27,6 @@
 #include <iomanip>
 #include <iostream>
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::ios_base;
@@ -125,15 +124,12 @@ InitStatus CbmMvdHitfinderTB::Init()
 
   using namespace std;
 
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -171,9 +167,8 @@ InitStatus CbmMvdHitfinderTB::Init()
   fDetector->Init();
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
 
 
   return kSUCCESS;
@@ -197,18 +192,19 @@ void CbmMvdHitfinderTB::Reset() { fHits->Delete(); }
 void CbmMvdHitfinderTB::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
+void CbmMvdHitfinderTB::PrintParameters() const { LOG(info) << ParametersToString(); }
 
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdHitfinderTB::PrintParameters()
+std::string CbmMvdHitfinderTB::ParametersToString() const
 {
 
-  using namespace std;
-
-  cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================" << endl;
-  cout << "============== Parameters MvdHitfinder =====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+  std::stringstream ss;
+  ss.setf(std::ios_base::fixed, std::ios_base::floatfield);
+  ss << "============================================================" << endl;
+  ss << "============== Parameters MvdHitfinder =====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

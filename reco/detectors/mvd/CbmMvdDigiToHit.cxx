@@ -36,7 +36,6 @@
 #include <iomanip>
 #include <iostream>
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::setprecision;
@@ -93,16 +92,16 @@ void CbmMvdDigiToHit::Exec(Option_t* /*opt*/)
 
   fHit->Delete();
   if (fInputDigis && fInputDigis->GetEntriesFast() > 0) {
-    if (fVerbose) cout << "//----------------------------------------//";
-    if (fVerbose) cout << endl << "Send Input" << endl;
+    if (fVerbose) LOG(debug) << "//----------------------------------------//";
+    if (fVerbose) LOG(debug) << "Send Input";
     fDetector->SendInputDigisToHits(fInputDigis);  //Version for DigisToHits
-    if (fVerbose) cout << "Execute HitPlugin Nr. " << fHitPluginNr << endl;
+    if (fVerbose) LOG(debug) << "Execute HitPlugin Nr. " << fHitPluginNr;
     fDetector->Exec(fHitPluginNr);
-    if (fVerbose) cout << "End Chain" << endl;
-    if (fVerbose) cout << "Start writing Hit" << endl;
+    if (fVerbose) LOG(debug) << "End Chain";
+    if (fVerbose) LOG(debug) << "Start writing Hit";
     fHit->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
-    if (fVerbose) cout << "Total of " << fHit->GetEntriesFast() << " Hit in this Event" << endl;
-    if (fVerbose) cout << "//----------------------------------------//" << endl;
+    if (fVerbose) LOG(debug) << "Total of " << fHit->GetEntriesFast() << " Hit in this Event";
+    if (fVerbose) LOG(debug) << "//----------------------------------------//";
     LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHit->GetEntriesFast() << " Hit in " << fixed
               << setprecision(6) << fTimer.RealTime() << " s";
   }
@@ -114,15 +113,12 @@ void CbmMvdDigiToHit::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdDigiToHit::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation..." << endl;
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -142,7 +138,7 @@ InitStatus CbmMvdDigiToHit::Init()
   fDetector = CbmMvdDetector::Instance();
 
   if (fDetector->GetSensorArraySize() > 1) {
-    if (fVerbose) cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
+    if (fVerbose) LOG(info) << "succesfully loaded Geometry from file";
   }
   else {
     LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
@@ -167,9 +163,8 @@ InitStatus CbmMvdDigiToHit::Init()
 
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
 
 
   return kSUCCESS;
@@ -197,15 +192,18 @@ void CbmMvdDigiToHit::Reset() { fHit->Delete(); }
 void CbmMvdDigiToHit::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
-
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigiToHit::PrintParameters()
-{
+void CbmMvdDigiToHit::PrintParameters() const { LOG(info) << ParametersToString(); }
 
-  cout << "============================================================" << endl;
-  cout << "============== Parameters DigiToHit ====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+// -----   Private method ParametersToString   -----------------------------
+void CbmMvdDigiToHit::ParametersToString() const
+{
+  std::stringstream ss;
+  ss << "============================================================" << endl;
+  ss << "============== Parameters DigiToHit ====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str()
 }
 // -------------------------------------------------------------------------
 

@@ -20,7 +20,6 @@
 #include <iostream>  // for operator<<, endl, basic_ostream, char_traits
 #include <memory>    // for allocator
 
-using std::cout;
 using std::endl;
 
 // -----   Default constructor   -------------------------------------------
@@ -54,15 +53,15 @@ TClonesArray* CbmMvdPileupManager::GetEvent(Int_t iEvent)
   if (!fBuffer) Fatal("CbmMvdPileupManager::GetEvent", "No event buffer!");
 
   if (iEvent > fBuffer->GetEntriesFast()) {
-    cout << "-W- CbmMvdPileupManager::GetEvent: Event " << iEvent << " not present in buffer! " << endl;
-    cout << "                                   Returning nullptr pointer! " << endl;
+    LOG(warning) << "CbmMvdPileupManager::GetEvent: Event " << iEvent << " not present in buffer! ";
+    LOG(warning) << "                                   Returning nullptr pointer! ";
     return nullptr;
   }
 
   TClonesArray* pArray = (TClonesArray*) fBuffer->At(iEvent);
 
   if (!pArray) {
-    cout << "-W CbmMvdPileupManager::GetEvent: Returning nullptr pointer!" << endl;
+    LOG(warning) << "CbmMvdPileupManager::GetEvent: Returning nullptr pointer!";
     return nullptr;
   }
 
@@ -91,8 +90,7 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName, TString branchName, Int_
                  << endl;
     return 0;
   }
-  cout << "-I- CbmMvdPileupManager::FillBuffer: Opening file " << endl;
-  cout << fileName << endl;
+  LOG(info) << "CbmMvdPileupManager::FillBuffer: Opening file " << fileName;
 
   TTree* bgtree = bgfile->Get<TTree>("cbmsim");
   if (!bgtree) {
@@ -102,13 +100,13 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName, TString branchName, Int_
   }
 
   Int_t nEventsInFile = bgtree->GetEntries();
-  cout << "-I- CbmMvdPileupManager::FillBuffer: " << nEventsInFile << " events in file" << endl;
+  LOG(info) << "CbmMvdPileupManager::FillBuffer: " << nEventsInFile << " events in file";
   Int_t nBuffer = TMath::Min(nEvents, nEventsInFile);
-  cout << "-I- CbmMvdPileupManager::FillBuffer: Buffering " << nBuffer << " events" << endl;
+  LOG(info) << "CbmMvdPileupManager::FillBuffer: Buffering " << nBuffer << " events";
   if (nBuffer < 100)
-    cout << "-W- CbmMvdPileupManager::FillBuffer: "
-         << "Number of events may not be sufficient for appropriate "
-         << "presentation of background pattern!" << endl;
+    LOG(warning) << "CbmMvdPileupManager::FillBuffer: "
+                 << "Number of events may not be sufficient for appropriate "
+                 << "presentation of background pattern!";
 
   bgtree->SetBranchAddress(branchName, &pointArray);
 

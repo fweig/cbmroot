@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+@ /* Copyright (C) 2017-2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Philipp Sitzmann [committer] */
 
@@ -32,8 +32,7 @@
 #include <iomanip>
 #include <iostream>
 
-using std::cout;
-using std::endl;
+  using std::endl;
 using std::fixed;
 using std::setprecision;
 using std::setw;
@@ -109,15 +108,12 @@ void CbmMvdClusterfinderTB::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdClusterfinderTB::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -190,15 +186,18 @@ void CbmMvdClusterfinderTB::Reset() { fCluster->Delete(); }
 void CbmMvdClusterfinderTB::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
-
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdClusterfinderTB::PrintParameters()
-{
+void CbmMvdClusterfinderTB::PrintParameters() const { LOG(info) << ParametersToString(); }
 
-  cout << "============================================================" << endl;
-  cout << "============== Parameters Clusterfinder ====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+// -----   Private method ParametersToString   -----------------------------
+void CbmMvdClusterfinderTB::ParametersToString() const
+{
+  std::stringstream ss;
+  ss << "============================================================" << endl;
+  ss << "============== Parameters Clusterfinder ====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

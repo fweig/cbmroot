@@ -16,6 +16,8 @@
 
 #include "TStopwatch.h"
 
+#include <string>
+
 class CbmMvdDetector;
 class TClonesArray;
 class TString;
@@ -83,7 +85,8 @@ private:
 
 
   /** Print digitisation parameters **/
-  void PrintParameters();
+  void PrintParameters() const;
+  std::string ParametersToString() const;
 
 private:
   CbmMvdDigiToHit(const CbmMvdDigiToHit&);

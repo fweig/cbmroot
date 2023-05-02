@@ -88,7 +88,8 @@ private:
 
 
   /** Print digitisation parameters **/
-  void PrintParameters();
+  void PrintParameters() const;
+  std::string ParametersToString() const;
 
 private:
   CbmMvdClusterfinder(const CbmMvdClusterfinder&);

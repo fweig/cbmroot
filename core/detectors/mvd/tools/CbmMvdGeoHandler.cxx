@@ -191,7 +191,7 @@ Int_t CbmMvdGeoHandler::GetStation(const TString& path)
 //--------------------------------------------------------------------------
 void CbmMvdGeoHandler::NavigateTo(const TString& path)
 {
-  //   cout << "path : " << path.Data() << endl;
+  //   LOG(info) << "path : " << path.Data();
   if (fIsSimulation) { LOG(fatal) << "This method is not supported in simulation mode"; }
   else {
     gGeoManager->cd(path.Data());
@@ -614,15 +614,15 @@ void CbmMvdGeoHandler::FillStationMap()
           fQuadrantName  = Form("/MVD-S%i-Q0-L%i-C%02i_1", StatNr, Layer, SensNr);
           fSensorHolding = Form("/MVD-S%i-Q0-L%i-C%02i-P0oPartAss_1", StatNr, Layer, SensNr);
           fSensorName    = Form("MVD-S%i-Q0-L%i-C%02i-P0", StatNr, Layer, SensNr);
-          //cout << endl << "try to find: " << fSensorName << endl;
+          //LOG(debug) << "try to find: " << fSensorName;
           fVolId = gGeoManager->GetUID(fSensorName);
           if (fVolId > -1) {
             fnodeName =
               fMother + fDetectorName + fStationName + fQuadrantName + fSensorHolding + "/" + fSensorName + "_1";
-            //cout << endl << "sensorfound check for node " << fnodeName << endl;
+            //LOG(debug) << "sensorfound check for node " << fnodeName;
             Bool_t nodeFound = gGeoManager->CheckPath(fnodeName.Data());
             if (nodeFound) {
-              //cout << endl << "node found " << fnodeName << endl;
+              //LOG(debug) << "node found " << fnodeName;
               fStationMap[fVolId] = iStation;
               iStation++;
             }

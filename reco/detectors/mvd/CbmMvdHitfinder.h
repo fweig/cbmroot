@@ -17,6 +17,8 @@
 #include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, UInt_t, kTRUE
 #include <TStopwatch.h>  // for TStopwatch
 
+#include <string>
+
 class CbmDigiManager;
 class CbmMvdDetector;
 class TBuffer;
@@ -87,7 +89,8 @@ private:
   void GetMvdGeometry();
 
   /** Print digitisation parameters **/
-  void PrintParameters();
+  void PrintParameters() const;
+  std::string ParametersToString() const;
 
 private:
   CbmMvdHitfinder(const CbmMvdHitfinder&);

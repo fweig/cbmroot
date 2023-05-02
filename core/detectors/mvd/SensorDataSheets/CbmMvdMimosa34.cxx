@@ -13,8 +13,6 @@
 #include <TMath.h>       // for Power
 #include <TString.h>     // for TString
 
-#include <iostream>  // for cout, endl
-
 // -----   Default constructor   -------------------------------------------
 CbmMvdMimosa34::CbmMvdMimosa34()
 {

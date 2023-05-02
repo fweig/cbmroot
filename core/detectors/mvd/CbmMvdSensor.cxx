@@ -27,10 +27,7 @@
 
 
 /// includes from C
-#include <iostream>
-
-using std::cout;
-using std::endl;
+#include <ostream>  // for operator<<, stringstream, basic_ostream
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdSensor::CbmMvdSensor()
@@ -45,15 +42,6 @@ CbmMvdSensor::CbmMvdSensor()
   , fClusterPlugin(-1)
   , fVolName("")
   , fNodeName("")
-  /*
-  , foutputDigis(nullptr)
-  , foutputCluster(nullptr)
-  ,  //not needed khun
-  foutputDigiMatch(nullptr)
-  , foutputBuffer(nullptr)
-
-  , fcurrentPoints(nullptr)
-  */
   , fcurrentEventTime(0.)
   , epsilon()
   , fShape(nullptr)
@@ -68,14 +56,11 @@ CbmMvdSensor::CbmMvdSensor()
   , fSensorStartTime(0.)
   , initialized(kFALSE)
 {
-  cout << "-W- " << GetName() << ": MVD-Sensor initialized without technical data.";
-  cout << " Assuming default sensor." << endl;
+  LOG(warning) << "MVD-Sensor initialized without technical data. Assuming default sensor.";
 
-  cout << "-W- " << GetName() << ": MVD-Sensor initialized without geometry data. ";
-  cout << " Must be added manually before using this class." << endl;
+  LOG(warning) << "MVD-Sensor initialized without geometry data. Must be added manually before using this class.";
 
-  cout << "-W- " << GetName() << ": MVD-Sensor initialized without valid start time. ";
-  cout << " Must be added manually before using this class." << endl;
+  LOG(warning) << "MVD-Sensor initialized without valid start time. Must be added manually before using this class.";
 }
 // -------------------------------------------------------------------------
 
@@ -94,15 +79,6 @@ CbmMvdSensor::CbmMvdSensor(const char* name, CbmMvdSensorDataSheet* dataSheet, T
   , fClusterPlugin(-1)
   , fVolName(volName)
   , fNodeName(nodeName)
-  /*
-  , foutputDigis(nullptr)
-  , foutputCluster(nullptr)
-  ,  //not needed khun
-  foutputDigiMatch(nullptr)
-  , foutputBuffer(nullptr)
-
-  , fcurrentPoints(nullptr)
-  */
   , fcurrentEventTime(0.)
   , epsilon()
   , fShape(nullptr)
@@ -251,8 +227,7 @@ void CbmMvdSensor::ShowDebugHistos()
   {
     CbmMvdSensorPlugin* pluginLast;
     pluginLast = (CbmMvdSensorPlugin*) fPluginArray->At(fPluginArray->GetEntriesFast() - 1);
-    cout << endl
-         << "Set debug mode on Plugin " << fPluginArray->GetEntriesFast() - 1 << " at sensor " << GetName() << endl;
+    LOG(info) << "Set debug mode on Plugin " << fPluginArray->GetEntriesFast() - 1 << " at sensor " << GetName();
     pluginLast->ShowDebugHistos();
   }
 }
@@ -334,7 +309,7 @@ void CbmMvdSensor::ExecTo(UInt_t nPlugin)
     }
   }
   else {
-    cout << endl << "nPlugin to large" << endl;
+    LOG(info) << "nPlugin to large";
   }
 }
 
@@ -354,18 +329,18 @@ void CbmMvdSensor::ExecFrom(UInt_t nPlugin)
   plugin = (CbmMvdSensorPlugin*) fPluginArray->At(nPlugin);
   if (nPlugin <= maxPlugin) {
     plugin->ExecChain();
-    //cout << endl << "is plugin ready? "<< plugin->PluginReady() << " on sensor "<< this->GetName()  << endl;
+    //LOG(info) << "is plugin ready? "<< plugin->PluginReady() << " on sensor "<< this->GetName();
     if (plugin->PluginReady()) {
-      //cout << endl << "exec chain on sensor "<< this->GetName() << endl;
+      //LOG(info) << "exec chain on sensor "<< this->GetName();
       for (UInt_t i = nPlugin + 1; i < maxPlugin; i++) {
-        //cout << endl << "exec plugin " << i << " on sensor "<< this->GetName() << endl;
+        //LOG(info) << "exec plugin " << i << " on sensor "<< this->GetName();
         plugin = (CbmMvdSensorPlugin*) fPluginArray->At(i);
         plugin->ExecChain();
       }
     }
   }
   else {
-    cout << endl << "nPlugin to large" << endl;
+    LOG(info) << "nPlugin to large";
   }
 }
 
@@ -405,7 +380,7 @@ TClonesArray* CbmMvdSensor::GetOutputBuffer() const
 
 
   CbmMvdSensorPlugin* plugin = (CbmMvdSensorPlugin*) fPluginArray->At(fPluginArray->GetLast());
-  cout << "-W- CbmMvdSensor::GetOutputBuffer: Warning - Use of method depreciated." << endl;
+  LOG(warning) << "CbmMvdSensor::GetOutputBuffer: Warning - Use of method depreciated.";
   return (plugin->GetOutputArray());
 }
 // -------------------------------------------------------------------------
@@ -421,8 +396,8 @@ void CbmMvdSensor::LocalToTop(Double_t* local, Double_t* lab) { fMCMatrix->Local
 void CbmMvdSensor::TopToLocal(Double_t* lab, Double_t* local)
 {
   fMCMatrix->MasterToLocal(lab, local);
-  //cout << endl << "local 0 nach TopToLocal " << local[0] << endl;
-  //cout << endl << "local 1 nach TopToLocal " << local[1] << endl;
+  //LOG(info) << "local 0 nach TopToLocal " << local[0];
+  //LOG(info) << "local 1 nach TopToLocal " << local[1];
 };
 // -------------------------------------------------------------------------
 
@@ -434,15 +409,15 @@ void CbmMvdSensor::LocalToPixel(Double_t* local, Int_t& pixelNumberX, Int_t& pix
   //Compute position of the frame relativ to the border of the matrix
   //which contains the pixel (0/0)
   Double_t x = local[0] + (fSensorData->GetPixelSignX() * GetDX());
-  //cout << "From " << local[0] << " to Double_t x " << x << endl;
+  //LOG(info) << "From " << local[0] << " to Double_t x " << x;
   Double_t y = local[1] + (fSensorData->GetPixelSignY() * GetDY());
-  //cout << "From " << local[1] << " to Double_t y " << y << endl;
+  //LOG(info) << "From " << local[1] << " to Double_t y " << y;
   //Compute the number of the pixel hit.
   //Note: substract 0.5 to move from border to center of pixel
   pixelNumberX = Int_t(x / fSensorData->GetPixelPitchX() - 0.5);
-  //if (pixelNumberX < 0) cout << "pixelNumberX = " << pixelNumberX << " on Sensor " << this->GetName() << endl;
+  //if (pixelNumberX < 0) LOG(info)<< "pixelNumberX = " << pixelNumberX << " on Sensor " << this->GetName();
   pixelNumberY = Int_t(y / fSensorData->GetPixelPitchY() - 0.5);
-  //if (pixelNumberY < 0) cout << "pixelNumberY = " << pixelNumberY << " on Sensor " << this->GetName() << endl;
+  //if (pixelNumberY < 0) LOG(info) << "pixelNumberY = " << pixelNumberY << " on Sensor " << this->GetName();
 };
 // -------------------------------------------------------------------------
 
@@ -526,19 +501,23 @@ Double_t CbmMvdSensor::GetReadoutTime(Double_t absoluteTime) const
 // -------------------------------------------------------------------------
 
 
+void CbmMvdSensor::Print(Option_t* /*opt*/) const { LOG(info) << ToString(); }
+
 // -----   Public method Print   -------------------------------------------
-void CbmMvdSensor::Print(Option_t* /*opt*/) const
+std::string CbmMvdSensor::ToString() const
 {
-  cout << " --- " << GetName() << ", sensor name" << fVolName << endl;
-  cout << " MC - ID: " << fVolumeId << endl;
-  cout << "---------------------------------------------------------" << endl;
-  cout << " Position information: " << endl;
+  std::stringstream ss;
+  ss << " --- " << GetName() << ", sensor name" << fVolName << std::endl;
+  ss << " MC - ID: " << fVolumeId << std::endl;
+  ss << "---------------------------------------------------------" << std::endl;
+  ss << " Position information: " << std::endl;
   fRecoMatrix->Print();
-  cout << " --------------------------------------------------------" << endl;
-  cout << " Technical information: " << endl;
-  fSensorData->Print("");
-  cout << " , MC Id " << fVolumeId << endl;
-  cout << "---------------------------------------------------------" << endl;
+  ss << " --------------------------------------------------------" << std::endl;
+  ss << " Technical information: " << std::endl;
+  ss << fSensorData->ToString();
+  ss << " , MC Id " << fVolumeId << std::endl;
+  ss << "---------------------------------------------------------" << std::endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

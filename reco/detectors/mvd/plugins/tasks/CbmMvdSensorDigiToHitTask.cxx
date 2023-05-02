@@ -16,9 +16,6 @@
 
 #include <cstring>
 
-
-using std::cout;
-using std::endl;
 using std::map;
 using std::pair;
 using std::vector;
@@ -132,8 +129,7 @@ void CbmMvdSensorDigiToHitTask::InitTask(CbmMvdSensor* mysensor)
 // -----   Virtual public method Reinit   ----------------------------------
 Bool_t CbmMvdSensorDigiToHitTask::ReInit()
 {
-  cout << "-I- "
-       << "CbmMvdSensorDigiToHitTask::ReInt---------------" << endl;
+  LOG(info) << "CbmMvdSensorDigiToHitTask::ReInt---------------";
   return kTRUE;
 }
 // -------------------------------------------------------------------------
@@ -154,11 +150,7 @@ void CbmMvdSensorDigiToHitTask::Exec()
 
     CbmMvdDigi* digi = (CbmMvdDigi*) fInputBuffer->At(iDigi);
 
-    if (!digi) {
-      cout << "-E- : CbmMvdSensorFindHitTask - Fatal: No Digits found in this "
-              "event."
-           << endl;
-    }
+    if (!digi) { LOG(error) << "CbmMvdSensorFindHitTask - Fatal: No Digits found in this event."; }
 
 
     dth_clusterArray.reserve(nDigis);
@@ -406,7 +398,7 @@ void CbmMvdSensorDigiToHitTask::Exec()
         fHitPosY += shiftOut[1];
         fHitPosZ += shiftOut[2];
 
-        // pos = center of gravity (labframe), dpos uncertaintycout<<setw(10)<<setprecision(2)<< VolumeShape->GetDX();
+        // pos = center of gravity (labframe), dpos uncertainty LOG(info)<<setw(10)<<setprecision(2)<< VolumeShape->GetDX();
         pos.SetXYZ(fHitPosX, fHitPosY, fHitPosZ);
         dpos.SetXYZ(TMath::Abs(sigmaOut[0]), TMath::Abs(sigmaOut[1]), TMath::Abs(sigmaOut[2]));
 
@@ -463,18 +455,18 @@ float CbmMvdSensorDigiToHitTask::GetAdcCharge(Float_t curr_charge)
 void CbmMvdSensorDigiToHitTask::Finish()
 {
   if (fShowDebugHistos) {
-    cout << "\n============================================================" << endl;
-    cout << "-I- " << GetName() << "::Finish: Total events skipped: " << fCounter << endl;
-    cout << "============================================================" << endl;
-    cout << "-I- Parameters used" << endl;
-    cout << "Gaussian noise [electrons]	: " << fSigmaNoise << endl;
-    cout << "Noise simulated [Bool]	        : " << fAddNoise << endl;
-    cout << "Threshold seed [ADC]            : " << dth_fSeedThreshold << endl;
-    cout << "Threshold neighbours [ADC]	: " << dth_fNeighThreshold << endl;
-    cout << "ADC - Bits			: " << fAdcBits << endl;
-    cout << "ADC - Dynamic [electrons]	: " << fAdcDynamic << endl;
-    cout << "ADC - Offset [electrons]	: " << fAdcOffset << endl;
-    cout << "============================================================" << endl;
+    LOG(info) << "============================================================";
+    LOG(info) << GetName() << "::Finish: Total events skipped: " << fCounter;
+    LOG(info) << "============================================================";
+    LOG(info) << "Parameters used";
+    LOG(info) << "Gaussian noise [electrons]	: " << fSigmaNoise;
+    LOG(info) << "Noise simulated [Bool]	: " << fAddNoise;
+    LOG(info) << "Threshold seed [ADC]          : " << dth_fSeedThreshold;
+    LOG(info) << "Threshold neighbours [ADC]	: " << dth_fNeighThreshold;
+    LOG(info) << "ADC - Bits			: " << fAdcBits;
+    LOG(info) << "ADC - Dynamic [electrons]	: " << fAdcDynamic;
+    LOG(info) << "ADC - Offset [electrons]	: " << fAdcOffset;
+    LOG(info) << "============================================================";
 
 
     TH1F* histo;
@@ -488,7 +480,7 @@ void CbmMvdSensorDigiToHitTask::Finish()
       for (Int_t i = 0; i < fChargeArraySize * fChargeArraySize; i++) {
         histo               = dth_fPixelChargeHistos[i];
         Float_t curr_charge = histo->GetMean();
-        //cout <<i << " Charge " << charge << " xCluster: " << i%fChargeArraySize << " yCluster: " << i/fChargeArraySize << endl;
+        //LOG(debug) <<i << " Charge " << charge << " xCluster: " << i%fChargeArraySize << " yCluster: " << i/fChargeArraySize;
         //histo->Fit("landau");
         //TF1* fitFunction= histo->GetFunction("landau");
         //Double_t MPV=fitFunction->GetParameter(1);

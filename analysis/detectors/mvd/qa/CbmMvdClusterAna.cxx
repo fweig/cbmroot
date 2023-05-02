@@ -47,10 +47,7 @@
 
 //-- Include from C++ --//
 #include <iomanip>
-#include <iostream>
-using namespace std;
-using std::cout;
-using std::endl;
+
 using std::flush;
 
 // -----   Default constructor   -------------------------------------------
@@ -115,19 +112,11 @@ CbmMvdClusterAna::~CbmMvdClusterAna() { ; }
 // -------------------------------------------------------------------------
 InitStatus CbmMvdClusterAna::Init()
 {
-  cout << "--------------------------------------------------------------------"
-          "-----"
-       << endl
-       << "-I- " << GetName() << "::Init: "
-       << " Start Initilisation " << endl
-       << "--------------------------------------------------------------------"
-          "-----"
-       << endl;
+  LOG(info) << GetName() << "::Init:  Start Initilisation ";
 
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: "
-         << "RootManager not instantised!" << endl;
+    LOG(error) << GetName() << "::Init: RootManager not instantised!";
     return kFATAL;
   }
 
@@ -221,14 +210,7 @@ InitStatus CbmMvdClusterAna::Init()
   fMvdHisto2[15] = new TH2F("mom_cha", "mom_cha", 100, 0, 3, 1000, 0, 10000);
   fMvdHisto2[16] = new TH2F("ang_cha", "ang_cha", 200, 0, 2, 1000, 0, 10000);
   fMvdHisto2[17] = new TH2F("mom_chacut", "mom_chacut", 100, 0, 3, 1000, 0, 10000);
-  cout << "--------------------------------------------------------------------"
-          "-----"
-       << endl
-       << "-I- " << GetName() << "::Init: "
-       << " Finished Initilisation " << endl
-       << "--------------------------------------------------------------------"
-          "-----"
-       << endl;
+  LOG(info) << GetName() << "::Init: Finished Initilisation ";
 
   fNrMcPointsAll = 0;
   fNrHitsAll     = 0;
@@ -260,16 +242,16 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
   // Int_t nMcTracks 		= fListMCTracks		->GetEntriesFast();
   // 	Int_t nTracks			= fStsTrackArray	->GetEntriesFast();		// Number of Tracks
 
-  // 	cout<<"MC Points    : "<< nMcpoints		<<endl;
-  // 	cout<<"Hits         : "<< nHits			<<endl;
-  // 	cout<<"HitMatchs    : "<< nHitsMatch	<<endl;
-  // 	cout<<"Clusters     : "<< nClusters		<<endl;
-  // 	cout<<"ClusterMatch : "<< nClustersMatch<<endl;
-  // 	cout<<"Digis        : "<< nDigis		<<endl;
-  // 	cout<<"DigiMatchs   : "<< nDigisMatch	<<endl;
-  // 	cout<<"MC Tracks    : "<< nMcTracks		<<endl;
-  // 	cout<<"Tracks       : "<< nTracks		<<endl;
-  // 	cout<<"------"<<endl;
+  // 	LOG(debug)<<"MC Points    : "<< nMcpoints;
+  // 	LOG(debug)<<"Hits         : "<< nHits;
+  // 	LOG(debug)<<"HitMatchs    : "<< nHitsMatch;
+  // 	LOG(debug)<<"Clusters     : "<< nClusters;
+  // 	LOG(debug)<<"ClusterMatch : "<< nClustersMatch;
+  // 	LOG(debug)<<"Digis        : "<< nDigis;
+  // 	LOG(debug)<<"DigiMatchs   : "<< nDigisMatch;
+  // 	LOG(debug)<<"MC Tracks    : "<< nMcTracks;
+  // 	LOG(debug)<<"Tracks       : "<< nTracks;
+  // 	LOG(debug)<<"------";
   // -------------------
   CbmMvdPoint* mvdPoint;  // Monte Carlo Point
   CbmMvdDigi* mvdDigi;    // Digi
@@ -400,7 +382,7 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
   // Analyze Hits and Clusters
 
   for (Int_t iHit = 0; iHit < nHits; iHit++) {
-    cout << endl << "run next Hit " << iHit << " of " << nHits << " Hits" << endl;
+    LOG(info) << "run next Hit " << iHit << " of " << nHits << " Hits";
     mvdHit          = (CbmMvdHit*) fMvdHits->At(iHit);
     mvdCluster      = (CbmMvdCluster*) fMvdClusters->At(iHit);
     mvdHitMatch     = (CbmMvdHitMatch*) fMvdHitsMatch->At(iHit);
@@ -443,7 +425,6 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
 
     McInHit.clear();
     McContrToHitList.clear();
-    cout << endl << "ping" << endl;
     for (it_type iterator = digiMap.begin(); iterator != digiMap.end(); iterator++) {
       digiCoor   = iterator->first;
       digiCharge = iterator->second;
@@ -479,7 +460,6 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
       // 			if (it != DigisMap.end())
       // 			{
       fMcperDigi[McContrList.size()]++;  // Number of MC Points contributing to a Digi
-      cout << endl << "ping 2" << endl;
       for (Int_t iMc = 0; iMc < McContrList.size(); iMc++) {
         if (std::find(McContrToHitList.begin(), McContrToHitList.end(), McContrList[iMc]) == McContrToHitList.end()) {
           McContrToHitList.push_back(McContrList[iMc]);
@@ -505,7 +485,6 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
       fMcperHit[10]++;
     }
     count = 0;
-    cout << endl << "ping 3" << endl;
     for (std::map<Int_t, Int_t>::iterator iterator = McInHit.begin(); iterator != McInHit.end(); iterator++) {
       DigisInMc[iterator->first] += iterator->second;
       count++;
@@ -523,7 +502,6 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
 
       HitsInMc[iterator->first] = McContrList;
     }
-    cout << endl << "ping 4" << endl;
     if ((xaxismax - xaxismin) < 4 && (yaxismax - yaxismin) < 4) {
       shape = 0;
 
@@ -566,7 +544,6 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
     else {
       shape = 9;
     }
-    cout << endl << "ping 5" << endl;
     ARR_momentum[iHit] = mcTrack->GetP();
     ARR_angle[iHit]    = cVect.Angle(cOrth);
     ARR_digis[iHit]    = mvdCluster->GetNofDigis();
@@ -579,12 +556,11 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
                     + (double) (((locMC[1] + VolumeShape->GetDY()) / (1 * pitchy)) - 0.5);
     ARR_shape[iHit]  = shape;
     ARR_charge[iHit] = charge;
-    cout << endl << "finished this hit" << endl;
   }
 
   // -------------------
   for (Int_t iHit = 0; iHit < nHits; iHit++) {
-    cout << endl << "fill stuff" << endl;
+    LOG(debug) << "fill stuff";
     fMvdHisto1[0]->Fill(ARR_momentum[iHit]);
     fMvdHisto1[1]->Fill(ARR_angle[iHit]);
     fMvdHisto1[2]->Fill(ARR_digis[iHit]);
@@ -665,18 +641,18 @@ void CbmMvdClusterAna::Exec(Option_t* /*opt*/)
 // -------------------------------------------------------------------------
 void CbmMvdClusterAna::Finish()
 {
-  cout << "======================" << endl;
-  cout << "'Mvd QA Output' Start!" << endl;
-  cout << "======================" << endl;
+  LOG(info) << "======================";
+  LOG(info) << "'Mvd QA Output' Start!";
+  LOG(info) << "======================";
   // -------------------
-  cout << "----------------------" << endl;
-  cout << "Pixelpitch: " << endl;
-  cout << "x: " << fPixelpitch[0] << endl;
-  cout << "y: " << fPixelpitch[1] << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "Pixelpitch: ";
+  LOG(info) << "x: " << fPixelpitch[0];
+  LOG(info) << "y: " << fPixelpitch[1];
   // -------------------
   int sum;
-  cout << "----------------------" << endl;
-  cout << "MC points per Digi:" << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "MC points per Digi:";
   sum = 0;
   for (Int_t i = 0; i < 6; i++) {
     sum += fMcperDigi[i];
@@ -686,37 +662,37 @@ void CbmMvdClusterAna::Finish()
     printf(" %2i  %10i    %6.5f \n", i, fMcperDigi[i], 1. * fMcperDigi[i] / sum);
   }
   // -------------------
-  cout << "----------------------" << endl;
-  cout << "Digis per MC Point:" << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "Digis per MC Point:";
   for (Int_t i = 0; i < 11; i++) {
     if (fMvdHisto1[30]->GetBinCenter(i) >= 0)
       printf(" %2i  %10i    %6.5f \n", (int) (fMvdHisto1[30]->GetBinCenter(i)),
              (int) (fMvdHisto1[30]->GetBinContent(i)),
              1. * (int) (fMvdHisto1[30]->GetBinContent(i)) * 1. / fMvdHisto1[30]->GetEntries());
   }
-  cout << "  .." << endl;
+  LOG(info) << "  ..";
   // -------------------
-  cout << "----------------------" << endl;
-  cout << "Digis per Hit:" << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "Digis per Hit:";
   for (Int_t i = 0; i < 11; i++) {
     if (fMvdHisto1[2]->GetBinCenter(i) >= 0)
       printf(" %2i  %10i    %6.5f \n", (int) (fMvdHisto1[2]->GetBinCenter(i)), (int) (fMvdHisto1[2]->GetBinContent(i)),
              1. * (int) (fMvdHisto1[2]->GetBinContent(i)) * 1. / fMvdHisto1[2]->GetEntries());
   }
-  cout << "  .." << endl;
+  LOG(info) << "  ..";
   // -------------------
-  cout << "----------------------" << endl;
-  cout << "Hits per MC Point:" << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "Hits per MC Point:";
   for (Int_t i = 0; i < 11; i++) {
     if (fMvdHisto1[31]->GetBinCenter(i) >= 0)
       printf(" %2i  %10i    %6.5f \n", (int) (fMvdHisto1[31]->GetBinCenter(i)),
              (int) (fMvdHisto1[31]->GetBinContent(i)),
              1. * (int) (fMvdHisto1[31]->GetBinContent(i)) * 1. / fMvdHisto1[31]->GetEntries());
   }
-  cout << "  .." << endl;
+  LOG(info) << "  ..";
   // -------------------
-  cout << "----------------------" << endl;
-  cout << "MC Points per Hit:" << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "MC Points per Hit:";
   sum = 0;
   for (Int_t i = 0; i < 11; i++) {
     sum += fMcperHit[i];
@@ -726,17 +702,17 @@ void CbmMvdClusterAna::Finish()
     printf(" %2i  %10i    %6.5f \n", i, fMcperHit[i], 1. * fMcperHit[i] / sum);
   }
   // -------------------
-  cout << "----------------------" << endl;
-  cout << "MC Points per Hit (merged Clusters):" << endl;
+  LOG(info) << "----------------------";
+  LOG(info) << "MC Points per Hit (merged Clusters):";
   for (Int_t i = 0; i < 11; i++) {
     if (fMvdHisto1[32]->GetBinCenter(i) >= 0)
       printf(" %2i  %10i    %6.5f \n", (int) (fMvdHisto1[32]->GetBinCenter(i)),
              (int) (fMvdHisto1[32]->GetBinContent(i)),
              1. * (int) (fMvdHisto1[32]->GetBinContent(i)) * 1. / fMvdHisto1[32]->GetEntries());
   }
-  cout << "  .." << endl;
+  LOG(info) << "  ..";
   // -------------------
-  cout << "----------------------" << endl;
+  LOG(info) << "----------------------";
   // -------------------
   Double_t xpar[3];
   Double_t ypar[3];
@@ -750,51 +726,51 @@ void CbmMvdClusterAna::Finish()
   gFitx->GetParameters(&xpar[0]);
   gFity->GetParameters(&ypar[0]);
 
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
-  cout << "Resolution:" << endl;
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
-  cout << setw(9) << "  Shape";
-  cout << setw(10) << "  Mean(x)";
-  cout << setw(10) << "  RMS(x)";
-  cout << setw(10) << "  Mean(y)";
-  cout << setw(10) << "  RMS(y)";
-  cout << setw(10) << "  Mean(z)";
-  cout << setw(10) << "  RMS(z)";
-  cout << endl;
-  cout << setw(40) << "---------------------------------------------------------------------";
-  cout << endl;
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
+  LOG(info) << "Resolution:";
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
+  LOG(info) << setw(9) << "  Shape";
+  LOG(info) << setw(10) << "  Mean(x)";
+  LOG(info) << setw(10) << "  RMS(x)";
+  LOG(info) << setw(10) << "  Mean(y)";
+  LOG(info) << setw(10) << "  RMS(y)";
+  LOG(info) << setw(10) << "  Mean(z)";
+  LOG(info) << setw(10) << "  RMS(z)";
+  LOG(info);
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
+  LOG(info);
 
   for (int i = 0; i < 10; i++) {
     printf("%6i    %+5.4f   %+5.4f   %+5.4f   %+5.4f  \n", i, fMvdHisto1[10 + i]->GetMean(),
            fMvdHisto1[10 + i]->GetRMS(), fMvdHisto1[20 + i]->GetMean(), fMvdHisto1[20 + i]->GetRMS());
   }
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
   printf("%10s%+5.4f   %+5.4f   %+5.4f   %+5.4f   %+5.4f   %+5.4f  \n", "All       ", fMvdHisto1[3]->GetMean(),
          fMvdHisto1[3]->GetRMS(), fMvdHisto1[4]->GetMean(), fMvdHisto1[4]->GetRMS(), fMvdHisto1[5]->GetMean(),
          fMvdHisto1[5]->GetRMS());
   printf("%10s%+5.4f   %+5.4f   %+5.4f   %+5.4f  \n", "All (Fit) ", xpar[1], xpar[2], ypar[1], ypar[2]);
 
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
   fMvdHisto1[33]->Fit(gFitx, "QRN0");
   fMvdHisto1[34]->Fit(gFity, "QRN0");
 
   gFitx->GetParameters(&xpar[0]);
   gFity->GetParameters(&ypar[0]);
-  cout << "Pulls:" << endl;
+  LOG(info) << "Pulls:";
   printf("%10s%+5.4f   %+5.4f   %+5.4f   %+5.4f  \n", "All       ", fMvdHisto1[33]->GetMean(), fMvdHisto1[33]->GetRMS(),
          fMvdHisto1[34]->GetMean(), fMvdHisto1[34]->GetRMS());
   printf("%10s%+5.4f   %+5.4f   %+5.4f   %+5.4f  \n", "All (Fit) ", xpar[1], xpar[2], ypar[1], ypar[2]);
-  cout << "(Using 3.8(x) and 4.8(y) as nominal resolution!)" << endl;
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
+  LOG(info) << "(Using 3.8(x) and 4.8(y) as nominal resolution!)";
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
   // -------------------
-  cout << "Hit Reco Efficiency: " << float(1. * fNrHitsAll / fNrMcPointsAll) << "\t( " << fNrHitsAll << "\t"
-       << fNrMcPointsAll << " )" << endl;
-  cout << setw(40) << "---------------------------------------------------------------------" << endl;
+  LOG(info) << "Hit Reco Efficiency: " << float(1. * fNrHitsAll / fNrMcPointsAll) << "\t( " << fNrHitsAll << "\t"
+            << fNrMcPointsAll << " )";
+  LOG(info) << setw(40) << "---------------------------------------------------------------------";
   // -------------------
-  cout << "======================" << endl;
-  cout << "'Mvd QA Output' End!" << endl;
-  cout << "======================" << endl;
+  LOG(info) << "======================";
+  LOG(info) << "'Mvd QA Output' End!";
+  LOG(info) << "======================";
 
   // -------------------
   TCanvas* a = new TCanvas("Residuals", "Residuals");

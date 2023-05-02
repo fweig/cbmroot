@@ -15,6 +15,8 @@
 
 #include "TStopwatch.h"
 
+#include <string>
+
 class CbmMvdDetector;
 
 
@@ -79,7 +81,8 @@ private:
   void GetMvdGeometry();
 
   /** Print digitisation parameters **/
-  void PrintParameters();
+  void PrintParameters() const;
+  std::string ParametersToString() const;
 
 private:
   CbmMvdHitfinderTB(const CbmMvdHitfinderTB&);

@@ -27,7 +27,6 @@
 #include <map>       // for map, __map_iterator, operator!=, operator==
 #include <vector>    // for vector
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::ios_base;
@@ -180,9 +179,8 @@ void CbmMvdSensorHitfinderTask::InitTask(CbmMvdSensor* mysensor)
 
 
   fSensor = mysensor;
-  if (gDebug > 0) {
-    cout << "-Start- CbmMvdSensorHitfinderTask: Initialisation of sensor " << fSensor->GetName() << endl;
-  }
+  LOG(debug) << "CbmMvdSensorHitfinderTask: Initialisation of sensor " << fSensor->GetName();
+
   fInputBuffer  = new TClonesArray("CbmMvdCluster", 100);
   fOutputBuffer = new TClonesArray("CbmMvdHit", 100);
 
@@ -204,15 +202,14 @@ void CbmMvdSensorHitfinderTask::InitTask(CbmMvdSensor* mysensor)
 
   initialized = kTRUE;
 
-  //cout << "-Finished- " << GetName() << ": Initialisation of sensor " << fSensor->GetName() << endl;
+  //LOG(debug) << "-Finished- " << GetName() << ": Initialisation of sensor " << fSensor->GetName();
 }
 // -------------------------------------------------------------------------
 
 // -----   Virtual public method Reinit   ----------------------------------
 InitStatus CbmMvdSensorHitfinderTask::ReInit()
 {
-  cout << "-I- "
-       << "CbmMvdSensorHitfinderTask::ReInt---------------" << endl;
+  LOG(info) << "CbmMvdSensorHitfinderTask::ReInt---------------";
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
@@ -229,7 +226,7 @@ void CbmMvdSensorHitfinderTask::Exec()
   //  {
   //  fInputBuffer->Clear();
   //  fInputBuffer->AbsorbObjects(fPreviousPlugin->GetOutputArray());
-  //  cout << endl << "absorbt object from previous plugin at " << fSensor->GetName() << " got " << fInputBuffer->GetEntriesFast() << " entrys" << endl;
+  //  LOG(debug) << "absorbt object from previous plugin at " << fSensor->GetName() << " got " << fInputBuffer->GetEntriesFast() << " entrys";
   //  }
   if (fInputBuffer->GetEntriesFast() > 0) {
 
@@ -260,16 +257,16 @@ void CbmMvdSensorHitfinderTask::CreateHit(CbmMvdCluster* cluster, TVector3& pos,
   Double_t local[2];
   local[0] = pos.X();
   local[1] = pos.Y();
-  //cout << endl << "found center of gravity at: " << local[0] << " , " << local[1] << endl;
+  //LOG(debug)<< "found center of gravity at: " << local[0] << " , " << local[1];
 
   fSensor->TopToPixel(local, indexX, indexY);
 
-  //cout << endl << "Center is on pixel: " << indexX << " , " << indexY << endl;
+  //LOG(debug) << "Center is on pixel: " << indexX << " , " << indexY;
 
 
   // Save hit into array
 
-  //cout << endl << "adding new hit to fHits at X: " << pos.X() << " , Y: "<< pos.Y() << " , Z: " << pos.Z() << " , from cluster nr " << cluster->GetRefId() ;
+  //LOG(debug) << "adding new hit to fHits at X: " << pos.X() << " , Y: "<< pos.Y() << " , Z: " << pos.Z() << " , from cluster nr " << cluster->GetRefId();
   Int_t nHits = fOutputBuffer->GetEntriesFast();
   new ((*fOutputBuffer)[nHits]) CbmMvdHit(fSensor->GetStationNr(), pos, dpos, indexX, indexY, cluster->GetRefId(), 0);
   CbmMvdHit* currentHit = (CbmMvdHit*) fOutputBuffer->At(nHits);
@@ -324,14 +321,8 @@ void CbmMvdSensorHitfinderTask::ComputeCenterOfGravity(CbmMvdCluster* cluster, T
       shape += TMath::Power(2, (4 * (yIndex - yIndex0 + 3)) + (xIndex - xIndex0));
     }
 
-    if (gDebug > 0) {
-      cout << "-I- "
-           << "CbmMvdSensorHitfinderTask:: iCluster= " << cluster->GetRefId() << " , clusterSize= " << clusterSize
-           << endl;
-      cout << "-I- "
-           << "CbmMvdSensorHitfinderTask::xIndex " << xIndex << " , yIndex " << yIndex << " , charge = " << charge
-           << endl;
-    }
+    LOG(debug) << "CbmMvdSensorHitfinderTask:: iCluster= " << cluster->GetRefId() << " , clusterSize= " << clusterSize;
+    LOG(debug) << "CbmMvdSensorHitfinderTask::xIndex " << xIndex << " , yIndex " << yIndex << " , charge = " << charge;
 
     fSensor->PixelToTop(xIndex, yIndex, lab);
 
@@ -346,13 +337,9 @@ void CbmMvdSensorHitfinderTask::ComputeCenterOfGravity(CbmMvdCluster* cluster, T
     denominator += charge;
   }
 
-  if (gDebug > 0) {
-    cout << "-I- "
-         << "CbmMvdSensorHitfinderTask::=========================\n " << endl;
-    cout << "-I- "
-         << "CbmMvdSensorHitfinderTask::numeratorX: " << numeratorX << " , numeratorY: " << numeratorY
-         << ", denominator: " << denominator << endl;
-  }
+  LOG(debug) << "CbmMvdSensorHitfinderTask::=========================";
+  LOG(debug) << "CbmMvdSensorHitfinderTask::numeratorX: " << numeratorX << " , numeratorY: " << numeratorY
+             << ", denominator: " << denominator;
 
   //Calculate x,y coordinates of the pixel in the laboratory ref frame
   if (denominator != 0) {
@@ -366,16 +353,9 @@ void CbmMvdSensorHitfinderTask::ComputeCenterOfGravity(CbmMvdCluster* cluster, T
     fHitPosZ = 0;
   }
 
-  if (gDebug > 0) {
-    cout << "-I- "
-         << "CbmMvdSensorHitfinderTask::-----------------------------------" << endl;
-    cout << "-I- "
-         << "CbmMvdSensorHitfinderTask::X hit= " << fHitPosX << " Y hit= " << fHitPosY << " Z hit= " << fHitPosZ
-         << endl;
-    cout << "-I- "
-         << "CbmMvdSensorHitfinderTask::-----------------------------------\n"
-         << endl;
-  }
+  LOG(debug) << "CbmMvdSensorHitfinderTask::-----------------------------------";
+  LOG(debug) << "CbmMvdSensorHitfinderTask::X hit= " << fHitPosX << " Y hit= " << fHitPosY << " Z hit= " << fHitPosZ;
+  LOG(debug) << "CbmMvdSensorHitfinderTask::-----------------------------------";
 
   // Treat Sigma/Shift of the Cluster according to the Shape
   if (shape == 12288) {
@@ -474,7 +454,7 @@ void CbmMvdSensorHitfinderTask::ComputeCenterOfGravity(CbmMvdCluster* cluster, T
   fHitPosY += shiftOut[1];
   fHitPosZ += shiftOut[2];
 
-  // pos = center of gravity (labframe), dpos uncertaintycout<<setw(10)<<setprecision(2)<< VolumeShape->GetDX();
+  // pos = center of gravity (labframe), dpos uncertainty LOG(info)<<setw(10)<<setprecision(2)<< VolumeShape->GetDX();
   pos.SetXYZ(fHitPosX, fHitPosY, fHitPosZ);
   dpos.SetXYZ(fHitPosErrX, fHitPosErrY, fHitPosErrZ);
 }

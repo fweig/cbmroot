@@ -17,11 +17,6 @@
 #include <FairRootManager.h>  // for FairRootManager
 #include <Logger.h>           // for LOG
 
-#include <iostream>  // for operator<<, endl
-
-using std::cout;
-using std::endl;
-
 // -----   Default constructor   ------------------------------------------
 CbmMvdReadout::CbmMvdReadout() : CbmMvdReadout("MVDClusterfinder") {}
 // -------------------------------------------------------------------------
@@ -47,8 +42,8 @@ void CbmMvdReadout::Exec(Option_t* /*opt*/)
 {
 
   if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd) > 0) {
-    if (fVerbose) cout << "//----------------------------------------//";
-    if (fVerbose) cout << endl << "Send Input" << endl;
+    if (fVerbose) LOG(info) << "//----------------------------------------//";
+    if (fVerbose) LOG(info) << "Send Input";
     Int_t nTargetPlugin = fDetector->DetectPlugin(200);
     CbmMvdDigi* digi    = 0;
 
@@ -60,9 +55,9 @@ void CbmMvdReadout::Exec(Option_t* /*opt*/)
 
       fDetector->SendInputToSensorPlugin(digi->GetDetectorId(), nTargetPlugin, static_cast<TObject*>(digi));
     }
-    if (fVerbose) cout << "Execute ReadoutPlugin Nr. " << fPluginNr << endl;
+    if (fVerbose) LOG(info) << "Execute ReadoutPlugin Nr. " << fPluginNr;
     fDetector->Exec(fPluginNr);
-    if (fVerbose) cout << "End Chain" << endl;
+    if (fVerbose) LOG(info) << "End Chain";
   }
 }
 // -----------------------------------------------------------------------------
@@ -70,15 +65,12 @@ void CbmMvdReadout::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdReadout::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -95,7 +87,7 @@ InitStatus CbmMvdReadout::Init()
   fDetector = CbmMvdDetector::Instance();
 
   if (fDetector->GetSensorArraySize() > 1) {
-    if (fVerbose) cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
+    if (fVerbose) LOG(info) << "succesfully loaded Geometry from file";
   }
   else {
     LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
@@ -122,10 +114,8 @@ InitStatus CbmMvdReadout::Init()
 
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
-
 
   return kSUCCESS;
 }
@@ -155,11 +145,10 @@ void CbmMvdReadout::Reset()
 void CbmMvdReadout::PrintParameters() const
 {
 
-  //cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================" << endl;
-  cout << "============== Parameters Readout ===== ====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+  LOG(info) << "============================================================";
+  LOG(info) << "============== Parameters Readout ===== ====================";
+  LOG(info) << "============================================================";
+  LOG(info) << "=============== End Task ===================================";
 }
 // -------------------------------------------------------------------------
 

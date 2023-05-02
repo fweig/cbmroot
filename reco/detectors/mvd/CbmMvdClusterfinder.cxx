@@ -26,7 +26,6 @@
 #include <utility>   // for pair
 
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::setprecision;
@@ -78,18 +77,18 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 {
   // --- Start timer
   fTimer.Start();
-  if (gDebug > 0) { cout << "CbmMvdClusterfinder::Exec : Starting Exec " << endl; }
+  LOG(debug) << "CbmMvdClusterfinder::Exec : Starting Exec ";
   fCluster->Delete();
   if (fDigiMan->GetNofDigis(ECbmModuleId::kMvd)) {
-    if (fVerbose) cout << "//----------------------------------------//";
-    if (fVerbose) cout << endl << "Send Input" << endl;
+    if (fVerbose) LOG(debug) << "//----------------------------------------//";
+    if (fVerbose) LOG(debug) << "Send Input";
 
     Int_t nTargetPlugin = fDetector->DetectPlugin(200);
     CbmMvdDigi* digi    = 0;
 
     Int_t nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
 
-    if (gDebug > 0) { cout << "CbmMvdClusterfinder::Exec - nDigis= " << nDigis << endl; }
+    LOG(debug) << "CbmMvdClusterfinder::Exec - nDigis= " << nDigis;
 
     for (Int_t i = 0; i < nDigis; i++) {
       digi = new CbmMvdDigi(*(fDigiMan->Get<CbmMvdDigi>(i)));
@@ -99,21 +98,21 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
     }
 
 
-    if (gDebug > 0) { cout << "CbmMvdClusterfinder::Exec : Communicating with Plugin: " << nTargetPlugin << endl; }
+    LOG(debug) << "CbmMvdClusterfinder::Exec : Communicating with Plugin: " << nTargetPlugin;
 
 
     //fDetector->SendInputDigis(fDigiMan);
-    if (fVerbose) cout << "Execute ClusterPlugin Nr. " << fClusterPluginNr << endl;
+    if (fVerbose) LOG(debug) << "Execute ClusterPlugin Nr. " << fClusterPluginNr;
     fDetector->Exec(nTargetPlugin);
-    if (fVerbose) cout << "End Chain" << endl;
-    if (fVerbose) cout << "Start writing Cluster" << endl;
+    if (fVerbose) LOG(debug) << "End Chain";
+    if (fVerbose) LOG(debug) << "Start writing Cluster";
 
     fDetector->GetOutputArray(nTargetPlugin, fCluster);
     //fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
     //fCluster->AbsorbObjects(fDetector->GetOutputCluster(), 0, fDetector->GetOutputCluster()->GetEntriesFast() - 1);
 
-    if (fVerbose) cout << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event" << endl;
-    if (fVerbose) cout << "//----------------------------------------//" << endl;
+    if (fVerbose) LOG(debug) << "Total of " << fCluster->GetEntriesFast() << " Cluster in this Event";
+    if (fVerbose) LOG(debug) << "//----------------------------------------//";
     LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fCluster->GetEntriesFast() << " cluster in " << fixed
               << setprecision(6) << fTimer.RealTime() << " s";
   }
@@ -125,15 +124,12 @@ void CbmMvdClusterfinder::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdClusterfinder::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -153,7 +149,7 @@ InitStatus CbmMvdClusterfinder::Init()
   fDetector = CbmMvdDetector::Instance();
 
   if (fDetector->GetSensorArraySize() > 1) {
-    if (fVerbose) cout << endl << "-I- succesfully loaded Geometry from file -I-" << endl;
+    if (fVerbose) LOG(info) << "succesfully loaded Geometry from file";
   }
   else {
     LOG(fatal) << "Geometry couldn't be loaded from file. No MVD digitizer available.";
@@ -178,9 +174,8 @@ InitStatus CbmMvdClusterfinder::Init()
 
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
 
 
   return kSUCCESS;
@@ -208,15 +203,18 @@ void CbmMvdClusterfinder::Reset() { fCluster->Delete(); }
 void CbmMvdClusterfinder::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
-
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdClusterfinder::PrintParameters()
-{
+void CbmMvdClusterfinder::PrintParameters() const { LOG(info) << ParametersToString(); }
 
-  cout << "============================================================" << endl;
-  cout << "============== Parameters Clusterfinder ====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+// -----   Private method ParametersToString   -----------------------------
+std::string CbmMvdClusterfinder::ParametersToString() const
+{
+  std::stringstream ss;
+  ss << "============================================================" << endl;
+  ss << "============== Parameters Clusterfinder ====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

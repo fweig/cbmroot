@@ -28,7 +28,6 @@
 #include <map>       // for allocator, __map_i...
 #include <utility>   // for pair
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::ios_base;
@@ -109,7 +108,7 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
   CbmMvdCluster* cluster = 0;
 
   if (fDigiMan->IsPresent(ECbmModuleId::kMvd) || fInputCluster) {  //checks if data sources are available
-    if (fVerbose) cout << endl << "//----------------------------------------//" << endl;
+    if (fVerbose) LOG(debug) << "//----------------------------------------//";
     if (!fUseClusterfinder) {
       /*
       fDigiMan->GetNofDigis(ECbmModuleId::kMvd);
@@ -144,20 +143,20 @@ void CbmMvdHitfinder::Exec(Option_t* /*opt*/)
     //fDetector->SendInputCluster(fInputCluster);
 
 
-    if (fVerbose) cout << "Execute HitfinderPlugin Nr. " << fHitfinderPluginNr << endl;
+    if (fVerbose) LOG(debug) << "Execute HitfinderPlugin Nr. " << fHitfinderPluginNr;
 
 
     fDetector->Exec(fHitfinderPluginNr);
-    if (fVerbose) cout << "End Chain" << endl;
-    if (fVerbose) cout << "Start writing Hits" << endl;
+    if (fVerbose) LOG(debug) << "End Chain";
+    if (fVerbose) LOG(debug) << "Start writing Hits";
     fDetector->GetOutputArray(nTargetPlugin, fHits);
 
     //fDetector->GetMatchArray (nTargetPlugin, fTmpMatch);
     //fHits->AbsorbObjects(fDetector->GetOutputHits(), 0, fDetector->GetOutputHits()->GetEntriesFast() - 1);
 
-    //cout << "Total of " << fHits->GetEntriesFast() << " hits found" << endl;
-    if (fVerbose) cout << "Finished writing Hits" << endl;
-    if (fVerbose) cout << "//----------------------------------------//" << endl << endl;
+    //LOG(debug) << "Total of " << fHits->GetEntriesFast() << " hits found";
+    if (fVerbose) LOG(debug) << "Finished writing Hits";
+    if (fVerbose) LOG(debug) << "//----------------------------------------//";
     LOG(info) << "+ " << setw(20) << GetName() << ": Created: " << fHits->GetEntriesFast() << " hits in " << fixed
               << setprecision(6) << fTimer.RealTime() << " s";
   }
@@ -171,15 +170,12 @@ InitStatus CbmMvdHitfinder::Init()
 
   using namespace std;
 
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -247,10 +243,8 @@ InitStatus CbmMvdHitfinder::Init()
 
 
   // Screen output
-  cout << GetName() << " initialised with parameters: " << endl;
+  LOG(info) << GetName() << " initialised with parameters: ";
   //PrintParameters();
-  cout << "---------------------------------------------" << endl;
-
 
   return kSUCCESS;
 }
@@ -273,18 +267,19 @@ void CbmMvdHitfinder::Reset() { fHits->Delete(); }
 void CbmMvdHitfinder::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
-
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdHitfinder::PrintParameters()
+void CbmMvdHitfinder::PrintParameters() const { LOG(info) << ParametersToString(); }
+
+// -----   Private method ParametersToString   -----------------------------
+std::string CbmMvdHitfinder::ParametersToString() const
 {
-
-  using namespace std;
-
-  cout.setf(ios_base::fixed, ios_base::floatfield);
-  cout << "============================================================" << endl;
-  cout << "============== Parameters MvdHitfinder =====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+  std::stringstream ss;
+  ss.setf(std::ios_base::fixed, std::ios_base::floatfield);
+  ss << "============================================================" << endl;
+  ss << "============== Parameters MvdHitfinder =====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 

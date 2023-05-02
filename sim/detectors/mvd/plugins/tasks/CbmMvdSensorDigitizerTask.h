@@ -263,8 +263,8 @@ private:
 
 
   /** Print digitisation parameters **/
-  void PrintParameters();
-
+  void PrintParameters() const;
+  std::string ToString() const;
 
   /** Get MVD geometry parameters from database 
    **@value Number of MVD stations

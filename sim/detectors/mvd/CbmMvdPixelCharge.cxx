@@ -6,12 +6,6 @@
 
 #include <Logger.h>
 
-#include <iostream>
-
-
-using std::cout;
-using std::endl;
-
 // -------------------------------------------------------------------------
 Bool_t CbmMvdPixelCharge::TestXY(Int_t channelNrX, Int_t channelNrY)
 {

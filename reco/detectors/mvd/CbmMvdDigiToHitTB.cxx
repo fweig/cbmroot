@@ -31,7 +31,6 @@
 #include <iomanip>
 #include <iostream>
 
-using std::cout;
 using std::endl;
 using std::fixed;
 using std::setprecision;
@@ -107,15 +106,12 @@ void CbmMvdDigiToHitTB::Exec(Option_t* /*opt*/)
 // -----   Init   --------------------------------------------------------------
 InitStatus CbmMvdDigiToHitTB::Init()
 {
-  cout << "-I- " << GetName() << ": Initialisation..." << endl;
-  cout << endl;
-  cout << "---------------------------------------------" << endl;
-  cout << "-I- Initialising " << GetName() << " ...." << endl;
+  LOG(info) << GetName() << ": Initialisation...";
 
   // **********  RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) {
-    cout << "-E- " << GetName() << "::Init: No FairRootManager!" << endl;
+    LOG(error) << GetName() << "::Init: No FairRootManager!";
     return kFATAL;
   }
 
@@ -187,15 +183,18 @@ void CbmMvdDigiToHitTB::Reset() { fCluster->Delete(); }
 void CbmMvdDigiToHitTB::GetMvdGeometry() {}
 // -------------------------------------------------------------------------
 
-
 // -----   Private method PrintParameters   --------------------------------
-void CbmMvdDigiToHitTB::PrintParameters()
-{
+void CbmMvdDigiToHitTB::PrintParameters() const { LOG(info) << ParametersToString(); }
 
-  cout << "============================================================" << endl;
-  cout << "============== Parameters DigiToHit ====================" << endl;
-  cout << "============================================================" << endl;
-  cout << "=============== End Task ===================================" << endl;
+// -----   Private method ParametersTo String   -----------------------------
+std::string CbmMvdDigiToHitTB::ParametersToString() const
+{
+  std::stringstream ss;
+  ss << "============================================================" << endl;
+  ss << "============== Parameters DigiToHit ====================" << endl;
+  ss << "============================================================" << endl;
+  ss << "=============== End Task ===================================" << endl;
+  return ss.str();
 }
 // -------------------------------------------------------------------------
 
