@@ -22,6 +22,7 @@ class CbmTofDigi;
 #include "Math/Vector3Dfwd.h"
 
 // C++ Classes and includes
+#include <memory>
 #include <vector>
 
 #include <cmath>
