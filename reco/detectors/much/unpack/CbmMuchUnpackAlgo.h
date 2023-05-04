@@ -34,8 +34,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <utility>
 #include <set>
+#include <utility>
 
 class CbmMuchUnpackAlgo : public CbmRecoUnpackAlgo<CbmMuchDigi, CbmMuchDigi, CbmErrorMessage> {
 public:
@@ -102,7 +102,7 @@ public:
   */
   void SetParFileName(std::string sNewName) { fParFileName = sNewName; }
 
-  void SetInactiveChannel(uint32_t channel){  fInactiveChannels.insert(channel);}
+  void SetInactiveChannel(uint32_t channel) { fInactiveChannels.insert(channel); }
 
 protected:
   /**
@@ -333,8 +333,8 @@ protected:
   /** @brief Current µSlice time */
   uint64_t fMsStartTime = 0;
 
-  std::set<uint32_t> fInactiveChannels = {};  
-  
+  std::set<uint32_t> fInactiveChannels = {};
+
   uint64_t fMaskedNoisyHitsFromCbmMuchAddress = 0;
 
 private:

@@ -73,11 +73,11 @@ public:
   {
     fvChanMasks.emplace_back(FebChanMaskReco {uFeb, uChan, bMasked});
   }
-  
+
   /**
    * @brief Read Inactive Channel list based on CbmMuchAddress from a file.
   */
-  
+
   virtual std::pair<size_t, bool> ReadInactiveChannels();
 
   // Setters
@@ -149,8 +149,8 @@ protected:
 
   /// Parameter file name
   std::string fsParFileName = "mMuchPar.par";
-  TString fInactiveChannelFileName     = "";  
-  
+  TString fInactiveChannelFileName = "";
+
 private:
   ClassDef(CbmMuchUnpackConfig, 2)
 };

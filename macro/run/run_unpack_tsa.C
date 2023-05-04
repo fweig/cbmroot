@@ -273,7 +273,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     // muchconfig->MaskNoisyChannel(3, 56);
     //List of noisy channels *.txt file based on CbmMuchAddress is placed at the same location as par files
     //
-    std::string NoisyChannelFilePath = parfilesbasepathMuch + "mMuChNoisyChannelMarch2022.txt"; 
+    std::string NoisyChannelFilePath = parfilesbasepathMuch + "mMuChNoisyChannelMarch2022.txt";
     LOG(info) << "Noisy Channel File Name : " << NoisyChannelFilePath;
     muchconfig->SetNoisyChannelFile(NoisyChannelFilePath);
   }
