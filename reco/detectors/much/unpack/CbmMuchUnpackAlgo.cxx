@@ -996,7 +996,7 @@ bool CbmMuchUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
     //fMonitor->DrawCanvases();
   }
 
-  std::cout << "Total Number of Masked Addresses " << fMaskedNoisyHitsFromCbmMuchAddress << std::endl;
+  LOG(info) << "Total Number of Masked Addresses " << fMaskedNoisyHitsFromCbmMuchAddress;
   return true;
 }
 
