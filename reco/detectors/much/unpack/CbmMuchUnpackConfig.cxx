@@ -37,6 +37,19 @@ void CbmMuchUnpackConfig::InitAlgo()
 
   // Set the flags for duplicate digis rejections
   fAlgo->SetDuplicatesRejection(fbRejectDuplicateDigis, fbDupliWithoutAdc);
+  
+  // --- Read list of inactive channels
+  if (!fInactiveChannelFileName.IsNull()) {
+    LOG(info) << GetName() << ": Reading inactive channels from " << fInactiveChannelFileName;
+    auto result = ReadInactiveChannels();
+    if (!result.second) {
+      LOG(error) << GetName() << ": Error in reading from file! Task will be inactive.";
+      return;
+    }
+    //LOG(info) << GetName() << ": " << std::get<0>(result) << " lines read from file, " << fInactiveChannels.size()
+     //         << " channels set inactive";
+  }
+
 
   if (fMonitor) { fAlgo->SetMonitor(fMonitor); }
 
@@ -46,6 +59,7 @@ void CbmMuchUnpackConfig::InitAlgo()
   // Mask the noisy channels set by the user
   for (auto chmask : fvChanMasks)
     fAlgo->MaskNoisyChannel(chmask.uFeb, chmask.uChan, chmask.bMasked);
+    
 }
 
 // ---- chooseAlgo ----
@@ -68,6 +82,30 @@ std::shared_ptr<CbmMuchUnpackAlgo> CbmMuchUnpackConfig::chooseAlgo()
              << "::Init - chooseAlgo() - no algorithm created something went wrong. We can not work like this!";
   return nullptr;
 }
+
+
+// -----   Read list of inactive channels   ---------------------------------
+std::pair<size_t, bool> CbmMuchUnpackConfig::ReadInactiveChannels()
+{
+ 
+  if (fInactiveChannelFileName.IsNull()) return std::make_pair(0, true);
+ 
+  FILE* channelFile = fopen(fInactiveChannelFileName.Data(), "r");
+  if (channelFile == nullptr) return std::make_pair(0, false);
+ 
+  size_t nLines    = 0;
+  uint32_t channel = 0;
+  while (fscanf(channelFile, "%u", &channel) == 1) {
+    fAlgo->SetInactiveChannel(channel);
+    nLines++;
+  }
+  bool success = feof(channelFile);
+ 
+  fclose(channelFile);
+  LOG(info) << " Number of Noisy Channels in CbmAddress Format : " << nLines;
+  return std::make_pair(nLines, success);
+}
+// --------------------------------------------------------------------------
 
 
 ClassImp(CbmMuchUnpackConfig)

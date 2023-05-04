@@ -65,7 +65,14 @@ uint64_t CbmMuchUnpackAlgo::getFullTimeStamp(const uint16_t usRawTs)
 }
 
 // ---- init
-Bool_t CbmMuchUnpackAlgo::init() { return kTRUE; }
+Bool_t CbmMuchUnpackAlgo::init() { 
+	LOG(debug) << " Below are the list of addresses of noisy  channels ";
+	for (auto it = fInactiveChannels.begin(); it !=
+                             fInactiveChannels.end(); ++it)
+                             LOG(debug) << " " << *it;
+	
+	return kTRUE; 
+	}
 
 // ---- initDpbIdIndexMap ----
 void CbmMuchUnpackAlgo::initDpbIdIndexMap(CbmMuchUnpackPar* parset)
@@ -356,6 +363,7 @@ void CbmMuchUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t 
       }
     }
   }
+
 }
 
 // ---- MaskNoisyChannel ----
@@ -532,6 +540,16 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       if (usChan > 127) LOG(debug) << "ERROR !!! Channel in hit message is out of range  " << usChan;
       // uFebIdx is FEB position in the GEM and RPC
       const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, usChan);
+      
+      // Masking Noisy Channel. If Address is part of Inactive Channel List
+      if (fInactiveChannels.count(address)) {
+		  //Counting number of hits fall on noisy channel
+		  fMaskedNoisyHitsFromCbmMuchAddress++;
+		  return;
+		  }
+			
+      
+      
       //const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, uChanInFeb);
       LOG(debug) << "Created Much Address = " << address << " from fuCurrDpbIdx " << fuCurrDpbIdx << " Feb Id "
                  << uFebIdx << " Channnel Id " << uChanInFeb;
@@ -979,6 +997,8 @@ bool CbmMuchUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
     fMonitor->FillVectorSize(ts->index(), fOutputVec.size());
     //fMonitor->DrawCanvases();
   }
+ 
+  std::cout << "Total Number of Masked Addresses " << fMaskedNoisyHitsFromCbmMuchAddress << std::endl;
   return true;
 }
 

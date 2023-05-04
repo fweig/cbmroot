@@ -73,6 +73,12 @@ public:
   {
     fvChanMasks.emplace_back(FebChanMaskReco {uFeb, uChan, bMasked});
   }
+  
+  /**
+   * @brief Read Inactive Channel list based on CbmMuchAddress from a file.
+  */
+  
+  virtual std::pair<size_t, bool> ReadInactiveChannels();
 
   // Setters
   /**
@@ -110,6 +116,7 @@ public:
   void SetParFileName(std::string sNewName) { fsParFileName = sNewName; }
   void LoadParFileName() { fAlgo->SetParFileName(fsParFileName); }
 
+  void SetNoisyChannelFile(TString fileName) { fInactiveChannelFileName = fileName; }
 
 protected:
   /**
@@ -142,7 +149,8 @@ protected:
 
   /// Parameter file name
   std::string fsParFileName = "mMuchPar.par";
-
+  TString fInactiveChannelFileName     = "";  
+  
 private:
   ClassDef(CbmMuchUnpackConfig, 2)
 };

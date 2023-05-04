@@ -43,9 +43,9 @@ namespace cbm
         /// Lambda Benchmark Gold runs: 2454 - 2497 = 16/06/2022 - 18/06/2022
         sSetupName = "mcbm_beam_2022_06_16_gold";
       }
-      else if (2497 < ulRunId) {
+      else if (2610 < ulRunId) {
         /// Future runs, exception there to force implementation and support from users side
-        throw(std::invalid_argument("RunId bigger than latest run mapped (2497, mCBM 2022)! Please complete the map!"));
+        throw(std::invalid_argument("RunId bigger than latest run mapped (2610, mCBM 2022)! Please complete the map!"));
       }
 
       return sSetupName;
