@@ -35,8 +35,8 @@ public:
   /** Information not to be changed
    */
 
-  virtual Double_t GetMass() { return 0.1396; }  /// Mass hypothesis
-  virtual Bool_t IsElectron() { return 0; }      /// Is it electron
+  virtual Double_t GetMass() const { return 0.1396; }  /// Mass hypothesis
+  virtual Bool_t IsElectron() const { return 0; }      /// Is it electron
 
   /** I/O parameters for extrapolation routines
    */

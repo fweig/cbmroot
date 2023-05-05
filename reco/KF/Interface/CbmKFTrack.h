@@ -53,16 +53,16 @@ public:
 
   void SetPID(Int_t pidHypo);
 
-  Double_t* GetTrack() { return fT; }
-  Double_t* GetCovMatrix() { return fC; }
-  Double_t& GetRefChi2() { return fChi2; }
-  Int_t& GetRefNDF() { return fNDF; }
-  Double_t GetMass() { return fMass; }
-  Bool_t IsElectron() { return fIsElectron; }
-  Int_t GetNOfHits() { return fHits.size(); }
-  CbmKFHit* GetHit(Int_t i) { return fHits[i]; }
+  Double_t* GetTrack() override { return fT; }
+  Double_t* GetCovMatrix() override { return fC; }
+  Double_t& GetRefChi2() override { return fChi2; }
+  Int_t& GetRefNDF() override { return fNDF; }
+  Double_t GetMass() const override { return fMass; }
+  Bool_t IsElectron() const override { return fIsElectron; }
+  Int_t GetNOfHits() override { return fHits.size(); }
+  CbmKFHit* GetHit(Int_t i) override { return fHits[i]; }
 
-  ClassDef(CbmKFTrack, 1)
+  ClassDefOverride(CbmKFTrack, 1)
 };
 
 #endif

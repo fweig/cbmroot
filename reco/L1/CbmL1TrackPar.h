@@ -12,12 +12,12 @@
 struct CbmL1TrackPar : public CbmKFTrackInterface {
 public:
   CbmL1TrackPar() : chi2(0), NDF(0), mass(0), is_electron(0) {}
-  double* GetTrack() { return T; }
-  double* GetCovMatrix() { return C; }
-  double& GetRefChi2() { return chi2; }
-  int& GetRefNDF() { return NDF; }
-  double GetMass() const { return mass; }
-  bool IsElectron() const { return is_electron; }
+  double* GetTrack() override { return T; }
+  double* GetCovMatrix() override { return C; }
+  double& GetRefChi2() override { return chi2; }
+  int& GetRefNDF() override { return NDF; }
+  double GetMass() const override { return mass; }
+  bool IsElectron() const override { return is_electron; }
 
   double T[L1TrackPar::kNparTr];
   double C[L1TrackPar::kNparCov];

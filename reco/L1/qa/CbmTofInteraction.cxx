@@ -51,7 +51,7 @@ void CbmTofInteraction::AddPoint(const CbmTofPoint* pPoint)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmTofInteraction::Clear()
+void CbmTofInteraction::Clear(Option_t*)
 {
   fTrackID    = -1;
   fDetectorID = -1;

@@ -41,7 +41,7 @@ public:
   void AddPoint(const CbmTofPoint* pPoint);
 
   /// \brief Clears the instance
-  void Clear();
+  void Clear(Option_t*);
 
   /// \brief Sets parameters from a particular TOF MC-point
   /// \param pPoint Pointer to TOF point
