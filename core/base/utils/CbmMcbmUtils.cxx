@@ -1,4 +1,4 @@
-gh /* Copyright (C) 2022 Facility for Antiproton and Ion Research in Europe, Darmstadt
+/* Copyright (C) 2022 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer] */
 
@@ -6,7 +6,7 @@ gh /* Copyright (C) 2022 Facility for Antiproton and Ion Research in Europe, Dar
 
 #include <stdexcept>
 
-  namespace cbm
+namespace cbm
 {
   namespace mcbm
   {
