@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Facility for Antiproton and Ion Research in Europe, Darmstadt
+gh /* Copyright (C) 2022 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer] */
 
@@ -39,10 +39,11 @@ namespace cbm
         /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022 (Lambda Benchmark but mTOF troubles)
         sSetupName = "mcbm_beam_2022_05_23_nickel";
       }
-      else if (2454 <= ulRunId && ulRunId <= 2497) {
+      else if (2454 <= ulRunId && ulRunId <= 2610) {
         /// Lambda Benchmark Gold runs: 2454 - 2497 = 16/06/2022 - 18/06/2022
         sSetupName = "mcbm_beam_2022_06_16_gold";
       }
+      /// High Rate Gold runs with GEMs in Acceptance: 2498 - 2610 = 18/06/2022 - 20/06/2022
       else if (2610 < ulRunId) {
         /// Future runs, exception there to force implementation and support from users side
         throw(std::invalid_argument("RunId bigger than latest run mapped (2610, mCBM 2022)! Please complete the map!"));
