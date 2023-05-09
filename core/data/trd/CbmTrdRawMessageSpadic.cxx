@@ -82,5 +82,3 @@ void CbmTrdRawMessageSpadic::SetSample(std::int16_t value, std::uint8_t pos)
 
   return;
 }
-
-ClassImp(CbmTrdRawMessageSpadic)

@@ -11,14 +11,12 @@
 #ifndef CbmTrdRawMessageSpadic_H
 #define CbmTrdRawMessageSpadic_H
 
-#include <Rtypes.h>      // for ClassDef
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/vector.hpp>
 
 #include <cstdint>
-#include <vector>   // for vector
+#include <vector>  // for vector
 
 namespace Spadic
 {
@@ -125,7 +123,7 @@ public:
   void IncNrSamples() { fNrSamples++; }
 
   /** Set the full time in nanoseconds */
-  void SetTime(Double_t setvalue) { fFullTime = static_cast<std::uint64_t>(setvalue / 62.5); }
+  void SetTime(double setvalue) { fFullTime = static_cast<std::uint64_t>(setvalue / 62.5); }
 
   /** Returns the value of the sample with the highest value. */
   int16_t GetMaxAdc();
@@ -153,9 +151,6 @@ public:
     ar& fFullTime;
     ar& fSamples;
   }
-
-  // Root Class Def Macro
-  ClassDef(CbmTrdRawMessageSpadic, 2);
 };
 
 #endif

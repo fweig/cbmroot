@@ -35,6 +35,7 @@ set(PUBLIC_DEPENDENCIES
 
 set(PRIVATE_DEPENDENCIES
   CbmBase
+  CbmTrdBase
   FairLogger::FairLogger
   FairRoot::Online
   external::yaml-cpp

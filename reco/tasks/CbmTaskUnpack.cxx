@@ -11,9 +11,13 @@
 #include "CbmDigiManager.h"
 #include "CbmDigiTimeslice.h"
 #include "CbmSourceTs.h"
+#include "CbmTrdParSetAsic.h"
+#include "CbmTrdParSpadic.h"
 
 #include "MicrosliceDescriptor.hpp"
 
+#include <FairParAsciiFileIo.h>
+#include <FairParamList.h>
 #include <FairRunOnline.h>
 #include <Logger.h>
 
@@ -42,6 +46,9 @@ using cbm::algo::UnpackStsElinkPar;
 using cbm::algo::UnpackStsPar;
 using cbm::algo::UnpackTofElinkPar;
 using cbm::algo::UnpackTofPar;
+using cbm::algo::UnpackTrdCrobPar;
+using cbm::algo::UnpackTrdElinkPar;
+using cbm::algo::UnpackTrdPar;
 
 // -----   Constructor   -----------------------------------------------------
 CbmTaskUnpack::CbmTaskUnpack() : FairTask("Unpack") {}
@@ -191,6 +198,25 @@ void CbmTaskUnpack::Exec(Option_t*)
       numCompUsed++;
     }  // system T0
 
+    // system TRD
+    if (systemId == fles::SubsystemIdentifier::TRD) {
+      const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoTrd.find(equipmentId);
+      assert(algoIt != fAlgoTrd.end());
+
+      // The current algorithm works for the TRD data format version XXX used in 2022.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      //assert(timeslice->descriptor(comp, 0).sys_ver == XXX);  To do: add something sensible here
+
+      // --- Microslice loop
+      numMsInComp =
+        MsLoop(timeslice, algoIt->second, comp, &fTimeslice->fData.fTrd.fDigis, &numBytesInComp, &numDigisInComp);
+
+      numCompUsed++;
+    }  // system TRD
+
     compTimer.Stop();
     LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << " input size "
                << numBytesInComp << " bytes, "
@@ -212,6 +238,8 @@ void CbmTaskUnpack::Exec(Option_t*)
             [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
   std::sort(std::execution::par_unseq, fTimeslice->fData.fT0.fDigis.begin(), fTimeslice->fData.fT0.fDigis.end(),
             [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(std::execution::par_unseq, fTimeslice->fData.fTrd.fDigis.begin(), fTimeslice->fData.fTrd.fDigis.end(),
+            [](CbmTrdDigi digi1, CbmTrdDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #else
   std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
@@ -221,6 +249,8 @@ void CbmTaskUnpack::Exec(Option_t*)
             [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
   std::sort(fTimeslice->fData.fT0.fDigis.begin(), fTimeslice->fData.fT0.fDigis.end(),
             [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(fTimeslice->fData.fTrd.fDigis.begin(), fTimeslice->fData.fTrd.fDigis.end(),
+            [](CbmTrdDigi digi1, CbmTrdDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #endif
 
   // --- Timeslice log
@@ -360,6 +390,29 @@ InitStatus CbmTaskUnpack::Init()
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }
 
+  InitTrdReadoutConfig();
+  auto equipIdsTrd = fTrdConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsTrd) {
+
+    std::unique_ptr<UnpackTrdPar> par(new UnpackTrdPar());
+    const size_t numCrobs = fTrdConfig.GetNumCrobs(equip);
+    for (size_t crob = 0; crob < numCrobs; crob++) {
+
+      UnpackTrdCrobPar crobPar;
+      const size_t numElinks = fTrdConfig.GetNumElinks(equip, crob);
+      for (size_t elink = 0; elink < numElinks; elink++) {
+
+        UnpackTrdElinkPar elinkPar;
+        auto addresses        = fTrdConfig.Map(equip, crob, elink);
+        elinkPar.fAddress     = addresses.first;   // Asic address for this elink
+        elinkPar.fChanAddress = addresses.second;  // Channel addresses for this elink
+        crobPar.fElinkParams.push_back(elinkPar);
+      }
+      par->fCrobParams.push_back(crobPar);
+    }
+    fAlgoTrd[equip].SetParams(std::move(par));
+    LOG(info) << "--- Configured equipment " << equip << " with " << numCrobs << " crobs";
+  }
 
   LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
@@ -372,6 +425,63 @@ InitStatus CbmTaskUnpack::Init()
   return kSUCCESS;
 }
 // ----------------------------------------------------------------------------
+
+// -----   Initialisation   ---------------------------------------------------
+void CbmTaskUnpack::InitTrdReadoutConfig()
+{
+  std::string trdparfile = Form("%s/parameters/trd/trd_v21d_mcbm.asic.par", std::getenv("VMCWORKDIR"));
+
+  CbmTrdParSetAsic trdpar;
+
+  FairParAsciiFileIo asciiInput;
+  if (asciiInput.open(trdparfile.data())) { trdpar.init(&asciiInput); }
+
+  FairParamList parlist;
+  trdpar.putParams(&parlist);
+
+  std::vector<int> moduleIds(trdpar.GetNrOfModules());
+  parlist.fill("ModuleId", moduleIds.data(), moduleIds.size());
+
+  std::map<size_t, std::map<size_t, std::map<size_t, size_t>>> addressMap;  //[criId][crobId][elinkId] -> asicAddress
+  std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, size_t>>>>
+    channelMap;  //[criId][crobId][elinkId][chanId] -> chanAddress
+
+  for (auto module : moduleIds) {
+    CbmTrdParSetAsic* moduleSet = (CbmTrdParSetAsic*) trdpar.GetModuleSet(module);
+
+    // Skip entries for "Fasp" modules in .asic.par file
+    if (moduleSet->GetAsicType() != static_cast<int32_t>(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)) continue;
+
+    std::vector<int> asicAddresses;
+    moduleSet->GetAsicAddresses(&asicAddresses);
+
+    for (auto address : asicAddresses) {
+      CbmTrdParSpadic* asicPar = (CbmTrdParSpadic*) moduleSet->GetAsicPar(address);
+      const uint16_t criId     = asicPar->GetCriId();
+      const uint8_t crobId     = asicPar->GetCrobId();
+      const uint8_t elinkId    = asicPar->GetElinkId(0);
+      if (elinkId >= 98) { continue; }  // Don't add not connected asics to the map
+      addressMap[criId][crobId][elinkId]     = address;
+      addressMap[criId][crobId][elinkId + 1] = address;
+
+      const uint8_t numChans = 16;
+      for (uint8_t chan = 0; chan < numChans; chan++) {
+        auto asicChannelId                       = (elinkId % 2) == 0 ? chan : chan + numChans;
+        auto chanAddr                            = asicPar->GetChannelAddresses().at(asicChannelId);
+        channelMap[criId][crobId][elinkId][chan] = chanAddr;
+      }
+      for (uint8_t chan = 0; chan < numChans; chan++) {
+        auto asicChannelId                           = (elinkId + 1 % 2) == 0 ? chan : chan + numChans;
+        auto chanAddr                                = asicPar->GetChannelAddresses().at(asicChannelId);
+        channelMap[criId][crobId][elinkId + 1][chan] = chanAddr;
+      }
+      LOG(debug) << "componentID " << asicPar->GetComponentId() << " "
+                 << "address " << address << " key " << criId << " " << unsigned(crobId) << " " << unsigned(elinkId);
+    }
+  }
+  fTrdConfig.Init(addressMap, channelMap);
+  LOG(debug) << fTrdConfig.PrintReadoutMap();
+}
 
 
 ClassImp(CbmTaskUnpack)

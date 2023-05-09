@@ -15,7 +15,9 @@ set(SRCS
   detectors/tof/UnpackTof.cxx
   detectors/bmon/BmonReadoutConfig.cxx
   detectors/bmon/UnpackBmon.cxx
- )
+  detectors/trd/TrdReadoutConfig.cxx
+  detectors/trd/UnpackTrd.cxx
+)
 
 add_library(Algo SHARED ${SRCS})
 
@@ -28,6 +30,7 @@ target_include_directories(Algo
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/much
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/tof
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/bmon
+         ${CMAKE_CURRENT_SOURCE_DIR}/detectors/trd
  )
 
 target_link_libraries(Algo PUBLIC OnlineData ROOT::GenVector INTERFACE FairLogger::FairLogger external::fles_ipc)

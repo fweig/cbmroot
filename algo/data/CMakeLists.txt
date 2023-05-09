@@ -17,6 +17,7 @@ set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/much/CbmMuchAddress.cxx
 
   ${CMAKE_SOURCE_DIR}/core/data/trd/CbmTrdDigi.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/trd/CbmTrdRawMessageSpadic.cxx
 
   ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofAddress.cxx
