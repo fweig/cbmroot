@@ -39,6 +39,8 @@ struct InitTaskError : std::runtime_error {
 };
 
 using namespace std;
+using cbm::algo::UnpackMuchElinkPar;
+using cbm::algo::UnpackMuchPar;
 using cbm::algo::UnpackStsElinkPar;
 using cbm::algo::UnpackStsPar;
 
@@ -59,16 +61,16 @@ catch (InitTaskError& e) {
 
 Bool_t CbmDevUnpack::InitAlgos()
 {
-  // --- Common parameters for all components
-  uint32_t numChansPerAsic   = 128;  // R/O channels per ASIC
-  uint32_t numAsicsPerModule = 16;   // Number of ASICs per module
+  // --- Common parameters for all components for STS
+  uint32_t numChansPerAsicSts   = 128;  // R/O channels per ASIC for STS
+  uint32_t numAsicsPerModuleSts = 16;   // Number of ASICs per module for STS
 
-  // Create one algorithm per component and configure it with parameters
-  auto equipIds = fStsConfig.GetEquipmentIds();
-  for (auto& equip : equipIds) {
+  // Create one algorithm per component for STS and configure it with parameters
+  auto equipIdsSts = fStsConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsSts) {
     std::unique_ptr<UnpackStsPar> par(new UnpackStsPar());
-    par->fNumChansPerAsic   = numChansPerAsic;
-    par->fNumAsicsPerModule = numAsicsPerModule;
+    par->fNumChansPerAsic   = numChansPerAsicSts;
+    par->fNumAsicsPerModule = numAsicsPerModuleSts;
     const size_t numElinks  = fStsConfig.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackStsElinkPar elinkPar;
@@ -87,6 +89,25 @@ Bool_t CbmDevUnpack::InitAlgos()
 
   LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
+  LOG(info) << "==================================================";
+  std::cout << std::endl;
+
+  // Create one algorithm per component for MUCH and configure it with parameters
+  auto equipIdsMuch = fMuchConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsMuch) {
+    std::unique_ptr<UnpackMuchPar> par(new UnpackMuchPar());
+    const size_t numElinks = fMuchConfig.GetNumElinks(equip);
+    for (size_t elink = 0; elink < numElinks; elink++) {
+      UnpackMuchElinkPar elinkPar;
+      elinkPar.fAddress    = fMuchConfig.Map(equip, elink);  // Vector of MUCH addresses for this elink
+      elinkPar.fTimeOffset = 0.;
+      par->fElinkParams.push_back(elinkPar);
+    }
+    fAlgoMuch[equip].SetParams(std::move(par));
+    LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
+  }
+
+  LOG(info) << "--- Configured " << fAlgoMuch.size() << " unpacker algorithms for MUCH.";
   LOG(info) << "==================================================";
   std::cout << std::endl;
 
@@ -197,26 +218,34 @@ CbmDigiTimeslice CbmDevUnpack::DoUnpack(const fles::Timeslice& timeslice)
   // Output digi timeslice
   CbmDigiTimeslice digiTs;
 
-  // --- Timer
-  TStopwatch timer;
-  TStopwatch compTimer;
-  timer.Start();
-
   // --- Timeslice properties
   const uint64_t tsIndex = timeslice.index();
   const uint64_t tsTime  = timeslice.start_time();
   const uint64_t numComp = timeslice.num_components();
-  uint64_t numCompUsed   = 0;
+
+  // --- Timer
+  TStopwatch timer;
+  timer.Start();
 
   // --- Counters
-  size_t numMs    = 0;
-  size_t numBytes = 0;
-  size_t numDigis = 0;
+  size_t numMs         = 0;
+  size_t numBytes      = 0;
+  size_t numDigis      = 0;
+  uint64_t numCompUsed = 0;
 
   // ---  Component loop
   for (uint64_t comp = 0; comp < numComp; comp++) {
 
+    // --- Component log
+    size_t numBytesInComp = 0;
+    size_t numDigisInComp = 0;
+    uint64_t numMsInComp  = 0;
+
+    TStopwatch compTimer;
+    compTimer.Start();
+
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice.descriptor(comp, 0).sys_id);
+
     if (systemId == fles::SubsystemIdentifier::STS) {
       const uint16_t equipmentId = timeslice.descriptor(comp, 0).eq_id;
       const auto algoIt          = fAlgoSts.find(equipmentId);
@@ -228,13 +257,8 @@ CbmDigiTimeslice CbmDevUnpack::DoUnpack(const fles::Timeslice& timeslice)
       // algorithms depending on the version.
       assert(timeslice.descriptor(comp, 0).sys_ver == 0x20);
 
-      // --- Component log
-      size_t numBytesInComp = 0;
-      size_t numDigisInComp = 0;
-      compTimer.Start();
-
       // --- Microslice loop
-      uint64_t numMsInComp = timeslice.num_microslices(comp);
+      numMsInComp = timeslice.num_microslices(comp);
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
         const auto msDescriptor = timeslice.descriptor(comp, mslice);
         const auto msContent    = timeslice.content(comp, mslice);
@@ -249,22 +273,54 @@ CbmDigiTimeslice CbmDevUnpack::DoUnpack(const fles::Timeslice& timeslice)
         digiTs.fData.fSts.fDigis.insert(it, result.first.begin(), result.first.end());
         numDigisInComp += result.first.size();
       }
-
-      compTimer.Stop();
-      LOG(debug) << "CbmDevUnpack::DoUnpack(): Component " << comp << ", microslices " << numMsInComp << " input size "
-                 << numBytesInComp << " bytes, "
-                 << ", digis " << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
       numCompUsed++;
-      numBytes += numBytesInComp;
-      numDigis += numDigisInComp;
-      numMs += numMsInComp;
-    }
+    }  // system STS
 
+    if (systemId == fles::SubsystemIdentifier::MUCH) {
+      const uint16_t equipmentId = timeslice.descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoMuch.find(equipmentId);
+      assert(algoIt != fAlgoMuch.end());
+
+      // The current algorithm works for the MUCH data format version 0x20 used in 2021.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      assert(timeslice.descriptor(comp, 0).sys_ver == 0x20);
+
+      // --- Microslice loop
+      numMsInComp = timeslice.num_microslices(comp);
+      for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
+        const auto msDescriptor = timeslice.descriptor(comp, mslice);
+        const auto msContent    = timeslice.content(comp, mslice);
+        numBytesInComp += msDescriptor.size;
+        auto result = (algoIt->second)(msContent, msDescriptor, tsTime);
+        LOG(debug1) << "CbmDevUnpack::DoUnpack(): Component " << comp << ", microslice " << mslice << ", digis "
+                    << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
+                    << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
+                    << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
+                    << " | ";
+        const auto it = digiTs.fData.fMuch.fDigis.end();
+        digiTs.fData.fMuch.fDigis.insert(it, result.first.begin(), result.first.end());
+        numDigisInComp += result.first.size();
+      }
+      numCompUsed++;
+    }  // system MUCH
+
+
+    compTimer.Stop();
+    LOG(debug) << "CbmDevUnpack::DoUnpack(): Component " << comp << ", microslices " << numMsInComp << " input size "
+               << numBytesInComp << " bytes, "
+               << ", digis " << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
+    numBytes += numBytesInComp;
+    numDigis += numDigisInComp;
+    numMs += numMsInComp;
   }  //# component
 
   // --- Sorting of output digis. Is required by both digi trigger and event builder.
   std::sort(digiTs.fData.fSts.fDigis.begin(), digiTs.fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(digiTs.fData.fMuch.fDigis.begin(), digiTs.fData.fMuch.fDigis.end(),
+            [](CbmMuchDigi digi1, CbmMuchDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 
   // --- Timeslice log
   timer.Stop();

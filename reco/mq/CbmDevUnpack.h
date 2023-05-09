@@ -26,7 +26,9 @@
 #include <map>
 #include <vector>
 
+#include "MuchReadoutConfig.h"
 #include "StsReadoutConfig.h"
+#include "UnpackMuch.h"
 #include "UnpackSts.h"
 
 class TimesliceMetaData;
@@ -40,6 +42,9 @@ public:
 private:
   std::map<uint16_t, cbm::algo::UnpackSts> fAlgoSts = {};
   cbm::algo::StsReadoutConfig fStsConfig {};
+
+  std::map<uint16_t, cbm::algo::UnpackMuch> fAlgoMuch = {};
+  cbm::algo::MuchReadoutConfig fMuchConfig {};
 
   /// message queues
   std::string fsChannelNameDataInput  = "ts-request";
