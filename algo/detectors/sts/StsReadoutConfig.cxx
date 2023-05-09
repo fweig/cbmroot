@@ -48,6 +48,18 @@ namespace cbm::algo
   // ------------------------------------------------------------------------------------
 
 
+  // ---   Total number of elinks for STS   ---------------------------------------------
+  size_t StsReadoutConfig::GetNumElinks()
+  {
+    size_t result = 0;
+    for (auto& entry : fReadoutMap) {
+      result += entry.second.size();
+    }
+    return result;
+  }
+  // ------------------------------------------------------------------------------------
+
+
   // ---  Initialise the mapping structure   --------------------------------------------
   void StsReadoutConfig::Init()
   {

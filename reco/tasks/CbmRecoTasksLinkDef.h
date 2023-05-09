@@ -21,6 +21,7 @@
 #pragma link C++ class CbmTaskTofHitFinder + ;
 #pragma link C++ class CbmTaskTriggerDigi + ;
 #pragma link C++ class CbmTaskUnpack + ;
+#pragma link C++ class CbmTaskUnpackXpu + ;
 
 
 #endif /* __CINT__ */

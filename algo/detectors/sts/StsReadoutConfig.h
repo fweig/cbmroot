@@ -50,6 +50,12 @@ namespace cbm::algo
     size_t GetNumElinks(uint16_t equipmentId);
 
 
+    /** @brief Total number of elinks for STS
+     ** @return Number of elinks
+     **/
+    size_t GetNumElinks();
+
+
     /** @brief API: Mapping from component and elink to address and ASIC number
      ** @param equipId     Equipment identifier (component)
      ** @param elink       Elink number within component

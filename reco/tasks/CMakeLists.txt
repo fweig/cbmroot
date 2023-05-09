@@ -15,6 +15,7 @@ set(SRCS
   CbmTaskTriggerDigi.cxx
   CbmTaskTofHitFinder.cxx
   CbmTaskUnpack.cxx
+  CbmTaskUnpackXpu.cxx
 )
 
 
