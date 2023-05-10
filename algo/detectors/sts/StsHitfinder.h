@@ -9,11 +9,10 @@
 
 #include <xpu/device.h>
 
+#include "gpu/DeviceImage.h"
+
 namespace cbm::algo
 {
-  struct GpuOnline {
-  };  // xpu image identifier, has to be moved when more steps are moved to GPU
-
   // Block sizes / other compile time constants that need tuning
   enum GpuConstants
   {
@@ -35,16 +34,16 @@ namespace cbm::algo
   };
 
   // Kernel declarations
-  XPU_EXPORT_KERNEL(GpuOnline, SortDigis);
+  XPU_EXPORT_KERNEL(GPUReco, SortDigis);
   // Combine substeps for finding clusters into a single kernel
-  XPU_EXPORT_KERNEL(GpuOnline, FindClustersSingleStep);
-  XPU_EXPORT_KERNEL(GpuOnline, CalculateOffsets);
-  XPU_EXPORT_KERNEL(GpuOnline, FindClusters);
-  XPU_EXPORT_KERNEL(GpuOnline, FindClustersBasic);
-  XPU_EXPORT_KERNEL(GpuOnline, CalculateClusters);
-  XPU_EXPORT_KERNEL(GpuOnline, CalculateClustersBasic);
-  XPU_EXPORT_KERNEL(GpuOnline, SortClusters);
-  XPU_EXPORT_KERNEL(GpuOnline, FindHits);
+  XPU_EXPORT_KERNEL(GPUReco, FindClustersSingleStep);
+  XPU_EXPORT_KERNEL(GPUReco, CalculateOffsets);
+  XPU_EXPORT_KERNEL(GPUReco, FindClusters);
+  XPU_EXPORT_KERNEL(GPUReco, FindClustersBasic);
+  XPU_EXPORT_KERNEL(GPUReco, CalculateClusters);
+  XPU_EXPORT_KERNEL(GPUReco, CalculateClustersBasic);
+  XPU_EXPORT_KERNEL(GPUReco, SortClusters);
+  XPU_EXPORT_KERNEL(GPUReco, FindHits);
 
 }  // namespace cbm::algo
 
@@ -413,7 +412,7 @@ namespace cbm::algo
   };
 
   // StsHitfinder lives in constant memory
-  XPU_EXPORT_CONSTANT(GpuOnline, StsHitfinderGpu, TheStsHitfinder);
+  XPU_EXPORT_CONSTANT(GPUReco, StsHitfinderGpu, TheStsHitfinder);
 
 }  // namespace cbm::algo
 

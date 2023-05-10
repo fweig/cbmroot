@@ -6,9 +6,6 @@
 
 using namespace cbm::algo;
 
-
-XPU_IMAGE(GpuOnline);
-
 XPU_CONSTANT(TheStsHitfinder);
 
 XPU_KERNEL(SortDigis, StsSortDigiSmem)
