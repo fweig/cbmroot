@@ -5,7 +5,6 @@
 #ifndef CBM_ALGO_UNPACKSTSXPU_H
 #define CBM_ALGO_UNPACKSTSXPU_H 1
 
-
 #include "CbmStsDigi.h"
 
 #include "MicrosliceDescriptor.hpp"
@@ -22,6 +21,7 @@
 
 #include "StsReadoutConfig.h"
 #include "StsXyterMessage.h"
+#include "gpu/DeviceImage.h"
 
 
 namespace cbm::algo
@@ -107,7 +107,7 @@ namespace cbm::algo
 
 
     // Run unpacker for each microslice
-    XPU_EXPORT_KERNEL(StsXpuUnpack, Unpack, UnpackStsXpuPar* params, UnpackStsXpuElinkPar* elinkParams,
+    XPU_EXPORT_KERNEL(GPUReco, Unpack, UnpackStsXpuPar* params, UnpackStsXpuElinkPar* elinkParams,
                       stsxyter::Message* content, uint64_t* msMessCount, uint64_t* msMessOffset, uint64_t* msStartTime,
                       uint32_t* msCompIdx, CbmStsDigi* digisOut, const uint64_t currentTsTime, int NElems);
 

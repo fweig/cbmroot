@@ -15,8 +15,6 @@
 using std::unique_ptr;
 using std::vector;
 
-XPU_IMAGE(cbm::algo::UnpackStsXpu::StsXpuUnpack);  // Call exactly once per library
-
 XPU_BLOCK_SIZE_1D(cbm::algo::UnpackStsXpu::Unpack, 32);
 
 namespace cbm::algo
