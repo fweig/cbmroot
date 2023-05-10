@@ -146,11 +146,7 @@ void CbmTrdUnpackFaspAlgo::SetCrobMapping(const std::map<uint32_t, uint16_t[NCRO
   for (auto& entry : map) {
     uint16_t mod_id = entry.first;
     for (uint8_t crob_id = 0; crob_id < NCROBMOD; crob_id++) {
-      uint16_t eq_id = entry.second[crob_id];
-      if (fCompMap->find(eq_id) != fCompMap->end()) {
-        LOG(error) << GetName() << "::SetCrobMapping: multiple entries for eq_id " << (int) eq_id << " found.";
-        return;
-      }
+      uint16_t eq_id     = entry.second[crob_id];
       (*fCompMap)[eq_id] = std::make_pair(mod_id, crob_id);
     }
   }
