@@ -16,3 +16,5 @@ templateClassImp(CbmQaCmpDrawer);
 
 template class CbmQaCmpDrawer<TH1F>;
 template class CbmQaCmpDrawer<TProfile>;
+template class CbmQaCmpDrawer<TH2F>;
+template class CbmQaCmpDrawer<TProfile2D>;

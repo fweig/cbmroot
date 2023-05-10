@@ -2,13 +2,15 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer] */
 
-/// \file   CbmL1DetectorID.h
-/// \brief  Implementation of L1DetectorID enum class for CBM
-/// \author S.Zharko
-/// \data   01.12.2022
+/// @file   CbmL1DetectorID.h
+/// @brief  Implementation of L1DetectorID enum class for CBM
+/// @author S.Zharko
+/// @since  01.12.2022
 
 #ifndef CbmL1DetectorID_h
 #define CbmL1DetectorID_h 1
+
+#include "L1EArray.h"
 
 /// Enumeration for the detector subsystems used in L1 tracking
 /// It is important for the subsystems to be specified in the actual order. The order is used
@@ -20,8 +22,15 @@ enum class L1DetectorID
   kSts,
   kMuch,
   kTrd,
-  kTof
+  kTof,
+  kEND  ///< End of enumeration
 };
+
+/// @brief  Alias to array, indexed by L1DetectorID enum
+/// @note   To be used only in CBM-specific code
+template<typename T>
+using CbmCaDetIdArr_t = L1EArray<L1DetectorID, T>;
+
 
 /// @brief Enumeration for different tracking running modes
 enum class ECbmTrackingMode

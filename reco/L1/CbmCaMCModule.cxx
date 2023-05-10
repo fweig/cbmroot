@@ -41,9 +41,11 @@
 // ** Action definition functions **
 // *********************************
 
+using cbm::ca::MCModule;
+
 // ---------------------------------------------------------------------------------------------------------------------
 //
-bool CbmCaMCModule::InitRun()
+bool MCModule::InitRun()
 try {
   LOG(info) << "CA MC Module: initializing CA tracking Monte-Carlo module... ";
 
@@ -125,7 +127,7 @@ catch (const std::logic_error& error) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
+void MCModule::InitEvent(CbmEvent* /*pEvent*/)
 {
   // Fill a set of file and event indexes
   fFileEventIDs.clear();
@@ -153,18 +155,15 @@ void CbmCaMCModule::InitEvent(CbmEvent* /*pEvent*/)
     aTrk.SortPointIndexes(
       [&](const int& iPl, const int& iPr) { return fpMCData->GetPoint(iPl).GetZ() < fpMCData->GetPoint(iPr).GetZ(); });
   }
-
-  // ------ Match reconstructed and MC data
-  this->MatchRecoAndMC();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::ProcessEvent(CbmEvent*) {}
+void MCModule::ProcessEvent(CbmEvent*) {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::InitTrackInfo()
+void MCModule::InitTrackInfo()
 {
   // ----- Initialize stations arrangement and hit indexes
   fpMCData->InitTrackInfo(*fpvQaHits);
@@ -207,7 +206,7 @@ void CbmCaMCModule::InitTrackInfo()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::Finish() {}
+void MCModule::Finish() {}
 
 
 // **********************************
@@ -216,7 +215,7 @@ void CbmCaMCModule::Finish() {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchRecoAndMC()
+void MCModule::MatchRecoAndMC()
 {
   this->MatchPointsAndHits();
   this->MatchRecoAndMCTracks();
@@ -227,13 +226,14 @@ void CbmCaMCModule::MatchRecoAndMC()
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHitExt) const
+int MCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHitExt) const
 {
   int iPoint = -1;
   if (fpMvdHitMatches) {
     const auto* hitMatch = dynamic_cast<CbmMatch*>(fpMvdHitMatches->At(iHitExt));
     assert(hitMatch);
-    if (hitMatch->GetNofLinks() > 0 && hitMatch->GetLink(0).GetIndex() < fvNofPointsUsed[int(L1DetectorID::kMvd)]) {
+    if (hitMatch->GetNofLinks() > 0
+        && hitMatch->GetLink(0).GetIndex() < fpMCData->GetNofPointsUsed(L1DetectorID::kMvd)) {
       iPoint = hitMatch->GetLink(0).GetIndex();
     }
   }
@@ -243,7 +243,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHitExt) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHitExt) const
+int MCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHitExt) const
 {
   int iPoint     = -1;
   const auto* sh = dynamic_cast<CbmStsHit*>(fpStsHits->At(iHitExt));
@@ -288,7 +288,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHitExt) const
 
       if (link.GetWeight() > bestWeight) {
         bestWeight = link.GetWeight();
-        iPoint     = fpMCData->FindInternalPointIndex(CalcGlobMCPointIndex(iIndex, L1DetectorID::kSts), iEvent, iFile);
+        iPoint     = fpMCData->FindInternalPointIndex(L1DetectorID::kSts, iIndex, iEvent, iFile);
         assert(iPoint != -1);
       }
     }
@@ -299,13 +299,13 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kSts>(int iHitExt) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHitExt) const
+int MCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHitExt) const
 {
   int iPoint               = -1;
   const auto* hitMatchMuch = dynamic_cast<CbmMatch*>(fpMuchHitMatches->At(iHitExt));
   if (hitMatchMuch) {
     for (int iLink = 0; iLink < hitMatchMuch->GetNofLinks(); ++iLink) {
-      if (hitMatchMuch->GetLink(iLink).GetIndex() < fvNofPointsUsed[int(L1DetectorID::kMuch)]) {
+      if (hitMatchMuch->GetLink(iLink).GetIndex() < fpMCData->GetNofPointsUsed(L1DetectorID::kMuch)) {
         int iMc = hitMatchMuch->GetLink(iLink).GetIndex();
         if (iMc < 0) {
           iPoint = -1;
@@ -313,7 +313,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHitExt) const
         }
         int iFile  = hitMatchMuch->GetLink(iLink).GetFile();
         int iEvent = hitMatchMuch->GetLink(iLink).GetEntry();
-        iPoint     = fpMCData->FindInternalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kMuch), iEvent, iFile);
+        iPoint     = fpMCData->FindInternalPointIndex(L1DetectorID::kMuch, iMc, iEvent, iFile);
         assert(iPoint != -1);
       }
     }
@@ -324,7 +324,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHitExt) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
+int MCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
 {
   int iPoint           = -1;
   const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTrdHitMatches->At(iHitExt));
@@ -332,14 +332,14 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
     int iMC = -1;
     if (hitMatch->GetNofLinks() > 0) {
       iMC = hitMatch->GetLink(0).GetIndex();
-      assert(iMC >= 0 && iMC < fvNofPointsUsed[int(L1DetectorID::kTrd)]);
+      assert(iMC >= 0 && iMC < fpMCData->GetNofPointsUsed(L1DetectorID::kTrd));
 
       int iMc = hitMatch->GetLink(0).GetIndex();
       if (iMc < 0) return iPoint;
       int iFile  = hitMatch->GetLink(0).GetFile();
       int iEvent = hitMatch->GetLink(0).GetEntry();
 
-      iPoint = fpMCData->FindInternalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kTrd), iEvent, iFile);
+      iPoint = fpMCData->FindInternalPointIndex(L1DetectorID::kTrd, iMc, iEvent, iFile);
       assert(iPoint != -1);
     }
   }
@@ -349,7 +349,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
+int MCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
 {
   int iPoint           = -1;
   const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTofHitMatches->At(iHitExt));
@@ -361,7 +361,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
       if (iMc < 0) return iPoint;
 
       assert(iMc >= 0 && iMc < fpTofPoints->Size(iFile, iEvent));
-      int iPointPrelim = fpMCData->FindInternalPointIndex(CalcGlobMCPointIndex(iMc, L1DetectorID::kTof), iEvent, iFile);
+      int iPointPrelim = fpMCData->FindInternalPointIndex(L1DetectorID::kTof, iMc, iEvent, iFile);
       if (iPointPrelim == -1) { continue; }
       iPoint = iPointPrelim;
     }
@@ -371,7 +371,7 @@ int CbmCaMCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchPointsAndHits()
+void MCModule::MatchPointsAndHits()
 {
   // Clear point indexes of each hit
   // NOTE: at the moment only the best point is stored to the hit, but we keep the possibility for keeping many
@@ -420,7 +420,7 @@ void CbmCaMCModule::MatchPointsAndHits()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::MatchRecoAndMCTracks()
+void MCModule::MatchRecoAndMCTracks()
 {
   for (int iTre = 0; iTre < int(fpvRecoTracks->size()); ++iTre) {
     auto& trkRe = (*fpvRecoTracks)[iTre];
@@ -454,7 +454,7 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
 
       if (double(nHitsTrkMc) > double(nHitsTrkRe) * maxPurity) { maxPurity = double(nHitsTrkMc) / double(nHitsTrkRe); }
 
-      ca::tools::MCTrack& trkMc = fpMCData->GetTrack(iTmc);
+      ::ca::tools::MCTrack& trkMc = fpMCData->GetTrack(iTmc);
 
       // Match reconstructed and MC tracks, if purity with this MC track passes the threshold
       if (double(nHitsTrkMc) >= CbmL1Constants::MinPurity * double(nHitsTrkRe)) {
@@ -480,7 +480,7 @@ void CbmCaMCModule::MatchRecoAndMCTracks()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::SetDetector(L1DetectorID detID, bool flag)
+void MCModule::SetDetector(L1DetectorID detID, bool flag)
 {
   switch (detID) {
     case L1DetectorID::kMvd: fbUseMvd = flag; break;
@@ -488,6 +488,7 @@ void CbmCaMCModule::SetDetector(L1DetectorID detID, bool flag)
     case L1DetectorID::kMuch: fbUseMuch = flag; break;
     case L1DetectorID::kTrd: fbUseTrd = flag; break;
     case L1DetectorID::kTof: fbUseTof = flag; break;
+    case L1DetectorID::kEND: break;
   }
 }
 
@@ -497,7 +498,7 @@ void CbmCaMCModule::SetDetector(L1DetectorID detID, bool flag)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::CheckInit() const
+void MCModule::CheckInit() const
 {
   // Check parameters
   if (!fpParameters.get()) { throw std::logic_error("Tracking parameters object was not defined"); }
@@ -551,9 +552,8 @@ void CbmCaMCModule::CheckInit() const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* pPoints)
+void MCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* pPoints)
 {
-  fvNofPointsUsed[int(L1DetectorID::kTof)] = 0;
   for (const auto& key : fFileEventIDs) {
     int iFile  = key.first;
     int iEvent = key.second;
@@ -586,7 +586,7 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
     }
 
     int nPointsEvent = pPoints->Size(iFile, iEvent);
-    // loop over all TOF points in event and ffvNofPointsUsed[int(L1DetectorID::kMvd)]ile
+    // loop over all TOF points in event and file
     for (int iP = 0; iP < nPointsEvent; ++iP) {
       if (!vbTofPointMatched[iP]) { continue; }  // iP was not matched
 
@@ -627,14 +627,14 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
       if (iStActive < 0) { continue; }
       for (int iTrk = 0; iTrk < (int) vTofPointToTrack[iStLocGeo].size(); ++iTrk) {
         if (vTofPointToTrack[iStLocGeo][iTrk] < 0) { continue; }
-        ca::tools::MCPoint aPoint;
+        ::ca::tools::MCPoint aPoint;
         if (FillMCPoint<L1DetectorID::kTof>(vTofPointToTrack[iStLocGeo][iTrk], iEvent, iFile, aPoint)) {
           aPoint.SetStationId(iStActive);
-          aPoint.SetExternalId(CalcGlobMCPointIndex(vTofPointToTrack[iStLocGeo][iTrk], L1DetectorID::kTof));
+          int iExtGlob = fpMCData->GetPointGlobExtIndex(L1DetectorID::kTof, vTofPointToTrack[iStLocGeo][iTrk]);
+          aPoint.SetExternalId(iExtGlob);
           int iPInt = fpMCData->GetNofPoints();  // assign an index of point in internal container
           if (aPoint.GetTrackId() > -1) { fpMCData->GetTrack(aPoint.GetTrackId()).AddPointIndex(iPInt); }
           fpMCData->AddPoint(aPoint);
-          ++fvNofPointsUsed[int(L1DetectorID::kTof)];
         }
       }  // loop over tracks: end
     }    // loop over geometry stations: end
@@ -643,23 +643,32 @@ void CbmCaMCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* 
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::ReadMCPoints()
+void MCModule::ReadMCPoints()
 {
   int nPointsEstimated = 5 * fpMCData->GetNofTracks() * fpParameters->GetNstationsActive();
   fpMCData->ReserveNofPoints(nPointsEstimated);
 
-  // ----- Initialise the number of points
-  std::fill(fvNofPointsOrig.begin(), fvNofPointsOrig.end(), 0);
-
+  int nPointsMvd  = 0;
+  int nPointsSts  = 0;
+  int nPointsMuch = 0;
+  int nPointsTrd  = 0;
+  int nPointsTof  = 0;
   for (const auto& key : fFileEventIDs) {
     int iFile  = key.first;
     int iEvent = key.second;
-    if (fbUseMvd) { fvNofPointsOrig[int(L1DetectorID::kMvd)] += fpMvdPoints->Size(iFile, iEvent); }
-    if (fbUseSts) { fvNofPointsOrig[int(L1DetectorID::kSts)] += fpStsPoints->Size(iFile, iEvent); }
-    if (fbUseMuch) { fvNofPointsOrig[int(L1DetectorID::kMuch)] += fpMuchPoints->Size(iFile, iEvent); }
-    if (fbUseTrd) { fvNofPointsOrig[int(L1DetectorID::kTrd)] += fpTrdPoints->Size(iFile, iEvent); }
-    if (fbUseTof) { fvNofPointsOrig[int(L1DetectorID::kTof)] += fpTofPoints->Size(iFile, iEvent); }
+
+    if (fbUseMvd) { nPointsMvd += fpMvdPoints->Size(iFile, iEvent); }
+    if (fbUseSts) { nPointsSts += fpStsPoints->Size(iFile, iEvent); }
+    if (fbUseMuch) { nPointsMuch += fpMuchPoints->Size(iFile, iEvent); }
+    if (fbUseTrd) { nPointsTrd += fpTrdPoints->Size(iFile, iEvent); }
+    if (fbUseTof) { nPointsTof += fpTofPoints->Size(iFile, iEvent); }
   }
+
+  fpMCData->SetNofPointsOrig(L1DetectorID::kMvd, nPointsMvd);
+  fpMCData->SetNofPointsOrig(L1DetectorID::kSts, nPointsSts);
+  fpMCData->SetNofPointsOrig(L1DetectorID::kMuch, nPointsMuch);
+  fpMCData->SetNofPointsOrig(L1DetectorID::kTrd, nPointsTrd);
+  fpMCData->SetNofPointsOrig(L1DetectorID::kTof, nPointsTof);
 
   // ----- Read MC points in MVD, STS, MuCh, TRD and TOF
   if (fbUseMvd) { this->ReadMCPointsForDetector<L1DetectorID::kMvd>(fpMvdPoints); }
@@ -671,7 +680,7 @@ void CbmCaMCModule::ReadMCPoints()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmCaMCModule::ReadMCTracks()
+void MCModule::ReadMCTracks()
 {
   // ----- Total number of tracks
   int nTracksTot = 0;
@@ -686,7 +695,7 @@ void CbmCaMCModule::ReadMCTracks()
     int iEvent      = key.second;
     auto pEvtHeader = dynamic_cast<FairMCEventHeader*>(fpMCEventHeader->Get(iFile, iEvent));
     if (!pEvtHeader) {
-      LOG(fatal) << "CbmCaMCModule: event header is not found for file " << iFile << " and event " << iEvent;
+      LOG(fatal) << "cbm::ca::MCModule: event header is not found for file " << iFile << " and event " << iEvent;
     }
     double eventTime = fpMCEventList->GetEventTime(iEvent, iFile);
 
@@ -695,11 +704,11 @@ void CbmCaMCModule::ReadMCTracks()
     for (int iTrkExt = 0; iTrkExt < nTracks; ++iTrkExt) {
       CbmMCTrack* pExtMCTrk = dynamic_cast<CbmMCTrack*>(fpMCTracks->Get(iFile, iEvent, iTrkExt));
       if (!pExtMCTrk) {
-        LOG(warn) << "CbmCaMCModule: track with (iF, iE, iT) = " << iFile << ' ' << iEvent << ' ' << iTrkExt
+        LOG(warn) << "cbm::ca::MCModule: track with (iF, iE, iT) = " << iFile << ' ' << iEvent << ' ' << iTrkExt
                   << " not found";
       }
       // Create a CbmL1MCTrack
-      ca::tools::MCTrack aTrk;
+      ::ca::tools::MCTrack aTrk;
 
       aTrk.SetId(fpMCData->GetNofTracks());  // assign current number of tracks read so far as an ID of a new track
       aTrk.SetExternalId(iTrkExt);           // external index of track is its index from CbmMCTrack objects container
@@ -722,7 +731,7 @@ void CbmCaMCModule::ReadMCTracks()
       aTrk.SetMass(pExtMCTrk->GetMass());
 
       // The charge in CbmMCTrack is similarly to mass defined from ROOT PDG data base. The value of charge there is
-      // given in the units of 1/3e (absolute value of d-quark charge). In ca::tools::MCTrack we recalculate this
+      // given in the units of 1/3e (absolute value of d-quark charge). In ::ca::tools::MCTrack we recalculate this
       // value to the units of e.
       aTrk.SetCharge(pExtMCTrk->GetCharge() / 3.);
 

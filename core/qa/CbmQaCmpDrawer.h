@@ -160,6 +160,21 @@ void CbmQaCmpDrawer<Obj>::Draw(Option_t* /*opt*/) const
       (*it)->Draw(it == fvpObjects.begin() ? "" : "same");
     }
   }
+  else if constexpr (std::is_base_of_v<TH2, Obj> || std::is_base_of_v<TH3, Obj>) {
+    int nObjects = fvpObjects.size();
+    int nRows    = static_cast<int>(std::sqrt(nObjects));
+    int nCols    = nObjects / nRows;
+    if (nCols * nRows < nObjects) { ++nCols; }
+    gPad->Divide(nCols, nRows);
+
+    for (auto it = fvpObjects.begin(); it != fvpObjects.end(); ++it) {
+      if constexpr (std::is_base_of_v<TH2, Obj>) { (*it)->Draw("colz"); }
+      else {
+        (*it)->Draw();
+      }
+    }
+    return;  // do not draw legend
+  }
 
   // Draw legend
   double legX0 = kLegRightBound - kLegEntryWidth;

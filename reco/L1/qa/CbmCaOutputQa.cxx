@@ -9,6 +9,7 @@
 
 #include "CbmCaOutputQa.h"
 
+#include "CbmCaMCModule.h"
 #include "CbmQaCanvas.h"
 
 #include "FairRootManager.h"
@@ -21,6 +22,7 @@
 
 using ca::tools::Debugger;
 using ::ca::tools::MCTrack;
+using cbm::ca::MCModule;
 using cbm::ca::OutputQa;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -377,6 +379,10 @@ InitStatus OutputQa::InitCanvases()
       MakeCanvas<CbmQaCanvas>("mc_yMC", "MC reconstructable track MC rapidity", kCXSIZEPX * 3, kCYSIZEPX * 2);
     DrawTrackDistributions(pc_mc_yMC, [&](ETrackType t) -> TH1F* { return fvpTrackHistograms[t]->fph_mc_yMC; });
 
+    // MC rapidity vs. MC momentum
+    auto* pc_mc_pMC_yMC =
+      MakeCanvas<CbmQaCanvas>("mc_pMC_yMC", "MC track MC mom. vs. rapidity ", kCXSIZEPX * 3, kCYSIZEPX * 2);
+    DrawSetOf<TH2F>(vCmpTypesGeneral, [&](ETrackType t) -> TH2F* { return fvpTrackHistograms[t]->fph_reco_pMC_yMC; });
 
     // **  Efficiencies  **
 
@@ -386,6 +392,31 @@ InitStatus OutputQa::InitCanvases()
 
     auto* pc_eff_yMC = MakeCanvas<CbmQaCanvas>("eff_yMC", "Tracking Eff. vs. MC rapidity", kCXSIZEPX * 3, kCYSIZEPX);
     DrawTrackEfficiens(pc_eff_yMC, [&](ETrackType t) -> TProfile* { return fvpTrackHistograms[t]->fph_eff_yMC; });
+
+    auto* pc_eff_thetaMC =
+      MakeCanvas<CbmQaCanvas>("eff_thetaMC", "Tracking Eff. vs. MC polar angle", kCXSIZEPX * 3, kCYSIZEPX);
+    DrawTrackEfficiens(pc_eff_thetaMC,
+                       [&](ETrackType t) -> TProfile* { return fvpTrackHistograms[t]->fph_eff_thetaMC; });
+
+    auto* pc_eff_phiMC =
+      MakeCanvas<CbmQaCanvas>("eff_phiMC", "Tracking Eff. vs. MC azimuthal angle", kCXSIZEPX * 3, kCYSIZEPX);
+    DrawTrackEfficiens(pc_eff_phiMC, [&](ETrackType t) -> TProfile* { return fvpTrackHistograms[t]->fph_eff_phiMC; });
+
+    auto* pc_eff_etaMC =
+      MakeCanvas<CbmQaCanvas>("eff_etaMC", "Tracking Eff. vs. MC pseudorapidity", kCXSIZEPX * 3, kCYSIZEPX);
+    DrawTrackEfficiens(pc_eff_etaMC, [&](ETrackType t) -> TProfile* { return fvpTrackHistograms[t]->fph_eff_etaMC; });
+
+
+    // ** Pulls and residuals **
+    // NOTE: stored in a subdirectory for a given track type and point type
+    for (int iType = 0; iType < ETrackType::kEND; ++iType) {
+      if (fvbTrackTypeOn[iType] && fvpTrackHistograms[iType]->IsMCUsed()) {
+        fvpTrackHistograms[iType]->fpFitQaFirstHit->CreateResidualPlot();
+        fvpTrackHistograms[iType]->fpFitQaFirstHit->CreatePullPlot();
+        fvpTrackHistograms[iType]->fpFitQaLastHit->CreateResidualPlot();
+        fvpTrackHistograms[iType]->fpFitQaLastHit->CreatePullPlot();
+      }
+    }
   }
 
   return kSUCCESS;
@@ -436,7 +467,7 @@ InitStatus OutputQa::InitDataBranches()
 
   // Initialize MC module
   if (IsMCUsed()) {
-    if (!fpMCModule.get()) { fpMCModule = std::make_unique<CbmCaMCModule>(fVerbose, fPerformanceMode); }
+    if (!fpMCModule.get()) { fpMCModule = std::make_unique<MCModule>(fVerbose, fPerformanceMode); }
     fpMCModule->SetDetector(L1DetectorID::kMvd, fbUseMvd);
     fpMCModule->SetDetector(L1DetectorID::kSts, fbUseSts);
     fpMCModule->SetDetector(L1DetectorID::kMuch, fbUseMuch);
@@ -699,17 +730,38 @@ InitStatus OutputQa::InitTimeSlice()
   int nHits       = 0;
   int nRecoTracks = 0;
 
+  // Read MC tracks and points
+  if (IsMCUsed()) {
+    fpMCModule->InitEvent(nullptr);
+    nMCPoints = fMCData.GetNofPoints();
+    nMCTracks = fMCData.GetNofTracks();
+  }
+
   // Read reconstructed input
   fpTSReader->InitTimeSlice();
   nHits       = fvHits.size();
   nRecoTracks = fvRecoTracks.size();
 
-  if (IsMCUsed()) {
-    // Read MC information
-    fpMCModule->InitEvent(nullptr);
-    nMCPoints = fMCData.GetNofPoints();
-    nMCTracks = fMCData.GetNofTracks();
+  static bool bDo = true;
+  if (bDo) {
+    for (int iP = 0; iP < nMCPoints; ++iP) {
+      const auto& point = fMCData.GetPoint(iP);
+      LOG(info) << iP << ' ' << (int) point.GetDetectorId() << ' ' << point.GetStationId();
+    }
+
+    for (int iH = 0; iH < nHits; ++iH) {
+      const auto& hit = fvHits[iH];
+      LOG(info) << iH << ' ' << (int) hit.GetDetectorType() << ' ' << hit.GetStationId();
+    }
+    bDo = false;
   }
+
+  for (const auto& hit : fvHits) {
+    assert(hit.GetMCPointIndexes().size() < 2);
+  }
+
+  // Match tracks and points
+  if (IsMCUsed()) { fpMCModule->MatchRecoAndMC(); }
 
   LOG_IF(info, fVerbose > 1) << fName << ": Data sample consists of " << nHits << " hits, " << nRecoTracks
                              << " reco tracks, " << nMCTracks << " MC tracks, " << nMCPoints << " MC points";
@@ -728,7 +780,7 @@ void OutputQa::ReadParameters(const char* filename)
   manager.ReadParametersObject(filename);
   manager.SendParameters(*fpParameters);
 
-  LOG(info) << fpParameters->ToString(0);
+  LOG(info) << fpParameters->ToString(5);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

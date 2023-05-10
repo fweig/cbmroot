@@ -38,6 +38,7 @@
 #include "FairDetector.h"
 #include "FairRootManager.h"
 #include "FairTask.h"
+#include "Logger.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -269,8 +270,8 @@ public:
       case L1DetectorID::kMuch: return "MuCh";
       case L1DetectorID::kTrd: return "TRD";
       case L1DetectorID::kTof: return "TOF";
+      case L1DetectorID::kEND: break;
     }
-    // TODO: Probably, we should provide default with throwing exception here... (S.Zharko)
     return "";
   }
 

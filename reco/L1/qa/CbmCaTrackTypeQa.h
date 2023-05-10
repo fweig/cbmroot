@@ -149,8 +149,10 @@ namespace cbm::ca
     TH1F* fph_reco_pt       = nullptr;  ///< Transverse momentum over charge of reconstructed tracks
     TH1F* fph_reco_phi      = nullptr;  ///< Azimuthal angle of reconstructed tracks
     TH1F* fph_reco_theta    = nullptr;  ///< Polar angle of reconstructed tracks
+    TH2F* fph_reco_theta_phi = nullptr;  ///< Polar angle vs. azimuthal angle of reconstructed tracks
     TH1F* fph_reco_tx       = nullptr;  ///< Slope along x-axis of reconstructed tracks
     TH1F* fph_reco_ty       = nullptr;  ///< Slope along y-axis of reconstructed tracks
+    TH2F* fph_reco_ty_tx     = nullptr;  ///< Slope along x-axis vs y-axis of reconstructed tracks
     TH1F* fph_reco_eta      = nullptr;  ///< Pseudo-rapidity of reconstructed tracks
     TH1F* fph_reco_fhitR    = nullptr;  ///< Distance of the first hit from z-axis for reconstructed tracks
     TH1F* fph_reco_nhits    = nullptr;  ///< Hit number of reconstructed tracks
@@ -170,15 +172,17 @@ namespace cbm::ca
     TH1F* fph_reco_tyMC    = nullptr;  ///< Slope along y-axis of reconstructed tracks
 
     // ** MC track distributions **
-    TH1F* fph_mc_pMC     = nullptr;  ///< MC total momentum over charge of MC tracks
-    TH1F* fph_mc_yMC     = nullptr;  ///< MC rapidity of MC tracks
-    TH1F* fph_mc_etaMC   = nullptr;  ///< MC pseudo-rapidity of MC tracks
-    TH2F* fph_mc_pMC_yMC = nullptr;  ///< MC total momentum vs. MC rapidity of MC tracks
-    TH1F* fph_mc_ptMC    = nullptr;  ///< Transverse momentum over charge of reconstructed tracks
-    TH1F* fph_mc_phiMC   = nullptr;  ///< Azimuthal angle of reconstructed tracks
-    TH1F* fph_mc_thetaMC = nullptr;  ///< Polar angle of reconstructed tracks
-    TH1F* fph_mc_txMC    = nullptr;  ///< Slope along x-axis of reconstructed tracks
-    TH1F* fph_mc_tyMC    = nullptr;  ///< Slope along y-axis of reconstructed tracks
+    TH1F* fph_mc_pMC           = nullptr;  ///< MC total momentum over charge of MC tracks
+    TH1F* fph_mc_yMC           = nullptr;  ///< MC rapidity of MC tracks
+    TH1F* fph_mc_etaMC         = nullptr;  ///< MC pseudo-rapidity of MC tracks
+    TH2F* fph_mc_pMC_yMC       = nullptr;  ///< MC total momentum vs. MC rapidity of MC tracks
+    TH1F* fph_mc_ptMC          = nullptr;  ///< Transverse momentum over charge of MC tracks
+    TH1F* fph_mc_phiMC         = nullptr;  ///< Azimuthal angle of MC tracks
+    TH1F* fph_mc_thetaMC       = nullptr;  ///< Polar angle of MC tracks
+    TH2F* fph_mc_thetaMC_phiMC = nullptr;  ///< Polar angle vs. azimuthal angle of MC tracks
+    TH1F* fph_mc_txMC          = nullptr;  ///< Slope along x-axis of MC tracks
+    TH1F* fph_mc_tyMC          = nullptr;  ///< Slope along y-axis of MC tracks
+    TH2F* fph_mc_tyMC_txMC     = nullptr;  ///< Slope along x-axis vs y-axis of MC tracks
 
     // ** Efficiencies **
     TProfile* fph_eff_int     = nullptr;  ///< Integrated efficiency
@@ -186,8 +190,12 @@ namespace cbm::ca
     TProfile* fph_eff_yMC     = nullptr;  ///< Efficiency vs. MC rapidity
     TProfile* fph_eff_ptMC    = nullptr;  ///< Efficiency vs. MC transverse momentum
     TProfile* fph_eff_thetaMC = nullptr;  ///< Efficiency vs. MC polar angle
+    TProfile* fph_eff_etaMC   = nullptr;  ///< Efficiency vs. MC pseudorapidity
     TProfile* fph_eff_phiMC   = nullptr;  ///< Efficiency vs. MC azimuthal angle
     TProfile* fph_eff_nhitsMC = nullptr;  ///< Efficiency vs. MC number of hits
+    TProfile* fph_eff_txMC    = nullptr;  ///< Efficiency vs. MC slope along x-axis
+    TProfile* fph_eff_tyMC    = nullptr;  ///< Efficiency vs. MC slope along y-axis
+
 
     TProfile2D* fph_eff_thetaMC_phiMC = nullptr;  ///< Efficiency vs. MC theta and MC phi
     TProfile2D* fph_eff_pMC_yMC       = nullptr;  ///< Efficiency vs. MC momentum and MC rapidity

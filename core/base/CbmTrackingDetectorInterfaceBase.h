@@ -95,8 +95,7 @@ public:
 
   /// Technical flag: true - all downcasts are done with dynamic_cast followed by checks for nullptr (increases
   //  computing time, better for debug), false - all downcasts are done with static_cast without sanity checks
-  //  (decreases computting time, but can cause bugs)
-
+  //  (decreases computing time, but can cause bugs)
   static constexpr bool kUseDynamicCast {true};
 
 

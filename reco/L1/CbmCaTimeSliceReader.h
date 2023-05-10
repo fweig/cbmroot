@@ -151,7 +151,7 @@ namespace cbm::ca
     /// @param  detID  Id of detector
     /// @param  flag   Flag: true - detector is used
     /// @note Should be called before this->Init()
-    void SetDetector(L1DetectorID detID, bool flag = true);
+    void SetDetector(L1DetectorID detID, bool flag = true) { fvbUseDet[detID] = flag; }
 
   private:
     /// @brief Reads hits for a given detector subsystem
@@ -173,13 +173,8 @@ namespace cbm::ca
     void StoreHitRecord(const HitRecord& hitRecord);
 
 
-    // Flags for detector subsystems being used
-    bool fbUseMvd     = false;  ///< is MVD used
-    bool fbUseSts     = false;  ///< is STS used
-    bool fbUseMuch    = false;  ///< is MuCh used
-    bool fbUseTrd     = false;  ///< is TRD used
-    bool fbUseTof     = false;  ///< is TOF used
     bool fbReadTracks = true;   ///< flag to read reconstructed tracks from reco.root
+
 
     // Pointers to the tracking detector interfaces
     CbmTrackingDetectorInterfaceBase* fpMvdInterface  = nullptr;
@@ -197,6 +192,8 @@ namespace cbm::ca
     TClonesArray* fpBrTrdHits  = nullptr;  ///< Input branch for TRD hits ("TrdHit")
     TClonesArray* fpBrTofHits  = nullptr;  ///< Input branch for TOF hits ("TofHit")
 
+    CbmCaDetIdArr_t<TClonesArray*> fvpBrHits = {nullptr};  ///< Input branch for hits
+
     // Branches for reconstructed tracks. The input at the moment (as for 27.02.2023) depends on the selected
     // tracking mode. For simulations in CBM, the CA tracking is used only in STS + MVD detectors. In this case
     // the reconstructed tracks are saved to the "StsTrack" branch as CbmStsTrack objects. For mCBM, the tracks from
@@ -206,7 +203,6 @@ namespace cbm::ca
     TClonesArray* fpBrMuchTracks = nullptr;  ///< Input branch for reconstructed MuCh tracks ("MuchTrack")
     TClonesArray* fpBrTrdTracks  = nullptr;  ///< Input branch for reconstructed TRD tracks ("TrdTrack")
     TClonesArray* fpBrTofTracks  = nullptr;  ///< Input branch for reconstructed TOF tracks ("TofTrack")
-
 
     // Pointers to output data containers
     L1Vector<CbmL1HitId>* fpvHitIds                  = nullptr;  ///< Pointer to array of hit index objects
@@ -223,6 +219,9 @@ namespace cbm::ca
     L1Vector<int> vHitTrdIds {"CbmCaTimeSliceReader::vHitTrdIds"};
     L1Vector<int> vHitTofIds {"CbmCaTimeSliceReader::vHitTofIds"};
 
+    CbmCaDetIdArr_t<int> fvNofHitsTotal = {0};      ///< Total hit number in detector
+    CbmCaDetIdArr_t<int> fvNofHitsUsed  = {0};      ///< Number of used hits in detector
+    CbmCaDetIdArr_t<bool> fvbUseDet     = {false};  ///< Flag: is detector subsystem used
 
     // Additional
     ECbmTrackingMode fTrackingMode;  ///< Tracking mode
@@ -232,8 +231,7 @@ namespace cbm::ca
     int fNofHitKeys  = 0;  ///< Recorded number of hit keys
     int fFirstHitKey = 0;  ///< First index of hit key for the detector subsystem
 
-    std::array<int, L1Constants::size::kMaxNdetectors + 1> fvHitFirstIndexDet = {
-      0};  ///< First index of hit in detector
+    std::array<int, L1Constants::size::kMaxNdetectors + 1> fvHitFirstIndexDet = {0};  ///< First hit index in detector
   };
 }  // namespace cbm::ca
 

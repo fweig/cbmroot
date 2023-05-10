@@ -26,6 +26,8 @@ MCData::MCData() {}
 MCData::MCData(const MCData& other)
   : fvPoints(other.fvPoints)
   , fvTracks(other.fvTracks)
+  , fvNofPointsOrig(other.fvNofPointsOrig)
+  , fvNofPointsUsed(other.fvNofPointsUsed)
   , fmPointLinkMap(other.fmPointLinkMap)
   , fmTrackLinkMap(other.fmTrackLinkMap)
 {
@@ -60,25 +62,12 @@ void MCData::Swap(MCData& other) noexcept
 {
   std::swap(fvPoints, other.fvPoints);
   std::swap(fvTracks, other.fvTracks);
+  std::swap(fvNofPointsOrig, other.fvNofPointsOrig);
+  std::swap(fvNofPointsUsed, other.fvNofPointsUsed);
   std::swap(fmPointLinkMap, other.fmPointLinkMap);
   std::swap(fmTrackLinkMap, other.fmTrackLinkMap);
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void MCData::AddPoint(const MCPoint& point)
-{
-  fmPointLinkMap[point.GetLinkKey()] = point.GetId();
-  fvPoints.push_back(point);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void MCData::AddTrack(const MCTrack& track)
-{
-  fmTrackLinkMap[track.GetLinkKey()] = track.GetId();
-  fvTracks.push_back(track);
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //

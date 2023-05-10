@@ -26,7 +26,7 @@
 
 namespace cbm::ca
 {
-  /// @brief Enumeration of track category
+  /// @brief Enumeration fors track category
   enum ETrackType
   {
     kAll,        ///< all tracks
@@ -235,7 +235,7 @@ namespace cbm::ca
     ECbmTrackingMode fTrackingMode = ECbmTrackingMode::kSTS;  ///< Tracking mode
 
     std::unique_ptr<TimeSliceReader> fpTSReader       = nullptr;  ///< Reader of the time slice
-    std::unique_ptr<CbmCaMCModule> fpMCModule         = nullptr;  ///< MC module
+    std::unique_ptr<cbm::ca::MCModule> fpMCModule     = nullptr;  ///< MC module
     std::shared_ptr<L1IODataManager> fpDataManager    = nullptr;  ///< Data manager
     std::shared_ptr<::ca::tools::Debugger> fpDebugger = nullptr;  ///< Debugger
     std::shared_ptr<L1Parameters> fpParameters        = nullptr;  ///< Tracking parameters object

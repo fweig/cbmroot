@@ -12,7 +12,10 @@
 
 #include "CbmQaIO.h"
 
+#include <array>
+
 #include "L1Constants.h"
+#include "L1EArray.h"
 #include "L1Field.h"
 #include "L1Fit.h"
 #include "L1Vector.h"
@@ -29,9 +32,36 @@ class CbmL1HitDebugInfo;
 class TFolder;
 class TH1F;
 class TProfile;
+class CbmQaCanvas;
 
 namespace cbm::ca
 {
+  /// TODO: SZh 02.05.2023: Move ETrackParType to another class and apply it everywhere to track parameters
+  /// @brief Enumeration for track parameter type
+  enum class ETrackParType
+  {
+    kX,         ///< x-position
+    kY,         ///< y-position
+    kTX,        ///< slope along x-axis
+    kTY,        ///< slope along y-axis
+    kQP,        ///< charge over total momentum
+    kTIME,      ///< time
+    kVI,        ///< inverse speed
+    kEND,       ///< end of enumeration
+    kBEGIN = 0  ///< begin of enumeration
+  };
+
+  /// @brief Prefix increment operator for ETrackParType
+  ETrackParType operator++(ETrackParType& type);
+
+  /// @brief Postfix increment operator for ETrackParType
+  ETrackParType operator++(ETrackParType& type, int);
+
+
+  /// @brief Alias to array, indexed with ETrackParType enumeration
+  template<typename T>
+  using TrackParArray_t = L1EArray<ETrackParType, T>;
+
   /// @brief Set of histograms to monitor track parameters
   ///
   /// Class provides histograms to monitor track fit parameters at a selected z-coordinate.
@@ -79,11 +109,37 @@ namespace cbm::ca
     /// @param title  Title of fit distributions
     void SetTitle(const char* title) { fsTitle = title; }
 
+    /// @brief Fit histograms
+    void FitHistograms() {}
+
+    /// @brief Creates residuals plot
+    CbmQaCanvas* CreateResidualPlot();
+
+    /// @brief Creates pulls plot
+    CbmQaCanvas* CreatePullPlot();
+
+    /// @brief Creates resolutionis plot
+    CbmQaCanvas* CreateResolutionPlot() { return nullptr; }
+
+    /// @brief Sets properties for a residual histogram
+    /// @param type   Type of track parameter
+    /// @param nBins  Number of bins
+    /// @param lo     Lower boundary
+    /// @param up     Upper boundary
+    void SetResidualHistoProperties(ETrackParType type, int nBins, double lo, double up);
+
+    /// @brief Sets properties for a pull histogram
+    /// @param type   Type of track parameter
+    /// @param nBins  Number of bins
+    /// @param lo     Lower boundary
+    /// @param up     Upper boundary
+    void SetPullHistoProperties(ETrackParType type, int nBins, double lo, double up);
+
     // ************************
     // ** List of histograms **
     // ************************
 
-    // ** Residuals **
+
     TH1F* fph_res_x  = nullptr;  ///< Residual of x-coordinate [cm]
     TH1F* fph_res_y  = nullptr;  ///< Residual of y-coordinate [cm]
     TH1F* fph_res_tx = nullptr;  ///< Residual of slope along x-axis
@@ -102,66 +158,64 @@ namespace cbm::ca
     TH1F* fph_pull_vi = nullptr;  ///< Pull of inverse speed
 
     // ** Resolution profiles **
-    TProfile* fph_res_p_vs_pMC         = nullptr;  ///< Resolution of momentum [GeV/c]
-    TProfile* fph_res_theta_vs_thetaMC = nullptr;  ///< Resolution of polar angle [rad]
-    TProfile* fph_res_phi_vs_phiMC     = nullptr;  ///< Resolution of azimuthal angle [rad]
+    TProfile* fph_res_p_pMC         = nullptr;  ///< Resolution of momentum [GeV/c]
+    TProfile* fph_res_phi_phiMC     = nullptr;  ///< Resolution of azimuthal angle [rad]
+    TProfile* fph_res_theta_thetaMC = nullptr;  ///< Resolution of polar angle [rad]
 
     // **************************
     // ** Histogram properties **
     // **************************
 
     // ** Binning **
-    int fBinsRESX   = 200;     ///< Number of bins, residual of x
-    double fLoRESX  = -4.e-3;  ///< Lower boundary, residual of x [cm]
-    double fUpRESX  = +4.e-3;  ///< Upper boundary, residual of x [cm]
-    int fBinsRESY   = 200;     ///< Number of bins, residual of y
-    double fLoRESY  = -4.e-2;  ///< Lower boundary, residual of y [cm]
-    double fUpRESY  = +4.e-2;  ///< Upper boundary, residual of y [cm]
-    int fBinsRESTX  = 200;     ///< Number of bins, residual of slope along x-axis
-    double fLoRESTX = -4.e-3;  ///< Lower boundary, residual of slope along x-axis
-    double fUpRESTX = +4.e-3;  ///< Upper boundary, residual of slope along x-axis
-    int fBinsRESTY  = 200;     ///< Number of bins, residual of slope along y-axis
-    double fLoRESTY = -4.e-3;  ///< Lower boundary, residual of slope along y-axis
-    double fUpRESTY = +4.e-3;  ///< Upper boundary, residual of slope along y-axis
-    int fBinsRESQP  = 200;     ///< Number of bins, residual of q/p
-    double fLoRESQP = -10.;    ///< Lower boundary, residual of q/p [ec/GeV]
-    double fUpRESQP = +10.;    ///< Upper boundary, residual of q/p [ec/GeV]
-    int fBinsREST   = 200;     ///< Number of bins, residual of time
-    double fLoREST  = -10.;    ///< Lower boundary, residual of time [ns]
-    double fUpREST  = +10.;    ///< Upper boundary, residual of time [ns]
-    int fBinsRESVI  = 200;     ///< Number of bins, residual of inverse speed
-    double fLoRESVI = -2.;     ///< Lower boundary, residual of inverse speed [1/c]
-    double fUpRESVI = +2.;     ///< Upper boundary, residual of inverse speed [1/c]
-
-    int fBinsPULLX   = 200;   ///< Number of bins, pull of x
-    double fLoPULLX  = -4.;   ///< Lower boundary, pull of x [cm]
-    double fUpPULLX  = +4.;   ///< Upper boundary, pull of x [cm]
-    int fBinsPULLY   = 200;   ///< Number of bins, pull of y
-    double fLoPULLY  = -4.;   ///< Lower boundary, pull of y [cm]
-    double fUpPULLY  = +4.;   ///< Upper boundary, pull of y [cm]
-    int fBinsPULLTX  = 200;   ///< Number of bins, pull of slope along x-axis
-    double fLoPULLTX = -4.;   ///< Lower boundary, pull of slope along x-axis
-    double fUpPULLTX = +4.;   ///< Upper boundary, pull of slope along x-axis
-    int fBinsPULLTY  = 200;   ///< Number of bins, pull of slope along y-axis
-    double fLoPULLTY = -4.;   ///< Lower boundary, pull of slope along y-axis
-    double fUpPULLTY = +4.;   ///< Upper boundary, pull of slope along y-axis
-    int fBinsPULLQP  = 200;   ///< Number of bins, pull of q/p
-    double fLoPULLQP = -10.;  ///< Lower boundary, pull of q/p [ec/GeV]
-    double fUpPULLQP = +10.;  ///< Upper boundary, pull of q/p [ec/GeV]
-    int fBinsPULLT   = 200;   ///< Number of bins, pull of time
-    double fLoPULLT  = -10.;  ///< Lower boundary, pull of time [ns]
-    double fUpPULLT  = +10.;  ///< Upper boundary, pull of time [ns]
-    int fBinsPULLVI  = 200;   ///< Number of bins, pull of inverse speed
-    double fLoPULLVI = -2.;   ///< Lower boundary, pull of inverse speed [1/c]
-    double fUpPULLVI = +2.;   ///< Upper boundary, pull of inverse speed [1/c]
+    static constexpr int kCXSIZEPX = 600;  ///< Canvas size along x-axis [px]
+    static constexpr int kCYSIZEPX = 600;  ///< Canvas size along y-axis [px]
 
   private:
+    /// @brief Sets default histogram and track parameter properties
+    void SetDefaultProperties();
+
+    using FnVal_t = std::function<double()>;
+    /// @brief Fills residual and pull for a given track parameter
+    /// @param type     Type of the track parameter
+    /// @param recoVal  Reconstructed error of quantity
+    /// @param recoErr  Error of quantity
+    /// @param trueVal  True value of quantity
+    /// @param weight   Weight
+    void FillResAndPull(ETrackParType type, double recoVal, double recoErr, double trueVal, double w);
+
+    TrackParArray_t<TH1F*> fvphResiduals = {0};  ///< Residuals for different track parameters
+    TrackParArray_t<TH1F*> fvphPulls     = {0};  ///< Pulls for different track parameters
+
+    TrackParArray_t<bool> fvbParIgnored = {0};  ///< Flag: true - parameter is ignored
+
+    // ** Distribution properties **
+    TrackParArray_t<int> fvRBins  = {0};  ///< Number of bins, residuals
+    TrackParArray_t<double> fvRLo = {0};  ///< Lower boundary, residuals
+    TrackParArray_t<double> fvRUp = {0};  ///< Upper boundary, residuals
+
+    TrackParArray_t<int> fvPBins  = {0};  ///< Number of bins, pulls
+    TrackParArray_t<double> fvPLo = {0};  ///< Lower boundary, pulls
+    TrackParArray_t<double> fvPUp = {0};  ///< Upper boundary, pulls
+
     TString fsTitle = "";  ///< Title of the point
 
     double fMass = L1Constants::phys::kMuonMass;  /// Mass of particle
   };
 
+  // *****************************
+  // **  Inline implementation  **
+  // *****************************
 
+  // ---------------------------------------------------------------------------------------------------------------------
+  // TODO: Test this function for performance penalties
+  inline void TrackFitQa::FillResAndPull(ETrackParType type, double recoVal, double recoErr, double trueVal, double w)
+  {
+    if (fvbParIgnored[type]) { return; }
+    double res  = recoVal - trueVal;
+    double pull = res / recoErr;
+    fvphResiduals[type]->Fill(res, w);
+    fvphPulls[type]->Fill(pull, w);
+  }
 }  // namespace cbm::ca
 
 

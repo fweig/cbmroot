@@ -173,10 +173,10 @@ inline fscal L1TrackPar::GetPhiErr() const
   fscal phiDFactor = 1. / (GetTx() * GetTx() + GetTy() * GetTy());
   fscal phiDTx     = -phiDFactor * GetTy();  // partial derivative of phi over Tx
   fscal phiDTy     = +phiDFactor * GetTx();  // partial derivative of phi over Ty
-  
+
   fscal varTx   = (std::isfinite(C22[0]) && C22[0] > 0) ? C22[0] : undef::kF;  // variance of Tx
   fscal varTy   = (std::isfinite(C33[0]) && C33[0] > 0) ? C33[0] : undef::kF;  // variance of Ty
-  fscal covTxTy = std::isfinite(C32[0]) ? C32[0] : undef::kF;                 // covariance of Tx and Ty
+  fscal covTxTy = std::isfinite(C32[0]) ? C32[0] : undef::kF;                  // covariance of Tx and Ty
 
   fscal varPhi = phiDTx * phiDTx * varTx + phiDTy * phiDTy * varTy + 2 * phiDTx * phiDTy * covTxTy;
   return std::sqrt(varPhi);
@@ -186,14 +186,14 @@ inline fscal L1TrackPar::GetPhiErr() const
 //
 inline fscal L1TrackPar::GetThetaErr() const
 {
-  fscal sumSqSlopes    = GetTx() * GetTx() + GetTy() * GetTy();
+  fscal sumSqSlopes  = GetTx() * GetTx() + GetTy() * GetTy();
   fscal thetaDFactor = 1. / ((sumSqSlopes + 1) * sqrt(sumSqSlopes));
   fscal thetaDTx     = thetaDFactor * GetTx();
   fscal thetaDTy     = thetaDFactor * GetTy();
 
   fscal varTx   = (std::isfinite(C22[0]) && C22[0] > 0) ? C22[0] : undef::kF;  // variance of Tx
   fscal varTy   = (std::isfinite(C33[0]) && C33[0] > 0) ? C33[0] : undef::kF;  // variance of Ty
-  fscal covTxTy = std::isfinite(C32[0]) ? C32[0] : undef::kF;                 // covariance of Tx and Ty
+  fscal covTxTy = std::isfinite(C32[0]) ? C32[0] : undef::kF;                  // covariance of Tx and Ty
 
   fscal varTheta = thetaDTx * thetaDTx * varTx + thetaDTy * thetaDTy * varTy + 2 * thetaDTx * thetaDTy * covTxTy;
   return std::sqrt(varTheta);

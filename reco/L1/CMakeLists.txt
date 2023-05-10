@@ -111,6 +111,7 @@ set(HEADERS
   CbmL1Vtx.h
   L1Algo/L1Def.h
   L1Algo/L1Vector.h
+  L1Algo/L1EArray.h
   L1Algo/L1Undef.h
   catools/CaToolsWindowFinder.h
   catools/CaToolsLinkKey.h
@@ -224,5 +225,6 @@ install(FILES L1Algo/L1Algo.h
   L1Algo/L1Field.h
   L1Algo/L1Hit.h
   L1Algo/L1Vector.h
+  L1Algo/L1EArray.h
   DESTINATION include/L1Algo
 )

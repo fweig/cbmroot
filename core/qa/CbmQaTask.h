@@ -241,7 +241,7 @@ T* CbmQaTask::MakeHistoFromConfig(const char* nameBase, int id0, int id1, int id
       double minZ     = node["minz"].as<double>();
       double maxZ     = node["maxz"].as<double>();
       std::string opt = node["opt"].as<std::string>("");
-      pHist = new T(name.data(), title.data(), nBinsX, minX, maxX, nBinsY, minY, maxY, minZ, maxZ, opt.data());
+      pHist = new T(name.data(), title.data(), nBinsX, minX, maxX, nBinsY, minY, maxY, nBinsZ, minZ, maxZ, opt.data());
     }
     // 2D-histograms
     else if constexpr (std::is_base_of_v<TH2, T>) {
