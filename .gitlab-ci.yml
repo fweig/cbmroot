@@ -205,13 +205,12 @@ FileLicenceCheck:
     SIMPATH: "$BASE_PATH/fairsoft_$FAIRSOFT_VERSION/installation"
     FAIRROOTPATH: "$BASE_PATH/fairroot_${FAIRROOT_VERSION}-fairsoft_${FAIRSOFT_VERSION}"
 
-
-.singularity_tag: &singularity_tag
+.apptainer_tag: &apptainer_tag
   stage: build
   tags:
-    - CbmRoot_singularity
+    - CbmRoot_apptainer
 
-.singularity_debian10_variables_apr21: &singularity_debian10_variables_apr21
+.apptainer_debian10_variables_apr21: &apptainer_debian10_variables_apr21
     OS: debian10
     FAIRSOFT_VERSION: apr21p2
     FAIRROOT_VERSION: v18.6.7
@@ -222,7 +221,7 @@ FileLicenceCheck:
     INSTALL_PROJECT: "TRUE"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
 
-.singularity_debian10_variables_nov22p1: &singularity_debian10_variables_nov22p1
+.apptainer_debian10_variables_nov22p1: &apptainer_debian10_variables_nov22p1
     OS: debian10
     FAIRSOFT_VERSION: nov22p1
     FAIRROOT_VERSION: v18.8.0
@@ -233,7 +232,7 @@ FileLicenceCheck:
     INSTALL_PROJECT: "TRUE"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
 
-.singularity_centos7_variables_apr21: &singularity_centos7_variables_apr21
+.apptainer_centos7_variables_apr21: &apptainer_centos7_variables_apr21
     OS: centos7
     FAIRSOFT_VERSION: apr21p2
     FAIRROOT_VERSION: v18.6.7
@@ -242,7 +241,7 @@ FileLicenceCheck:
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment_test.sh"
 
-.singularity_centos7_variables_nov22p1: &singularity_centos7_variables_nov22p1
+.apptainer_centos7_variables_nov22p1: &apptainer_centos7_variables_nov22p1
     OS: centos7
     FAIRSOFT_VERSION: nov22p1
     FAIRROOT_VERSION: v18.8.0
@@ -251,7 +250,7 @@ FileLicenceCheck:
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/fairsoft.gsi.de/$OS/bin/setup_development_environment.sh"
 
-.singularity_debian11_variables_apr21: &singularity_debian11_variables_apr21
+.apptainer_debian11_variables_apr21: &apptainer_debian11_variables_apr21
     CONTAINER: "/cvmfs/cbm.gsi.de/containers/debian11_v18.6.7_apr21p2.sif"
     OS: debian11
     FAIRSOFT_VERSION: apr21p2
@@ -261,11 +260,6 @@ FileLicenceCheck:
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
     INSTALL_PROJECT: "TRUE"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
-
-.apptainer_tag: &apptainer_tag
-  stage: build
-  tags:
-    - CbmRoot_apptainer
 
 .apptainer_debian12_variables_nov22p1: &apptainer_debian12_variables_nov22p1
     CONTAINER: "/cvmfs/cbm.gsi.de/containers/debian12_v18.8.0_nov22p1.sif"
@@ -390,30 +384,30 @@ CbmRoot_Merge_Apptainer_debian12_nov22p1:
   variables:
     <<: [*mergeRequestVariables, *apptainer_debian12_variables_nov22p1]
 
-CbmRoot_Merge_Singularity_debian10_apr21:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+CbmRoot_Merge_Apptainer_debian10_apr21:
+  <<: [*apptainer_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_debian10_variables_apr21]
+    <<: [*mergeRequestVariables, *apptainer_debian10_variables_apr21]
 
-CbmRoot_Merge_Singularity_debian10_nov22p1:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+CbmRoot_Merge_Apptainer_debian10_nov22p1:
+  <<: [*apptainer_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_debian10_variables_nov22p1]
+    <<: [*mergeRequestVariables, *apptainer_debian10_variables_nov22p1]
 
-CbmRoot_Merge_Singularity_debian11_apr21:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+CbmRoot_Merge_Apptainer_debian11_apr21:
+  <<: [*apptainer_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_debian11_variables_apr21]
+    <<: [*mergeRequestVariables, *apptainer_debian11_variables_apr21]
 
-CbmRoot_Merge_Singularity_centos7_apr21:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+CbmRoot_Merge_Apptainer_centos7_apr21:
+  <<: [*apptainer_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_centos7_variables_apr21]
+    <<: [*mergeRequestVariables, *apptainer_centos7_variables_apr21]
 
-CbmRoot_Merge_Singularity_centos7_nov22p1:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+CbmRoot_Merge_Apptainer_centos7_nov22p1:
+  <<: [*apptainer_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_centos7_variables_nov22p1]
+    <<: [*mergeRequestVariables, *apptainer_centos7_variables_nov22p1]
 
 CbmRoot_Merge_macosx_13_nov22p1:
   <<: [*macosx_tag, *check_merge_request, *build_and_test]
