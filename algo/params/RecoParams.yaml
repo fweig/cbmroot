@@ -1,0 +1,24 @@
+---
+sts:
+  # 0: block_sort, 1: cub
+  digiSortMode: 0
+  clusterSortMode: 0
+  # 0: cpu, 1: xpu
+  unpackMode: 0
+  findClustersMultiKernels: 1
+  timeCutDigiAbs: -1
+  timeCutDigiSig: 3
+  timeCutClusterAbs: -1
+  timeCutClusterSig: 4
+
+  memoryLimits:
+    maxDigisPerTS: 80000000
+    # TODO: Find sensible value!
+    maxDigisPerMS:   100000
+    # TODO: Find sensible value
+    maxDigisPerModule: 4000000
+    clustersPerDigiTS: 1.0
+    clustersPerDigiModule: 1.0
+    hitsPerClusterTS: 1.0
+    hitsPerClusterModule: 1.0
+...
