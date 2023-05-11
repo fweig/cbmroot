@@ -118,8 +118,7 @@ public:
      **/
   void SetMode(ECbmRecoMode mode) { fMode = mode; }
 
-  void SetUseGpuReco(bool useGpu) { fUseGpuReco = useGpu; }
-
+  void SetUseGpuReco(bool useGPU);
 
   /** @brief Define the needed parameter containers **/
   virtual void SetParContainers();

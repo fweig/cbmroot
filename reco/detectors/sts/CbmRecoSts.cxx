@@ -491,6 +491,14 @@ void CbmRecoSts::InitParams()
 }
 // -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
+void CbmRecoSts::SetUseGpuReco(bool useGpu)
+{
+  LOG_IF(warn, useGpu) << "CbmRecoSts: GPU STS reconstruction temporarily disabled! Will use CPU reco instead.";
+  fUseGpuReco = false;
+}
+// -------------------------------------------------------------------------
+
 
 // -----   Calculate the mean Lorentz shift in a sensor   ------------------
 std::pair<Double_t, Double_t> CbmRecoSts::LorentzShift(const CbmStsParSensorCond& conditions, Double_t dZ, Double_t bY)
