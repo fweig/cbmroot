@@ -126,11 +126,10 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
     //}
 
 
-
     //Add charge collection histograms
     fPixelChargeHistos = new TObjArray();
-    size_t buf_size = 20;
-    char* histoName            = new char[buf_size];
+    size_t buf_size    = 20;
+    char* histoName    = new char[buf_size];
     TH1F* histo;
     for (Int_t i = 0; i < 49; i++) {
       snprintf(histoName, buf_size - 1, "ChargePixel%i", i + 1);
@@ -140,7 +139,7 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
     delete[] histoName;
 
     fTotalChargeInNpixelsArray = new TObjArray();
-    buf_size = 50;
+    buf_size                   = 50;
     char* histoTotalChargeName = new char[buf_size];
     TH1F* histoTotalCharge;
     for (Int_t i = 0; i < 49; i++) {
