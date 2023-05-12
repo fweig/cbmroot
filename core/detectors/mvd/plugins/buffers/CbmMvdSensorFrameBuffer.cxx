@@ -187,7 +187,6 @@ void CbmMvdSensorFrameBuffer::ClearFrame(Int_t frameNumber)
   Int_t pointFrameNumber;
   Double_t position[3];
   Int_t pixelX, pixelY;
-  Int_t nPoints;
 
   for (Int_t i = 0; i < fBuffer->GetEntriesFast(); i++) {
 

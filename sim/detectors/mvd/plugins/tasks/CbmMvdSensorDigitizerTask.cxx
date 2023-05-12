@@ -493,7 +493,7 @@ void CbmMvdSensorDigitizerTask::Exec()
 // -------------------------------------------------------------------------
 
 
-Int_t CbmMvdSensorDigitizerTask::GetPixelCharge(CbmMvdPixelCharge* myPixel, Double_t readoutTime)
+Int_t CbmMvdSensorDigitizerTask::GetPixelCharge(CbmMvdPixelCharge* /*myPixel*/, Double_t readoutTime)
 {
 
   /**
@@ -533,7 +533,7 @@ Bool_t CbmMvdSensorDigitizerTask::GetSignalAboveThreshold(CbmMvdPixelCharge* myP
    * Checks if pixel is above threshold.
    **/
 
-  CbmMvdSensor* mySensor;
+//  CbmMvdSensor* mySensor; // not used FU 12.05.23
 
 
   return (GetPixelCharge(myPixel, readoutTime) > fsensorDataSheet->GetAnalogThreshold());
