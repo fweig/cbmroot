@@ -16,52 +16,6 @@
 #include <ostream>  // for operator<<, stringstream, basic_ostream
 using std::endl;
 
-
-// -----   Default constructor   -------------------------------------------
-CbmMvdSensorDataSheet::CbmMvdSensorDataSheet()
-  : TNamed()
-  , fMimosaName("DefaulSensor")
-  , fPixelPitchX(18.4e-4)
-  , fPixelPitchY(18.4e-4)
-  , fNPixelsX(0)
-  , fNPixelsY(0)
-  , fNPixels(0)
-  , fPixelSignX(1)
-  , fPixelSignY(1)
-  , fShutterSign(1)
-  , fIntegrationTime(50e3)
-  , fEpiTh(14e-4)
-  , fChargeThreshold()
-  , fNoise(0)
-  , fLandauMPV(8.62131e+02)
-  , fLandauSigma(2.e+02)
-  , fLandauGain(1.56)
-  , fLorentzPar0(4.12073e+02)
-  , fLorentzPar1(0.8e+00)
-  , fLorentzPar2(0.)
-  , fAdcDynamic(150)
-  , fAdcOffset(0)
-  , fAdcBits(1)
-  , fAdcSteps(TMath::Power(2, fAdcBits))
-  , fStatesPerBank(0)
-  , fStatesPerLine(0)
-  , fStatesPerFrame(0)
-  , fPixelsPerBank(0)
-  , fAdcStepSize(fAdcDynamic / fAdcSteps)
-  , fValidData(kFALSE)
-  , fSignalRiseTime(nan("NotSet"))
-  , fSignalFallTime(nan("NotSet"))
-  , fAnalogThreshold(-1)
-
-
-{
-}
-
-// -----   Destructor   ----------------------------------------------------
-CbmMvdSensorDataSheet::~CbmMvdSensorDataSheet() {}
-// -------------------------------------------------------------------------
-
-
 // -----   Public method Print   -------------------------------------------
 void CbmMvdSensorDataSheet::Print(Option_t* /*opt*/) const { LOG(info) << ToString(); }
 
