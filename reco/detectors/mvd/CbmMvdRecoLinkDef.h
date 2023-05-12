@@ -13,7 +13,6 @@
 
 #pragma link C++ class CbmMvdSensorHitfinderTask + ;  //OLD
 #pragma link C++ class CbmMvdSensorClusterfinderTask + ;  //OLD
-#pragma link C++ class CbmMvdTrackingInterface + ;
 //#pragma link C++ class CbmMvdSensorFindHitTask + ;
 
 #endif
