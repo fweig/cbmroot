@@ -1,1 +1,2 @@
+add_subdirectory(cbmreco)
 add_subdirectory(cbmreco_fairrun)

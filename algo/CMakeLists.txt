@@ -9,7 +9,9 @@ set(DEVICE_SRCS
 
 set(SRCS
   ${DEVICE_SRCS}
+  base/Options.cxx
   evbuild/EventBuilder.cxx
+  global/Reco.cxx
   trigger/TimeClusterTrigger.cxx
   evselector/DigiEventSelector.cxx
   detectors/sts/StsHitfinderChain.cxx
@@ -32,6 +34,7 @@ target_include_directories(Algo
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
          ${CMAKE_CURRENT_SOURCE_DIR}/base
          ${CMAKE_CURRENT_SOURCE_DIR}/evbuild
+         ${CMAKE_CURRENT_SOURCE_DIR}/global
          ${CMAKE_CURRENT_SOURCE_DIR}/trigger
          ${CMAKE_CURRENT_SOURCE_DIR}/evselector
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/sts
@@ -45,9 +48,10 @@ target_link_libraries(Algo
   PUBLIC    OnlineData
             ROOT::GenVector
             GSL
+            Boost::program_options
+            xpu
   INTERFACE FairLogger::FairLogger
             external::fles_ipc
-            xpu
 )
 target_compile_definitions(Algo PUBLIC NO_ROOT)
 xpu_attach(Algo ${DEVICE_SRCS})
