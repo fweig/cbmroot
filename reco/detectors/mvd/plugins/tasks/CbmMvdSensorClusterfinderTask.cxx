@@ -125,25 +125,30 @@ void CbmMvdSensorClusterfinderTask::InitTask(CbmMvdSensor* mysensor)
     fFullClusterHisto = new TH1F("ChargeOfAllPixels", "ChargeOfAllPixels", 12000, 0, 12000);
     //}
 
-    TH1F* histo;
-    TH1F* histoTotalCharge;
-    char* histoName            = new char[20];
-    char* histoTotalChargeName = new char[50];
+
 
     //Add charge collection histograms
     fPixelChargeHistos = new TObjArray();
+    size_t buf_size = 20;
+    char* histoName            = new char[buf_size];
+    TH1F* histo;
     for (Int_t i = 0; i < 49; i++) {
-      sprintf(histoName, "ChargePixel%i", i + 1);
+      snprintf(histoName, buf_size - 1, "ChargePixel%i", i + 1);
       histo = new TH1F(histoName, histoName, 200, 0, 200);
       fPixelChargeHistos->AddLast(histo);
     };
+    delete[] histoName;
 
     fTotalChargeInNpixelsArray = new TObjArray();
+    buf_size = 50;
+    char* histoTotalChargeName = new char[buf_size];
+    TH1F* histoTotalCharge;
     for (Int_t i = 0; i < 49; i++) {
-      sprintf(histoTotalChargeName, "totalChargeInNPixels%i", i + 1);
+      snprintf(histoTotalChargeName, buf_size - 1, "totalChargeInNPixels%i", i + 1);
       histoTotalCharge = new TH1F(histoTotalChargeName, histoTotalChargeName, 12000, 0, 12000);
       fTotalChargeInNpixelsArray->AddLast(histoTotalCharge);
     };
+    delete[] histoTotalChargeName;
 
     //Number 49
     histo = new TH1F("ChargePixelSeed", "ChargePixelSeed", 200, 0, 14000);
