@@ -36,6 +36,7 @@ public:
   CbmMuchDigiData fMuch;  ///< MUCH data
   CbmRichDigiData fRich;  ///< RICH data
   CbmTrdDigiData fTrd;    ///< TRD data
+  CbmTrdDigiData fTrd2d;  ///< TRD2D data
   CbmTofDigiData fTof;    ///< TOF data
   CbmPsdDigiData fPsd;    ///< PSD data
 
@@ -49,6 +50,7 @@ public:
     ar& fSts;
     ar& fMuch;
     ar& fTrd;
+    ar& fTrd2d;
     ar& fTof;
     ar& fPsd;
     ar& fRich;
@@ -66,11 +68,12 @@ public:
     fSts.Clear();
     fMuch.Clear();
     fTrd.Clear();
+    fTrd2d.Clear();
     fTof.Clear();
     fPsd.Clear();
     fRich.Clear();
   }
 };
 
-BOOST_CLASS_VERSION(CbmDigiData, 3)
+BOOST_CLASS_VERSION(CbmDigiData, 4)
 #endif /* CBMDIGIDATA_H */

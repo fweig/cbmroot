@@ -11,7 +11,10 @@
 #include "CbmDigiManager.h"
 #include "CbmDigiTimeslice.h"
 #include "CbmSourceTs.h"
+#include "CbmTrdParFasp.h"
+#include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetAsic.h"
+#include "CbmTrdParSetDigi.h"
 #include "CbmTrdParSpadic.h"
 
 #include "MicrosliceDescriptor.hpp"
@@ -34,9 +37,6 @@
 #include <sstream>
 #include <vector>
 
-#include "UnpackSts.h"
-
-
 using namespace std;
 using cbm::algo::UnpackBmonElinkPar;
 using cbm::algo::UnpackBmonPar;
@@ -46,9 +46,13 @@ using cbm::algo::UnpackStsElinkPar;
 using cbm::algo::UnpackStsPar;
 using cbm::algo::UnpackTofElinkPar;
 using cbm::algo::UnpackTofPar;
+using cbm::algo::UnpackTrd2dAsicPar;
+using cbm::algo::UnpackTrd2dChannelPar;
+using cbm::algo::UnpackTrd2dPar;
 using cbm::algo::UnpackTrdCrobPar;
 using cbm::algo::UnpackTrdElinkPar;
 using cbm::algo::UnpackTrdPar;
+
 
 // -----   Constructor   -----------------------------------------------------
 CbmTaskUnpack::CbmTaskUnpack() : FairTask("Unpack") {}
@@ -215,6 +219,26 @@ void CbmTaskUnpack::Exec(Option_t*)
       numCompUsed++;
     }  // system TRD
 
+    // system TRD2D
+    if (systemId == fles::SubsystemIdentifier::TRD2D) {
+      const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoTrd2d.find(equipmentId);
+      assert(algoIt != fAlgoTrd2d.end());
+
+      // The current algorithm works for the TRD2D data format version XXX used in 2022.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      //assert(timeslice->descriptor(comp, 0).sys_ver == XXX);  To do: add something sensible here
+
+      // --- Microslice loop
+      numMsInComp =
+        MsLoop(timeslice, algoIt->second, comp, &fTimeslice->fData.fTrd2d.fDigis, &numBytesInComp, &numDigisInComp);
+
+      numCompUsed++;
+    }  // system TRD2D
+
+
     compTimer.Stop();
     LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << " input size "
                << numBytesInComp << " bytes, "
@@ -238,6 +262,8 @@ void CbmTaskUnpack::Exec(Option_t*)
             [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
   std::sort(std::execution::par_unseq, fTimeslice->fData.fTrd.fDigis.begin(), fTimeslice->fData.fTrd.fDigis.end(),
             [](CbmTrdDigi digi1, CbmTrdDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(std::execution::par_unseq, fTimeslice->fData.fTrd2d.fDigis.begin(), fTimeslice->fData.fTrd2d.fDigis.end(),
+            [](CbmTrdDigi digi1, CbmTrdDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #else
   std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
@@ -248,6 +274,8 @@ void CbmTaskUnpack::Exec(Option_t*)
   std::sort(fTimeslice->fData.fT0.fDigis.begin(), fTimeslice->fData.fT0.fDigis.end(),
             [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
   std::sort(fTimeslice->fData.fTrd.fDigis.begin(), fTimeslice->fData.fTrd.fDigis.end(),
+            [](CbmTrdDigi digi1, CbmTrdDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(fTimeslice->fData.fTrd2d.fDigis.begin(), fTimeslice->fData.fTrd2d.fDigis.end(),
             [](CbmTrdDigi digi1, CbmTrdDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #endif
 
@@ -394,12 +422,12 @@ InitStatus CbmTaskUnpack::Init()
 
     std::unique_ptr<UnpackTrdPar> par(new UnpackTrdPar());
     const size_t numCrobs = fTrdConfig.GetNumCrobs(equip);
-    for (size_t crob = 0; crob < numCrobs; crob++) {
 
+    for (size_t crob = 0; crob < numCrobs; crob++) {
       UnpackTrdCrobPar crobPar;
       const size_t numElinks = fTrdConfig.GetNumElinks(equip, crob);
-      for (size_t elink = 0; elink < numElinks; elink++) {
 
+      for (size_t elink = 0; elink < numElinks; elink++) {
         UnpackTrdElinkPar elinkPar;
         auto addresses        = fTrdConfig.Map(equip, crob, elink);
         elinkPar.fAddress     = addresses.first;   // Asic address for this elink
@@ -410,6 +438,34 @@ InitStatus CbmTaskUnpack::Init()
     }
     fAlgoTrd[equip].SetParams(std::move(par));
     LOG(info) << "--- Configured equipment " << equip << " with " << numCrobs << " crobs";
+  }
+
+  InitTrd2dReadoutConfig();
+  auto equipIdsTrd2d = fTrd2dConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsTrd2d) {
+
+    std::unique_ptr<UnpackTrd2dPar> par(new UnpackTrd2dPar());
+    const size_t numAsics = fTrd2dConfig.GetNumAsics(equip);
+
+    for (size_t asic = 0; asic < numAsics; asic++) {
+      UnpackTrd2dAsicPar asicPar;
+      const size_t numChans = fTrd2dConfig.GetNumChans(equip, asic);
+
+      for (size_t chan = 0; chan < numChans; chan++) {
+        UnpackTrd2dChannelPar chanPar;
+        auto pars            = fTrd2dConfig.ChanMap(equip, asic, chan);
+        chanPar.fPadAddress  = std::get<0>(pars);  // Pad address for channel
+        chanPar.fHasPairingR = std::get<1>(pars);  // Flag for R or T compoment
+        chanPar.fDaqOffset   = std::get<2>(pars);  // Time calibration parameter
+        asicPar.fChanParams.push_back(chanPar);
+      }
+      auto comppars = fTrd2dConfig.CompMap(equip);
+      par->fModId   = comppars.first;
+      par->fCrobId  = comppars.second;
+      par->fAsicParams.push_back(asicPar);
+    }
+    fAlgoTrd2d[equip].SetParams(std::move(par));
+    LOG(info) << "--- Configured equipment " << equip << " with " << numAsics << " asics";
   }
 
   LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
@@ -423,6 +479,73 @@ InitStatus CbmTaskUnpack::Init()
   return kSUCCESS;
 }
 // ----------------------------------------------------------------------------
+
+// -----   Initialisation   ---------------------------------------------------
+void CbmTaskUnpack::InitTrd2dReadoutConfig()
+{
+  // Initialize input files
+  FairParAsciiFileIo asciiInput;
+  std::string digiparfile = Form("%s/parameters/trd/trd_v22h_mcbm.digi.par", std::getenv("VMCWORKDIR"));
+  std::string asicparfile = Form("%s/parameters/trd/trd_v22h_mcbm.asic.par", std::getenv("VMCWORKDIR"));
+
+  // Read the .digi file and store result
+  CbmTrdParSetDigi digiparset;
+  if (asciiInput.open(digiparfile.data())) { digiparset.init(&asciiInput); }
+  asciiInput.close();
+
+  // Read the .asic file and store result
+  CbmTrdParSetAsic asicparset;
+  if (asciiInput.open(asicparfile.data())) { asicparset.init(&asciiInput); }
+  asciiInput.close();
+
+  // Initialize map (moduleId, crobId) -> (equipId) explicitly
+  std::map<uint32_t, uint16_t[NCROBMOD]> crob_map;
+  uint16_t cmap[] = {0xffc2, 0xffc5, 0xffc1, 0, 0};        // "crob map 22" for run Id >= 2335
+  memcpy(crob_map[5], cmap, NCROBMOD * sizeof(uint16_t));  // only module Id 5 is used!
+
+  // Then pass to Trd2dReadoutConfig, will invert to obain map (equipId) -> (module iq, crob id)
+  fTrd2dConfig.InitComponentMap(crob_map);
+
+  // Map (equipId, asicId, chanId) -> (pad address, R pairing flag, daq offset)
+  std::map<size_t, std::map<size_t, std::map<size_t, std::tuple<int32_t, bool, uint64_t>>>> channelMap;
+
+  // Loop through a list of module IDs from the .digi file (can in principle contradict crob_map).
+  for (auto entry : digiparset.GetModuleMap()) {
+
+    const auto moduleId = entry.first;
+    if (crob_map.find(moduleId) == crob_map.end()) { continue; }  //skip if no entry in crob_map
+
+    // Get ASIC parameters for this module
+    const CbmTrdParSetAsic* setDet = static_cast<const CbmTrdParSetAsic*>(asicparset.GetModuleSet(moduleId));
+    if (!setDet) continue;
+    if (setDet->GetAsicType() != int32_t(CbmTrdDigi::eCbmTrdAsicType::kFASP)) continue;
+
+    // Loop through ASICs for this module
+    std::vector<int32_t> addresses;
+    setDet->GetAsicAddresses(&addresses);
+    for (auto add : addresses) {
+
+      //Get local IDs for this component / equipment.
+      const int32_t fasp_in_eq  = ((int) add - 1000 * (int) moduleId) % (NFASPCROB);
+      const int32_t crob_in_mod = ((int) add - 1000 * (int) moduleId) / (NFASPCROB);
+      const uint16_t eq_id      = crob_map[moduleId][crob_in_mod];
+
+      // ASIC parameter set
+      CbmTrdParFasp* fasppar = (CbmTrdParFasp*) setDet->GetModulePar(add);
+
+      // Loop through channels for this ASIC and fill map
+      for (size_t chan = 0; chan < fasppar->GetNchannels(); chan++) {
+        const int32_t pad              = fasppar->GetPadAddress(chan);
+        const bool hasPairingR         = fasppar->GetChannel(chan)->HasPairingR();
+        const CbmTrdParModDigi* modpar = (CbmTrdParModDigi*) digiparset.GetModulePar(moduleId);
+        uint64_t daq_offset            = 0;
+        if (modpar->GetPadRow(fasppar->GetPadAddress(chan)) % 2 == 0) daq_offset = 3;
+        channelMap[eq_id][fasp_in_eq][chan] = std::make_tuple(pad, hasPairingR, daq_offset);
+      }
+    }
+  }
+  fTrd2dConfig.InitChannelMap(channelMap);
+}
 
 // -----   Initialisation   ---------------------------------------------------
 void CbmTaskUnpack::InitTrdReadoutConfig()

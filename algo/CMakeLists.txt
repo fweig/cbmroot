@@ -26,6 +26,8 @@ set(SRCS
   detectors/bmon/UnpackBmon.cxx
   detectors/trd/TrdReadoutConfig.cxx
   detectors/trd/UnpackTrd.cxx
+  detectors/trd2d/Trd2dReadoutConfig.cxx
+  detectors/trd2d/UnpackTrd2d.cxx
 )
 
 set(BUILD_INFO_CXX ${CMAKE_CURRENT_BINARY_DIR}/base/BuildInfo.cxx)
@@ -59,6 +61,7 @@ target_include_directories(Algo
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/tof
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/bmon
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/trd
+         ${CMAKE_CURRENT_SOURCE_DIR}/detectors/trd2d
  )
 
 target_link_libraries(Algo

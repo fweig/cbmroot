@@ -12,6 +12,7 @@
 #include <FairTask.h>
 
 #include "TofReadoutConfig.h"
+#include "Trd2dReadoutConfig.h"
 #include "TrdReadoutConfig.h"
 
 #include <sstream>
@@ -26,6 +27,7 @@
 #include "UnpackSts.h"
 #include "UnpackTof.h"
 #include "UnpackTrd.h"
+#include "UnpackTrd2d.h"
 
 class CbmDigiManager;
 class CbmSourceTs;
@@ -77,6 +79,9 @@ private:  // methods
   /** @brief Initialisation of address maps for Trd **/
   virtual void InitTrdReadoutConfig();
 
+  /** @brief Initialisation of address maps for Trd2d **/
+  virtual void InitTrd2dReadoutConfig();
+
 private:  // members
   CbmSourceTs* fSource = nullptr;
 
@@ -94,6 +99,9 @@ private:  // members
 
   std::map<uint16_t, cbm::algo::UnpackTrd> fAlgoTrd = {};
   cbm::algo::TrdReadoutConfig fTrdConfig {};
+
+  std::map<uint16_t, cbm::algo::UnpackTrd2d> fAlgoTrd2d = {};
+  cbm::algo::Trd2dReadoutConfig fTrd2dConfig {};
 
   size_t fNumTs                = 0;
   size_t fNumMs                = 0;
