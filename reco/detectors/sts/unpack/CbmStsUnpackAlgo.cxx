@@ -516,7 +516,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
 
       // Time-Walk correction or Asic-byAsic offsetting, depending on availability
       if (fbUseTimeWalkCorrection == true && fWalkLookup.count(fviFebAddress[uFebIdx])) {
-        dTimeInNs += fWalkLookup[fviFebAddress[uFebIdx]][uChanInMod / fNrChsPerAsic][usRawAdc-1];
+        dTimeInNs += fWalkLookup[fviFebAddress[uFebIdx]][uChanInMod / fNrChsPerAsic][usRawAdc - 1];
       }
       else if (uAsicIdx < fvdTimeOffsetNsAsics.size()) {
         dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
