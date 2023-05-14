@@ -180,7 +180,7 @@ public:
   /** @brief Set coefficients for walk correction
    ** @param par Array of correction parameters
    **/
-  void SetWalkCoef(std::array<double, 32> par) { fWalkCoef = par; }
+  void SetWalkCoef(std::array<double, 31> par) { fWalkCoef = par; }
 
   /** @brief Get one of the coefficients for walk correction
    ** @param uIdx Index of the correction parameter
@@ -188,7 +188,7 @@ public:
    **/
   double GetWalkCoef(uint32_t uIdx) const
   {
-    if (uIdx < 32) return fWalkCoef[uIdx];
+    if (uIdx < 31) return fWalkCoef[uIdx];
     return 0.;
   }
 
@@ -206,9 +206,7 @@ private:
   double fNoise                   = 0.;                  ///< RMS of noise [e]
   double fZeroNoiseRate           = 0.;                  ///< Zero-crossing noise rate [1/ns]
   double fTimeOffset              = 0.;                  ///< Time offset [ns]
-  std::array<double, 32> fWalkCoef = {{0., 0., 0., 0.,    ///< Parameters for correction of walk effect
-                                       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                                       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.}};
+  std::array<double, 31> fWalkCoef = {};                 ///< Parameters for correction of walk effect
   std::set<uint16_t> fDeadChannels {};                   ///< Map of dead channels
 
   bool fIsInit = kFALSE;  //! Flag for being initialised

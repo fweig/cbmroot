@@ -185,9 +185,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     auto parAsic = new CbmStsParAsic(128, 31, 31., 1., 5., 800., 1000., 3.9789e-3);  // Default ASIC parameters
     auto parMod  = new CbmStsParModule(2048, 128);  // Generic STS module parameter object
 
-    std::array<double, 32> tw_map = {{0., 0., 0., 0.,  // Default time walk map
-                                      0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                                      0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.}};
+    std::array<double, 31> tw_map = {}; // Default time walk map
     parAsic->SetWalkCoef(tw_map);   // Set generic ASIC par with no time walk correction
     parMod->SetAllAsics(*parAsic);  // Set generic module ASIC as default ASIC parameter configuration
 
@@ -198,7 +196,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     int sensor, asic;
     std::ifstream asicTimeWalk_par(Form("%s/mStsAsicTimeWalk.par", parfilesbasepathSts.data()));
     while (asicTimeWalk_par >> std::hex >> sensor >> std::dec >> asic) {  // Read module and ASIC
-      LOG(info) << Form("[STS] Reading %x %u", sensor, asic);
+      LOG(debug) << Form("[STS] Reading %x %u", sensor, asic);
       for (int adc = 0; adc < 31; adc++) {  // Read time offset by ADC
         asicTimeWalk_par >> tw_map[adc];    // Set time walk map offset value for given ADC
         if (std::fabs(tw_map[adc]) > 100) {
@@ -213,7 +211,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       }
       moduleWalkMap[sensor].SetAsic(asic, *parAsic);  // Set ASIC parameter
 
-      LOG(info) << Form("\n[STS] Time Walk parameters loaded for: module %x, ASIC %u\n", sensor, asic);
+      LOG(debug) << Form("\n[STS] Time Walk parameters loaded for: module %x, ASIC %u\n", sensor, asic);
     }
 
     stsconfig->SetWalkMap(moduleWalkMap);

@@ -31,8 +31,8 @@ void CbmStsUnpackAlgoBase::SetWalkMap(const std::map<uint32_t, CbmStsParModule>&
     fWalkLookup[mapInEntry.first].resize(uNbAsics);
     LOG(debug) << Form("[STS-UNPACKER] setting TW parameters: %x\n", mapInEntry.first);
     for (uint32_t asicIdx = 0; asicIdx < uNbAsics; ++asicIdx) {
-      fWalkLookup[mapInEntry.first][asicIdx].resize(32);
-      for (uint32_t uAdc = 0; uAdc < 32; ++uAdc) {
+      fWalkLookup[mapInEntry.first][asicIdx].resize(31);
+      for (uint32_t uAdc = 0; uAdc < 31; ++uAdc) {
         fWalkLookup[mapInEntry.first][asicIdx][uAdc] = asicPars[asicIdx].GetWalkCoef(uAdc);
       }
     }
