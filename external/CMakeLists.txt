@@ -46,16 +46,25 @@ if(DOWNLOAD_EXTERNALS)
     set(KF_DEPENDS_ON "")
   endif()
 
-  download_project_if_needed(PROJECT           xpu
-                             GIT_REPOSITORY    "https://github.com/fweig/xpu.git"
-                             GIT_TAG           "dd7d1d7e4b4d71079b9cfadbd662a264288308b0" # v0.7.6
-                             SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
-                             CONFIGURE_COMMAND ""
-                             BUILD_COMMAND     ""
-                             INSTALL_COMMAND   ""
-  )
-  Add_Subdirectory(xpu)
-  Set(XPU_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xpu/src PARENT_SCOPE)
+
+  option(CBM_XPU_DEV "Use the development version of xpu." OFF)
+
+  if (NOT ${CBM_XPU_DEV})
+    download_project_if_needed(PROJECT           xpu
+                              GIT_REPOSITORY    "https://github.com/fweig/xpu.git"
+                              GIT_TAG           "dd7d1d7e4b4d71079b9cfadbd662a264288308b0" # v0.7.6
+                              SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
+                              CONFIGURE_COMMAND ""
+                              BUILD_COMMAND     ""
+                              INSTALL_COMMAND   ""
+    )
+    Add_Subdirectory(xpu)
+    Set(XPU_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xpu/src PARENT_SCOPE)
+  else()
+    message(WARNING "xpu DEVELOPMENT MODE: Using local xpu build from external/xpu-dev")
+    add_subdirectory(xpu-dev)
+    Set(XPU_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xpu-dev/src PARENT_SCOPE)
+  endif()
 
 
   Include(InstallKFParticle.cmake)
@@ -70,7 +79,7 @@ if(DOWNLOAD_EXTERNALS)
   Include(InstallYamlCpp.cmake)
 
   Include(InstallBBA.cmake)
-  
+
 else()
   # Define targets which are needed by CbmRoot but are not available
   # whithout the external packages
@@ -97,7 +106,7 @@ else()
   add_library(bba::library STATIC IMPORTED GLOBAL)
   set_target_properties(bba::library PROPERTIES
                         IMPORTED_LOCATION bba::library-NOTFOUND
-            )           
+            )
 
  set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
