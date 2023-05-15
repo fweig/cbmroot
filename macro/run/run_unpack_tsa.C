@@ -185,9 +185,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     auto parAsic = new CbmStsParAsic(128, 31, 31., 1., 5., 800., 1000., 3.9789e-3);  // Default ASIC parameters
     auto parMod  = new CbmStsParModule(2048, 128);  // Generic STS module parameter object
 
-    std::array<double, 31> tw_map = {}; // Default time walk map
-    parAsic->SetWalkCoef(tw_map);   // Set generic ASIC par with no time walk correction
-    parMod->SetAllAsics(*parAsic);  // Set generic module ASIC as default ASIC parameter configuration
+    std::array<double, 31> tw_map = {};  // Default time walk map
+    parAsic->SetWalkCoef(tw_map);        // Set generic ASIC par with no time walk correction
+    parMod->SetAllAsics(*parAsic);       // Set generic module ASIC as default ASIC parameter configuration
 
     moduleWalkMap[0x10107C02] = CbmStsParModule(*parMod);  // Make a copy for storage
     moduleWalkMap[0x101FFC02] = CbmStsParModule(*parMod);  // Make a copy for storage

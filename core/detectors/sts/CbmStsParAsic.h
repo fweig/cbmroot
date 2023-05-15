@@ -206,7 +206,7 @@ private:
   double fNoise                   = 0.;                  ///< RMS of noise [e]
   double fZeroNoiseRate           = 0.;                  ///< Zero-crossing noise rate [1/ns]
   double fTimeOffset              = 0.;                  ///< Time offset [ns]
-  std::array<double, 31> fWalkCoef = {};                 ///< Parameters for correction of walk effect
+  std::array<double, 31> fWalkCoef = {};                  ///< Parameters for correction of walk effect
   std::set<uint16_t> fDeadChannels {};                   ///< Map of dead channels
 
   bool fIsInit = kFALSE;  //! Flag for being initialised
