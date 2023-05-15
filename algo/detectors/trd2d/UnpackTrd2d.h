@@ -1,6 +1,6 @@
 /* Copyright (C) 2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig, Dominik Smith [committer] */
+   Authors: Pascal Raisig, Alexandru Bercuci, Dominik Smith [committer] */
 
 #ifndef CBM_ALGO_UNPACKTRD2D_H
 #define CBM_ALGO_UNPACKTRD2D_H 1
@@ -12,6 +12,7 @@
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
 
+#include <array>
 #include <memory>
 
 #include <cmath>
@@ -163,8 +164,6 @@ namespace cbm::algo
 
     std::array<std::vector<CbmTrdDigi>, NFASPMOD* NFASPCH> fDigiBuffer = {
       {}};  ///> Buffered digi for each pad in CROB component
-
-    std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap = nullptr;  ///> FASP mapping update wrt the default setting
   };
 
 

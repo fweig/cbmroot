@@ -506,6 +506,31 @@ void CbmTaskUnpack::InitTrd2dReadoutConfig()
   // Then pass to Trd2dReadoutConfig, will invert to obain map (equipId) -> (module iq, crob id)
   fTrd2dConfig.InitComponentMap(crob_map);
 
+  // FASP mapping update wrt the default setting (optional)
+  std::map<uint32_t, uint8_t[NFASPMOD]> fasp_map;
+
+  {  // Initialize the "fasp remapping"
+    // Hard coded for run Id >= 2335 (only module Id 5).
+    uint8_t map[NFASPMOD];
+    for (uint32_t i(0); i < NFASPMOD; i++) {
+      map[i] = i;
+    }
+    const size_t nfasp0 = 72;
+    const size_t nfasps = 36;
+    uint8_t map22[]     = {
+      84,  85,  86,  87,  88,  89,   // FEB14/0xffc1
+      90,  91,  92,  93,  94,  95,   // FEB17/0xffc1
+      96,  97,  98,  99,  100, 101,  // FEB18/0xffc1
+      102, 103, 104, 105, 106, 107,  // FEB16/0xffc1
+      72,  73,  74,  75,  76,  77,   // FEB9/0xffc1
+      78,  79,  80,  81,  82,  83    // FEB8/0xffc1
+    };
+    for (uint32_t i(0); i < nfasps; i++) {
+      map[i + nfasp0] = map22[i];
+    }
+    memcpy(fasp_map[5], map, NFASPMOD * sizeof(uint8_t));
+  }
+
   // Map (equipId, asicId, chanId) -> (pad address, R pairing flag, daq offset)
   std::map<size_t, std::map<size_t, std::map<size_t, std::tuple<int32_t, bool, uint64_t>>>> channelMap;
 
@@ -526,9 +551,14 @@ void CbmTaskUnpack::InitTrd2dReadoutConfig()
     for (auto add : addresses) {
 
       //Get local IDs for this component / equipment.
-      const int32_t fasp_in_eq  = ((int) add - 1000 * (int) moduleId) % (NFASPCROB);
-      const int32_t crob_in_mod = ((int) add - 1000 * (int) moduleId) / (NFASPCROB);
+      const int32_t fasp_in_mod = add - 1000 * moduleId;
+      const int32_t fasp_in_eq  = fasp_in_mod % (NFASPCROB);
+      const int32_t crob_in_mod = fasp_in_mod / (NFASPCROB);
       const uint16_t eq_id      = crob_map[moduleId][crob_in_mod];
+
+      // Apply FASP remapping (optional)
+      const int32_t add_remap = fasp_map[moduleId][fasp_in_mod];
+      add                     = add_remap + 1000 * moduleId;
 
       // ASIC parameter set
       CbmTrdParFasp* fasppar = (CbmTrdParFasp*) setDet->GetModulePar(add);
@@ -539,11 +569,12 @@ void CbmTaskUnpack::InitTrd2dReadoutConfig()
         const bool hasPairingR         = fasppar->GetChannel(chan)->HasPairingR();
         const CbmTrdParModDigi* modpar = (CbmTrdParModDigi*) digiparset.GetModulePar(moduleId);
         uint64_t daq_offset            = 0;
-        if (modpar->GetPadRow(fasppar->GetPadAddress(chan)) % 2 == 0) daq_offset = 3;
+        if (modpar->GetPadRow(pad) % 2 == 0) daq_offset = 3;
         channelMap[eq_id][fasp_in_eq][chan] = std::make_tuple(pad, hasPairingR, daq_offset);
       }
     }
   }
+
   fTrd2dConfig.InitChannelMap(channelMap);
 }
 

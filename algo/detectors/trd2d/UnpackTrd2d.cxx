@@ -1,6 +1,6 @@
 /* Copyright (C) 2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig, Dominik Smith [committer] */
+   Authors: Pascal Raisig, Alexandru Bercuci, Dominik Smith [committer] */
 
 #include "UnpackTrd2d.h"
 
@@ -39,7 +39,6 @@ namespace cbm::algo
     uint64_t time = uint64_t((msDescr.idx - tTimeslice - fSystemTimeOffset) / 12.5);
 
     // Get parameters for current eq id.
-    const uint16_t mod_id = fParams.fModId;
     const uint8_t crob_id = fParams.fCrobId;
 
     // Get the number of complete words in the input MS buffer.
@@ -51,12 +50,11 @@ namespace cbm::algo
     unsigned char lFaspOld(0xff);
     std::vector<CbmTrdFaspMessage> vMess;
     for (uint64_t j = 0; j < nwords; j++, wd++) {
-      uint32_t w    = *wd;
-      uint8_t ch_id = w & 0xf;
-      uint8_t isaux = (w >> 4) & 0x1;
-      uint8_t slice = (w >> 5) & 0x7f;
-      uint16_t data = (w >> 12) & 0x3fff;
-      // uint8_t fasp_id = ((w >> 26) & 0x3f) + crob_id * NFASPCROB;
+      uint32_t w      = *wd;
+      uint8_t ch_id   = w & 0xf;
+      uint8_t isaux   = (w >> 4) & 0x1;
+      uint8_t slice   = (w >> 5) & 0x7f;
+      uint16_t data   = (w >> 12) & 0x3fff;
       uint8_t fasp_id = ((w >> 26) & 0x3f);
 
       if (isaux) {
@@ -70,8 +68,6 @@ namespace cbm::algo
         }
         continue;
       }
-      //if (fFaspMap) fasp_id = ((*fFaspMap)[mod_id])[fasp_id];
-
       if (lFaspOld != fasp_id) {
         if (vMess.size()) { pushDigis(vMess, time); }
         vMess.clear();
