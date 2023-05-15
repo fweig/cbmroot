@@ -11,5 +11,6 @@ jsroot
 googletest
 yaml-cpp/
 xpu/
+xpu-dev
 GSL
 bba

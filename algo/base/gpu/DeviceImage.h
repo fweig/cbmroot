@@ -7,7 +7,7 @@
 
 namespace cbm::algo
 {
-  struct GPUReco {
+  struct GPUReco : xpu::device_image {
   };
 }  // namespace cbm::algo
 
