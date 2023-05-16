@@ -44,7 +44,7 @@ void Reco::Init(const Options& opts)
   fs::path recoParamsPath = opts.ParamsDir() / "RecoParams.yaml";
   YAML::Node yaml         = YAML::LoadFile(recoParamsPath.string());
 
-  fContext.recoParams     = config::Read<RecoParams>(yaml);
+  fContext.recoParams = config::Read<RecoParams>(yaml);
 
   for (auto x : Opts().ConfigKeys()) {
     YAML::Node node = YAML::Load(x);

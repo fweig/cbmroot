@@ -81,7 +81,11 @@ target_link_libraries(Algo
             Boost::filesystem
             xpu
             external::yaml-cpp
+<<<<<<< HEAD
             external::fles_logging
+=======
+  INTERFACE FairLogger::FairLogger
+>>>>>>> c8d3fa54 (Add STS Unpacker and STS reco to toplevel reco.)
             external::fles_ipc
 )
 target_compile_definitions(Algo PUBLIC NO_ROOT)

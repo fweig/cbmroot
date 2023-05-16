@@ -24,10 +24,10 @@ namespace cbm::algo
     Reco();
     ~Reco();
 
-    Reco(const Reco&) = delete;
+    Reco(const Reco&)            = delete;
     Reco& operator=(const Reco&) = delete;
     Reco(Reco&&)                 = delete;
-    Reco& operator=(Reco&&) = delete;
+    Reco& operator=(Reco&&)      = delete;
 
     void Init(const Options&);
     void Run(const fles::Timeslice&);
@@ -44,6 +44,8 @@ namespace cbm::algo
     sts::HitfinderChain fStsHitFinder;
 
     void Validate(const Options& opts);
+    // Util functions
+    void AddTiming(xpu::timings& timings);
   };
 }  // namespace cbm::algo
 
