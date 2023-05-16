@@ -5,11 +5,13 @@
 #define CBM_ALGO_BASE_CHAINCONTEXT_H
 
 #include "Options.h"
+#include "RecoParams.h"
 
 namespace cbm::algo
 {
   struct ChainContext {
     Options opts;
+    RecoParams recoParams;
   };
 }  // namespace cbm::algo
 

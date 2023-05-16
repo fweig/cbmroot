@@ -15,7 +15,7 @@
 #include "Prelude.h"
 #include "Property.h"
 
-namespace CORE_INTERFACE_NS::config
+namespace cbm::algo::config
 {
 
   template<typename T, T... Values, typename Func>
@@ -144,6 +144,6 @@ namespace CORE_INTERFACE_NS::config
     }
   };
 
-}  // namespace CORE_INTERFACE_NS::config
+}  // namespace cbm::algo::config
 
 #endif

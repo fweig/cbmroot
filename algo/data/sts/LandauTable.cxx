@@ -3,6 +3,8 @@
    Authors: Felix Weiglhofer [committer] */
 #include "LandauTable.h"
 
+#include <fairlogger/Logger.h>
+
 #include <fstream>
 
 using namespace cbm::algo;
@@ -16,10 +18,13 @@ sts::LandauTable sts::LandauTable::FromFile(std::filesystem::path path)
   std::ifstream file(path);
 
   while (!file.eof()) {
+
     f32 q, p;
     file >> q >> p;
     charge.push_back(q);
     prob.push_back(p);
+
+    LOG(trace) << "Reading Landau table " << path << " q=" << q << " p=" << p;
   }
 
   // TODO: check if charge is monotonically increasing, also more than 2 entries

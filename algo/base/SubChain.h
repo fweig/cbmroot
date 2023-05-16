@@ -16,6 +16,7 @@ namespace cbm::algo
     void SetContext(ChainContext* ctx) { fContext = ctx; }
 
     const Options& Opts() const { return gsl::make_not_null(fContext)->opts; }
+    const RecoParams& Params() const { return gsl::make_not_null(fContext)->recoParams; }
 
   private:
     ChainContext* fContext = nullptr;

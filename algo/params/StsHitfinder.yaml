@@ -1,0 +1,122 @@
+---
+asic:
+  nAdc: 32
+  dynamicRange: 75000
+  threshold: 3000
+  timeResolution: 5
+  deadTime: 800
+  noise: 1000
+  zeroNoiseRate: 0.00397890015
+nChannels: 2048
+modules:
+  - address: 0x10008002
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [-1, -1.22464685e-16, 0, 1.22464685e-16, -1, 0, 0, 0, 1]
+      translation: [-2.97959995, 2.86999989, 27.2849998]
+  - address: 0x10018002
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [-1, -1.22464685e-16, 0, 1.22464685e-16, -1, 0, 0, 0, 1]
+      translation: [-2.97959995, -2.86999989, 27.4850006]
+  - address: 0x10008402
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [2.97959995, 2.86999989, 28.7150002]
+  - address: 0x10018402
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [2.97959995, -2.86999989, 28.5149994]
+  - address: 0x10008012
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [-5.95919991, 5.96999979, 42.9150009]
+  - address: 0x10018012
+    dY: 12.1599998
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [-5.95919991, -2.86999989, 42.7150002]
+  - address: 0x10008412
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [-1, -1.22464685e-16, 0, 1.22464685e-16, -1, 0, 0, 0, 1]
+      translation: [7.31114159e-16, 5.96999979, 41.0849991]
+  - address: 0x10018412
+    dY: 12.1599998
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [-1, -1.22464685e-16, 0, 1.22464685e-16, -1, 0, 0, 0, 1]
+      translation: [-3.51473622e-16, -2.86999989, 41.2849998]
+  - address: 0x10008812
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [5.95919991, 5.73999977, 42.9150009]
+  - address: 0x10018812
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [5.95919991, 1.33226763e-15, 42.7150002]
+  - address: 0x10028812
+    dY: 5.96000004
+    pitch: 0.00579999993
+    stereoF: 0
+    stereoB: 7.5
+    lorentzF: 0
+    lorentzB: 0
+    localToGlobal:
+      rotation: [1, 1.22464685e-16, 1.22464685e-16, 1.22464685e-16, -1, 0, 1.22464685e-16, 1.49975976e-32, -1]
+      translation: [5.95919991, -5.73999977, 42.5149994]
+...

@@ -9,102 +9,110 @@
 
 #include <xpu/device.h>
 
+#include "Prelude.h"
 #include "gpu/DeviceImage.h"
+#include "gpu/Params.h"
+#include "sts/Cluster.h"
+#include "sts/Hit.h"
+#include "sts/HitfinderPars.h"
 
 namespace cbm::algo
 {
+
   // Block sizes / other compile time constants that need tuning
   enum GpuConstants
   {
 #if XPU_IS_CUDA
-    kSortDigisBlockSize         = 32,
-    kSortDigisItemsPerThread    = 32,
-    kSortClustersBlockSize      = 32,
-    kSortClustersItemsPerThread = 32,
-    kFindClusterBlockSize       = 32,
-    kFindHitsBlockSize          = 32,
+    kSortDigisBlockSize         = 512,
+    kSortDigisItemsPerThread    = 8,
+    kSortClustersBlockSize      = 512,
+    kSortClustersItemsPerThread = 8,
+    kFindClusterBlockSize       = 1024,
+    kFindHitsBlockSize          = 512,
 #else  // HIP, values ignored on CPU
     kSortDigisBlockSize         = 256,
     kSortDigisItemsPerThread    = 6,
     kSortClustersBlockSize      = 256,
     kSortClustersItemsPerThread = 6,
-    kFindClusterBlockSize       = 256,
-    kFindHitsBlockSize          = 256,
+    kFindClusterBlockSize       = 1024,
+    kFindHitsBlockSize          = 1024,
 #endif
   };
-
-  // Kernel declarations
-  XPU_EXPORT_KERNEL(GPUReco, SortDigis);
-  // Combine substeps for finding clusters into a single kernel
-  XPU_EXPORT_KERNEL(GPUReco, FindClustersSingleStep);
-  XPU_EXPORT_KERNEL(GPUReco, CalculateOffsets);
-  XPU_EXPORT_KERNEL(GPUReco, FindClusters);
-  XPU_EXPORT_KERNEL(GPUReco, FindClustersBasic);
-  XPU_EXPORT_KERNEL(GPUReco, CalculateClusters);
-  XPU_EXPORT_KERNEL(GPUReco, CalculateClustersBasic);
-  XPU_EXPORT_KERNEL(GPUReco, SortClusters);
-  XPU_EXPORT_KERNEL(GPUReco, FindHits);
-
 }  // namespace cbm::algo
 
-// Set block sizes. Currently this needs to be done in toplevel namespace.
-XPU_BLOCK_SIZE_1D(cbm::algo::SortClusters, cbm::algo::kSortClustersBlockSize);
-XPU_BLOCK_SIZE_1D(cbm::algo::FindClustersSingleStep, cbm::algo::kFindClusterBlockSize);
-XPU_BLOCK_SIZE_1D(cbm::algo::CalculateOffsets, cbm::algo::kFindClusterBlockSize);
-XPU_BLOCK_SIZE_1D(cbm::algo::FindClusters, cbm::algo::kFindClusterBlockSize);
-XPU_BLOCK_SIZE_1D(cbm::algo::CalculateClusters, cbm::algo::kFindClusterBlockSize);
-XPU_BLOCK_SIZE_1D(cbm::algo::SortDigis, cbm::algo::kSortClustersBlockSize);
-XPU_BLOCK_SIZE_1D(cbm::algo::FindHits, cbm::algo::kFindClusterBlockSize);
-
-namespace cbm::algo
+namespace cbm::algo::sts
 {
+
+  class Hitfinder;  // forward declaration
+
   // GPU Data structures
   // TODO: Replace with regular StsCluster / StsHit once the changes
   // land to make them fit for GPU
-  struct StsGpuClusterIdx {
+  struct GpuClusterIdx {
     uint32_t fTime;  ///< Cluster time (average of digi times) [ns]
     int fIdx;
   };
 
-  struct StsGpuCluster {
-    float fCharge;         ///< Total charge
-    int fSize;             ///< Difference between first and last channel
-    float fPosition;       ///< Cluster centre in channel number units
-    float fPositionError;  ///< Cluster centre error (r.m.s.) in channel number units
-    uint32_t fTime;        ///< cluster time [ns]
-    float fTimeError;      ///< Error of cluster time [ns]
+  // Declare Constant Memory
+  struct TheHitfinder : xpu::constant<GPUReco, Hitfinder> {
   };
 
-  struct StsGpuHit {
-    float fX, fY;      ///< X, Y positions of hit [cm]
-    float fZ;          ///< Z position of hit [cm]
-    uint32_t fTime;    ///< Hit time [ns]
-    float fDx, fDy;    ///< X, Y errors [cm]
-    float fDz;         ///< Z position error [cm]
-    float fDxy;        ///< XY correlation
-    float fTimeError;  ///< Error of hit time [ns]
-    float fDu;         ///< Error of coordinate across front-side strips [cm]
-    float fDv;         ///< Error of coordinate across back-side strips [cm]
+  // Declare Kernels
+  struct SortDigis : xpu::kernel<GPUReco> {
+    using block_size    = xpu::block_size<kSortDigisBlockSize>;
+    using sort_t        = xpu::block_sort<u64, CbmStsDigi, kSortDigisBlockSize, kSortDigisItemsPerThread>;
+    using shared_memory = sort_t::storage_t;
+    using constants     = xpu::cmem<TheHitfinder, Params>;
+    using context       = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
+  };
+
+  struct FindClusters : xpu::kernel<GPUReco> {
+    using block_size = xpu::block_size<kFindClusterBlockSize>;
+    using constants  = xpu::cmem<TheHitfinder, Params>;
+    using context    = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
+  };
+
+  struct ChannelOffsets : xpu::kernel<GPUReco> {
+    using block_size = xpu::block_size<kFindClusterBlockSize>;
+    using constants  = xpu::cmem<TheHitfinder, Params>;
+    using context    = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
+  };
+
+  struct CreateDigiConnections : xpu::kernel<GPUReco> {
+    using block_size = xpu::block_size<kFindClusterBlockSize>;
+    using constants  = xpu::cmem<TheHitfinder, Params>;
+    using context    = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
+  };
+
+  struct CreateClusters : xpu::kernel<GPUReco> {
+    using block_size = xpu::block_size<kFindClusterBlockSize>;
+    using constants  = xpu::cmem<TheHitfinder, Params>;
+    using context    = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
+  };
+
+  struct SortClusters : xpu::kernel<GPUReco> {
+    using block_size    = xpu::block_size<kSortClustersBlockSize>;
+    using sort_t        = xpu::block_sort<u32, GpuClusterIdx, kSortClustersBlockSize, kSortClustersItemsPerThread>;
+    using shared_memory = sort_t::storage_t;
+    using constants     = xpu::cmem<TheHitfinder, Params>;
+    using context       = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
+  };
+
+  struct FindHits : xpu::kernel<GPUReco> {
+    using block_size = xpu::block_size<kFindHitsBlockSize>;
+    using constants  = xpu::cmem<TheHitfinder, Params>;
+    using context    = xpu::kernel_context<shared_memory, constants>;
+    XPU_D void operator()(context&);
   };
 
   // Calibration data structures
-
-  struct StsAsicPar {
-    int nAdc;
-    float dynamicRange;
-    float threshold;
-    float timeResolution;
-    float deadTime;
-    float noise;
-    float zeroNoiseRate;
-
-    XPU_D float AdcToCharge(unsigned short adc) const
-    {
-      return threshold + dynamicRange / float(nAdc) * (float(adc) + 0.5f);
-    }
-  };
-
-  struct StsSensorPar {
+  struct SensorPar {
     float dY;
     float pitch;
     float stereoF;
@@ -117,14 +125,14 @@ namespace cbm::algo
   // Used internally to avoid computing values multiple times
   // TODO: is this really needed? Overhead from additional computations should be miniscule.
   // TODO: Also store in shared memory, not registers. Values identical for all threads.
-  struct StsHitfinderCache : StsSensorPar {
+  struct HitfinderCache : SensorPar {
     float tanStereoF;
     float tanStereoB;
     float errorFac;
     float dX;
   };
 
-  struct StsClusterCalculationProperties {
+  struct ClusterCalculationProperties {
     float tSum      = 0.;       // sum of digi times
     int chanF       = 9999999;  // first channel in cluster
     int chanL       = -1;       // last channel in cluster
@@ -139,7 +147,7 @@ namespace cbm::algo
     float xSum = 0.f;  // weighted charge sum, used to correct corrupt clusters
   };
 
-  class StsDigiConnector {
+  class DigiConnector {
   private:
     unsigned int hasPreviousAndNext;
 
@@ -156,7 +164,7 @@ namespace cbm::algo
 
       do {
         assumed = old;
-        old     = xpu::atomic_cas_block(&hasPreviousAndNext, assumed, UnpackNext(assumed) | hasPreviousI);
+        old     = xpu::atomic_cas(&hasPreviousAndNext, assumed, UnpackNext(assumed) | hasPreviousI);
       } while (old != assumed);
     }
 
@@ -171,31 +179,15 @@ namespace cbm::algo
 
       do {
         assumed = old;
-        old     = xpu::atomic_cas_block(&hasPreviousAndNext, assumed, (assumed & (1u << 31)) | next);
+        old     = xpu::atomic_cas(&hasPreviousAndNext, assumed, (assumed & (1u << 31)) | next);
       } while (old != assumed);
     }
 
     XPU_D bool HasNext() const { return UnpackNext(hasPreviousAndNext) != 0; }
   };
 
-  // Shared Memory defintions
-  using SortDigisT =
-    xpu::block_sort<unsigned long int, ::CbmStsDigi, xpu::block_size<SortDigis>::value.x, kSortDigisItemsPerThread>;
-
-  struct StsSortDigiSmem {
-    typename SortDigisT::storage_t sortBuf;
-  };
-
-  using SortClustersT =
-    xpu::block_sort<uint32_t, StsGpuClusterIdx, xpu::block_size<SortClusters>::value.x, kSortClustersItemsPerThread>;
-
-  struct StsSortClusterSmem {
-    typename SortClustersT::storage_t sortBuf;
-  };
-
-  // Hitfinder buffers
-  template<xpu::side S>
-  class StsHitfinderBase {
+  // Hitfinder class. Holds pointers to buffers + algorithm.
+  class Hitfinder {
 
   public:
     // calibration / configuration data
@@ -204,87 +196,71 @@ namespace cbm::algo
     int nModules;   // Number of modules
     int nChannels;  // Number of channels per module
 
-    // Time cuts for Digis / Clusters
-    // TODO: currently not used!
-    float timeCutDigiAbs;
-    float timeCutDigiSig;
-    float timeCutClusterAbs;
-    float timeCutClusterSig;
-
-    StsAsicPar asic;
+    sts::HitfinderPars::Asic asic;
 
     int landauTableSize;
     float landauStepSize;
     // Entries of landauTable. size = landauTableSize
-    xpu::cmem_device_t<float, S> landauTable;
+    xpu::buffer<float> landauTable;
 
     // transformation matrix to convert local to global coordinate space
     // size = nModules
-    xpu::cmem_io_t<float, S> localToGlobalTranslationByModule;
-    xpu::cmem_io_t<float, S> localToGlobalRotationByModule;
+    xpu::buffer<float> localToGlobalTranslationByModule;
+    xpu::buffer<float> localToGlobalRotationByModule;
 
     // Sensor Parameters
     // size = nModules
-    xpu::cmem_io_t<StsSensorPar, S> sensorPars;
+    xpu::buffer<SensorPar> sensorPars;
 
     // input
     // Store all digis in a flat array with a header that contains the offset for every module (front and back)
-    xpu::cmem_io_t<size_t, S>
-      digiOffsetPerModule;  // size = 2 * nModules + 1 entries, last entry contains total digi count
-    xpu::cmem_io_t<CbmStsDigi, S> digisPerModule;  // Flat array of input digis. size = nDigisTotal
+    xpu::buffer<size_t> digiOffsetPerModule;  // size = 2 * nModules + 1 entries, last entry contains total digi count
+    xpu::buffer<CbmStsDigi> digisPerModule;   // Flat array of input digis. size = nDigisTotal
 
     // Temporary Digi-Array used for sorting as sorting is not in place. size = nDigisTotal
-    xpu::cmem_device_t<CbmStsDigi, S> digisPerModuleTmp;
-
-    // Pointer to sorted of a module side. Points either to digisPerModule or digisPerModuleTmp
-    // size = 2 * nModules
-    xpu::cmem_device_t<CbmStsDigi*, S> digisSortedPerModule;
+    xpu::buffer<CbmStsDigi> digisPerModuleTmp;
 
     // DigiConnectors used internally by StsClusterizer
     // Connects digis that belong to the same cluster via linked-list.
     // size = nDigisTotal
-    xpu::cmem_device_t<StsDigiConnector, S> digiConnectorsPerModule;
+    xpu::buffer<DigiConnector> digiConnectorsPerModule;
 
     // Digis are sorted by channel + within channel by time
     // Contains the offset for each channel within each channel
     // size = 2 * nModules * nChannels
-    xpu::cmem_device_t<unsigned int, S> channelOffsetPerModule;
+    xpu::buffer<unsigned int> channelOffsetPerModule;
 
     // intermediate results
     size_t maxClustersPerModule;
-
-    // FIXME: Not used anymore?
-    xpu::cmem_device_t<int, S> channelStatusPerModule;
 
     // Cluster Index by module. Produced by cluster finder.
     // Stored as buckets with a max size of maxClustersPerModule
     // Actual number of entries in each bucket is stored in nClustersPerModule
     // size = 2 * nModules * maxClustersPerModule
-    xpu::cmem_io_t<StsGpuClusterIdx, S> clusterIdxPerModule;
+    xpu::buffer<GpuClusterIdx> clusterIdxPerModule;
 
     // Temporary cluster index array used for sorting as sorting is not in place.
     // size =  2 * nModules * maxClustersPerModule
-    xpu::cmem_io_t<StsGpuClusterIdx, S> clusterIdxPerModuleTmp;
+    xpu::buffer<GpuClusterIdx> clusterIdxPerModuleTmp;
 
     // Pointer to sorted cluster idx for every module side.
     // Either points to clusterIdxPerModule or clusterIdxPerModuleTmp.
     // size = 2 * nModules
-    xpu::cmem_io_t<StsGpuClusterIdx*, S> clusterIdxSortedPerModule;
+    xpu::buffer<GpuClusterIdx*> clusterIdxSortedPerModule;
 
     // Clusters stored by modules. Stored as buckets with a max size of maxClustersPerModule
     // Actual number of entries in each bucket is stored in nClustersPerModule
     // size = 2 * nModules * maxClustersPerModule
-    xpu::cmem_io_t<StsGpuCluster, S> clusterDataPerModule;
+    xpu::buffer<sts::Cluster> clusterDataPerModule;
 
     // Number of clusters in each module
     // size = 2 * nModules
-    xpu::cmem_io_t<int, S> nClustersPerModule;
+    xpu::buffer<int> nClustersPerModule;
 
     // Max time error of clusters on front- and backside of a module
     // size = 1 (???)
     // FIXME: size should be 2 * nModules? And only one array!
-    xpu::cmem_device_t<float, S> maxErrorFront;
-    xpu::cmem_device_t<float, S> maxErrorBack;
+    xpu::buffer<float> maxClusterTimeErrorByModuleSide;
 
     // output
 
@@ -294,55 +270,38 @@ namespace cbm::algo
     // Hits sorted by module. Stored in buckets of size maxHitsPerModule.
     // Actual number of hits is stored in nHitsPerModule
     // size = maxHitsPerModule * nModules
-    xpu::cmem_io_t<StsGpuHit, S> hitsPerModule;
+    xpu::buffer<sts::Hit> hitsPerModule;
 
     // Number of hits in each module
     // size = nModules
-    xpu::cmem_io_t<int, S> nHitsPerModule;
-  };
-
-  // Host-side hitfinder. Only holds memory buffers.
-  using StsHitfinderHost = StsHitfinderBase<xpu::side::host>;
-
-  // Device-side hitfinder. Holds pointers to buffers + algorithm.
-  class StsHitfinderGpu : public StsHitfinderBase<xpu::side::device> {
+    xpu::buffer<int> nHitsPerModule;
 
   public:
-    XPU_D void SortDigisInSpaceAndTime(StsSortDigiSmem& smem, int iBlock) const;
-    XPU_D void FindClustersSingleStep(int iBlock) const;
-    XPU_D void SortClusters(StsSortClusterSmem& smem, int iBlock) const;
-    XPU_D void FindHits(int iBlock) const;
+    XPU_D void SortDigisInSpaceAndTime(SortDigis::context&) const;
+    XPU_D void FindClustersSingleStep(FindClusters::context&) const;
+    XPU_D void SortClusters(SortClusters::context&) const;
+    XPU_D void FindHits(FindHits::context&) const;
 
     // Individual steps of cluster finder, for more granular time measurement
-    XPU_D void CalculateOffsetsParallel(int iBlock) const;
-    XPU_D void FindClustersParallel(int iBlock) const;
-    XPU_D void CalculateClustersParallel(int iBlock) const;
-
-    XPU_D void FindClusterConnectionsBasic(int iBlock) const;
-    XPU_D void CalculateClustersBasic(int iBlock) const;
+    XPU_D void CalculateOffsetsParallel(FindClusters::context&) const;
+    XPU_D void FindClustersParallel(FindClusters::context&) const;
+    XPU_D void CalculateClustersParallel(FindClusters::context&) const;
 
   private:
-    XPU_D void CalculateChannelOffsets(CbmStsDigi* digis, unsigned int* channelOffsets, unsigned int nDigis) const;
+    XPU_D void CalculateChannelOffsets(FindClusters::context& ctx, CbmStsDigi* digis, unsigned int* channelOffsets,
+                                       unsigned int nDigis) const;
 
-    XPU_D void FindClusterConnectionsChannelWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
-                                                 unsigned int* channelOffsets, int iModule,
-                                                 unsigned int threadId) const;
-    XPU_D void FindClusterConnectionsDigiWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
-                                              unsigned int* channelOffsets, int iModule, unsigned int threadId,
+    XPU_D void FindClusterConnectionsDigiWise(FindClusters::context& ctx, CbmStsDigi* digis,
+                                              DigiConnector* digiConnector, unsigned int* channelOffsets,
                                               unsigned int nDigis) const;
 
-    XPU_D void CalculateClustersBasic(CbmStsDigi* digis, StsDigiConnector* digiConnector, int iModule,
-                                      unsigned int const threadId) const;
-    XPU_D void CalculateClustersChannelWise(CbmStsDigi* digis, StsDigiConnector* digiConnector,
-                                            unsigned int* channelOffsets, int iModule, unsigned int const threadId,
-                                            unsigned int const nDigis) const;
-    XPU_D void CalculateClustersDigiWise(CbmStsDigi* digis, StsDigiConnector* digiConnector, int iModule,
-                                         unsigned int const threadId, unsigned int const nDigis) const;
+    XPU_D void CalculateClustersDigiWise(FindClusters::context& ctx, CbmStsDigi* digis, DigiConnector* digiConnector,
+                                         unsigned int const nDigis) const;
 
     XPU_D void CreateClusterFromConnectors1(int const iModule, CbmStsDigi* digis, int const digiIndex) const;
-    XPU_D void CreateClusterFromConnectors2(int const iModule, CbmStsDigi* digis, StsDigiConnector* digiConnector,
+    XPU_D void CreateClusterFromConnectors2(int const iModule, CbmStsDigi* digis, DigiConnector* digiConnector,
                                             int const digiIndex) const;
-    XPU_D void CreateClusterFromConnectorsN(int const iModule, CbmStsDigi* digis, StsDigiConnector* digiConnector,
+    XPU_D void CreateClusterFromConnectorsN(int const iModule, CbmStsDigi* digis, DigiConnector* digiConnector,
                                             int const digiIndex) const;
 
   private:
@@ -371,17 +330,19 @@ namespace cbm::algo
       return diff;
     }
 
-    XPU_D void AddCluster(int iModule, uint32_t time, const StsGpuCluster& cls) const
+    XPU_D void AddCluster(int iModule, uint32_t time, const sts::Cluster& cls) const
     {
-      StsGpuClusterIdx* tgtIdx = &clusterIdxPerModule[iModule * maxClustersPerModule];
-      StsGpuCluster* tgtData   = &clusterDataPerModule[iModule * maxClustersPerModule];
+      GpuClusterIdx* tgtIdx = &clusterIdxPerModule[iModule * maxClustersPerModule];
+      sts::Cluster* tgtData = &clusterDataPerModule[iModule * maxClustersPerModule];
 
       int pos = xpu::atomic_add_block(&nClustersPerModule[iModule], 1);
       XPU_ASSERT(size_t(pos) < maxClustersPerModule);
 
-      StsGpuClusterIdx idx {time, pos};
-      tgtIdx[idx.fIdx]  = idx;
-      tgtData[idx.fIdx] = cls;
+      if (size_t(pos) < maxClustersPerModule) {
+        GpuClusterIdx idx {time, pos};
+        tgtIdx[idx.fIdx]  = idx;
+        tgtData[idx.fIdx] = cls;
+      }
     }
 
     XPU_D bool IsBackside(int iModule) const { return iModule >= nModules; }
@@ -390,19 +351,18 @@ namespace cbm::algo
 
     XPU_D void ToGlobal(int iModule, float lx, float ly, float lz, float& gx, float& gy, float& gz) const;
 
-    XPU_D void IntersectClusters(int iBlock, const StsHitfinderCache& pars, uint32_t timeF, const StsGpuCluster& clsF,
-                                 uint32_t timeB, const StsGpuCluster& clsB) const;
-    XPU_D float GetClusterPosition(const StsHitfinderCache& pars, float centre, bool isFront) const;
-    XPU_D bool Intersect(const StsHitfinderCache& pars, float xF, float exF, float xB, float exB, float& x, float& y,
+    XPU_D void IntersectClusters(int iBlock, const HitfinderCache& pars, uint32_t timeF, const sts::Cluster& clsF,
+                                 uint32_t timeB, const sts::Cluster& clsB) const;
+    XPU_D float GetClusterPosition(const HitfinderCache& pars, float centre, bool isFront) const;
+    XPU_D bool Intersect(const HitfinderCache& pars, float xF, float exF, float xB, float exB, float& x, float& y,
                          float& varX, float& varY, float& varXY) const;
-    XPU_D bool IsInside(const StsHitfinderCache& pars, float x, float y) const;
+    XPU_D bool IsInside(const HitfinderCache& pars, float x, float y) const;
     XPU_D void CreateHit(int iBlocks, float xLocal, float yLocal, float varX, float varY, float varXY, uint32_t timeF,
-                         const StsGpuCluster& clsF, uint32_t timeB, const StsGpuCluster& clsB, float du,
-                         float dv) const;
+                         const sts::Cluster& clsF, uint32_t timeB, const sts::Cluster& clsB, float du, float dv) const;
 
     XPU_D void SaveMaxError(float errorValue, int iModule) const
     {
-      float* maxError = IsBackside(iModule) ? maxErrorBack : maxErrorFront;
+      float* maxError = &maxClusterTimeErrorByModuleSide[iModule];
       float old {};
       do {
         old = *maxError;
@@ -411,9 +371,6 @@ namespace cbm::algo
     }
   };
 
-  // StsHitfinder lives in constant memory
-  XPU_EXPORT_CONSTANT(GPUReco, StsHitfinderGpu, TheStsHitfinder);
+}  // namespace cbm::algo::sts
 
-}  // namespace cbm::algo
-
-#endif  // #ifndef CBM_ALGO_STS_HITFINDER_H
+#endif  // CBM_ALGO_STS_HITFINDER_H

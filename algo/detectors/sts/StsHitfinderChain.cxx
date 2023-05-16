@@ -4,35 +4,28 @@
 
 #include "StsHitfinderChain.h"
 
-#include "Logger.h"
+#include <fairlogger/Logger.h>
+
+#include <numeric>
 
 using namespace cbm::algo;
 
-// Shorthands to set data / allocate buffers on GPU
-// FIXME: Eventually we'll need a better way to do this. Preferably supplied by xpu
-#define SET_GPU_CONSTANT(constant, val) fHitfinderHost.constant = fHitfinderGpu.constant = val
-#define GPU_ALLOC(field, nEntries)                                                                                     \
-  fHitfinderHost.field = decltype(fHitfinderHost.field)(nEntries);                                                     \
-  fHitfinderGpu.field  = fHitfinderHost.field.d()
-
-void StsHitfinderChain::SetParameters(const StsHitfinderPar& parameters)
+void sts::HitfinderChain::SetParameters(const sts::HitfinderPars& parameters)
 {
   fPars.emplace(parameters);
   AllocateStatic();
 }
 
-void StsHitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
+void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
 {
   EnsureParameters();
 
-  // FIXME: this has to be called only once
-  // and should happen during initialization not in reco loop
-  setenv("XPU_PROFILE", "1", 1);
-  xpu::initialize();
+  xpu::scoped_timer t_("STS Hitfinder");
 
   int nModules       = fPars->modules.size();
   int nModuleSides   = nModules * 2;
   size_t nDigisTotal = digis.size();
+  xpu::t_add_bytes(nDigisTotal * sizeof(CbmStsDigi));
 
   // Getting the digis on the GPU requires 3 steps
   // 1. Sort digis into buckets by module
@@ -44,107 +37,173 @@ void StsHitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
   // 3. Copy digis into flat array with offsets per module
   FlattenDigis(digiMap);
 
+  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) { EnsureDigiOffsets(digiMap); }
+
+  xpu::queue queue;
+
   // Clear buffers
   // Not all buffers have to initialized, but useful for debugging
 
-  auto& hfc = fHitfinderHost;
+  LOG(debug) << "STS Hitfinder Chain: Clearing buffers...";
+  auto& hfc = fHitfinder;
   // xpu::memset(hfc.digisPerModule, 0);
   // xpu::memset(hfc.digisPerModuleTmp, 0);
   // xpu::memset(hfc.digisSortedPerModule, 0);
   // xpu::memset(hfc.digiOffsetPerModule, 0);
-  xpu::memset(hfc.digiConnectorsPerModule, 0);
-  // xpu::memset(hfc.channelOffsetPerModule, 0);
-  xpu::memset(hfc.channelStatusPerModule, -1);
-  xpu::memset(hfc.clusterIdxPerModule, 0);
+  queue.memset(hfc.digiConnectorsPerModule, 0);
+  queue.memset(hfc.channelOffsetPerModule, 0);
+  queue.memset(hfc.clusterIdxPerModule, 0);
   // xpu::memset(hfc.clusterIdxPerModuleTmp, 0);
   // xpu::memset(hfc.clusterIdxSortedPerModule, 0);
   // xpu::memset(hfc.clusterDataPerModule, 0);
-  xpu::memset(hfc.nClustersPerModule, 0);
+  queue.memset(hfc.nClustersPerModule, 0);
   // xpu::memset(hfc.hitsPerModule, 0);
-  xpu::memset(hfc.nHitsPerModule, 0);
-  xpu::memset(hfc.maxErrorFront, 0);
-  xpu::memset(hfc.maxErrorBack, 0);
+  queue.memset(hfc.nHitsPerModule, 0);
+  queue.memset(hfc.maxClusterTimeErrorByModuleSide, 0);
 
-  xpu::set_constant<TheStsHitfinder>(fHitfinderGpu);
-  xpu::copy(hfc.digisPerModule, xpu::host_to_device);
-  xpu::copy(hfc.digiOffsetPerModule, xpu::host_to_device);
+  LOG(debug) << "STS Hitfinder Chain: Copy digis buffers...";
+  xpu::set<TheHitfinder>(fHitfinder);
+  queue.copy(hfc.digisPerModule, xpu::h2d);
+  queue.copy(hfc.digiOffsetPerModule, xpu::h2d);
 
-  xpu::run_kernel<SortDigis>(xpu::grid::n_blocks(nModuleSides));
-  xpu::run_kernel<FindClustersSingleStep>(xpu::grid::n_blocks(nModuleSides));
+  LOG(debug) << "STS Hitfinder Chain: Sort Digis...";
+  // TODO: skip temporary buffers and sort directly into digisSortedPerModule
+
+  queue.launch<SortDigis>(xpu::n_blocks(nModuleSides));
+  xpu::k_add_bytes<SortDigis>(nDigisTotal * sizeof(CbmStsDigi));
+  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) {
+    LOG(trace) << "Ensuring STS digis are sorted...";
+    queue.copy(hfc.digisPerModule, xpu::d2h);
+    queue.copy(hfc.digiOffsetPerModule, xpu::d2h);
+    queue.wait();
+    EnsureDigisSorted();
+  }
+
+  LOG(debug) << "STS Hitfinder Chain: Find Clusters...";
+  if (!Params().sts.findClustersMultiKernels) { queue.launch<FindClusters>(xpu::n_blocks(nModuleSides)); }
+  else {
+    queue.launch<ChannelOffsets>(xpu::n_blocks(nModuleSides));
+    xpu::k_add_bytes<ChannelOffsets>(nDigisTotal * sizeof(CbmStsDigi));
+    queue.launch<CreateDigiConnections>(xpu::n_threads(nDigisTotal));
+    xpu::k_add_bytes<CreateDigiConnections>(nDigisTotal * sizeof(CbmStsDigi));
+    queue.launch<CreateClusters>(xpu::n_blocks(nModuleSides));
+    xpu::k_add_bytes<CreateClusters>(nDigisTotal * sizeof(CbmStsDigi));
+  }
+  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) {
+    LOG(trace) << "Ensuring STS channel offsets correct...";
+    xpu::buffer_prop propsOffset {hfc.channelOffsetPerModule};
+    std::vector<u32> channelOffsetPerModule;
+    channelOffsetPerModule.resize(propsOffset.size());
+    queue.copy(hfc.channelOffsetPerModule.get(), channelOffsetPerModule.data(), propsOffset.size_bytes());
+    queue.wait();
+    EnsureChannelOffsets(channelOffsetPerModule);
+
+    LOG(trace) << "Ensuring STS clusters are ok...";
+    xpu::buffer_prop props {hfc.clusterIdxPerModule};
+
+    std::vector<GpuClusterIdx> clusterIdxPerModule;
+    clusterIdxPerModule.resize(props.size());
+    std::vector<int> nClustersPerModule;
+    nClustersPerModule.resize(fPars->modules.size() * 2);
+
+    queue.copy(hfc.clusterIdxPerModule.get(), clusterIdxPerModule.data(), props.size_bytes());
+    queue.copy(hfc.nClustersPerModule.get(), nClustersPerModule.data(), nClustersPerModule.size() * sizeof(int));
+    queue.wait();
+    EnsureClustersSane(clusterIdxPerModule, nClustersPerModule);
+  }
+
   // Run cluster finding steps in indivual kernels, useful for debugging / profiling
   // xpu::run_kernel<CalculateOffsets>(xpu::grid::n_blocks(hfc.nModules * 2));
   // xpu::run_kernel<FindClustersBasic>(xpu::grid::n_blocks(hfc.nModules * 2));
   // xpu::run_kernel<CalculateClusters>(xpu::grid::n_blocks(hfc.nModules * 2));
   // xpu::run_kernel<FindClustersBasic>(xpu::grid::n_blocks(hfc.nModules * 2));
   // xpu::run_kernel<CalculateClustersBasic>(xpu::grid::n_blocks(hfc.nModules * 2));
-  xpu::run_kernel<SortClusters>(xpu::grid::n_blocks(nModuleSides));
-  xpu::run_kernel<FindHits>(xpu::grid::n_blocks(nModules));
+  LOG(debug) << "STS Hitfinder Chain: Sort Clusters...";
+  queue.launch<SortClusters>(xpu::n_blocks(nModuleSides));  // FIXME n_blocks(nModuleSides) once debugging is done
 
-  CollectTimingInfo();
+  LOG(debug) << "STS Hitfinder Chain: Find Hits...";
+  queue.copy(hfc.nClustersPerModule, xpu::d2h);
+  queue.wait();
+  xpu::h_view nClusters {hfc.nClustersPerModule};
+  size_t nClustersFront = std::accumulate(nClusters.begin(), nClusters.begin() + nModules, 0);
+  bool isCpu            = xpu::device::active().backend() == xpu::cpu;
+  xpu::grid findHitsG   = isCpu ? xpu::n_blocks(nModules) : xpu::n_threads(nClustersFront);
+  queue.launch<FindHits>(findHitsG);
 
   // Transfer Hits / Cluster back to host
   // TODO: Hits and Clusters are stored in buckets. Currently we transfer the entire
   // bucket arrays back to the host. This includes a lot of unused bytes.
   // Better to either flatten both arrays on the GPU and transfer flat array back.
   // Or do multiple copies to copy contents of individual buckets.
-  xpu::copy(hfc.clusterDataPerModule, xpu::device_to_host);
-  xpu::copy(hfc.nClustersPerModule, xpu::device_to_host);
-  xpu::copy(hfc.hitsPerModule, xpu::device_to_host);
-  xpu::copy(hfc.nHitsPerModule, xpu::device_to_host);
+  queue.copy(hfc.clusterDataPerModule, xpu::d2h);
+  queue.copy(hfc.nClustersPerModule, xpu::d2h);
+  queue.copy(hfc.hitsPerModule, xpu::d2h);
+  queue.copy(hfc.nHitsPerModule, xpu::d2h);
+
+  queue.wait();
+
+  xpu::h_view nHits {hfc.nHitsPerModule};
+  // xpu::h_view nClusters{hfc.nClustersPerModule};
+  size_t nHitsTotal     = std::accumulate(nHits.begin(), nHits.end(), 0);
+  size_t nClustersTotal = std::accumulate(nClusters.begin(), nClusters.end(), 0);
+
+  xpu::k_add_bytes<SortClusters>(nClustersTotal * sizeof(GpuClusterIdx));
+  xpu::k_add_bytes<FindHits>(nClustersTotal * sizeof(sts::Cluster));
+
+  LOG(info) << "Timeslice contains " << nHitsTotal << " STS hits and " << nClustersTotal << " STS clusters";
 }
 
-void StsHitfinderChain::EnsureParameters()
+void sts::HitfinderChain::EnsureParameters()
 {
-  LOG_IF(fatal, fPars == std::nullopt) << "StsHitfinderChain: Parameters not set. Can't continue!";
+  LOG_IF(fatal, fPars == std::nullopt) << "sts::HitfinderChain: Parameters not set. Can't continue!";
 }
 
-void StsHitfinderChain::AllocateStatic()
+void sts::HitfinderChain::AllocateStatic()
 {
   EnsureParameters();
 
   // Shorthands for common constants
   const int nChannels = fPars->nChannels / 2;  // Only count channels on one side of the module
   const int nModules  = fPars->modules.size();
-  // const int nModuleSides = 2 * nModules; // Number of module front + backsides
+  const int nModuleSides = 2 * nModules;  // Number of module front + backsides
+
+  xpu::queue q;
 
   // Set GPU constants
-  SET_GPU_CONSTANT(nModules, nModules);
-  SET_GPU_CONSTANT(nChannels, nChannels);
-
-  SET_GPU_CONSTANT(timeCutDigiAbs, -1.f);
-  SET_GPU_CONSTANT(timeCutDigiSig, 3.f);
-  SET_GPU_CONSTANT(timeCutClusterAbs, -1.f);
-  SET_GPU_CONSTANT(timeCutClusterSig, 4.f);
-
-  SET_GPU_CONSTANT(asic, fPars->asic);
+  fHitfinder.nModules  = nModules;
+  fHitfinder.nChannels = nChannels;
+  fHitfinder.asic      = fPars->asic;
 
   // Copy landau table
   size_t nLandauTableEntries = fPars->landauTable.values.size();
-  SET_GPU_CONSTANT(landauTableSize, nLandauTableEntries);
-  SET_GPU_CONSTANT(landauStepSize, fPars->landauTable.stepSize);
-  GPU_ALLOC(landauTable, nLandauTableEntries);
-  xpu::copy(fHitfinderGpu.landauTable, fPars->landauTable.values.data(), nLandauTableEntries);
+  fHitfinder.landauTableSize = nLandauTableEntries;
+  fHitfinder.landauStepSize  = fPars->landauTable.stepSize;
+  fHitfinder.landauTable.reset(nLandauTableEntries, xpu::buf_io);
+  q.copy(fPars->landauTable.values.data(), fHitfinder.landauTable.get(), nLandauTableEntries * sizeof(float));
 
   // Copy transformation matrix
-  GPU_ALLOC(localToGlobalRotationByModule, 9 * nModules);
-  GPU_ALLOC(localToGlobalTranslationByModule, 3 * nModules);
+  fHitfinder.localToGlobalRotationByModule.reset(9 * nModules, xpu::buf_io);
+  fHitfinder.localToGlobalTranslationByModule.reset(3 * nModules, xpu::buf_io);
 
   // - Copy matrix into flat array
+  xpu::h_view hRot {fHitfinder.localToGlobalRotationByModule};
+  xpu::h_view hTrans {fHitfinder.localToGlobalTranslationByModule};
   for (int m = 0; m < nModules; m++) {
     const auto& module = fPars->modules.at(m);
-    std::copy_n(module.localToGlobal.rotation.data(), 9, &fHitfinderHost.localToGlobalRotationByModule.h()[m * 9]);
-    std::copy_n(module.localToGlobal.translation.data(), 3, &fHitfinderHost.localToGlobalRotationByModule.h()[m * 3]);
+    std::copy_n(module.localToGlobal.rotation.data(), 9, &hRot[m * 9]);
+    std::copy_n(module.localToGlobal.translation.data(), 3, &hTrans[m * 3]);
   }
 
   // - Then copy to GPU
-  xpu::copy(fHitfinderHost.localToGlobalRotationByModule, xpu::host_to_device);
-  xpu::copy(fHitfinderHost.localToGlobalTranslationByModule, xpu::host_to_device);
+  q.copy(fHitfinder.localToGlobalRotationByModule, xpu::h2d);
+  q.copy(fHitfinder.localToGlobalTranslationByModule, xpu::h2d);
 
   // Copy Sensor Parameteres
-  GPU_ALLOC(sensorPars, nModules);
+  fHitfinder.sensorPars.reset(nModules, xpu::buf_io);
+  xpu::h_view hSensorPars {fHitfinder.sensorPars};
   for (int m = 0; m < nModules; m++) {
     const auto& module = fPars->modules.at(m);
-    auto& gpuPars      = fHitfinderHost.sensorPars.h()[m];
+    auto& gpuPars      = hSensorPars[m];
     gpuPars.dY         = module.dY;
     gpuPars.pitch      = module.pitch;
     gpuPars.stereoF    = module.stereoF;
@@ -152,12 +211,21 @@ void StsHitfinderChain::AllocateStatic()
     gpuPars.lorentzF   = module.lorentzF;
     gpuPars.lorentzB   = module.lorentzB;
   }
-  xpu::copy(fHitfinderHost.sensorPars, xpu::host_to_device);
+  xpu::copy(fHitfinder.sensorPars, xpu::h2d);
+
+  // Time errors
+  fHitfinder.maxClusterTimeErrorByModuleSide.reset(nModuleSides, xpu::buf_device);
+
+  q.wait();
 }
 
-void StsHitfinderChain::AllocateDynamic(size_t maxNDigisPerModule, size_t nDigisTotal)
+void sts::HitfinderChain::AllocateDynamic(size_t maxNDigisPerModule, size_t nDigisTotal)
 {
+  LOG(debug) << "STS Hitfinder Chain: Allocating dynamic memory for " << maxNDigisPerModule << " digis per module and "
+             << nDigisTotal << " digis in total";
   EnsureParameters();
+
+  xpu::scoped_timer t_ {"Allocate"};
 
   // TODO: some of these buffers have a constant size and can be allocated statically.
   // Just the data they contain is static.
@@ -170,42 +238,56 @@ void StsHitfinderChain::AllocateDynamic(size_t maxNDigisPerModule, size_t nDigis
   const size_t maxNClustersPerModule = maxNDigisPerModule * kClustersPerDigiFactor;
   const size_t maxNHitsPerModule     = maxNClustersPerModule * kHitsPerClustersFactor;
 
-
   // Allocate Digi Buffers
-  GPU_ALLOC(digiOffsetPerModule, nModuleSides + 1);
-  GPU_ALLOC(digisPerModule, nDigisTotal);
-  GPU_ALLOC(digisPerModuleTmp, nDigisTotal);
-  GPU_ALLOC(digisSortedPerModule, nModuleSides);
-  GPU_ALLOC(digiConnectorsPerModule, nDigisTotal);
+  fHitfinder.digiOffsetPerModule.reset(nModuleSides + 1, xpu::buf_io);
+  fHitfinder.digisPerModule.reset(nDigisTotal, xpu::buf_io);
 
-  GPU_ALLOC(channelOffsetPerModule, nModuleSides * nChannels);
+  fHitfinder.digisPerModuleTmp.reset(nDigisTotal, xpu::buf_device);
+  fHitfinder.digiConnectorsPerModule.reset(nDigisTotal, xpu::buf_device);
 
-  GPU_ALLOC(maxErrorFront, 1);
-  GPU_ALLOC(maxErrorBack, 1);
+  fHitfinder.channelOffsetPerModule.reset(nModuleSides * nChannels, xpu::buf_device);
 
   // Allocate Cluster Buffers
-  SET_GPU_CONSTANT(maxClustersPerModule, maxNClustersPerModule);
-  GPU_ALLOC(channelStatusPerModule, nChannels * nModules);
-  GPU_ALLOC(clusterIdxPerModule, maxNClustersPerModule * nModuleSides);
-  GPU_ALLOC(clusterIdxPerModuleTmp, maxNClustersPerModule * nModuleSides);
-  GPU_ALLOC(clusterIdxSortedPerModule, nModuleSides);
-  GPU_ALLOC(clusterDataPerModule, maxNClustersPerModule * nModuleSides);
-  GPU_ALLOC(nClustersPerModule, nModuleSides);
+  fHitfinder.maxClustersPerModule = maxNClustersPerModule;
+
+  fHitfinder.clusterIdxPerModule.reset(maxNClustersPerModule * nModuleSides, xpu::buf_device);
+  fHitfinder.clusterIdxPerModuleTmp.reset(maxNClustersPerModule * nModuleSides, xpu::buf_device);
+  fHitfinder.clusterIdxSortedPerModule.reset(nModuleSides, xpu::buf_device);
+
+  fHitfinder.clusterDataPerModule.reset(maxNClustersPerModule * nModuleSides, xpu::buf_io);
+  fHitfinder.nClustersPerModule.reset(nModuleSides, xpu::buf_io);
 
   // Allocate Hit Buffers
-  SET_GPU_CONSTANT(maxHitsPerModule, maxNHitsPerModule);
-  GPU_ALLOC(hitsPerModule, maxNHitsPerModule * nModules);
-  GPU_ALLOC(nHitsPerModule, nModules);
+  fHitfinder.maxHitsPerModule = maxNHitsPerModule;
+  fHitfinder.hitsPerModule.reset(maxNHitsPerModule * nModules, xpu::buf_io);
+  fHitfinder.nHitsPerModule.reset(nModules, xpu::buf_io);
 }
 
-StsHitfinderChain::DigiMap StsHitfinderChain::SortDigisIntoModules(gsl::span<const CbmStsDigi> digis,
-                                                                   size_t& maxNDigisPerModule)
+sts::HitfinderChain::DigiMap sts::HitfinderChain::SortDigisIntoModules(gsl::span<const CbmStsDigi> digis,
+                                                                       size_t& maxNDigisPerModule)
 {
+  LOG(debug) << "STS Hitfinder Chain: Sorting " << digis.size() << " digis into modules";
+  xpu::scoped_timer t_ {"Sort Digis"};
+
   DigiMap digiMap;
 
   int nChannelsPerSide = fPars->nChannels / 2;
 
+  auto isPulser = [&](const CbmStsDigi& digi) {
+    return std::find_if(fPars->modules.begin(), fPars->modules.end(),
+                        [&](const auto& mod) { return mod.address == digi.GetAddress(); })
+           == fPars->modules.end();
+  };
+
+  size_t nPulsers = 0;
+
   for (const auto& digi : digis) {
+
+    if (isPulser(digi)) {
+      nPulsers++;
+      continue;
+    }
+
     int moduleAddr = CbmStsAddress::GetMotherAddress(digi.GetAddress(), kStsModule);
     bool isFront   = digi.GetChannel() < fPars->nChannels / 2;
     if (isFront) digiMap.front[moduleAddr].emplace_back(digi);
@@ -214,6 +296,15 @@ StsHitfinderChain::DigiMap StsHitfinderChain::SortDigisIntoModules(gsl::span<con
       tmpdigi.SetChannel(tmpdigi.GetChannel() - nChannelsPerSide);
       digiMap.back[moduleAddr].emplace_back(tmpdigi);
     }
+  }
+
+  LOG_IF(warn, nPulsers > 0) << "STS Hitfinder: Discarded " << nPulsers << " pulser digis";
+
+  // Print digi counts per module
+  for (const auto& mod : fPars->modules) {
+    i32 moduleAddr = mod.address;
+    LOG(debug1) << "Module " << moduleAddr << " has " << digiMap.front[moduleAddr].size() << " front digis and "
+                << digiMap.back[moduleAddr].size() << " back digis";
   }
 
   maxNDigisPerModule = 0;
@@ -228,19 +319,21 @@ StsHitfinderChain::DigiMap StsHitfinderChain::SortDigisIntoModules(gsl::span<con
   return digiMap;
 }
 
-void StsHitfinderChain::FlattenDigis(DigiMap& digiMap)
+void sts::HitfinderChain::FlattenDigis(DigiMap& digiMap)
 {
+  LOG(debug) << "STS Hitfinder Chain: Flattening digis";
+  xpu::scoped_timer t_ {"Flatten Digis"};
   FlattenDigisSide(digiMap.front, true);
   FlattenDigisSide(digiMap.back, false);
 }
 
-void StsHitfinderChain::FlattenDigisSide(DigiMapSide& digis, bool isFront)
+void sts::HitfinderChain::FlattenDigisSide(DigiMapSide& digis, bool isFront)
 {
   EnsureParameters();
 
   int nModules           = fPars->modules.size();
-  size_t* pMdigiOffset   = fHitfinderHost.digiOffsetPerModule.h();
-  CbmStsDigi* pDigisFlat = fHitfinderHost.digisPerModule.h();
+  xpu::h_view pMdigiOffset {fHitfinder.digiOffsetPerModule};
+  xpu::h_view pDigisFlat {fHitfinder.digisPerModule};
 
   int sideOffset = (isFront ? 0 : nModules);
 
@@ -253,28 +346,17 @@ void StsHitfinderChain::FlattenDigisSide(DigiMapSide& digis, bool isFront)
   }
 }
 
-void StsHitfinderChain::CollectTimingInfo()
-{
-  // Check if profiling is enabled
-  // TODO: xpu should have a nicer way to query if profiling is enabled
-  if (xpu::get_timing<SortDigis>().empty()) return;
-
-  // TODO: Add time counters
-  fHitfinderTimes.timeSortDigi    = xpu::get_timing<SortDigis>().back();
-  fHitfinderTimes.timeCluster     = xpu::get_timing<FindClustersSingleStep>().back();
-  fHitfinderTimes.timeSortCluster = xpu::get_timing<SortClusters>().back();
-  fHitfinderTimes.timeHits        = xpu::get_timing<FindHits>().back();
-}
-
-void StsHitfinderChain::AppendClustersModule(int module, bool isFront, std::vector<StsGpuCluster>& clusters)
+void sts::HitfinderChain::AppendClustersModule(int module, bool isFront, std::vector<sts::Cluster>& clusters)
 {
   EnsureParameters();
 
-  auto& hfc      = fHitfinderHost;
+  auto& hfc      = fHitfinder;
   int moduleSide = (isFront ? module : 2 * module);
+  xpu::h_view hNClusters {hfc.nClustersPerModule};
+  xpu::h_view hClusters {hfc.clusterDataPerModule};
 
-  int nClusters     = hfc.nClustersPerModule.h()[moduleSide];
-  auto* gpuClusters = &hfc.clusterDataPerModule.h()[moduleSide * hfc.maxClustersPerModule];
+  int nClusters     = hNClusters[moduleSide];
+  auto* gpuClusters = &hClusters[moduleSide * hfc.maxClustersPerModule];
 
   clusters.reserve(clusters.size() + nClusters);
 
@@ -292,14 +374,15 @@ void StsHitfinderChain::AppendClustersModule(int module, bool isFront, std::vect
   }
 }
 
-void StsHitfinderChain::AppendHitsModule(int module, std::vector<StsGpuHit>& hits)
+void sts::HitfinderChain::AppendHitsModule(int module, std::vector<sts::Hit>& hits)
 {
   EnsureParameters();
 
-  auto& hfc = fHitfinderHost;
+  xpu::h_view hHits {fHitfinder.hitsPerModule};
+  xpu::h_view hNHits {fHitfinder.nHitsPerModule};
 
-  auto* gpuHits = &hfc.hitsPerModule.h()[module * hfc.maxHitsPerModule];
-  int nHitsGpu  = hfc.nHitsPerModule.h()[module];
+  auto* gpuHits = &hHits[module * fHitfinder.maxHitsPerModule];
+  int nHitsGpu  = hNHits[module];
 
   hits.reserve(hits.size() + nHitsGpu);
 
@@ -318,4 +401,134 @@ void StsHitfinderChain::AppendHitsModule(int module, std::vector<StsGpuHit>& hit
     //                   hitGpu.fDu,
     //                   hitGpu.fDv);
   }
+}
+
+void sts::HitfinderChain::EnsureDigiOffsets(DigiMap& digi)
+{
+  xpu::h_view digiOffset {fHitfinder.digiOffsetPerModule};
+
+  size_t nModules = fPars->modules.size();
+  size_t offset   = 0;
+  // Front
+  for (size_t m = 0; m < nModules; m++) {
+    const auto& moduleDigis = digi.front[fPars->modules[m].address];
+    LOG_IF(fatal, digiOffset[m] != offset) << "Digi offset mismatch";
+    offset += moduleDigis.size();
+  }
+
+  // Back
+  for (size_t m = 0; m < nModules; m++) {
+    const auto& moduleDigis = digi.back[fPars->modules[m].address];
+    LOG_IF(fatal, digiOffset[nModules + m] != offset)
+      << "Module " << nModules + m << ": Digi offset mismatch: " << digiOffset[nModules + m] << " != " << offset;
+    offset += moduleDigis.size();
+  }
+
+  LOG_IF(fatal, offset != digiOffset[2 * nModules]) << "Digi offset mismatch";
+}
+
+void sts::HitfinderChain::EnsureDigisSorted()
+{
+  xpu::h_view digiOffset {fHitfinder.digiOffsetPerModule};
+  xpu::h_view digis {fHitfinder.digisPerModule};
+
+  bool isSorted = true;
+
+  for (size_t m = 0; m < fPars->modules.size(); m++) {
+    int nDigis = digiOffset[m + 1] - digiOffset[m];
+    if (nDigis == 0) continue;
+
+    auto* digisModule = &digis[digiOffset[m]];
+
+    for (int i = 0; i < nDigis - 1; i++) {
+      const auto &digi1 = digisModule[i], &digi2 = digisModule[i + 1];
+
+      if ((digi1.GetChannel() < digi2.GetChannel())
+          || (digi1.GetChannel() == digi2.GetChannel()
+              && digi1.GetTime() <= digi2.GetTime())  // Unpacker sometimes produces multiple
+                                                      // digis with the same time and channel, FIXME!
+      ) {
+        continue;
+      }
+
+      isSorted = false;
+      LOG(error) << "Module " << m << " not sorted: " << digi1.ToString() << " " << digi2.ToString();
+      break;
+    }
+  }
+
+  LOG_IF(fatal, !isSorted) << "Digis are not sorted";
+}
+
+void sts::HitfinderChain::EnsureChannelOffsets(span<u32> channelOffsetsByModule)
+{
+  xpu::h_view digisPerModule {fHitfinder.digisPerModule};
+  xpu::h_view digiOffsetPerModule {fHitfinder.digiOffsetPerModule};
+  for (size_t m = 0; m < fPars->modules.size() * 2; m++) {
+    int nChannels = fPars->nChannels / 2;  // Consider module sides
+
+    std::vector<u32> expectedChannelOffsets(nChannels, 0);
+
+    int offset = digiOffsetPerModule[m];
+    int nDigis = digiOffsetPerModule[m + 1] - offset;
+    span<CbmStsDigi> digis(&digisPerModule[offset], nDigis);
+    span<u32> channelOffsets = channelOffsetsByModule.subspan(m * nChannels, nChannels);
+
+    if (nDigis == 0) continue;
+
+    LOG_IF(fatal, channelOffsets[0] != 0) << "Module " << m << ": First channel offset is not 0";
+
+    int chan = digis[0].GetChannel();
+    for (int i = 0; i < nDigis; i++) {
+      if (digis[i].GetChannel() != chan) {
+        while (chan < digis[i].GetChannel()) {
+          chan++;
+          expectedChannelOffsets[chan] = i;
+        }
+      }
+    }
+    while (chan < nChannels) {
+      chan++;
+      expectedChannelOffsets[chan] = nDigis;
+    }
+
+    for (int i = 0; i < nChannels; i++) {
+      LOG_IF(fatal, channelOffsets[i] != expectedChannelOffsets[i])
+        << "Module " << m << ": Channel offset for channel " << i << " is " << channelOffsets[i] << " but should be "
+        << expectedChannelOffsets[i];
+    }
+  }
+}
+
+void sts::HitfinderChain::EnsureClustersSane(span<GpuClusterIdx> hClusterIdx, span<int> hNClusters)
+{
+  for (size_t m = 0; m < 2 * fPars->modules.size(); m++) {
+    int nClusters = hNClusters[m];
+
+    LOG(trace) << "Module " << m << " has " << nClusters << " clusters of " << fHitfinder.maxClustersPerModule;
+
+    if (nClusters == 0) continue;
+
+    if (nClusters < 0) { LOG(fatal) << "Module " << m << " has negative number of clusters " << nClusters; }
+    if (size_t(nClusters) > fHitfinder.maxClustersPerModule) {
+      LOG(fatal) << "Module " << m << " has " << nClusters << " clusters, but only " << fHitfinder.maxClustersPerModule
+                 << " are allowed";
+    }
+
+    auto* clusterIdx = &hClusterIdx[m * fHitfinder.maxClustersPerModule];
+
+    for (int i = 0; i < nClusters; i++) {
+      auto& cidx = clusterIdx[i];
+
+      if (cidx.fIdx < 0 || size_t(cidx.fIdx) >= fHitfinder.maxClustersPerModule) {
+        LOG(fatal) << "Cluster " << i << " of module " << m << " has invalid index " << cidx.fIdx;
+      }
+
+      if (cidx.fTime == 0xFFFFFFFF) {
+        LOG(fatal) << "Cluster " << i << " of module " << m << " has invalid time " << cidx.fTime;
+      }
+    }
+  }
+
+  LOG(trace) << "Clusters ok";
 }
