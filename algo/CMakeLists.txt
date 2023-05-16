@@ -11,13 +11,14 @@ set(DEVICE_SRCS
 set(SRCS
   ${DEVICE_SRCS}
   base/Options.cxx
+  base/util/TimingsFormat.cxx
   data/sts/LandauTable.cxx
   evbuild/EventBuilder.cxx
-  global/Reco.cxx
   trigger/TimeClusterTrigger.cxx
   evselector/DigiEventSelector.cxx
   detectors/sts/StsHitfinderChain.cxx
   detectors/sts/StsReadoutConfig.cxx
+  detectors/sts/StsUnpackChain.cxx
   detectors/sts/UnpackSts.cxx
   detectors/much/MuchReadoutConfig.cxx
   detectors/much/UnpackMuch.cxx
@@ -30,6 +31,7 @@ set(SRCS
   detectors/trd/UnpackTrd.cxx
   detectors/trd2d/Trd2dReadoutConfig.cxx
   detectors/trd2d/UnpackTrd2d.cxx
+  global/Reco.cxx
 )
 
 set(BUILD_INFO_CXX ${CMAKE_CURRENT_BINARY_DIR}/base/BuildInfo.cxx)
@@ -73,6 +75,7 @@ target_link_libraries(Algo
             GSL
             Boost::program_options
             xpu
+            external::yaml-cpp
   INTERFACE FairLogger::FairLogger
             external::fles_ipc
 )

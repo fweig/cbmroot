@@ -4,6 +4,10 @@
 #ifndef CBM_ALGO_GLOBAL_RECO_H
 #define CBM_ALGO_GLOBAL_RECO_H
 
+#include <xpu/host.h>
+
+#include "StsHitfinderChain.h"
+#include "StsUnpackChain.h"
 #include "SubChain.h"
 
 namespace fles
@@ -26,12 +30,21 @@ namespace cbm::algo
     Reco& operator=(Reco&&) = delete;
 
     void Init(const Options&);
-    void Run();
+    void Run(const fles::Timeslice&);
     void Finalize();
+    void PrintTimings(xpu::timings&);
 
   private:
     bool fInitialized = false;
     ChainContext fContext;
+    xpu::timings fTimesliceTimesAcc;
+
+    // STS
+    sts::UnpackChain fUnpack;
+    sts::HitfinderChain fStsHitFinder;
+
+    // Util functions
+    void AddTiming(xpu::timings& timings);
   };
 }  // namespace cbm::algo
 
