@@ -3,6 +3,7 @@ add_subdirectory(test)
 
 set(DEVICE_SRCS
   base/gpu/DeviceImage.cxx
+  base/gpu/Params.cxx
   detectors/sts/UnpackStsXpu.cxx
   detectors/sts/StsHitfinder.cxx
 )
@@ -10,6 +11,7 @@ set(DEVICE_SRCS
 set(SRCS
   ${DEVICE_SRCS}
   base/Options.cxx
+  data/sts/LandauTable.cxx
   evbuild/EventBuilder.cxx
   global/Reco.cxx
   trigger/TimeClusterTrigger.cxx
@@ -51,6 +53,7 @@ add_library(Algo SHARED ${SRCS})
 
 target_include_directories(Algo
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+         ${CMAKE_CURRENT_SOURCE_DIR}/data
          ${CMAKE_CURRENT_SOURCE_DIR}/base
          ${CMAKE_CURRENT_SOURCE_DIR}/evbuild
          ${CMAKE_CURRENT_SOURCE_DIR}/global
@@ -77,9 +80,8 @@ target_compile_definitions(Algo PUBLIC NO_ROOT)
 xpu_attach(Algo ${DEVICE_SRCS})
 
 install(TARGETS Algo DESTINATION lib)
-install(DIRECTORY base/gpu TYPE INCLUDE
-  FILES_MATCHING PATTERN "*.h"
-)
+install(DIRECTORY base/gpu TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY data/sts TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 
 install(
   FILES       ca/simd/CaSimd.h

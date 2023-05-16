@@ -7,8 +7,6 @@
 
 
 #include "CbmStsDigi.h"
-#include "gpu/DeviceImage.h"
-#include "gpu/xpu_legacy.h"
 
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
@@ -24,6 +22,8 @@
 
 #include "StsReadoutConfig.h"
 #include "StsXyterMessage.h"
+#include "gpu/DeviceImage.h"
+#include "gpu/xpu_legacy.h"
 
 
 namespace cbm::algo
@@ -76,8 +76,8 @@ namespace cbm::algo
   };
 
   XPU_EXPORT_KERNEL(GPUReco, UnpackK, UnpackStsXpuPar* params, UnpackStsXpuElinkPar* elinkParams,
-                  stsxyter::Message* content, uint64_t* msMessCount, uint64_t* msMessOffset, uint64_t* msStartTime,
-                  uint32_t* msCompIdx, CbmStsDigi* digisOut, const uint64_t currentTsTime, int NElems);
+                    stsxyter::Message* content, uint64_t* msMessCount, uint64_t* msMessOffset, uint64_t* msStartTime,
+                    uint32_t* msCompIdx, CbmStsDigi* digisOut, const uint64_t currentTsTime, int NElems);
 
   /** @class UnpackStsXpu
    ** @author Pierre-Alain Loizeau <p.-a.loizeau@gsi.de>

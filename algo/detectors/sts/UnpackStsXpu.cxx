@@ -16,78 +16,80 @@ using std::unique_ptr;
 using std::vector;
 
 XPU_KERNEL(cbm::algo::UnpackK, xpu::no_smem, UnpackStsXpuPar* params, UnpackStsXpuElinkPar* elinkParams,
-             stsxyter::Message* content, uint64_t* msMessCount, uint64_t* msMessOffset, uint64_t* msStartTime,
-             uint32_t* msCompIdx, CbmStsDigi* digisOut, const uint64_t currentTsTime, int NElems)
-  {
-    int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
-    if (id >= NElems || msMessCount[id] < 2) return;  // exit if out of bounds or too few messages
+           stsxyter::Message* content, uint64_t* msMessCount, uint64_t* msMessOffset, uint64_t* msStartTime,
+           uint32_t* msCompIdx, CbmStsDigi* digisOut, const uint64_t currentTsTime, int NElems)
+{
+  int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
+  if (id >= NElems || msMessCount[id] < 2) return;  // exit if out of bounds or too few messages
 
-    UnpackStsXpuMonitorData monitor;  //Monitor data, currently not stored. TO DO: Implement!
+  UnpackStsXpuMonitorData monitor;  //Monitor data, currently not stored. TO DO: Implement!
 
-    // --- Get message count and offset for this MS
-    const uint32_t numMessages = msMessCount[id];
-    const uint32_t messOffset  = msMessOffset[id];
+  // --- Get message count and offset for this MS
+  const uint32_t numMessages = msMessCount[id];
+  const uint32_t messOffset  = msMessOffset[id];
 
-    // --- Get starting position of this MS in message buffer
-    stsxyter::Message* message = &content[messOffset];
+  // --- Get starting position of this MS in message buffer
+  stsxyter::Message* message = &content[messOffset];
 
-    // --- Get starting position of this MS in digi buffer
-    CbmStsDigi* digis = &digisOut[messOffset];
+  // --- Get starting position of this MS in digi buffer
+  CbmStsDigi* digis = &digisOut[messOffset];
 
-    // --- Get component index and unpack parameters of this MS
-    const uint32_t comp              = msCompIdx[id];
-    const UnpackStsXpuPar& unpackPar = params[comp];
+  // --- Get component index and unpack parameters of this MS
+  const uint32_t comp              = msCompIdx[id];
+  const UnpackStsXpuPar& unpackPar = params[comp];
 
-    // --- Get starting position of elink parameters of this MS
-    UnpackStsXpuElinkPar* elinkPar = &elinkParams[unpackPar.fElinkOffset];
+  // --- Get starting position of elink parameters of this MS
+  UnpackStsXpuElinkPar* elinkPar = &elinkParams[unpackPar.fElinkOffset];
 
-    // --- Init counter for produced digis
-    uint64_t numDigis = 0;
+  // --- Init counter for produced digis
+  uint64_t numDigis = 0;
 
-    // --- The first message in the MS is expected to be of type EPOCH and can be ignored.
-    if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
-      monitor.fNumErrInvalidFirstMessage++;
-      msMessCount[id] = 0;
-      return;
-    }
+  // --- The first message in the MS is expected to be of type EPOCH and can be ignored.
+  if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
+    monitor.fNumErrInvalidFirstMessage++;
+    msMessCount[id] = 0;
+    return;
+  }
 
-    // --- The second message must be of type ts_msb.
-    if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
-      monitor.fNumErrInvalidFirstMessage++;
-      msMessCount[id] = 0;
-      return;
-    }
+  // --- The second message must be of type ts_msb.
+  if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
+    monitor.fNumErrInvalidFirstMessage++;
+    msMessCount[id] = 0;
+    return;
+  }
 
-    // --- Current TS_MSB epoch cycle
-    uint64_t currentCycle = msStartTime[id] / UnpackStsXpu::fkCycleLength;
+  // --- Current TS_MSB epoch cycle
+  uint64_t currentCycle = msStartTime[id] / UnpackStsXpu::fkCycleLength;
 
-    // --- Process first message (ts_msb)
-    uint32_t currentEpoch     = 0;  ///< Current epoch number within epoch cycle
-    uint64_t currentEpochTime = 0;  ///< Current epoch time relative to timeslice in clock cycles
-    UnpackStsXpu::ProcessTsmsbMessage(message[1], currentEpoch, currentEpochTime, currentCycle, currentTsTime);
+  // --- Process first message (ts_msb)
+  uint32_t currentEpoch     = 0;  ///< Current epoch number within epoch cycle
+  uint64_t currentEpochTime = 0;  ///< Current epoch time relative to timeslice in clock cycles
+  UnpackStsXpu::ProcessTsmsbMessage(message[1], currentEpoch, currentEpochTime, currentCycle, currentTsTime);
 
-    // --- Message loop
-    for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
+  // --- Message loop
+  for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
 
-      // --- Action depending on message type
-      switch (message[messageNr].GetMessType()) {
-        case stsxyter::MessType::Hit: {
-          UnpackStsXpu::ProcessHitMessage(message[messageNr], digis, numDigis, unpackPar, elinkPar, monitor, currentEpochTime);
-          break;
-        }
-        case stsxyter::MessType::TsMsb: {
-          UnpackStsXpu::ProcessTsmsbMessage(message[messageNr], currentEpoch, currentEpochTime, currentCycle, currentTsTime);
-          break;
-        }
-        default: {
-          monitor.fNumNonHitOrTsbMessage++;
-          break;
-        }
+    // --- Action depending on message type
+    switch (message[messageNr].GetMessType()) {
+      case stsxyter::MessType::Hit: {
+        UnpackStsXpu::ProcessHitMessage(message[messageNr], digis, numDigis, unpackPar, elinkPar, monitor,
+                                        currentEpochTime);
+        break;
+      }
+      case stsxyter::MessType::TsMsb: {
+        UnpackStsXpu::ProcessTsmsbMessage(message[messageNr], currentEpoch, currentEpochTime, currentCycle,
+                                          currentTsTime);
+        break;
+      }
+      default: {
+        monitor.fNumNonHitOrTsbMessage++;
+        break;
       }
     }
-    // --- Store number of digis in buffer
-    msMessCount[id] = numDigis;
   }
+  // --- Store number of digis in buffer
+  msMessCount[id] = numDigis;
+}
 
 
 namespace cbm::algo
@@ -176,7 +178,7 @@ namespace cbm::algo
 
     // --- Do unpacking for each microslice
     xpu::run_kernel<UnpackK>(xpu::n_threads(numMs), fParams.d(), fElinkParams.d(), tsContent.d(), msMessCount.d(),
-                            msMessOffset.d(), msStartTime.d(), msCompIdx.d(), digisOut.d(), currentTsTime, numMs);
+                             msMessOffset.d(), msStartTime.d(), msCompIdx.d(), digisOut.d(), currentTsTime, numMs);
 
     // --- Copy results back to host (only two buffers are modified on device)
     xpu::copy(msMessCount, xpu::device_to_host);
