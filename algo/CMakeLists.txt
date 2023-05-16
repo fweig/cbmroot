@@ -90,7 +90,7 @@ install(DIRECTORY base/gpu TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY data/sts TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 
 install(
-  FILES       
+  FILES
     base/ChainContext.h
     base/Options.h
     base/Prelude.h
@@ -101,6 +101,6 @@ install(
     ca/simd/CaSimdPseudo.h
     detectors/sts/StsHitfinder.h
     detectors/sts/StsHitfinderChain.h
-  DESTINATION 
+  DESTINATION
     include/
 )
