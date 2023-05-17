@@ -26,8 +26,9 @@ void Reco::Init(const Options& opts)
   LOG(info) << "Running CBM Reco on Device " << props.name();
 
   // Reco Params
-  YAML::Node yaml     = YAML::LoadFile(opts.ParamsDir() / "RecoParams.yaml");
-  fContext.recoParams = config::Read<RecoParams>(yaml);
+  fs::path recoParamsPath = opts.ParamsDir() / "Reco.yaml";
+  YAML::Node yaml         = YAML::LoadFile(recoParamsPath.string());
+  fContext.recoParams     = config::Read<RecoParams>(yaml);
 
   // STS Unpacker
   // yaml = YAML::LoadFile(opts.ParamsDir() / "StsReadout.yaml");
@@ -36,7 +37,8 @@ void Reco::Init(const Options& opts)
   fUnpack.Init(readoutConfig);
 
   // STS Hitfinder
-  yaml                               = YAML::LoadFile(opts.ParamsDir() / "StsHitfinder.yaml");
+  fs::path stsHitfinderParamsPath    = opts.ParamsDir() / "StsHitfinder.yaml";
+  yaml                               = YAML::LoadFile(stsHitfinderParamsPath.string());
   sts::HitfinderPars hitFinderConfig = config::Read<sts::HitfinderPars>(yaml);
   hitFinderConfig.landauTable        = sts::LandauTable::FromFile(opts.ParamsDir() / "LandauWidthTable.txt");
   fStsHitFinder.SetParameters(hitFinderConfig);

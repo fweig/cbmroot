@@ -4,17 +4,17 @@
 #ifndef CBM_ALGO_DATA_STS_LANDAUTABLE_H
 #define CBM_ALGO_DATA_STS_LANDAUTABLE_H
 
-#include <filesystem>
 #include <vector>
 
 #include "Prelude.h"
+#include "compat/Filesystem.h"
 
 namespace cbm::algo::sts
 {
 
   struct LandauTable {
 
-    static LandauTable FromFile(std::filesystem::path path);
+    static LandauTable FromFile(fs::path path);
 
     std::vector<f32> values;
     f32 stepSize = 0;

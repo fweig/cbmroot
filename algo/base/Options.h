@@ -4,8 +4,9 @@
 #ifndef CBM_ALGO_BASE_OPTIONS_H
 #define CBM_ALGO_BASE_OPTIONS_H
 
-#include <filesystem>
 #include <string>
+
+#include "compat/Filesystem.h"
 
 namespace cbm::algo
 {
@@ -16,7 +17,7 @@ namespace cbm::algo
     Options() = default;
     Options(int argc, char** argv);
 
-    std::filesystem::path ParamsDir() const { return fParamsDir; }
+    fs::path ParamsDir() const { return fParamsDir; }
     const std::string& InputLocator() const { return fInputLocator; }
     const std::string& LogLevel() const { return fLogLevel; }
     const std::string& Device() const { return fDevice; }

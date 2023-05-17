@@ -74,6 +74,7 @@ target_link_libraries(Algo
             ROOT::GenVector
             GSL
             Boost::program_options
+            Boost::filesystem
             xpu
             external::yaml-cpp
   INTERFACE FairLogger::FairLogger

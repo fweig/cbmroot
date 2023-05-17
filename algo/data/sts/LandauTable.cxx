@@ -9,7 +9,7 @@
 
 using namespace cbm::algo;
 
-sts::LandauTable sts::LandauTable::FromFile(std::filesystem::path path)
+sts::LandauTable sts::LandauTable::FromFile(fs::path path)
 {
   sts::LandauTable table;
 
