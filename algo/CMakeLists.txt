@@ -28,6 +28,23 @@ set(SRCS
   detectors/trd/UnpackTrd.cxx
 )
 
+set(BUILD_INFO_CXX ${CMAKE_CURRENT_BINARY_DIR}/base/BuildInfo.cxx)
+set(SRCS ${SRCS} ${BUILD_INFO_CXX})
+
+add_custom_target(generateBuildInfo
+    COMMAND ${CMAKE_COMMAND}
+        -DBUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DXPU_DEBUG=${XPU_DEBUG}
+        -DINFILE=${CMAKE_CURRENT_SOURCE_DIR}/base/BuildInfo.cxx.in
+        -DOUTFILE=${BUILD_INFO_CXX}
+        -P ${CMAKE_SOURCE_DIR}/cmake/modules/GenerateBuildInfo.cmake
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/BuildInfo.cxx.in
+            ${CMAKE_SOURCE_DIR}/cmake/modules/GenerateBuildInfo.cmake
+    BYPRODUCTS ${BUILD_INFO_CXX}
+    COMMENT "Generating build info"
+)
+
 add_library(Algo SHARED ${SRCS})
 
 target_include_directories(Algo
