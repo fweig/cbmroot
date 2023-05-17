@@ -19,7 +19,7 @@ namespace xpu
     hd_buffer() = default;
     hd_buffer(size_t size) : m_buffer(size, xpu::buf_io) {}
 
-    T* h() { return xpu::h_view(m_buffer).begin(); }
+    T* h() { return xpu::h_view<T>(m_buffer).begin(); }
     T* d() { return m_buffer.get(); }
 
     xpu::buffer<T>& underlying() { return m_buffer; }

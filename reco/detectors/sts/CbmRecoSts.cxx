@@ -35,6 +35,8 @@
 
 #include <xpu/host.h>
 
+#include "sts/HitfinderPars.h"
+
 #if __has_include(<omp.h>)
 #include <omp.h>
 #endif
@@ -71,7 +73,7 @@ UInt_t CbmRecoSts::CreateModules()
 
   assert(fSetup);
 
-  std::vector<cbm::algo::StsModulePar> gpuModules;  // for gpu reco
+  std::vector<cbm::algo::sts::HitfinderPars::Module> gpuModules;  // for gpu reco
   // std::vector<int> moduleAddrs;
   // std::vector<experimental::CbmStsHitFinderConfig> hfCfg;
 
@@ -133,13 +135,13 @@ UInt_t CbmRecoSts::CreateModules()
     fModuleIndex.push_back(recoModule);
 
     // Get Transformation Matrix
-    cbm::algo::StsModuleTransformationMatrix localToGlobal;
+    cbm::algo::sts::HitfinderPars::ModuleTransform localToGlobal;
     TGeoHMatrix* matrix = recoModule->getMatrix();
     std::copy_n(matrix->GetRotationMatrix(), 9, localToGlobal.rotation.begin());
     std::copy_n(matrix->GetTranslation(), 3, localToGlobal.translation.begin());
 
     // Collect GPU parameters
-    cbm::algo::StsModulePar gpuModulePars {
+    cbm::algo::sts::HitfinderPars::Module gpuModulePars {
       .address       = moduleAddress,
       .dY            = sensPar.GetPar(3),
       .pitch         = sensPar.GetPar(6),
@@ -155,7 +157,7 @@ UInt_t CbmRecoSts::CreateModules()
   const CbmStsParModule& firstModulePars = fParSetModule->GetParModule(gpuModules[0].address);
 
   CbmStsParAsic asic = firstModulePars.GetParAsic(0);
-  cbm::algo::StsAsicPar algoAsic {
+  cbm::algo::sts::HitfinderPars::Asic algoAsic {
     .nAdc           = asic.GetNofAdc(),
     .dynamicRange   = float(asic.GetDynRange()),
     .threshold      = float(asic.GetThreshold()),
@@ -170,7 +172,7 @@ UInt_t CbmRecoSts::CreateModules()
   auto [landauValues, landauStepSize] = CbmStsPhysics::Instance()->GetLandauWidthTable();
   std::vector<float> landauValuesF;
   std::copy(landauValues.begin(), landauValues.end(), std::back_inserter(landauValuesF));
-  cbm::algo::StsHitfinderPar pars {
+  cbm::algo::sts::HitfinderPars pars {
     .asic      = algoAsic,
     .nChannels = nChannels,
     .modules   = gpuModules,
@@ -286,7 +288,8 @@ void CbmRecoSts::Finish()
   Double_t clusterHit  = Double_t(fNofClusters) / Double_t(fNofHits);
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  if (fUseGpuReco) LOG(info) << "Ran new GPU STS reconstruction. (Device " << xpu::device_properties().name << ")";
+  if (fUseGpuReco)
+    LOG(info) << "Ran new GPU STS reconstruction. (Device " << xpu::device_prop(xpu::device::active()).name() << ")";
   else if (ompThreads < 0)
     LOG(info) << "STS reconstruction ran single threaded (No OpenMP).";
   else
@@ -343,25 +346,26 @@ void CbmRecoSts::Finish()
               << throughput(fNofClusters * sizeof(CbmStsCluster), 1000. * fTimeFindHits) << " GB/s)";
   }
   else {
-    cbm::algo::StsHitfinderTimes times = fGpuReco.GetHitfinderTimes();
+    LOG(warn) << "Hitfinder times collected by cbm::algo::Reco";
+    //   cbm::algo::StsHitfinderTimes times = fGpuReco.GetHitfinderTimes();
 
-    double gpuHitfinderTimeTotal = times.timeSortDigi + times.timeCluster + times.timeSortCluster + times.timeHits;
+    //   double gpuHitfinderTimeTotal = times.timeSortDigi + times.timeCluster + times.timeSortCluster + times.timeHits;
 
-    double sortDigiThroughput    = throughput(fNofDigis * sizeof(CbmStsDigi), times.timeSortDigi);
-    double findClusterThroughput = throughput(fNofDigis * sizeof(CbmStsDigi), times.timeCluster);
-    double sortClusterThroughput = throughput(fNofClusters * 8, times.timeSortCluster);
-    double findHitThroughput     = throughput(fNofClusters * 24, times.timeHits);
+    //   double sortDigiThroughput    = throughput(fNofDigis * sizeof(CbmStsDigi), times.timeSortDigi);
+    //   double findClusterThroughput = throughput(fNofDigis * sizeof(CbmStsDigi), times.timeCluster);
+    //   double sortClusterThroughput = throughput(fNofClusters * 8, times.timeSortCluster);
+    //   double findHitThroughput     = throughput(fNofClusters * 24, times.timeHits);
 
-    LOG(info) << "Time Reconstruct (GPU) : " << fixed << setprecision(2) << setw(6) << gpuHitfinderTimeTotal << " ms";
-    LOG(info) << "Time by step:\n"
-              << "  Sort Digi   : " << fixed << setprecision(2) << setw(6) << times.timeSortDigi << " ms ("
-              << sortDigiThroughput << " GB/s)\n"
-              << "  Find Cluster: " << fixed << setprecision(2) << setw(6) << times.timeCluster << " ms ("
-              << findClusterThroughput << " GB/s)\n"
-              << "  Sort Cluster: " << fixed << setprecision(2) << setw(6) << times.timeSortCluster << " ms ("
-              << sortClusterThroughput << " GB/s)\n"
-              << "  Find Hits   : " << fixed << setprecision(2) << setw(6) << times.timeHits << "ms ("
-              << findHitThroughput << " GB/s)";
+    //   LOG(info) << "Time Reconstruct (GPU) : " << fixed << setprecision(2) << setw(6) << gpuHitfinderTimeTotal << " ms";
+    //   LOG(info) << "Time by step:\n"
+    //             << "  Sort Digi   : " << fixed << setprecision(2) << setw(6) << times.timeSortDigi << " ms ("
+    //             << sortDigiThroughput << " GB/s)\n"
+    //             << "  Find Cluster: " << fixed << setprecision(2) << setw(6) << times.timeCluster << " ms ("
+    //             << findClusterThroughput << " GB/s)\n"
+    //             << "  Sort Cluster: " << fixed << setprecision(2) << setw(6) << times.timeSortCluster << " ms ("
+    //             << sortClusterThroughput << " GB/s)\n"
+    //             << "  Find Hits   : " << fixed << setprecision(2) << setw(6) << times.timeHits << "ms ("
+    //             << findHitThroughput << " GB/s)";
   }
   LOG(info) << "=====================================";
 }
@@ -736,6 +740,7 @@ void CbmRecoSts::ProcessDataGpu()
 
 std::pair<size_t, size_t> CbmRecoSts::ForwardGpuClusterAndHits()
 {
+#if 0
   size_t nClustersForwarded = 0, nHitsForwarded = 0;
 
   const cbm::algo::StsHitfinderHost& hfc = fGpuReco.GetHitfinderBuffers();
@@ -804,6 +809,8 @@ std::pair<size_t, size_t> CbmRecoSts::ForwardGpuClusterAndHits()
   }  // for (int module = 0; module < hfc.nModules; module++)
 
   return {nClustersForwarded, nHitsForwarded};
+#endif
+  return {0, 0};
 }
 
 
@@ -820,18 +827,19 @@ void CbmRecoSts::SetParContainers()
 
 void CbmRecoSts::DumpNewHits()
 {
-  std::ofstream out {"newHits.csv"};
-  const cbm::algo::StsHitfinderHost& hfc = fGpuReco.GetHitfinderBuffers();
-  out << "module, x, y, z, deltaX, deltaY, deltaZ, deltaXY, time, timeError, deltaU, deltaV" << std::endl;
-  for (size_t m = 0; m < fModuleIndex.size(); m++) {
-    int nHitsGpu  = hfc.nHitsPerModule.h()[m];
-    auto* gpuHits = &hfc.hitsPerModule.h()[m * hfc.maxHitsPerModule];
-    for (int i = 0; i < nHitsGpu; i++) {
-      auto& h = gpuHits[i];
-      out << m << ", " << h.fX << ", " << h.fY << ", " << h.fZ << ", " << h.fDx << ", " << h.fDy << ", " << h.fDz
-          << ", " << h.fDxy << ", " << h.fTime << ", " << h.fTimeError << ", " << h.fDu << ", " << h.fDv << std::endl;
-    }
-  }
+  LOG(warn) << "DumpNewHits() not implemented yet";
+  // std::ofstream out {"newHits.csv"};
+  // const cbm::algo::StsHitfinderHost& hfc = fGpuReco.GetHitfinderBuffers();
+  // out << "module, x, y, z, deltaX, deltaY, deltaZ, deltaXY, time, timeError, deltaU, deltaV" << std::endl;
+  // for (size_t m = 0; m < fModuleIndex.size(); m++) {
+  //   int nHitsGpu  = hfc.nHitsPerModule.h()[m];
+  //   auto* gpuHits = &hfc.hitsPerModule.h()[m * hfc.maxHitsPerModule];
+  //   for (int i = 0; i < nHitsGpu; i++) {
+  //     auto& h = gpuHits[i];
+  //     out << m << ", " << h.fX << ", " << h.fY << ", " << h.fZ << ", " << h.fDx << ", " << h.fDy << ", " << h.fDz
+  //         << ", " << h.fDxy << ", " << h.fTime << ", " << h.fTimeError << ", " << h.fDu << ", " << h.fDv << std::endl;
+  //   }
+  // }
 }
 
 void CbmRecoSts::DumpOldHits()

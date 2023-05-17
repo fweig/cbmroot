@@ -330,7 +330,7 @@ private:
   std::vector<CbmStsRecoModule*> fModuleIndex {};   //!
 
   bool fUseGpuReco = false;
-  cbm::algo::StsHitfinderChain fGpuReco;
+  cbm::algo::sts::HitfinderChain fGpuReco;
 
   std::pair<size_t, size_t> ForwardGpuClusterAndHits();
 
