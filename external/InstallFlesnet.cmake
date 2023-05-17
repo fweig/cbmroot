@@ -106,6 +106,7 @@ list(APPEND dir_to_link
 if(NOT APPLE)
   list(APPEND dir_to_link ${Boost_THREAD_LIBRARY})
 endif()
+list(APPEND dir_to_link -lrt)
 
 set_target_properties(external::fles_ipc PROPERTIES
   IMPORTED_LOCATION ${FLESNET_DESTDIR}/src/flesnet-build/lib/fles_ipc/${CMAKE_STATIC_LIBRARY_PREFIX}fles_ipc${CMAKE_STATIC_LIBRARY_SUFFIX}
