@@ -26,7 +26,7 @@ void Reco::Init(const Options& opts)
   LOG(info) << "Running CBM Reco on Device " << props.name();
 
   // Reco Params
-  fs::path recoParamsPath = opts.ParamsDir() / "Reco.yaml";
+  fs::path recoParamsPath = opts.ParamsDir() / "RecoParams.yaml";
   YAML::Node yaml         = YAML::LoadFile(recoParamsPath.string());
   fContext.recoParams     = config::Read<RecoParams>(yaml);
 

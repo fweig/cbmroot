@@ -15,7 +15,7 @@ sts::LandauTable sts::LandauTable::FromFile(fs::path path)
 
   std::vector<f32> charge;
   std::vector<f32> prob;
-  std::ifstream file(path);
+  std::ifstream file(path.string());
 
   while (!file.eof()) {
 

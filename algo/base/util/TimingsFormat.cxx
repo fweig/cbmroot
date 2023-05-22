@@ -18,7 +18,7 @@ namespace cbm::algo
     void Begin(size_t align)
     {
       fAlign = align;
-      fSS    = {};
+      fSS    = std::stringstream();
     }
 
     void Title(std::string_view title) { fSS << fmt::format("{:<{}}\n", title, fAlign); }
