@@ -7,9 +7,9 @@
 
 #include <Timeslice.hpp>
 
-#include <fairlogger/Logger.h>
-
 #include <xpu/host.h>
+
+#include "log.hpp"
 
 using namespace cbm::algo;
 
@@ -43,7 +43,7 @@ void sts::UnpackChain::Init(StsReadoutConfig config)
       par->fElinkParams.push_back(elinkPar);
     }
     fAlgoSts[equip].SetParams(std::move(par));
-    LOG(debug) << "--- Configured STS equipment " << equip << " with " << numElinks << " elinks";
+    L_(debug) << "--- Configured STS equipment " << equip << " with " << numElinks << " elinks";
   }  //# equipments
 }
 
@@ -88,11 +88,10 @@ std::vector<CbmStsDigi> sts::UnpackChain::Run(const fles::Timeslice& timeslice)
         xpu::t_add_bytes(msDescriptor.size);
 
         auto result = (algoIt->second)(msContent, msDescriptor, timeslice.start_time());
-        LOG(debug1) << "STS Unpacker: Component " << comp << ", microslice " << mslice << ", digis "
-                    << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
-                    << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
-                    << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
-                    << " | ";
+        L_(trace) << "STS Unpacker: Component " << comp << ", microslice " << mslice << ", digis "
+                  << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
+                  << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage << " | "
+                  << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow << " | ";
 
         // numPulsers += result.second.fNumPulserHits;
         numDigisInComp += result.first.size();
@@ -103,6 +102,6 @@ std::vector<CbmStsDigi> sts::UnpackChain::Run(const fles::Timeslice& timeslice)
 
   }  // component
 
-  LOG(info) << "Timeslice contains " << digis.size() << " STS digis (discarded " << numPulsers << " pulser hits)";
+  L_(info) << "Timeslice contains " << digis.size() << " STS digis (discarded " << numPulsers << " pulser hits)";
   return digis;
 }

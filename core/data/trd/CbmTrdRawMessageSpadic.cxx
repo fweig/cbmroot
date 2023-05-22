@@ -4,11 +4,11 @@
 
 #include "CbmTrdRawMessageSpadic.h"
 
-#include <Logger.h>  // for LOG
-
 #include <algorithm>  // for max_element
 #include <cstdint>
 #include <stdexcept>  // for range_error
+
+#include "AlgoFairloggerCompat.h"  // for LOG
 
 // -------  Default Constructor  ----------------
 CbmTrdRawMessageSpadic::CbmTrdRawMessageSpadic()

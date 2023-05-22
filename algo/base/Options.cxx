@@ -9,6 +9,27 @@
 
 using namespace cbm::algo;
 
+void validate(boost::any& v, const std::vector<std::string>& values, severity_level*, int)
+{
+
+  static const std::unordered_map<std::string, severity_level> levels {
+    {"trace", severity_level::trace}, {"debug", severity_level::debug},     {"status", severity_level::status},
+    {"info", severity_level::info},   {"warning", severity_level::warning}, {"error", severity_level::error},
+    {"fatal", severity_level::fatal}};
+
+  namespace po = boost::program_options;
+
+  po::validators::check_first_occurrence(v);
+
+  const std::string& s = po::validators::get_single_string(values);
+
+  auto it = levels.find(s);
+
+  if (it == levels.end()) { throw po::validation_error(po::validation_error::invalid_option_value); }
+
+  v = it->second;
+}
+
 Options::Options(int argc, char** argv)
 {
   namespace po = boost::program_options;
@@ -28,7 +49,7 @@ Options::Options(int argc, char** argv)
   generic.add_options()
     ("device,d", po::value<std::string>(&fDevice)->default_value("cpu")->value_name("<device>"),
       "select device (cpu, cuda0, cuda1, hip0, ...)")
-    ("log-level,l", po::value<std::string>(&fLogLevel)->default_value("info")->value_name("<level>"),
+    ("log-level,l", po::value(&fLogLevel)->default_value(info)->value_name("<level>"),
       "set log level (debug, info, warning, error, fatal)")
     ("num-ts,n", po::value<int>(&fNumTimeslices)->default_value(-1)->value_name("<num>"),
       "Stop after <num> timeslices (-1 = all)")

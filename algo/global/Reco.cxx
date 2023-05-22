@@ -6,6 +6,7 @@
 #include <xpu/host.h>
 
 #include "config/Yaml.h"
+#include "log.hpp"
 #include "util/TimingsFormat.h"
 
 using namespace cbm::algo;
@@ -23,7 +24,7 @@ void Reco::Init(const Options& opts)
   fStsHitFinder.SetContext(&fContext);
 
   xpu::device_prop props {xpu::device::active()};
-  LOG(info) << "Running CBM Reco on Device " << props.name();
+  L_(info) << "Running CBM Reco on Device " << props.name();
 
   // Reco Params
   fs::path recoParamsPath = opts.ParamsDir() / "RecoParams.yaml";
@@ -58,9 +59,7 @@ void Reco::Run(const fles::Timeslice& ts)
 
   xpu::push_timer(fmt::format("TS {}", ts.index()));
 
-  LOG(info) << fair::Logger::startColor(fair::Logger::Color::fgRed) << ">>> Processing TS " << ts.index()
-            << fair::Logger::endColor();
-
+  L_(info) << ">>> Processing TS " << ts.index();
   xpu::set<cbm::algo::Params>(Params());
 
   std::vector<CbmStsDigi> digis;
@@ -84,20 +83,20 @@ void Reco::Finalize()
   // Pop timer that was started in Init()
   xpu::timings t = xpu::pop_timer();
   if (Opts().CollectKernelTimes()) {
-    LOG(info) << MakeReportSubtimers("Run Summary", fTimesliceTimesAcc) << "\n" << MakeReportSummary("Total", t);
+    L_(info) << MakeReportSubtimers("Run Summary", fTimesliceTimesAcc) << "\n" << MakeReportSummary("Total", t);
   }
   else {
-    LOG(info) << "Total Processing time (Wall): " << t.wall() << " ms";
+    L_(info) << "Total Processing time (Wall): " << t.wall() << " ms";
   }
 }
 
 void Reco::PrintTimings(xpu::timings& timings)
 {
   if (Opts().CollectKernelTimes()) {
-    LOG(info) << MakeReportSubtimers("TS timings", timings) << "\n" << MakeReportSummary("Total", timings);
+    L_(info) << MakeReportSubtimers("TS timings", timings) << "\n" << MakeReportSummary("Total", timings);
     fTimesliceTimesAcc.merge(timings);
   }
   else {
-    LOG(info) << "TS Processing time (Wall): " << timings.wall() << " ms";
+    L_(info) << "TS Processing time (Wall): " << timings.wall() << " ms";
   }
 }

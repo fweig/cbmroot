@@ -4,8 +4,7 @@
 
 #include "StsHitfinderChain.h"
 
-#include <fairlogger/Logger.h>
-
+#include <log.hpp>
 #include <numeric>
 
 using namespace cbm::algo;
@@ -37,14 +36,14 @@ void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
   // 3. Copy digis into flat array with offsets per module
   FlattenDigis(digiMap);
 
-  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) { EnsureDigiOffsets(digiMap); }
+  if (Opts().LogLevel() == trace) EnsureDigiOffsets(digiMap);
 
   xpu::queue queue;
 
   // Clear buffers
   // Not all buffers have to initialized, but useful for debugging
 
-  LOG(debug) << "STS Hitfinder Chain: Clearing buffers...";
+  L_(debug) << "STS Hitfinder Chain: Clearing buffers...";
   auto& hfc = fHitfinder;
   // xpu::memset(hfc.digisPerModule, 0);
   // xpu::memset(hfc.digisPerModuleTmp, 0);
@@ -61,25 +60,25 @@ void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
   queue.memset(hfc.nHitsPerModule, 0);
   queue.memset(hfc.maxClusterTimeErrorByModuleSide, 0);
 
-  LOG(debug) << "STS Hitfinder Chain: Copy digis buffers...";
+  L_(debug) << "STS Hitfinder Chain: Copy digis buffers...";
   xpu::set<TheHitfinder>(fHitfinder);
   queue.copy(hfc.digisPerModule, xpu::h2d);
   queue.copy(hfc.digiOffsetPerModule, xpu::h2d);
 
-  LOG(debug) << "STS Hitfinder Chain: Sort Digis...";
+  L_(debug) << "STS Hitfinder Chain: Sort Digis...";
   // TODO: skip temporary buffers and sort directly into digisSortedPerModule
 
   queue.launch<SortDigis>(xpu::n_blocks(nModuleSides));
   xpu::k_add_bytes<SortDigis>(nDigisTotal * sizeof(CbmStsDigi));
-  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) {
-    LOG(trace) << "Ensuring STS digis are sorted...";
+  if (Opts().LogLevel() == trace) {
+    L_(trace) << "Ensuring STS digis are sorted...";
     queue.copy(hfc.digisPerModule, xpu::d2h);
     queue.copy(hfc.digiOffsetPerModule, xpu::d2h);
     queue.wait();
     EnsureDigisSorted();
   }
 
-  LOG(debug) << "STS Hitfinder Chain: Find Clusters...";
+  L_(debug) << "STS Hitfinder Chain: Find Clusters...";
   if (!Params().sts.findClustersMultiKernels) { queue.launch<FindClusters>(xpu::n_blocks(nModuleSides)); }
   else {
     queue.launch<ChannelOffsets>(xpu::n_blocks(nModuleSides));
@@ -89,8 +88,8 @@ void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
     queue.launch<CreateClusters>(xpu::n_blocks(nModuleSides));
     xpu::k_add_bytes<CreateClusters>(nDigisTotal * sizeof(CbmStsDigi));
   }
-  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) {
-    LOG(trace) << "Ensuring STS channel offsets correct...";
+  if (Opts().LogLevel() == trace) {
+    L_(trace) << "Ensuring STS channel offsets correct...";
     xpu::buffer_prop propsOffset {hfc.channelOffsetPerModule};
     std::vector<u32> channelOffsetPerModule;
     channelOffsetPerModule.resize(propsOffset.size());
@@ -98,7 +97,7 @@ void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
     queue.wait();
     EnsureChannelOffsets(channelOffsetPerModule);
 
-    LOG(trace) << "Ensuring STS clusters are ok...";
+    L_(trace) << "Ensuring STS clusters are ok...";
     xpu::buffer_prop props {hfc.clusterIdxPerModule};
 
     std::vector<GpuClusterIdx> clusterIdxPerModule;
@@ -118,10 +117,10 @@ void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
   // xpu::run_kernel<CalculateClusters>(xpu::grid::n_blocks(hfc.nModules * 2));
   // xpu::run_kernel<FindClustersBasic>(xpu::grid::n_blocks(hfc.nModules * 2));
   // xpu::run_kernel<CalculateClustersBasic>(xpu::grid::n_blocks(hfc.nModules * 2));
-  LOG(debug) << "STS Hitfinder Chain: Sort Clusters...";
+  L_(debug) << "STS Hitfinder Chain: Sort Clusters...";
   queue.launch<SortClusters>(xpu::n_blocks(nModuleSides));  // FIXME n_blocks(nModuleSides) once debugging is done
 
-  LOG(debug) << "STS Hitfinder Chain: Find Hits...";
+  L_(debug) << "STS Hitfinder Chain: Find Hits...";
   queue.copy(hfc.nClustersPerModule, xpu::d2h);
   queue.wait();
   xpu::h_view nClusters {hfc.nClustersPerModule};
@@ -150,12 +149,12 @@ void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
   xpu::k_add_bytes<SortClusters>(nClustersTotal * sizeof(GpuClusterIdx));
   xpu::k_add_bytes<FindHits>(nClustersTotal * sizeof(sts::Cluster));
 
-  LOG(info) << "Timeslice contains " << nHitsTotal << " STS hits and " << nClustersTotal << " STS clusters";
+  L_(info) << "Timeslice contains " << nHitsTotal << " STS hits and " << nClustersTotal << " STS clusters";
 }
 
 void sts::HitfinderChain::EnsureParameters()
 {
-  LOG_IF(fatal, fPars == std::nullopt) << "sts::HitfinderChain: Parameters not set. Can't continue!";
+  if (fPars == std::nullopt) throw std::runtime_error("sts::HitfinderChain: Parameters not set. Can't continue!");
 }
 
 void sts::HitfinderChain::AllocateStatic()
@@ -221,8 +220,8 @@ void sts::HitfinderChain::AllocateStatic()
 
 void sts::HitfinderChain::AllocateDynamic(size_t maxNDigisPerModule, size_t nDigisTotal)
 {
-  LOG(debug) << "STS Hitfinder Chain: Allocating dynamic memory for " << maxNDigisPerModule << " digis per module and "
-             << nDigisTotal << " digis in total";
+  L_(debug) << "STS Hitfinder Chain: Allocating dynamic memory for " << maxNDigisPerModule << " digis per module and "
+            << nDigisTotal << " digis in total";
   EnsureParameters();
 
   xpu::scoped_timer t_ {"Allocate"};
@@ -266,7 +265,7 @@ void sts::HitfinderChain::AllocateDynamic(size_t maxNDigisPerModule, size_t nDig
 sts::HitfinderChain::DigiMap sts::HitfinderChain::SortDigisIntoModules(gsl::span<const CbmStsDigi> digis,
                                                                        size_t& maxNDigisPerModule)
 {
-  LOG(debug) << "STS Hitfinder Chain: Sorting " << digis.size() << " digis into modules";
+  L_(debug) << "STS Hitfinder Chain: Sorting " << digis.size() << " digis into modules";
   xpu::scoped_timer t_ {"Sort Digis"};
 
   DigiMap digiMap;
@@ -298,13 +297,13 @@ sts::HitfinderChain::DigiMap sts::HitfinderChain::SortDigisIntoModules(gsl::span
     }
   }
 
-  LOG_IF(warn, nPulsers > 0) << "STS Hitfinder: Discarded " << nPulsers << " pulser digis";
+  if (nPulsers > 0) L_(warning) << "STS Hitfinder: Discarded " << nPulsers << " pulser digis";
 
   // Print digi counts per module
   for (const auto& mod : fPars->modules) {
     i32 moduleAddr = mod.address;
-    LOG(debug1) << "Module " << moduleAddr << " has " << digiMap.front[moduleAddr].size() << " front digis and "
-                << digiMap.back[moduleAddr].size() << " back digis";
+    L_(debug) << "Module " << moduleAddr << " has " << digiMap.front[moduleAddr].size() << " front digis and "
+              << digiMap.back[moduleAddr].size() << " back digis";
   }
 
   maxNDigisPerModule = 0;
@@ -321,7 +320,7 @@ sts::HitfinderChain::DigiMap sts::HitfinderChain::SortDigisIntoModules(gsl::span
 
 void sts::HitfinderChain::FlattenDigis(DigiMap& digiMap)
 {
-  LOG(debug) << "STS Hitfinder Chain: Flattening digis";
+  L_(debug) << "STS Hitfinder Chain: Flattening digis";
   xpu::scoped_timer t_ {"Flatten Digis"};
   FlattenDigisSide(digiMap.front, true);
   FlattenDigisSide(digiMap.back, false);
@@ -412,19 +411,29 @@ void sts::HitfinderChain::EnsureDigiOffsets(DigiMap& digi)
   // Front
   for (size_t m = 0; m < nModules; m++) {
     const auto& moduleDigis = digi.front[fPars->modules[m].address];
-    LOG_IF(fatal, digiOffset[m] != offset) << "Digi offset mismatch";
+    if (digiOffset[m] != offset) {
+      L_(fatal) << "Module " << m << ": Digi offset mismatch: " << digiOffset[m] << " != " << offset;
+      std::abort();
+    }
     offset += moduleDigis.size();
   }
 
   // Back
   for (size_t m = 0; m < nModules; m++) {
     const auto& moduleDigis = digi.back[fPars->modules[m].address];
-    LOG_IF(fatal, digiOffset[nModules + m] != offset)
-      << "Module " << nModules + m << ": Digi offset mismatch: " << digiOffset[nModules + m] << " != " << offset;
+
+    if (digiOffset[nModules + m] != offset) {
+      L_(fatal) << "Module " << nModules + m << ": Digi offset mismatch: " << digiOffset[nModules + m]
+                << " != " << offset;
+      std::abort();
+    }
     offset += moduleDigis.size();
   }
 
-  LOG_IF(fatal, offset != digiOffset[2 * nModules]) << "Digi offset mismatch";
+  if (offset != digiOffset[2 * nModules]) {
+    L_(fatal) << "Digi offset mismatch: " << digiOffset[2 * nModules] << " != " << offset;
+    std::abort();
+  }
 }
 
 void sts::HitfinderChain::EnsureDigisSorted()
@@ -452,12 +461,15 @@ void sts::HitfinderChain::EnsureDigisSorted()
       }
 
       isSorted = false;
-      LOG(error) << "Module " << m << " not sorted: " << digi1.ToString() << " " << digi2.ToString();
+      L_(error) << "Module " << m << " not sorted: " << digi1.ToString() << " " << digi2.ToString();
       break;
     }
   }
 
-  LOG_IF(fatal, !isSorted) << "Digis are not sorted";
+  if (!isSorted) {
+    L_(fatal) << "Digis are not sorted";
+    std::abort();
+  }
 }
 
 void sts::HitfinderChain::EnsureChannelOffsets(span<u32> channelOffsetsByModule)
@@ -476,7 +488,10 @@ void sts::HitfinderChain::EnsureChannelOffsets(span<u32> channelOffsetsByModule)
 
     if (nDigis == 0) continue;
 
-    LOG_IF(fatal, channelOffsets[0] != 0) << "Module " << m << ": First channel offset is not 0";
+    if (channelOffsets[0] != 0) {
+      L_(fatal) << "Module " << m << ": First channel offset is not 0";
+      std::abort();
+    }
 
     int chan = digis[0].GetChannel();
     for (int i = 0; i < nDigis; i++) {
@@ -493,9 +508,11 @@ void sts::HitfinderChain::EnsureChannelOffsets(span<u32> channelOffsetsByModule)
     }
 
     for (int i = 0; i < nChannels; i++) {
-      LOG_IF(fatal, channelOffsets[i] != expectedChannelOffsets[i])
-        << "Module " << m << ": Channel offset for channel " << i << " is " << channelOffsets[i] << " but should be "
-        << expectedChannelOffsets[i];
+      if (channelOffsets[i] != expectedChannelOffsets[i]) {
+        L_(fatal) << "Module " << m << ": Channel offset for channel " << i << " is " << channelOffsets[i]
+                  << " but should be " << expectedChannelOffsets[i];
+        std::abort();
+      }
     }
   }
 }
@@ -505,14 +522,18 @@ void sts::HitfinderChain::EnsureClustersSane(span<GpuClusterIdx> hClusterIdx, sp
   for (size_t m = 0; m < 2 * fPars->modules.size(); m++) {
     int nClusters = hNClusters[m];
 
-    LOG(trace) << "Module " << m << " has " << nClusters << " clusters of " << fHitfinder.maxClustersPerModule;
+    L_(trace) << "Module " << m << " has " << nClusters << " clusters of " << fHitfinder.maxClustersPerModule;
 
     if (nClusters == 0) continue;
 
-    if (nClusters < 0) { LOG(fatal) << "Module " << m << " has negative number of clusters " << nClusters; }
+    if (nClusters < 0) {
+      L_(fatal) << "Module " << m << " has negative number of clusters " << nClusters;
+      std::abort();
+    }
     if (size_t(nClusters) > fHitfinder.maxClustersPerModule) {
-      LOG(fatal) << "Module " << m << " has " << nClusters << " clusters, but only " << fHitfinder.maxClustersPerModule
-                 << " are allowed";
+      L_(fatal) << "Module " << m << " has " << nClusters << " clusters, but only " << fHitfinder.maxClustersPerModule
+                << " are allowed";
+      std::abort();
     }
 
     auto* clusterIdx = &hClusterIdx[m * fHitfinder.maxClustersPerModule];
@@ -521,14 +542,16 @@ void sts::HitfinderChain::EnsureClustersSane(span<GpuClusterIdx> hClusterIdx, sp
       auto& cidx = clusterIdx[i];
 
       if (cidx.fIdx < 0 || size_t(cidx.fIdx) >= fHitfinder.maxClustersPerModule) {
-        LOG(fatal) << "Cluster " << i << " of module " << m << " has invalid index " << cidx.fIdx;
+        L_(fatal) << "Cluster " << i << " of module " << m << " has invalid index " << cidx.fIdx;
+        std::abort();
       }
 
       if (cidx.fTime == 0xFFFFFFFF) {
-        LOG(fatal) << "Cluster " << i << " of module " << m << " has invalid time " << cidx.fTime;
+        L_(fatal) << "Cluster " << i << " of module " << m << " has invalid time " << cidx.fTime;
+        std::abort();
       }
     }
   }
 
-  LOG(trace) << "Clusters ok";
+  L_(trace) << "Clusters ok";
 }

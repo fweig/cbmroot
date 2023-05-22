@@ -6,10 +6,10 @@
 
 #include "CbmDefs.h"  // for kMuch
 
-#include <Logger.h>  // for Logger, LOG
-
 #include <iomanip>  // for setw, __iom_t6
 #include <ios>      // for right
+
+#include "AlgoFairloggerCompat.h"  // for Logger, LOG
 
 
 // -----    Definition of the address field   -------------------------------

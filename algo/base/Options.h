@@ -7,6 +7,7 @@
 #include <string>
 
 #include "compat/Filesystem.h"
+#include "log.hpp"
 
 namespace cbm::algo
 {
@@ -19,7 +20,7 @@ namespace cbm::algo
 
     fs::path ParamsDir() const { return fParamsDir; }
     const std::string& InputLocator() const { return fInputLocator; }
-    const std::string& LogLevel() const { return fLogLevel; }
+    severity_level LogLevel() const { return fLogLevel; }
     const std::string& Device() const { return fDevice; }
     bool CollectKernelTimes() const { return fCollectKernelTimes; }
     int NumTimeslices() const { return fNumTimeslices; }
@@ -28,7 +29,7 @@ namespace cbm::algo
   private:
     std::string fParamsDir;  // TODO: can we make this a std::path?
     std::string fInputLocator;
-    std::string fLogLevel;
+    severity_level fLogLevel;
     std::string fDevice;
     bool fCollectKernelTimes = false;
     int fNumTimeslices       = -1;

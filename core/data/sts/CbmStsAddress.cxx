@@ -11,10 +11,10 @@
 
 #include "CbmDefs.h"  // for kSts
 
-#include <Logger.h>  // for Logger, LOG
-
 #include <cassert>  // for assert
 #include <sstream>  // for operator<<, basic_ostream, stringstream
+
+#include "AlgoFairloggerCompat.h"  // for Logger, LOG
 
 // -----   Construct address from element Ids   ------------------------------
 int32_t CbmStsAddress::GetAddress(uint32_t unit, uint32_t ladder, uint32_t halfladder, uint32_t module, uint32_t sensor,

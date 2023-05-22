@@ -3,8 +3,7 @@
    Authors: Felix Weiglhofer [committer] */
 #include <TimesliceAutoSource.hpp>
 
-#include <fairlogger/Logger.h>
-
+#include <log.hpp>
 #include <sstream>
 
 #include <xpu/host.h>
@@ -18,21 +17,15 @@ int main(int argc, char** argv)
 {
   Options opts {argc, argv};
 
-  // Logger
-  fair::Logger::SetConsoleSeverity(std::string {opts.LogLevel()});
-  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) {
-    fair::Logger::SetVerbosity(fair::Verbosity::veryhigh);
-  }
-  fair::Logger::OnFatal([] { std::abort(); });
-  fair::Logger::SetConsoleColor(true);
+  logging::add_console(opts.LogLevel());
 
   // XPU
   xpu::settings settings;
   settings.profile = opts.CollectKernelTimes();
   settings.device  = opts.Device();
-  if (fair::Logger::GetConsoleSeverity() == fair::Severity::trace) {
+  if (opts.LogLevel() == trace) {
     settings.verbose      = true;
-    settings.logging_sink = [](std::string_view msg) { LOG(trace) << msg; };
+    settings.logging_sink = [](std::string_view msg) { L_(trace) << msg; };
   }
   xpu::initialize(settings);
   xpu::preload<GPUReco>();
@@ -42,7 +35,7 @@ int main(int argc, char** argv)
   for (int i = 0; i < argc; i++) {
     ss << argv[i] << " ";
   }
-  LOG(info) << ss.str();
+  L_(info) << ss.str();
 
   Reco reco;
   reco.Init(opts);

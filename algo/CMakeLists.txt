@@ -1,3 +1,4 @@
+add_subdirectory(log)
 add_subdirectory(data)
 add_subdirectory(test)
 
@@ -77,7 +78,7 @@ target_link_libraries(Algo
             Boost::filesystem
             xpu
             external::yaml-cpp
-  INTERFACE FairLogger::FairLogger
+            external::fles_logging
             external::fles_ipc
 )
 target_compile_definitions(Algo PUBLIC NO_ROOT)

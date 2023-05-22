@@ -133,6 +133,7 @@ tof/CbmTofDigiData.h psd/CbmPsdDigiData.h)
 set(LIBRARY_NAME CbmData)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
+  OnlineDataLog
   FairRoot::Base
   ROOT::Core
   ROOT::Matrix

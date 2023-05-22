@@ -4,11 +4,10 @@
 #ifndef CBM_ALGO_BASE_CONFIG_DESERIALIZE_H
 #define CBM_ALGO_BASE_CONFIG_DESERIALIZE_H
 
-#include <fairlogger/Logger.h>
-
 #include <sstream>
 #include <string_view>
 
+#include <fmt/format.h>
 #include <yaml-cpp/yaml.h>
 
 #include "BaseTypes.h"

@@ -6,9 +6,9 @@
 
 #include "CbmMuchAddress.h"
 
-#include <Logger.h>
-
 #include <bitset>
+
+#include "AlgoFairloggerCompat.h"
 
 using namespace std;
 

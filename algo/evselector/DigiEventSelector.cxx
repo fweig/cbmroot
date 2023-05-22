@@ -6,13 +6,13 @@
 
 #include "CbmStsDigi.h"
 
-#include <Logger.h>
-
 #include "TofConfig.h"
 
 #include <iterator>
 #include <map>
 #include <unordered_set>
+
+#include "AlgoFairloggerCompat.h"
 
 
 namespace cbm::algo

@@ -6,14 +6,14 @@
 
 #include "CbmTrdAddress.h"  // for CbmTrdAddress
 
-#include <Logger.h>  // for LOG
-
 #include <iomanip>  // for operator<<, setprecision, setw
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 #include <string>   // for char_traits
 #include <utility>
 
 #include <cmath>
+
+#include "AlgoFairloggerCompat.h"  // for LOG
 
 #ifdef NO_ROOT
 // Coming from Rtypes.h in ROOT mode

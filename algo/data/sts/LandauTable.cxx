@@ -3,9 +3,9 @@
    Authors: Felix Weiglhofer [committer] */
 #include "LandauTable.h"
 
-#include <fairlogger/Logger.h>
-
 #include <fstream>
+
+#include "log.hpp"
 
 using namespace cbm::algo;
 
@@ -24,7 +24,7 @@ sts::LandauTable sts::LandauTable::FromFile(fs::path path)
     charge.push_back(q);
     prob.push_back(p);
 
-    LOG(trace) << "Reading Landau table " << path << " q=" << q << " p=" << p;
+    L_(trace) << "Reading Landau table " << path << " q=" << q << " p=" << p;
   }
 
   // TODO: check if charge is monotonically increasing, also more than 2 entries

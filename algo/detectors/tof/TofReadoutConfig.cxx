@@ -6,11 +6,10 @@
 
 #include "CbmTofAddress.h"
 
-#include <Logger.h>
-
 #include <bitset>
 #include <iomanip>
 
+#include "AlgoFairloggerCompat.h"
 #include "gDpbMessv100.h"
 
 using namespace std;
