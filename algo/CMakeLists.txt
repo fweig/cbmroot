@@ -84,14 +84,23 @@ target_compile_definitions(Algo PUBLIC NO_ROOT)
 xpu_attach(Algo ${DEVICE_SRCS})
 
 install(TARGETS Algo DESTINATION lib)
+install(DIRECTORY base/compat TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY base/config TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY base/gpu TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY data/sts TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 
 install(
-  FILES       ca/simd/CaSimd.h
-              ca/simd/CaSimdVc.h
-              ca/simd/CaSimdPseudo.h
-              detectors/sts/StsHitfinder.h
-              detectors/sts/StsHitfinderChain.h
-  DESTINATION include/
+  FILES       
+    base/ChainContext.h
+    base/Options.h
+    base/Prelude.h
+    base/RecoParams.h
+    base/SubChain.h
+    ca/simd/CaSimd.h
+    ca/simd/CaSimdVc.h
+    ca/simd/CaSimdPseudo.h
+    detectors/sts/StsHitfinder.h
+    detectors/sts/StsHitfinderChain.h
+  DESTINATION 
+    include/
 )
