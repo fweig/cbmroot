@@ -96,15 +96,15 @@ namespace ca::tools
       return std::accumulate(fvNofPointsUsed.cbegin(), fvNofPointsUsed.cbegin() + static_cast<int>(detID), 0);
     }
 
-    /// @brief Gets the first point index for a given detector subsystem
+    /// @brief Gets the next index of point, which is expected being after the last one for a given detector
     /// @param detID  Detector ID
     int GetLastPointIndex(L1DetectorID detID) const
     {
-      return std::accumulate(fvNofPointsUsed.cbegin(), fvNofPointsUsed.cbegin() + static_cast<int>(detID) + 1, 0) - 1;
+      return std::accumulate(fvNofPointsUsed.cbegin(), fvNofPointsUsed.cbegin() + static_cast<int>(detID) + 1, 0);
     }
 
     /// @brief Calculates global index of MC point
-    /// @param  iPointLocal  Local index of MC point
+    /// @param  iPointLocal  Local index of MC psinoint
     /// @param  detID        Detector ID
     ///
     /// The function calculates global external index of MC point as a sum of a given local index and total provided
@@ -113,7 +113,6 @@ namespace ca::tools
     {
       return iPointLocal + std::accumulate(fvNofPointsOrig.cbegin(), fvNofPointsOrig.cbegin() + int(detID), 0);
     }
-
 
     /// Gets number of tracks in this event/TS
     int GetNofTracks() const { return fvTracks.size(); }

@@ -232,6 +232,7 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << indent << indentChar << "Max number of threads:              " << L1Constants::size::kMaxNthreads << '\n';
   aStream << indent << indentChar << "Max number of triplets:             " << L1Constants::size::kMaxNtriplets << '\n';
   aStream << indent << kCLb << "RUNTIME CONSTANTS:\n" << kCL;
+  aStream << indent << indentChar << "Random seed:                        " << fRandomSeed << '\n';
   aStream << indent << indentChar << "Max number of doublets per singlet: " << fMaxDoubletsPerSinglet << '\n';
   aStream << indent << indentChar << "Max number of triplets per doublet: " << fMaxTripletPerDoublets << '\n';
   aStream << indent << indentChar << "Tracking level:                     " << fTrackingLevel << '\n';

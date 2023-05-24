@@ -224,12 +224,11 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
 
   // obtain mc data
   for (int iih = 0; iih < NHits; iih++) {
-    int nMC = fL1->fvHitDebugInfo[iHits[iih]].mcPointIds.size();
-    for (int iMC = 0; iMC < nMC; iMC++) {
-      const int iMCP = fL1->fvHitDebugInfo[iHits[iih]].mcPointIds[iMC];
+    const int iMCP = fL1->fvHitDebugInfo[iHits[iih]].GetMCPointIndex();
+    if (iMCP > -1) {
       int mcId       = fL1->fvMCPoints[iMCP].ID;
       mcIds[iih].push_back(mcId);
-    }  // for mcPoints
+    }
   }    // for hits
 
   // find all reconstructed track id-s
@@ -250,11 +249,14 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
   }
 
   // use first found // TODO: save all!!!
+  // UPD: SZh 24.05.2023: We save only one point index (the best matched)
   vector<int>& mcsN = mcIds[NHits - 1];
   for (unsigned int i = 0; i < mcsN.size(); i++) {
     if (mcsN[i] >= 0) {
       trlet.mcTrackId = mcsN[i];
-      trlet.iStation  = fL1->fvMCPoints[fL1->fvHitDebugInfo[iHits[0]].mcPointIds[0]].iStation;
+      int iMCP        = fL1->fvHitDebugInfo[iHits[0]].GetMCPointIndex();
+      assert(iMCP > -1);
+      trlet.iStation = fL1->fvMCPoints[fL1->fvHitDebugInfo[iHits[0]].GetMCPointIndex()].iStation;
       break;
     }
   }

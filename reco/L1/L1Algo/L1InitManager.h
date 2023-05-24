@@ -225,6 +225,11 @@ public:
   /// \param  filename  Name of the output L1 parameters configuration
   void SetOutputConfigName(const std::string& filename) { fConfigOutputName = filename; }
 
+  /// @brief Sets pseudo-random numbers generator seed
+  /// @param seed  Seed value
+  /// @note  The default seed is 0
+  void SetRandomSeed(unsigned int seed) { fParameters.fRandomSeed = seed; }
+
   /// Sets target position
   /// \param  x  Position X component [cm]
   /// \param  y  Position Y component [cm]

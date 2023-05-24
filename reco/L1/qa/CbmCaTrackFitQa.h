@@ -183,19 +183,19 @@ namespace cbm::ca
     /// @param weight   Weight
     void FillResAndPull(ETrackParType type, double recoVal, double recoErr, double trueVal, double w);
 
-    TrackParArray_t<TH1F*> fvphResiduals = {0};  ///< Residuals for different track parameters
-    TrackParArray_t<TH1F*> fvphPulls     = {0};  ///< Pulls for different track parameters
+    TrackParArray_t<TH1F*> fvphResiduals = {{0}};  ///< Residuals for different track parameters
+    TrackParArray_t<TH1F*> fvphPulls     = {{0}};  ///< Pulls for different track parameters
 
-    TrackParArray_t<bool> fvbParIgnored = {0};  ///< Flag: true - parameter is ignored
+    TrackParArray_t<bool> fvbParIgnored = {{0}};  ///< Flag: true - parameter is ignored
 
     // ** Distribution properties **
-    TrackParArray_t<int> fvRBins  = {0};  ///< Number of bins, residuals
-    TrackParArray_t<double> fvRLo = {0};  ///< Lower boundary, residuals
-    TrackParArray_t<double> fvRUp = {0};  ///< Upper boundary, residuals
+    TrackParArray_t<int> fvRBins  = {{0}};  ///< Number of bins, residuals
+    TrackParArray_t<double> fvRLo = {{0}};  ///< Lower boundary, residuals
+    TrackParArray_t<double> fvRUp = {{0}};  ///< Upper boundary, residuals
 
-    TrackParArray_t<int> fvPBins  = {0};  ///< Number of bins, pulls
-    TrackParArray_t<double> fvPLo = {0};  ///< Lower boundary, pulls
-    TrackParArray_t<double> fvPUp = {0};  ///< Upper boundary, pulls
+    TrackParArray_t<int> fvPBins  = {{0}};  ///< Number of bins, pulls
+    TrackParArray_t<double> fvPLo = {{0}};  ///< Lower boundary, pulls
+    TrackParArray_t<double> fvPUp = {{0}};  ///< Upper boundary, pulls
 
     TString fsTitle = "";  ///< Title of the point
 

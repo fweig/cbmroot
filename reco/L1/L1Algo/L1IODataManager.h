@@ -57,8 +57,9 @@ public:
   /// \note   If one does not call this method, the underlying vector of hits will be filled with the time penalty
   void ReserveNhits(L1HitIndex_t nHits) { fInputData.fHits.reserve(nHits); }
 
-  /// Resets the input data block
-  void ResetInputData() noexcept;
+  /// @brief  Resets the input data block
+  /// @param  nHits  Number of hits to reserve
+  void ResetInputData(L1HitIndex_t nHits = 0) noexcept;
 
   /// Pushes back a hit
   /// \param  hit  An L1Hit object

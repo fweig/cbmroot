@@ -62,6 +62,11 @@ namespace ca::tools
     /// @brief Gets MC event ID
     int GetEventId() const { return fLinkKey.fEvent; }
 
+    /// @brief Gets MC external ID
+    /// @note  External ID of a point shifted from the original external ID by the total number of points,
+    ///        produced in the preceding detector subsystems.
+    int GetExternalId() const { return fLinkKey.fIndex; }
+
     /// @brief Gets MC file ID
     int GetFileId() const { return fLinkKey.fFile; }
 
@@ -350,6 +355,7 @@ namespace ca::tools
 
     L1DetectorID fDetectorId;  ///< Detector ID of MC point
 
+    // TODO: SZh 17.05.2023: Check, if there are more then one index can be added
     L1Vector<int> fvHitIndexes {"ca::tools::MCPoint::fvHitIndexes"};  ///< Indexes of hits, assigned to this point
   };
 }  // namespace ca::tools

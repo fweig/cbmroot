@@ -71,11 +71,20 @@ public:
   /// String representation of the class contents
   std::string ToString(int verbosity = 0, int indentLevel = 0) const;
 
+  // TODO: SZh 15.05.2023: Setters should be removed from the class, since parameters
+  //                       can be initialized only via L1InitManager.
   /// Sets upper-bound cut on max number of doublets per one singlet
   void SetMaxDoubletsPerSinglet(unsigned int value) { fMaxDoubletsPerSinglet = value; }
 
   /// Sets upper-bound cut on max number of triplets per one doublet
   void SetMaxTripletPerDoublets(unsigned int value) { fMaxTripletPerDoublets = value; }
+
+  /// @brief  Gets first active station index within detector subsystem
+  /// @param  detectorID  Detector ID
+  int GetFirstActiveStationIndex(L1DetectorID detectorID) const
+  {
+    return std::accumulate(fNstationsActive.cbegin(), fNstationsActive.cbegin() + static_cast<int>(detectorID), 0);
+  }
 
   /// Gets upper-bound cut on max number of doublets per one singlet
   unsigned int GetMaxDoubletsPerSinglet() const { return fMaxDoubletsPerSinglet; }
@@ -181,6 +190,12 @@ public:
   /// Gets L1FieldValue object at primary vertex
   const L1FieldValue& GetVertexFieldValue() const { return fVertexFieldValue; }
 
+  /// @brief Gets random seed
+  ///
+  /// If random seed is zero, std::random_device is used to seed the random number generator.
+  int GetRandomSeed() const { return fRandomSeed; }
+
+
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fGhostSuppression; }
 
@@ -268,6 +283,8 @@ private:
   int fTrackingLevel    = 0;  ///< tracking level
   int fGhostSuppression = 0;  ///< flag: if true, ghost tracks are suppressed
   float fMomentumCutOff = 0;  ///< minimum momentum of tracks
+  int fRandomSeed       = 1;  ///< random seed
+
 
   // ***************************
   // ** Flags for development **
@@ -278,7 +295,7 @@ private:
   bool fDevIsMatchDoubletsViaMc {false};        ///< Flag to match doublets using MC information
   bool fDevIsMatchTripletsViaMc {false};        ///< Flag to match triplets using Mc information
   bool fDevIsExtendTracksViaMc {false};         ///< Flag to extend tracks using Mc information
-  bool fDevIsSuppressOverlapHitsViaMc {false};  ///<  Flag to match hits in overlaps using Mc information
+  bool fDevIsSuppressOverlapHitsViaMc {false};  ///< Flag to match hits in overlaps using Mc information
 
   bool fDevIsParSearchWUsed       = false;  ///< Flag: when true, the parametrized search windows are used in track
                                             ///< finder; when false, the Kalman filter is used instead
@@ -310,6 +327,7 @@ private:
     ar& fTrackingLevel;
     ar& fGhostSuppression;
     ar& fMomentumCutOff;
+    ar& fRandomSeed;
 
     ar& fDevIsIgnoreHitSearchAreas;
     ar& fDevIsUseOfOriginalField;

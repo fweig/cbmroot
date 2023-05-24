@@ -10,6 +10,7 @@
 #ifndef CbmCaTimeSliceReader_h
 #define CbmCaTimeSliceReader_h 1
 
+#include "CbmCaMCModule.h"
 #include "CbmL1.h"  // TMP: for CbmL1HitStore
 #include "CbmL1DetectorID.h"
 #include "CbmL1Hit.h"
@@ -28,6 +29,7 @@
 
 #include "TClonesArray.h"
 
+#include "CaToolsHitRecord.h"
 #include "L1Constants.h"
 #include "L1Vector.h"
 
@@ -38,39 +40,19 @@ class L1Parameters;
 
 namespace cbm::ca
 {
+  using ::ca::tools::HitRecord;
+
+
   /// @brief A reader of time slice for CA tracker
   ///
   /// The class reads reconstructed hits and reconstructed tracks (optionally) and fills the CA tracking internal
   /// data structures.
   ///
   class TimeSliceReader {
-    /// @brief A structure to store hits information from different detectors in a uniform manner
-    ///
-    struct HitRecord {
-      double fX           = 0.;  ///< x component of hit position [cm]
-      double fY           = 0.;  ///< y component of hit position [cm]
-      double fDx          = 0.;  ///< error of x component of hit position [cm]
-      double fDy          = 0.;  ///< error of y component of hit position [cm]
-      double fDxy         = 0.;  ///< correlation between x and y components [cm]
-      double fU           = 0.;  ///< hit position in direction of front strips [cm]
-      double fV           = 0.;  ///< hit position in direction of back strips [cm]
-      double fDu          = 0.;  ///< hit position error in direction of front strips [cm]
-      double fDv          = 0.;  ///< hit position error in direction of back strips [cm]
-      double fZ           = 0.;  ///< z component of hit position [cm]
-      double fT           = 0.;  ///< time of hit [ns]
-      double fDt          = 0.;  ///< time error of hit [ns]
-      int64_t fDataStream = -1;  ///< Global index of detector module
-      int fExtId          = -1;  ///< external index of hit
-      int fStaId          = -1;  ///< index of active tracking station
-      int fStripF         = -1;  ///< index of front strip
-      int fStripB         = -1;  ///< index of back strip
-      int fDet            = -1;  ///< detector ID
-    };
-
   public:
     /// @brief Constructor from parameters
     /// @param mode  Tracking mode
-    TimeSliceReader(ECbmTrackingMode mode);
+    TimeSliceReader() = default;
 
     /// @brief Destructor
     ~TimeSliceReader() = default;
@@ -90,10 +72,6 @@ namespace cbm::ca
     /// @brief Clears class content
     void Clear();
 
-    /// @brief Check class initialization
-    /// @note The function throws std::logic_error, if initialization is incomplete
-    void CheckInit() const;
-
     /// @brief Gets reference to container of first hit indexes in a detector subsystem
     /// @return Ref. to the container
     const auto& GetHitFirstIndexDet() const { return fvHitFirstIndexDet; }
@@ -106,6 +84,9 @@ namespace cbm::ca
       return fvHitFirstIndexDet[int(iDet) + 1] - fvHitFirstIndexDet[int(iDet)];
     }
 
+    /// @brief Gets CBM tracking mode
+    ECbmCaTrackingMode GetTrackingMode() const { return fTrackingMode; }
+
     /// @brief Run initializer function
     /// @return Success flag
     ///
@@ -116,12 +97,6 @@ namespace cbm::ca
     ///
     /// Reads hits and tracks (optionally) from time slice
     void InitTimeSlice();
-
-    /// @brief Reads hits
-    void ReadHits();
-
-    /// @brief Reads reconstructed tracks
-    void ReadRecoTracks();
 
     /// @brief Registers hit debug info container
     /// @param vQaHits  Reference to Qa hit container
@@ -153,17 +128,30 @@ namespace cbm::ca
     /// @note Should be called before this->Init()
     void SetDetector(L1DetectorID detID, bool flag = true) { fvbUseDet[detID] = flag; }
 
+    /// @brief  Sets the tracking mode
+    /// @param  mode Tracking mode (from ECbmTrackingMode)
+    void SetTrackingMode(ECbmCaTrackingMode mode) { fTrackingMode = mode; }
+
+
   private:
+    /// @brief Check class initialization
+    /// @note The function throws std::logic_error, if initialization is incomplete
+    void CheckInit() const;
+
+    /// @brief Reads hits
+    void ReadHits();
+
+    /// @brief Reads reconstructed tracks
+    void ReadRecoTracks();
+
     /// @brief Reads hits for a given detector subsystem
     /// @tparam Detector ID
-    /// @param  pBrHits  Pointer to input hit branch
     /// @return  Number of stored hits
     /// @note The function modifies fNofHitKey and fFirstHitKey counters
     template<L1DetectorID DetID>
-    int ReadHitsForDetector(const TClonesArray* pBrHits);
+    int ReadHitsForDetector();
 
     /// @brief Sorts QA hit objects by stations
-    template<bool IsNewSortingApproach>
     void SortQaHits();
 
     /// @brief Saves hit to data structures
@@ -172,27 +160,14 @@ namespace cbm::ca
     /// Stores recorded hit information into registered hit containers
     void StoreHitRecord(const HitRecord& hitRecord);
 
-
     bool fbReadTracks = true;   ///< flag to read reconstructed tracks from reco.root
 
-
-    // Pointers to the tracking detector interfaces
-    CbmTrackingDetectorInterfaceBase* fpMvdInterface  = nullptr;
-    CbmTrackingDetectorInterfaceBase* fpStsInterface  = nullptr;
-    CbmTrackingDetectorInterfaceBase* fpMuchInterface = nullptr;
-    CbmTrackingDetectorInterfaceBase* fpTrdInterface  = nullptr;
-    CbmTrackingDetectorInterfaceBase* fpTofInterface  = nullptr;
+    /// @brief Pointers to the tracking detector interfaces for each subsystem
+    CbmCaDetIdArr_t<const CbmTrackingDetectorInterfaceBase*> fvpDetInterface = {{nullptr}};
 
     // Input data branches
-    CbmTimeSlice* fpBrTimeSlice = nullptr;  ///< Pointer to the TS object
-
-    TClonesArray* fpBrMvdHits  = nullptr;  ///< Input branch for MVD hits ("MvdHit")
-    TClonesArray* fpBrStsHits  = nullptr;  ///< Input branch for STS hits ("StsHit")
-    TClonesArray* fpBrMuchHits = nullptr;  ///< Input branch for MuCh hits ("MuchPixelHit")
-    TClonesArray* fpBrTrdHits  = nullptr;  ///< Input branch for TRD hits ("TrdHit")
-    TClonesArray* fpBrTofHits  = nullptr;  ///< Input branch for TOF hits ("TofHit")
-
-    CbmCaDetIdArr_t<TClonesArray*> fvpBrHits = {nullptr};  ///< Input branch for hits
+    CbmTimeSlice* fpBrTimeSlice              = nullptr;      ///< Pointer to the TS object
+    CbmCaDetIdArr_t<TClonesArray*> fvpBrHits = {{nullptr}};  ///< Input branch for hits
 
     // Branches for reconstructed tracks. The input at the moment (as for 27.02.2023) depends on the selected
     // tracking mode. For simulations in CBM, the CA tracking is used only in STS + MVD detectors. In this case
@@ -211,27 +186,21 @@ namespace cbm::ca
     std::shared_ptr<L1IODataManager> fpIODataManager = nullptr;  ///< Pointer to input data manager
     std::shared_ptr<L1Parameters> fpParameters       = nullptr;  ///< Pointer to tracking parameters object
 
-
     // Maps of hit indexes: ext -> int
-    L1Vector<int> vHitMvdIds {"CbmCaTimeSliceReader::vHitMvdIds"};
-    L1Vector<int> vHitStsIds {"CbmCaTimeSliceReader::vHitStsIds"};
-    L1Vector<int> vHitMuchIds {"CbmCaTimeSliceReader::vHitMuchIds"};
-    L1Vector<int> vHitTrdIds {"CbmCaTimeSliceReader::vHitTrdIds"};
-    L1Vector<int> vHitTofIds {"CbmCaTimeSliceReader::vHitTofIds"};
+    CbmCaDetIdArr_t<L1Vector<int>> fvvHitExtToIntIndexMap;  ///< Hit index map ext -> int
 
-    CbmCaDetIdArr_t<int> fvNofHitsTotal = {0};      ///< Total hit number in detector
-    CbmCaDetIdArr_t<int> fvNofHitsUsed  = {0};      ///< Number of used hits in detector
-    CbmCaDetIdArr_t<bool> fvbUseDet     = {false};  ///< Flag: is detector subsystem used
+    CbmCaDetIdArr_t<int> fvNofHitsTotal = {{0}};      ///< Total hit number in detector
+    CbmCaDetIdArr_t<int> fvNofHitsUsed  = {{0}};      ///< Number of used hits in detector
+    CbmCaDetIdArr_t<bool> fvbUseDet     = {{false}};  ///< Flag: is detector subsystem used
 
-    // Additional
-    ECbmTrackingMode fTrackingMode;  ///< Tracking mode
+    ECbmCaTrackingMode fTrackingMode = ECbmCaTrackingMode::kSTS;  ///< Tracking mode
 
     // Variables for storing cache
     int fNofHits     = 0;  ///< Stored number of hits
     int fNofHitKeys  = 0;  ///< Recorded number of hit keys
     int fFirstHitKey = 0;  ///< First index of hit key for the detector subsystem
 
-    std::array<int, L1Constants::size::kMaxNdetectors + 1> fvHitFirstIndexDet = {0};  ///< First hit index in detector
+    std::array<int, L1Constants::size::kMaxNdetectors + 1> fvHitFirstIndexDet = {{0}};  ///< First hit index in detector
   };
 }  // namespace cbm::ca
 
@@ -243,78 +212,61 @@ namespace cbm::ca
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<L1DetectorID DetID>
-int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
+int cbm::ca::TimeSliceReader::ReadHitsForDetector()
 {
-  int nHitsTot    = pBrHits->GetEntriesFast();  // total number of hits stored in a branch
-  int nHitsStored = 0;                          // number of hits stored
+  if (!fvbUseDet[DetID]) { return 0; }  // Detector is entirelly not used
+
+  const auto* pDetInterface = fvpDetInterface[DetID];
+  int nHitsTot              = fvpBrHits[DetID]->GetEntriesFast();  // total number of hits provided by hit finder
+  int nHitsStored           = 0;                                   // number of hits used in tracking
 
   fFirstHitKey = fNofHitKeys;
 
   for (int iHext = 0; iHext < nHitsTot; ++iHext) {
-    HitRecord hitRecord;  // Record of hits information
+    HitRecord hitRecord;
 
     CbmPixelHit* pPixelHit = nullptr;  // Pointer to hit object
-    float phiF             = 0.;       // Stereo angle of front strips
-    float phiB             = 0.;       // Stereo angle of back strips
     int iStGeom            = -1;       // Geometry station number
 
     // Fill out detector specific data
     if constexpr (L1DetectorID::kMvd == DetID) {
-      CbmMvdHit* pMvdHit = static_cast<CbmMvdHit*>(pBrHits->At(iHext));
-      iStGeom            = fpMvdInterface->GetTrackingStationIndex(pMvdHit->GetStationNr());
-      phiF               = fpMvdInterface->GetStripsStereoAngleFront(iStGeom);
-      phiB               = fpMvdInterface->GetStripsStereoAngleBack(iStGeom);
+      CbmMvdHit* pMvdHit = static_cast<CbmMvdHit*>(fvpBrHits[DetID]->At(iHext));
       pPixelHit          = static_cast<CbmPixelHit*>(pMvdHit);
-      hitRecord.fDu      = pMvdHit->GetDx();
-      hitRecord.fDv      = pMvdHit->GetDy();
+      iStGeom            = pDetInterface->GetTrackingStationIndex(pMvdHit->GetStationNr());
     }
     else if constexpr (L1DetectorID::kSts == DetID) {
-      CbmStsHit* pStsHit = static_cast<CbmStsHit*>(pBrHits->At(iHext));
-      iStGeom            = fpStsInterface->GetTrackingStationIndex(pStsHit->GetAddress());
-      phiF               = fpStsInterface->GetStripsStereoAngleFront(iStGeom);
-      phiB               = fpStsInterface->GetStripsStereoAngleBack(iStGeom);
+      CbmStsHit* pStsHit = static_cast<CbmStsHit*>(fvpBrHits[DetID]->At(iHext));
       pPixelHit          = static_cast<CbmPixelHit*>(pStsHit);
+      iStGeom            = pDetInterface->GetTrackingStationIndex(pStsHit->GetAddress());
       hitRecord.fStripF  = fFirstHitKey + pStsHit->GetFrontClusterId();
       hitRecord.fStripB  = fFirstHitKey + pStsHit->GetBackClusterId();
       hitRecord.fDu      = pStsHit->GetDu();
       hitRecord.fDv      = pStsHit->GetDv();
     }
     else if constexpr (L1DetectorID::kMuch == DetID) {
-      CbmMuchPixelHit* pMuchHit = static_cast<CbmMuchPixelHit*>(pBrHits->At(iHext));
-      iStGeom                   = fpMuchInterface->GetTrackingStationIndex(pMuchHit->GetAddress());
-      phiF                      = fpMuchInterface->GetStripsStereoAngleFront(iStGeom);
-      phiB                      = fpMuchInterface->GetStripsStereoAngleBack(iStGeom);
+      CbmMuchPixelHit* pMuchHit = static_cast<CbmMuchPixelHit*>(fvpBrHits[DetID]->At(iHext));
       pPixelHit                 = static_cast<CbmPixelHit*>(pMuchHit);
-      hitRecord.fDu             = pMuchHit->GetDx();
-      hitRecord.fDv             = pMuchHit->GetDy();
+      iStGeom                   = pDetInterface->GetTrackingStationIndex(pMuchHit->GetAddress());
     }
     else if constexpr (L1DetectorID::kTrd == DetID) {
-      CbmTrdHit* pTrdHit = static_cast<CbmTrdHit*>(pBrHits->At(iHext));
-      iStGeom            = fpTrdInterface->GetTrackingStationIndex(pTrdHit->GetAddress());
-      phiF               = fpTrdInterface->GetStripsStereoAngleFront(iStGeom);
-      phiB               = fpTrdInterface->GetStripsStereoAngleBack(iStGeom);
+      CbmTrdHit* pTrdHit = static_cast<CbmTrdHit*>(fvpBrHits[DetID]->At(iHext));
       pPixelHit          = static_cast<CbmPixelHit*>(pTrdHit);
-      hitRecord.fDu      = pTrdHit->GetDx();
-      hitRecord.fDv      = pTrdHit->GetDy();
+      iStGeom            = pDetInterface->GetTrackingStationIndex(pTrdHit->GetAddress());
     }
     else if constexpr (L1DetectorID::kTof == DetID) {
-      CbmTofHit* pTofHit = static_cast<CbmTofHit*>(pBrHits->At(iHext));
+      CbmTofHit* pTofHit = static_cast<CbmTofHit*>(fvpBrHits[DetID]->At(iHext));
+      pPixelHit          = static_cast<CbmPixelHit*>(pTofHit);
       // NOTE: In TOF we can take station index only from hit, because the function needs information on x and z
       //       of the hit in case of "beam_mcbm_2021_07_surveyed" (missingHits flag = true).
       // TODO: Investigate this case or apply the hack to the TOF level
-      iStGeom       = fpTofInterface->GetTrackingStationIndex(pTofHit);
-      phiF          = fpTofInterface->GetStripsStereoAngleFront(iStGeom);
-      phiB          = fpTofInterface->GetStripsStereoAngleBack(iStGeom);
-      pPixelHit     = static_cast<CbmPixelHit*>(pTofHit);
-      hitRecord.fDu = pTofHit->GetDx();
-      hitRecord.fDv = pTofHit->GetDy();
+      iStGeom = pDetInterface->GetTrackingStationIndex(pTofHit);
 
       // *** Additional cuts for TOF ***
       // Skip T0 hits
       if (5 == CbmTofAddress::GetSmType(pTofHit->GetAddress())) { continue; }
 
       // FIXME: Figure it out, if this cut is still needed (introduced a year ago for mCBM)
-      if (ECbmTrackingMode::kMCBM == fTrackingMode && pTofHit->GetZ() > 400) { continue; }
+      if (ECbmCaTrackingMode::kMCBM == fTrackingMode && pTofHit->GetZ() > 400) { continue; }
     }
 
     int iStActive = fpParameters->GetStationIndexActive(iStGeom, DetID);
@@ -332,6 +284,8 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
     hitRecord.fDt         = pPixelHit->GetTimeError();
     hitRecord.fDet        = static_cast<int>(DetID);
     hitRecord.fDataStream = (static_cast<int64_t>(hitRecord.fDet) << 60) | pPixelHit->GetAddress();
+    float phiF            = pDetInterface->GetStripsStereoAngleFront(iStGeom);
+    float phiB            = pDetInterface->GetStripsStereoAngleBack(iStGeom);
     hitRecord.fU          = hitRecord.fX * cos(phiF) + hitRecord.fY * sin(phiF);
     hitRecord.fV          = hitRecord.fX * cos(phiB) + hitRecord.fY * sin(phiB);
     hitRecord.fExtId      = iHext;
@@ -342,6 +296,8 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
       if (fNofHitKeys <= hitRecord.fStripB) { fNofHitKeys += hitRecord.fStripB; }
     }
     else {
+      hitRecord.fDu     = hitRecord.fDx;
+      hitRecord.fDv     = hitRecord.fDy;
       hitRecord.fStripF = fFirstHitKey + iHext;
       hitRecord.fStripB = hitRecord.fStripF;
       if (fNofHitKeys <= hitRecord.fStripF) { fNofHitKeys += hitRecord.fStripF; }
@@ -351,8 +307,8 @@ int cbm::ca::TimeSliceReader::ReadHitsForDetector(const TClonesArray* pBrHits)
     this->StoreHitRecord(hitRecord);
     ++nHitsStored;
   }  // iH
+
   return nHitsStored;
 }
-
 
 #endif  // CbmCaTimeSliceReader_h

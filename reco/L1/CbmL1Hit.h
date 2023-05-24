@@ -49,7 +49,7 @@ public:
 ///
 class CbmL1HitDebugInfo {  // TODO: SZh 21.09.2022: Replace instances of this class with L1Hit
 public:
-  /// Gets detector type
+  /// @brief Gets detector type
   /// 0 - MVD
   /// 1 - STS
   /// 2 - MuCh
@@ -58,29 +58,31 @@ public:
   // TODO: SZh 02.03.2023: Replace det. ID with L1DetectorID
   int GetDetectorType() const { return Det; }
 
-  /// Gets distance from z-axis [cm]
-  float GetR() const { return std::sqrt(x * x + y * y); }
+  /// @brief Gets distance from z-axis [cm]
+  double GetR() const { return std::sqrt(x * x + y * y); }
 
-  /// Gets index of the hit in the external container
+  /// @brief Gets index of the hit in the external container
   int GetExternalHitId() const { return ExtIndex; }
 
-  /// Gets MC point index container
-  const auto& GetMCPointIndexes() const { return mcPointIds; }
+  /// @brief Gets index of matched MC point
+  int GetMCPointIndex() const { return fPointID; }
 
-  /// Gets index of matched MC point
-  int GetMCPointIndex() const { return mcPointIds.size() ? mcPointIds[0] : -1; }
-
-  /// Gets global index of active tracking station
+  /// @brief Gets global index of active tracking station
   int GetStationId() const { return iStation; }
 
-  /// Gets time measurement [ns]
-  float GetT() const { return time; }
+  /// @brief Gets time measurement [ns]
+  double GetT() const { return time; }
 
-  /// Gets x component of position [cm]
-  float GetX() const { return x; }
+  /// @brief Gets x component of position [cm]
+  double GetX() const { return x; }
 
-  /// Gets y component of position [cm]
-  float GetY() const { return y; }
+  /// @brief Gets y component of position [cm]
+  double GetY() const { return y; }
+
+  /// @brief Sets index of matched MC point
+  /// @param pointID  Internal index of MC point
+  void SetMCPointIndex(int pointID) { fPointID = pointID; }
+
 
   /// @brief String representation of the object
   /// @param verbose  Verbosity level
@@ -102,7 +104,7 @@ public:
       if (verbose > 0) {
         msg << setw(14) << setfill(' ') << "dx [cm]" << ' ';
         msg << setw(14) << setfill(' ') << "dy [cm]" << ' ';
-        msg << setw(14) << setfill(' ') << "dxy [cm]" << ' ';
+        msg << setw(14) << setfill(' ') << "dxy [cm2]" << ' ';
         msg << setw(14) << setfill(' ') << "dt [ns]" << ' ';
       }
     }
@@ -129,6 +131,7 @@ public:
   int ExtIndex;                                                ///< index of hit in the external branch
   int IntIndex;                                                ///< index of hit in the internal array
   int iStation;                                                ///< index of station in active stations array
+  int Det;                                                     ///< detector subsystem ID
   double x;                                                    ///< x coordinate of position [cm]
   double y;                                                    ///< y coordinate of position [cm]
   double time;                                                 ///< hit time [ns]
@@ -136,8 +139,7 @@ public:
   double dy;                                                   ///< y coordinate error [cm]
   double dt;                                                   ///< time error [ns]
   double dxy;                                                  ///< covariance between x and y [cm2]
-  int Det;                                                     ///< detector subsystem ID
-  L1Vector<int> mcPointIds {"CbmL1HitDebugInfo::mcPointIds"};  ///< indices of CbmL1MCPoint in L1->fvMCPoints array
+  int fPointID = -1;                                           ///< index of matched MC point
 };
 
 #endif

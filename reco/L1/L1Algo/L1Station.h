@@ -21,6 +21,9 @@
 ///
 class L1Station {
 public:
+  // TODO: SZh 12.05.2022: Rewrite type into L1DetectorID, change detector indexing scheme
+  // TODO: SZh 12.05.2022: Provide getters to stations
+
   int type        = undef::kI32;
   int timeInfo    = undef::kI32;  ///< flag: if time information can be used
   int fieldStatus = undef::kI32;  ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field

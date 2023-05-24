@@ -19,20 +19,18 @@
 #include "FairRootManager.h"
 #include "Logger.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "L1Constants.h"
 #include "L1InputData.h"
 #include "L1Parameters.h"
 
+using ca::tools::HitRecord;
 using cbm::ca::TimeSliceReader;
 using L1Constants::clrs::kCL;   // clear log
 using L1Constants::clrs::kGNb;  // green bold log
 using L1Constants::clrs::kRDb;  // red bold log
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-TimeSliceReader::TimeSliceReader(ECbmTrackingMode mode) : fTrackingMode(mode) {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -45,11 +43,7 @@ void TimeSliceReader::Clear()
   fpBrTimeSlice = nullptr;
   fpParameters  = nullptr;
 
-  fpBrMvdHits  = nullptr;
-  fpBrStsHits  = nullptr;
-  fpBrMuchHits = nullptr;
-  fpBrTrdHits  = nullptr;
-  fpBrTofHits  = nullptr;
+  fvpBrHits.fill(nullptr);
 
   fpBrRecoTracks = nullptr;
   fpBrStsTracks  = nullptr;
@@ -80,17 +74,17 @@ void TimeSliceReader::CheckInit() const
 
   if (!fpBrTimeSlice) { throw std::logic_error("Time slice branch is unavailable"); }
 
-  if (fvbUseDet[L1DetectorID::kMvd] && !fpBrMvdHits) { throw std::logic_error("MVD hits branch is unavailable"); }
-  if (fvbUseDet[L1DetectorID::kSts] && !fpBrStsHits) { throw std::logic_error("STS hits branch is unavailable"); }
-  if (fvbUseDet[L1DetectorID::kMuch] && !fpBrMuchHits) { throw std::logic_error("MuCh hits branch is unavailable"); }
-  if (fvbUseDet[L1DetectorID::kTrd] && !fpBrTrdHits) { throw std::logic_error("TRD hits branch is unavailable"); }
-  if (fvbUseDet[L1DetectorID::kTof] && !fpBrTofHits) { throw std::logic_error("TOF hits branch is unavailable"); }
+  for (int iDet = 0; iDet < static_cast<int>(L1DetectorID::kEND); ++iDet) {
+    if (fvbUseDet[iDet] && !fvpBrHits[iDet]) {
+      throw std::logic_error(std::string(kDetName[iDet]) + " hits branch is not found");
+    }
+  }
 
   if (fpvTracks) {
-    if (ECbmTrackingMode::kSTS == fTrackingMode) {
+    if (ECbmCaTrackingMode::kSTS == fTrackingMode) {
       if (!fpBrRecoTracks) { throw std::logic_error("StsTrack branch is unavailable"); }
     }
-    else if (ECbmTrackingMode::kMCBM == fTrackingMode) {
+    else if (ECbmCaTrackingMode::kMCBM == fTrackingMode) {
       if (!fpBrRecoTracks) { throw std::logic_error("GlobalTrack branch is unavailable"); }
       if (fvbUseDet[L1DetectorID::kSts] && !fpBrStsTracks) { throw std::logic_error("StsTrack branch is not found"); }
       if (fvbUseDet[L1DetectorID::kMuch] && !fpBrMuchTracks) {
@@ -109,11 +103,11 @@ try {
   LOG(info) << "TimeSliceReader: initializing run ... ";
 
   // Init tracking detector interfaces
-  fpMvdInterface  = CbmMvdTrackingInterface::Instance();
-  fpStsInterface  = CbmStsTrackingInterface::Instance();
-  fpMuchInterface = CbmMuchTrackingInterface::Instance();
-  fpTrdInterface  = CbmTrdTrackingInterface::Instance();
-  fpTofInterface  = CbmTofTrackingInterface::Instance();
+  fvpDetInterface[L1DetectorID::kMvd]  = CbmMvdTrackingInterface::Instance();
+  fvpDetInterface[L1DetectorID::kSts]  = CbmStsTrackingInterface::Instance();
+  fvpDetInterface[L1DetectorID::kMuch] = CbmMuchTrackingInterface::Instance();
+  fvpDetInterface[L1DetectorID::kTrd]  = CbmTrdTrackingInterface::Instance();
+  fvpDetInterface[L1DetectorID::kTof]  = CbmTofTrackingInterface::Instance();
 
   // ** Init data branches **
 
@@ -122,22 +116,25 @@ try {
 
   fpBrTimeSlice = dynamic_cast<CbmTimeSlice*>(pFairManager->GetObject("TimeSlice."));
 
-  // Init hit branches
-  if (fvbUseDet[L1DetectorID::kMvd]) { fpBrMvdHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MvdHit")); }
-  if (fvbUseDet[L1DetectorID::kSts]) { fpBrStsHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsHit")); }
-  if (fvbUseDet[L1DetectorID::kMuch]) {
-    fpBrMuchHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("MuchPixelHit"));
-  }
-  if (fvbUseDet[L1DetectorID::kTrd]) { fpBrTrdHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TrdHit")); }
-  if (fvbUseDet[L1DetectorID::kTof]) { fpBrTofHits = dynamic_cast<TClonesArray*>(pFairManager->GetObject("TofHit")); }
+  // Init branches
+  auto InitHitBranch = [&](L1DetectorID detID, const char* branchName) {
+    if (fvbUseDet[detID]) { fvpBrHits[detID] = dynamic_cast<TClonesArray*>(pFairManager->GetObject(branchName)); }
+  };
+
+  InitHitBranch(L1DetectorID::kMvd, "MvdHit");
+  InitHitBranch(L1DetectorID::kSts, "StsHit");
+  InitHitBranch(L1DetectorID::kMuch, "MuchPixelHit");
+  InitHitBranch(L1DetectorID::kTrd, "TrdHit");
+  InitHitBranch(L1DetectorID::kTof, "TofHit");
 
   // Init track branches
+
   if (fpvTracks) {
     switch (fTrackingMode) {
-      case ECbmTrackingMode::kSTS:
+      case ECbmCaTrackingMode::kSTS:
         fpBrRecoTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsTrack"));
         break;
-      case ECbmTrackingMode::kMCBM:
+      case ECbmCaTrackingMode::kMCBM:
         fpBrRecoTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("GlobalTrack"));
         if (fvbUseDet[L1DetectorID::kSts]) {
           fpBrStsTracks = dynamic_cast<TClonesArray*>(pFairManager->GetObject("StsTrack"));
@@ -188,7 +185,7 @@ void TimeSliceReader::ReadRecoTracks()
   int nTracks = fpBrRecoTracks->GetEntriesFast();
   fpvTracks->reset(nTracks);
   switch (fTrackingMode) {
-    case ECbmTrackingMode::kSTS:
+    case ECbmCaTrackingMode::kSTS:
       // Fill tracks from StsTrack branch
       for (int iT = 0; iT < nTracks; ++iT) {
         auto* pInputTrack = static_cast<CbmStsTrack*>(fpBrRecoTracks->At(iT));
@@ -207,18 +204,18 @@ void TimeSliceReader::ReadRecoTracks()
         track.Hits.reserve(pInputTrack->GetNofHits());
         for (int iH = 0; iH < pInputTrack->GetNofMvdHits(); ++iH) {
           int iHext = pInputTrack->GetMvdHitIndex(iH);
-          int iHint = vHitMvdIds[iHext];
+          int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kMvd][iHext];
           track.Hits.push_back(iHint);
         }  // iH
         for (int iH = 0; iH < pInputTrack->GetNofStsHits(); ++iH) {
           int iHext = pInputTrack->GetStsHitIndex(iH);
-          int iHint = vHitStsIds[iHext];
+          int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kSts][iHext];
           track.Hits.push_back(iHint);
         }  // iH
       }    // iT
       break;
 
-    case ECbmTrackingMode::kMCBM:
+    case ECbmCaTrackingMode::kMCBM:
       //LOG(fatal) << "Sorry, mCBM mode has not been implemented yet. Stay tuned :)";
       // Fill tracks from GlobalTrack branch
       for (int iT = 0; iT < nTracks; ++iT) {
@@ -238,13 +235,13 @@ void TimeSliceReader::ReadRecoTracks()
             if (fvbUseDet[L1DetectorID::kMvd]) {
               for (int iH = 0; iH < pStsTrack->GetNofMvdHits(); ++iH) {
                 int iHext = pStsTrack->GetMvdHitIndex(iH);
-                int iHint = vHitMvdIds[iHext];
+                int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kMvd][iHext];
                 track.Hits.push_back(iHint);
               }
             }
             for (int iH = 0; iH < pStsTrack->GetNofStsHits(); ++iH) {
               int iHext = pStsTrack->GetStsHitIndex(iH);
-              int iHint = vHitStsIds[iHext];
+              int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kSts][iHext];
               track.Hits.push_back(iHint);
             }
           }
@@ -257,7 +254,7 @@ void TimeSliceReader::ReadRecoTracks()
             auto* pMuchTrack = static_cast<CbmMuchTrack*>(fpBrMuchTracks->At(iMuchTrkId));
             for (int iH = 0; iH < pMuchTrack->GetNofHits(); ++iH) {
               int iHext = pMuchTrack->GetHitIndex(iH);
-              int iHint = vHitMuchIds[iHext];
+              int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kMuch][iHext];
               track.Hits.push_back(iHint);
             }
           }
@@ -270,7 +267,7 @@ void TimeSliceReader::ReadRecoTracks()
             const auto* pTrdTrack = static_cast<const CbmTrdTrack*>(fpBrTrdTracks->At(iTrdTrkId));
             for (int iH = 0; iH < pTrdTrack->GetNofHits(); ++iH) {
               int iHext = pTrdTrack->GetHitIndex(iH);
-              int iHint = vHitTrdIds[iHext];
+              int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kTrd][iHext];
               track.Hits.push_back(iHint);
             }  // iH
           }
@@ -283,7 +280,7 @@ void TimeSliceReader::ReadRecoTracks()
             const auto* pTofTrack = static_cast<const CbmTofTrack*>(fpBrTofTracks->At(iTofTrkId));
             for (int iH = 0; iH < pTofTrack->GetNofHits(); ++iH) {
               int iHext = pTofTrack->GetHitIndex(iH);
-              int iHint = vHitTofIds[iHext];
+              int iHint = fvvHitExtToIntIndexMap[L1DetectorID::kTof][iHext];
               track.Hits.push_back(iHint);
             }  // iH
           }    // if iTofTrkId > -1
@@ -303,40 +300,26 @@ void TimeSliceReader::RegisterIODataManager(std::shared_ptr<L1IODataManager>& pI
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-template<>
-void TimeSliceReader::SortQaHits<true>()
+void TimeSliceReader::SortQaHits()
 {
   int nStationsActive = fpParameters->GetNstationsActive();
   L1Vector<CbmL1HitDebugInfo> vNewHits(fpvQaHits->size());
-  std::vector<int> vHitFirstIndexes(nStationsActive + 1, 0);
+  std::vector<int> vHitFstIndexes(nStationsActive + 1, 0);
   std::vector<int> vNofHitsStored(nStationsActive, 0);
 
   // Count number of hits in each station (NOTE: we could use here boarders from the IO data manager, but we would keep
   // these two procedures independent)
-  for (const auto& hit : (*fpvQaHits)) {
-    ++vHitFirstIndexes[hit.GetStationId() + 1];
-  }
-
+  std::for_each(fpvQaHits->begin(), fpvQaHits->end(), [&](const auto& h) { ++vHitFstIndexes[h.GetStationId() + 1]; });
   for (int iSt = 0; iSt < nStationsActive; ++iSt) {
-    vHitFirstIndexes[iSt + 1] += vHitFirstIndexes[iSt];
+    vHitFstIndexes[iSt + 1] += vHitFstIndexes[iSt];
   }
 
   for (const auto& hit : (*fpvQaHits)) {
-    int iSt                                                   = hit.GetStationId();
-    vNewHits[vHitFirstIndexes[iSt] + (vNofHitsStored[iSt]++)] = hit;
+    int iSt                                                 = hit.GetStationId();
+    vNewHits[vHitFstIndexes[iSt] + (vNofHitsStored[iSt]++)] = hit;
   }
 
   std::swap(vNewHits, (*fpvQaHits));
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-template<>
-void TimeSliceReader::SortQaHits<false>()
-{
-  std::sort(fpvQaHits->begin(), fpvQaHits->end(), [](const CbmL1HitDebugInfo& a, const CbmL1HitDebugInfo& b) {
-    return (a.iStation < b.iStation) || (a.iStation == b.iStation) && (a.y < b.y);
-  });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -347,11 +330,10 @@ void TimeSliceReader::ReadHits()
   fNofHitKeys  = 0;
   fFirstHitKey = 0;
 
-  if (fvbUseDet[L1DetectorID::kMvd]) { fvNofHitsTotal[L1DetectorID::kMvd] = fpBrMvdHits->GetEntriesFast(); }
-  if (fvbUseDet[L1DetectorID::kSts]) { fvNofHitsTotal[L1DetectorID::kSts] = fpBrStsHits->GetEntriesFast(); }
-  if (fvbUseDet[L1DetectorID::kMuch]) { fvNofHitsTotal[L1DetectorID::kMuch] = fpBrMuchHits->GetEntriesFast(); }
-  if (fvbUseDet[L1DetectorID::kTrd]) { fvNofHitsTotal[L1DetectorID::kTrd] = fpBrTrdHits->GetEntriesFast(); }
-  if (fvbUseDet[L1DetectorID::kTof]) { fvNofHitsTotal[L1DetectorID::kTof] = fpBrTofHits->GetEntriesFast(); }
+  // TODO: Address case with CbmEvent != nullptr
+  for (int iDet = 0; iDet < static_cast<int>(L1DetectorID::kEND); ++iDet) {
+    if (fvbUseDet[iDet]) { fvNofHitsTotal[iDet] = fvpBrHits[iDet]->GetEntriesFast(); }
+  }
 
   int nHitsTot = std::accumulate(fvNofHitsTotal.begin(), fvNofHitsTotal.end(), 0);
 
@@ -364,29 +346,16 @@ void TimeSliceReader::ReadHits()
     fpvQaHits->clear();
     fpvQaHits->reserve(nHitsTot);
   }
-  if (fpIODataManager) {
-    fpIODataManager->ResetInputData();
-    fpIODataManager->ReserveNhits(nHitsTot);
-  }
+  if (fpIODataManager) { fpIODataManager->ResetInputData(nHitsTot); }
 
   std::fill(fvHitFirstIndexDet.begin(), fvHitFirstIndexDet.end(), 0);
 
   // Read hits for different detectors
-  if (fvbUseDet[L1DetectorID::kMvd]) {
-    fvNofHitsUsed[L1DetectorID::kMvd] = ReadHitsForDetector<L1DetectorID::kMvd>(fpBrMvdHits);
-  }
-  if (fvbUseDet[L1DetectorID::kSts]) {
-    fvNofHitsUsed[L1DetectorID::kSts] = ReadHitsForDetector<L1DetectorID::kSts>(fpBrStsHits);
-  }
-  if (fvbUseDet[L1DetectorID::kMuch]) {
-    fvNofHitsUsed[L1DetectorID::kMuch] = ReadHitsForDetector<L1DetectorID::kMuch>(fpBrMuchHits);
-  }
-  if (fvbUseDet[L1DetectorID::kTrd]) {
-    fvNofHitsUsed[L1DetectorID::kTrd] = ReadHitsForDetector<L1DetectorID::kTrd>(fpBrTrdHits);
-  }
-  if (fvbUseDet[L1DetectorID::kTof]) {
-    fvNofHitsUsed[L1DetectorID::kTof] = ReadHitsForDetector<L1DetectorID::kTof>(fpBrTofHits);
-  }
+  fvNofHitsUsed[L1DetectorID::kMvd]  = ReadHitsForDetector<L1DetectorID::kMvd>();
+  fvNofHitsUsed[L1DetectorID::kSts]  = ReadHitsForDetector<L1DetectorID::kSts>();
+  fvNofHitsUsed[L1DetectorID::kMuch] = ReadHitsForDetector<L1DetectorID::kMuch>();
+  fvNofHitsUsed[L1DetectorID::kTrd]  = ReadHitsForDetector<L1DetectorID::kTrd>();
+  fvNofHitsUsed[L1DetectorID::kTof]  = ReadHitsForDetector<L1DetectorID::kTof>();
 
   // Save first hit index for different detector subsystems
   for (uint32_t iDet = 0; iDet < fvNofHitsUsed.size(); ++iDet) {
@@ -399,26 +368,18 @@ void TimeSliceReader::ReadHits()
   if (fpIODataManager) { fpIODataManager->SetNhitKeys(fNofHitKeys); }
 
   // Sort debug hits
-  if (fpvQaHits) { this->SortQaHits<true>(); }  // false - old sort, true - new backet sort
+  if (fpvQaHits) { this->SortQaHits(); }
 
   // Update maps of ext->int hit indexes
   // NOTE: fvpHitIds must be initialized, if we want to read tracks from the file
   if (fpvHitIds) {
-    auto UpdateHitIndexMap = [&](L1Vector<int> & vIds, L1DetectorID detID) constexpr
-    {
-      if (fvbUseDet[detID]) {
-        vIds.reset(fvNofHitsTotal[detID]);
-        for (int iH = fvHitFirstIndexDet[int(detID)]; iH < fvHitFirstIndexDet[int(detID) + 1]; ++iH) {
-          vIds[(*fpvQaHits)[iH].ExtIndex] = iH;
-        }
-      }
-    };
+    auto ResetIndexMap = [&, idx = 0](auto& v) mutable { v.reset(fvNofHitsTotal[idx++]); };
+    std::for_each(fvvHitExtToIntIndexMap.begin(), fvvHitExtToIntIndexMap.end(), ResetIndexMap);
 
-    UpdateHitIndexMap(vHitMvdIds, L1DetectorID::kMvd);
-    UpdateHitIndexMap(vHitStsIds, L1DetectorID::kSts);
-    UpdateHitIndexMap(vHitMuchIds, L1DetectorID::kMuch);
-    UpdateHitIndexMap(vHitTrdIds, L1DetectorID::kTrd);
-    UpdateHitIndexMap(vHitTofIds, L1DetectorID::kTof);
+    for (int iH = 0; iH < fNofHits; ++iH) {
+      const auto& hit                               = (*fpvQaHits)[iH];
+      fvvHitExtToIntIndexMap[hit.Det][hit.ExtIndex] = iH;
+    }
   }
 }
 
@@ -448,17 +409,17 @@ void TimeSliceReader::StoreHitRecord(const HitRecord& hitRecord)
 
   // Save debug information
   if (fpvQaHits) {
-    CbmL1HitDebugInfo hitDbg;
-    hitDbg.Det      = hitRecord.fDet;
-    hitDbg.ExtIndex = hitRecord.fExtId;
-    hitDbg.IntIndex = static_cast<int>(fpvQaHits->size());
-    hitDbg.iStation = hitRecord.fStaId;
-    hitDbg.x        = hitRecord.fX;
-    hitDbg.y        = hitRecord.fY;
-    hitDbg.dx       = hitRecord.fDx;
-    hitDbg.dy       = hitRecord.fDy;
-    hitDbg.dxy      = hitRecord.fDxy;
-    hitDbg.time     = hitRecord.fT;
-    fpvQaHits->push_back(hitDbg);
+    CbmL1HitDebugInfo aHitQa;
+    aHitQa.Det      = hitRecord.fDet;
+    aHitQa.ExtIndex = hitRecord.fExtId;
+    aHitQa.IntIndex = static_cast<int>(fpvQaHits->size());
+    aHitQa.iStation = hitRecord.fStaId;
+    aHitQa.x        = hitRecord.fX;
+    aHitQa.y        = hitRecord.fY;
+    aHitQa.dx       = hitRecord.fDx;
+    aHitQa.dy       = hitRecord.fDy;
+    aHitQa.dxy      = hitRecord.fDxy;
+    aHitQa.time     = hitRecord.fT;
+    fpvQaHits->push_back(aHitQa);
   }
 }

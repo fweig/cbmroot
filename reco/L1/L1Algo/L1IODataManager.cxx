@@ -75,13 +75,14 @@ void L1IODataManager::ReadInputData(const std::string& fileName)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1IODataManager::ResetInputData() noexcept
+void L1IODataManager::ResetInputData(L1HitIndex_t nHits) noexcept
 {
   L1InputData tmp;
   fInputData.Swap(tmp);
   fLastStreamId = -1;
-  fInputData.fStreamStartIndices.reserve(2000);
+  fInputData.fStreamStartIndices.reserve(2000);  // TODO: What are these numbers? Please, put them into L1Constants.h
   fInputData.fStreamStopIndices.reserve(2000);
+  fInputData.fHits.reserve(nHits);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -26,11 +26,14 @@
 #include "CaSimd.h"
 #include "L1Def.h"
 
+// TODO: SZh 16.05.2023:  Split this class into several headers and place them into L1Algo::utils
+
 
 /// Class contains some utility functions for L1Algo
 namespace L1Utils
 {
   /// NaN value for float
+  // TODO: SZh 16.05.2023: Replace this kNaN with L1Undef::kF
   constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
   /// Comparison method for floats

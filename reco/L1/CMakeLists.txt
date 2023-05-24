@@ -38,7 +38,7 @@ set(SRCS
   OffLineInterface/CbmL1StsTrackFinder.cxx
   OffLineInterface/CbmL1GlobalTrackFinder.cxx
   OffLineInterface/CbmL1GlobalFindTracksEvents.cxx
-
+  L1Algo/utils/CaAlgoRandom.cxx
   L1Algo/L1Algo.cxx
   L1Algo/L1TrackPar.cxx
   L1Algo/L1CaTrackFinder.cxx
@@ -115,6 +115,7 @@ set(HEADERS
   L1Algo/L1Undef.h
   catools/CaToolsWindowFinder.h
   catools/CaToolsLinkKey.h
+  catools/CaToolsHitRecord.h
   qa/CbmCaInputQaBase.h
 )
 

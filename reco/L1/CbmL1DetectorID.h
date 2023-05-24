@@ -10,12 +10,15 @@
 #ifndef CbmL1DetectorID_h
 #define CbmL1DetectorID_h 1
 
+#include <string>
+
 #include "L1EArray.h"
 
 /// Enumeration for the detector subsystems used in L1 tracking
 /// It is important for the subsystems to be specified in the actual order. The order is used
 /// for the L1Station array filling.
 /// Note: L1DetectorID has a forward declaration in L1InitManager.h and L1BaseStationInfo.h
+/// TODO: Probably, we need to move everything into a single CbmCaConst.h header
 enum class L1DetectorID
 {
   kMvd,
@@ -31,9 +34,15 @@ enum class L1DetectorID
 template<typename T>
 using CbmCaDetIdArr_t = L1EArray<L1DetectorID, T>;
 
+namespace cbm::ca
+{
+  /// @brief Name of detector subsystems
+  constexpr CbmCaDetIdArr_t<const char*> kDetName = {{"MVD", "STS", "MuCh", "TRD", "TOF"}};
+
+}  // namespace cbm::ca
 
 /// @brief Enumeration for different tracking running modes
-enum class ECbmTrackingMode
+enum class ECbmCaTrackingMode
 {
   kSTS,  ///< Local tracking in CBM (STS + MVD), results stored to the StsTrack branch
   kMCBM  ///< Global tracking in mCBM (STS, MuCh, TRD, TOF), results stored to GlobalTrack branch

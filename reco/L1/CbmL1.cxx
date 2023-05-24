@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Ivan Kisel, Sergey Gorbunov [committer], Valentina Akishina, Igor Kulakov, Maksym Zyzak */
+   Authors: Ivan Kisel, Sergey Gorbunov [committer], Valentina Akishina, Igor Kulakov, Maksym Zyzak, Sergei Zharko */
 
 /*
  *====================================================================
@@ -1138,8 +1138,9 @@ void CbmL1::IdealTrackFinder()
     for (unsigned int iH = 0; iH < MC.Hits.size(); iH++) {
       const int hitI               = MC.Hits[iH];
       const CbmL1HitDebugInfo& hit = fvHitDebugInfo[hitI];
-
-      const int iStation = fvMCPoints[hit.mcPointIds[0]].iStation;
+      const int iP                 = hit.GetMCPointIndex();
+      assert(iP >= 0);
+      const int iStation = fvMCPoints[iP].iStation;
 
       if (iStation >= 0) hitIndices[iStation] = hitI;
     }

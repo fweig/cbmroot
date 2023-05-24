@@ -154,10 +154,10 @@ namespace cbm::ca
     void SetUseTof(bool flag = true) { fbUseTof = flag; }
 
     /// @brief Sets STS tracking mode
-    void SetStsTrackingMode() { fTrackingMode = ECbmTrackingMode::kSTS; }
+    void SetStsTrackingMode() { fTrackingMode = ECbmCaTrackingMode::kSTS; }
 
     /// @brief Sets mCBM global tracking mode
-    void SetMcbmTrackingMode() { fTrackingMode = ECbmTrackingMode::kMCBM; }
+    void SetMcbmTrackingMode() { fTrackingMode = ECbmCaTrackingMode::kMCBM; }
 
     /// @brief Sets performance mode
     /// @param mode  Performance mode (3 is default: TODO - test)
@@ -232,10 +232,10 @@ namespace cbm::ca
 
     int fPerformanceMode = 3;  ///< Performance mode
 
-    ECbmTrackingMode fTrackingMode = ECbmTrackingMode::kSTS;  ///< Tracking mode
+    ECbmCaTrackingMode fTrackingMode = ECbmCaTrackingMode::kSTS;  ///< Tracking mode
 
     std::unique_ptr<TimeSliceReader> fpTSReader       = nullptr;  ///< Reader of the time slice
-    std::unique_ptr<cbm::ca::MCModule> fpMCModule     = nullptr;  ///< MC module
+    std::shared_ptr<MCModule> fpMCModule              = nullptr;  ///< MC module
     std::shared_ptr<L1IODataManager> fpDataManager    = nullptr;  ///< Data manager
     std::shared_ptr<::ca::tools::Debugger> fpDebugger = nullptr;  ///< Debugger
     std::shared_ptr<L1Parameters> fpParameters        = nullptr;  ///< Tracking parameters object

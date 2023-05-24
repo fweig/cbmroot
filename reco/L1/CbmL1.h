@@ -381,6 +381,9 @@ private:
   // ** Reconstruction Performance **
   // ********************************
 
+  /// @brief  Sets random seed to CA internal random generator
+  /// @param  seed  Random seed
+  void SetRandomSeed(unsigned int seed) { fInitManager.SetRandomSeed(seed); }
 
   /// Matches reconstructed and MC tracks
   /// \note Should be called before Performances

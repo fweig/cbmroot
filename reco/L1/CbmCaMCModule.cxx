@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022-2023 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer] */
 
@@ -19,7 +19,6 @@
 #include "CbmMCTrack.h"
 #include "CbmStsHit.h"
 #include "CbmTimeSlice.h"
-
 #include "FairEventHeader.h"
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
@@ -42,6 +41,8 @@
 // *********************************
 
 using cbm::ca::MCModule;
+using L1Constants::clrs::kCL;   // clear log
+using L1Constants::clrs::kRDb;  // red bold log
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -63,60 +64,43 @@ try {
   fpMCEventHeader = mcManager->GetObject("MCEventHeader.");
   fpMCTracks      = mcManager->InitBranch("MCTrack");
 
-  fpMvdPoints  = nullptr;
-  fpStsPoints  = nullptr;
-  fpMuchPoints = nullptr;
-  fpTrdPoints  = nullptr;
-  fpTofPoints  = nullptr;
-
-  fpMvdHitMatches  = nullptr;
-  fpStsHitMatches  = nullptr;
-  fpMuchHitMatches = nullptr;
-  fpTrdHitMatches  = nullptr;
-  fpTofHitMatches  = nullptr;
+  fvpBrPoints.fill(nullptr);
+  fvpBrHitMatches.fill(nullptr);
 
   fpStsClusterMatches = nullptr;
   fpStsHits           = nullptr;
 
   fFileEventIDs.clear();
 
-  if (fbUseMvd) {
-    LOG(info) << "CA MC Module: initializing branches for MVD";
-    fpMvdPoints     = mcManager->InitBranch("MvdPoint");
-    fpMvdHitMatches = dynamic_cast<TClonesArray*>(fairManager->GetObject("MvdHitMatch"));
-  }
+  auto InitPointBranch = [&](const char* brName, L1DetectorID detID) {
+    if (fvbUseDet[detID]) { fvpBrPoints[detID] = mcManager->InitBranch(brName); }
+  };
 
-  if (fbUseSts) {
-    LOG(info) << "CA MC Module: initializing branches for STS";
-    fpStsPoints         = mcManager->InitBranch("StsPoint");
-    fpStsHitMatches     = dynamic_cast<TClonesArray*>(fairManager->GetObject("StsHitMatch"));
+  auto InitMatchesBranch = [&](const char* brName, L1DetectorID detID) {
+    if (fvbUseDet[detID]) { fvpBrHitMatches[detID] = dynamic_cast<TClonesArray*>(fairManager->GetObject(brName)); }
+  };
+
+  InitPointBranch("MvdPoint", L1DetectorID::kMvd);
+  InitPointBranch("StsPoint", L1DetectorID::kSts);
+  InitPointBranch("MuchPoint", L1DetectorID::kMuch);
+  InitPointBranch("TrdPoint", L1DetectorID::kTrd);
+  InitPointBranch("TofPoint", L1DetectorID::kTof);
+
+  InitMatchesBranch("MvdHitMatch", L1DetectorID::kMvd);
+  InitMatchesBranch("StsHitMatch", L1DetectorID::kSts);
+  InitMatchesBranch("MuchPixelHitMatch", L1DetectorID::kMuch);
+  InitMatchesBranch("TrdHitMatch", L1DetectorID::kTrd);
+  InitMatchesBranch("TofHitMatch", L1DetectorID::kTof);
+
+  if (fvbUseDet[L1DetectorID::kSts]) {
     fpStsClusterMatches = dynamic_cast<TClonesArray*>(fairManager->GetObject("StsClusterMatch"));
     fpStsHits           = dynamic_cast<TClonesArray*>(fairManager->GetObject("StsHit"));
-  }
-
-  if (fbUseMuch) {
-    LOG(info) << "CA MC Module: initializing branches for MuCh";
-    fpMuchPoints     = mcManager->InitBranch("MuchPoint");
-    fpMuchHitMatches = dynamic_cast<TClonesArray*>(fairManager->GetObject("MuchPixelHitMatch"));
-  }
-
-  if (fbUseTrd) {
-    LOG(info) << "CA MC Module: initializing branches for TRD";
-    fpTrdPoints     = mcManager->InitBranch("TrdPoint");
-    fpTrdHitMatches = dynamic_cast<TClonesArray*>(fairManager->GetObject("TrdHitMatch"));
-  }
-
-  if (fbUseTof) {
-    LOG(info) << "CA MC Module: initializing branches for TOF";
-    fpTofPoints     = mcManager->InitBranch("TofPoint");
-    fpTofHitMatches = dynamic_cast<TClonesArray*>(fairManager->GetObject("TofHitMatch"));
   }
 
   // Check initialization
   this->CheckInit();
 
   LOG(info) << "CA MC Module: initializing CA tracking Monte-Carlo module... \033[1;32mDone!\033[0m";
-
   return true;
 }
 catch (const std::logic_error& error) {
@@ -217,7 +201,11 @@ void MCModule::Finish() {}
 //
 void MCModule::MatchRecoAndMC()
 {
-  this->MatchPointsAndHits();
+  this->MatchPointsAndHits<L1DetectorID::kMvd>();
+  this->MatchPointsAndHits<L1DetectorID::kSts>();
+  this->MatchPointsAndHits<L1DetectorID::kMuch>();
+  this->MatchPointsAndHits<L1DetectorID::kTrd>();
+  this->MatchPointsAndHits<L1DetectorID::kTof>();
   this->MatchRecoAndMCTracks();
   this->InitTrackInfo();
 }
@@ -229,13 +217,10 @@ template<>
 int MCModule::MatchHitWithMc<L1DetectorID::kMvd>(int iHitExt) const
 {
   int iPoint = -1;
-  if (fpMvdHitMatches) {
-    const auto* hitMatch = dynamic_cast<CbmMatch*>(fpMvdHitMatches->At(iHitExt));
-    assert(hitMatch);
-    if (hitMatch->GetNofLinks() > 0
-        && hitMatch->GetLink(0).GetIndex() < fpMCData->GetNofPointsUsed(L1DetectorID::kMvd)) {
-      iPoint = hitMatch->GetLink(0).GetIndex();
-    }
+  const auto* hitMatch = dynamic_cast<CbmMatch*>(fvpBrHitMatches[L1DetectorID::kMvd]->At(iHitExt));
+  assert(hitMatch);
+  if (hitMatch->GetNofLinks() > 0 && hitMatch->GetLink(0).GetIndex() < fpMCData->GetNofPointsUsed(L1DetectorID::kMvd)) {
+    iPoint = hitMatch->GetLink(0).GetIndex();
   }
   return iPoint;
 }
@@ -302,7 +287,7 @@ template<>
 int MCModule::MatchHitWithMc<L1DetectorID::kMuch>(int iHitExt) const
 {
   int iPoint               = -1;
-  const auto* hitMatchMuch = dynamic_cast<CbmMatch*>(fpMuchHitMatches->At(iHitExt));
+  const auto* hitMatchMuch = dynamic_cast<CbmMatch*>(fvpBrHitMatches[L1DetectorID::kMuch]->At(iHitExt));
   if (hitMatchMuch) {
     for (int iLink = 0; iLink < hitMatchMuch->GetNofLinks(); ++iLink) {
       if (hitMatchMuch->GetLink(iLink).GetIndex() < fpMCData->GetNofPointsUsed(L1DetectorID::kMuch)) {
@@ -327,7 +312,7 @@ template<>
 int MCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
 {
   int iPoint           = -1;
-  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTrdHitMatches->At(iHitExt));
+  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fvpBrHitMatches[L1DetectorID::kTrd]->At(iHitExt));
   if (hitMatch) {
     int iMC = -1;
     if (hitMatch->GetNofLinks() > 0) {
@@ -351,8 +336,9 @@ int MCModule::MatchHitWithMc<L1DetectorID::kTrd>(int iHitExt) const
 template<>
 int MCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
 {
+  // TODO: SZh 23.05.2023: Use TOF interactions class
   int iPoint           = -1;
-  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTofHitMatches->At(iHitExt));
+  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fvpBrHitMatches[L1DetectorID::kTof]->At(iHitExt));
   if (hitMatch) {
     for (int iLink = 0; iLink < hitMatch->GetNofLinks(); ++iLink) {
       int iMc    = hitMatch->GetLink(iLink).GetIndex();
@@ -360,7 +346,7 @@ int MCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
       int iEvent = hitMatch->GetLink(iLink).GetEntry();
       if (iMc < 0) return iPoint;
 
-      assert(iMc >= 0 && iMc < fpTofPoints->Size(iFile, iEvent));
+      assert(iMc >= 0 && iMc < fvpBrPoints[L1DetectorID::kTof]->Size(iFile, iEvent));
       int iPointPrelim = fpMCData->FindInternalPointIndex(L1DetectorID::kTof, iMc, iEvent, iFile);
       if (iPointPrelim == -1) { continue; }
       iPoint = iPointPrelim;
@@ -369,54 +355,7 @@ int MCModule::MatchHitWithMc<L1DetectorID::kTof>(int iHitExt) const
   return iPoint;
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void MCModule::MatchPointsAndHits()
-{
-  // Clear point indexes of each hit
-  // NOTE: at the moment only the best point is stored to the hit, but we keep the possibility for keeping many
-  //       points for possible future module extension.
-  for (auto& hit : (*fpvQaHits)) {
-    hit.mcPointIds.clear();
-  }
 
-  // Match hit with point for different detectors
-  auto DoMatch = [&](int iH, int iP) constexpr
-  {
-    if (iP > -1) {
-      auto& hit = (*fpvQaHits)[iH];
-      hit.mcPointIds.push_back_no_warning(iP);
-      fpMCData->GetPoint(iP).AddHitID(iH);
-    }
-  };
-
-  int iH = 0;
-  if (fbUseMvd) {
-    for (iH = (*fpvFstHitId)[int(L1DetectorID::kMvd)]; iH < (*fpvFstHitId)[int(L1DetectorID::kMvd) + 1]; ++iH) {
-      DoMatch(iH, MatchHitWithMc<L1DetectorID::kMvd>((*fpvQaHits)[iH].ExtIndex));
-    }
-  }
-  if (fbUseSts) {
-    for (iH = (*fpvFstHitId)[int(L1DetectorID::kSts)]; iH < (*fpvFstHitId)[int(L1DetectorID::kSts) + 1]; ++iH) {
-      DoMatch(iH, MatchHitWithMc<L1DetectorID::kSts>((*fpvQaHits)[iH].ExtIndex));
-    }
-  }
-  if (fbUseSts) {
-    for (iH = (*fpvFstHitId)[int(L1DetectorID::kMuch)]; iH < (*fpvFstHitId)[int(L1DetectorID::kMuch) + 1]; ++iH) {
-      DoMatch(iH, MatchHitWithMc<L1DetectorID::kMuch>((*fpvQaHits)[iH].ExtIndex));
-    }
-  }
-  if (fbUseTrd) {
-    for (iH = (*fpvFstHitId)[int(L1DetectorID::kTrd)]; iH < (*fpvFstHitId)[int(L1DetectorID::kTrd) + 1]; ++iH) {
-      DoMatch(iH, MatchHitWithMc<L1DetectorID::kTrd>((*fpvQaHits)[iH].ExtIndex));
-    }
-  }
-  if (fbUseTof) {
-    for (iH = (*fpvFstHitId)[int(L1DetectorID::kTof)]; iH < (*fpvFstHitId)[int(L1DetectorID::kTof) + 1]; ++iH) {
-      DoMatch(iH, MatchHitWithMc<L1DetectorID::kTof>((*fpvQaHits)[iH].ExtIndex));
-    }
-  }
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -429,14 +368,15 @@ void MCModule::MatchRecoAndMCTracks()
     auto& mNofHitsVsMCTrkID = trkRe.hitMap;
     //mNofHitsVsMCTrkID.clear();
     for (int iH : trkRe.Hits) {
-      for (int iP : (*fpvQaHits)[iH].mcPointIds) {
-        assert(iP > -1);  // Should never be triggered
+      int iP = (*fpvQaHits)[iH].GetMCPointIndex();
+      L1_SHOW(iP);
+      if (iP > -1) {
         int iTmc = fpMCData->GetPoint(iP).GetTrackId();
         if (mNofHitsVsMCTrkID.find(iTmc) == mNofHitsVsMCTrkID.end()) { mNofHitsVsMCTrkID[iTmc] = 1; }
         else {
           mNofHitsVsMCTrkID[iTmc] += 1;
         }
-      }  // loop over global point ids stored for hit: end
+      }
     }    // loop over hit ids stored for a reconstructed track: end
 
 
@@ -473,25 +413,6 @@ void MCModule::MatchRecoAndMCTracks()
   }  // loop over reconstructed tracks: end
 }
 
-
-// ***********************
-// **     Accessors     **
-// ***********************
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void MCModule::SetDetector(L1DetectorID detID, bool flag)
-{
-  switch (detID) {
-    case L1DetectorID::kMvd: fbUseMvd = flag; break;
-    case L1DetectorID::kSts: fbUseSts = flag; break;
-    case L1DetectorID::kMuch: fbUseMuch = flag; break;
-    case L1DetectorID::kTrd: fbUseTrd = flag; break;
-    case L1DetectorID::kTof: fbUseTof = flag; break;
-    case L1DetectorID::kEND: break;
-  }
-}
-
 // *******************************
 // **     Utility functions     **
 // *******************************
@@ -521,43 +442,26 @@ void MCModule::CheckInit() const
   if (!fpMCEventHeader) { throw std::logic_error("MC event header is unavailable"); }
 
   // Check detectors initialization
-  if (fbUseMvd) {
-    if (!fpMvdPoints) { throw std::logic_error("MC points unavailable for MVD"); }
-    if (!fpMvdHitMatches) { throw std::logic_error("Hit matches unavailable for MVD"); }
+  for (int iD = 0; iD < static_cast<int>(L1DetectorID::kEND); ++iD) {
+    if (fvbUseDet[iD]) {
+      if (!fvpBrPoints[iD]) { throw std::logic_error(Form("MC points are unavailable for %s", kDetName[iD])); }
+      if (!fvpBrHitMatches[iD]) { throw std::logic_error(Form("Hit matches are unavailable for %s", kDetName[iD])); }
+    }
   }
 
-  if (fbUseSts) {
-    if (!fpStsPoints) { throw std::logic_error("MC points unavailable for STS"); }
-    if (!fpStsHitMatches) { throw std::logic_error("Hit matches unavailable for STS"); }
+  if (fvbUseDet[L1DetectorID::kSts]) {
     if (!fpStsClusterMatches) { throw std::logic_error("Cluster matches unavailable for STS"); }
     if (!fpStsHits) { throw std::logic_error("Hits unavailable for STS"); }
-  }
-
-  if (fbUseMuch) {
-    if (!fpMuchPoints) { throw std::logic_error("MC points unavailable for MuCh"); }
-    if (!fpMuchHitMatches) { throw std::logic_error("Hit matches unavailable for MuCh"); }
-  }
-
-  if (fbUseTrd) {
-    if (!fpTrdPoints) { throw std::logic_error("MC points unavailable for TRD"); }
-    if (!fpTrdHitMatches) { throw std::logic_error("Hit matches unavailable for TRD"); }
-  }
-
-  if (fbUseTof) {
-    if (!fpTofPoints) { throw std::logic_error("MC points unavailable for TOF"); }
-    if (!fpTofHitMatches) { throw std::logic_error("Hit matches unavailable for TOF"); }
   }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<>
-void MCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* pPoints)
+void MCModule::ReadMCPointsForDetector<L1DetectorID::kTof>()
 {
-  for (const auto& key : fFileEventIDs) {
-    int iFile  = key.first;
-    int iEvent = key.second;
-
+  auto* pPoints = fvpBrPoints[L1DetectorID::kTof];
+  for (const auto& [iFile, iEvent] : fFileEventIDs) {
     // Prepare TODO
     int nTofStationsGeo = fpParameters->GetNstationsGeometry(L1DetectorID::kTof);
     std::vector<std::vector<int>> vTofPointToTrack(nTofStationsGeo);      // TODO
@@ -573,7 +477,7 @@ void MCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* pPoin
     // Check whether a particular TOF point is matched to a hit
     auto* pTofHits = dynamic_cast<TClonesArray*>(FairRootManager::Instance()->GetObject("TofHit"));
     for (int iHit = 0; iHit < pTofHits->GetEntriesFast(); ++iHit) {
-      auto* pHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTofHitMatches->At(iHit));
+      auto* pHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fvpBrHitMatches[L1DetectorID::kTof]->At(iHit));
       LOG_IF(fatal, !pHitMatch) << "CA MC Module: hit match was not found for TOF hit " << iHit;
       for (int iLink = 0; iLink < pHitMatch->GetNofLinks(); ++iLink) {
         const auto& link = pHitMatch->GetLink(iLink);
@@ -627,14 +531,10 @@ void MCModule::ReadMCPointsForDetector<L1DetectorID::kTof>(CbmMCDataArray* pPoin
       if (iStActive < 0) { continue; }
       for (int iTrk = 0; iTrk < (int) vTofPointToTrack[iStLocGeo].size(); ++iTrk) {
         if (vTofPointToTrack[iStLocGeo][iTrk] < 0) { continue; }
-        ::ca::tools::MCPoint aPoint;
-        if (FillMCPoint<L1DetectorID::kTof>(vTofPointToTrack[iStLocGeo][iTrk], iEvent, iFile, aPoint)) {
-          aPoint.SetStationId(iStActive);
-          int iExtGlob = fpMCData->GetPointGlobExtIndex(L1DetectorID::kTof, vTofPointToTrack[iStLocGeo][iTrk]);
-          aPoint.SetExternalId(iExtGlob);
-          int iPInt = fpMCData->GetNofPoints();  // assign an index of point in internal container
-          if (aPoint.GetTrackId() > -1) { fpMCData->GetTrack(aPoint.GetTrackId()).AddPointIndex(iPInt); }
-          fpMCData->AddPoint(aPoint);
+        auto oPoint = FillMCPoint<L1DetectorID::kTof>(vTofPointToTrack[iStLocGeo][iTrk], iEvent, iFile);
+        if (oPoint) {
+          oPoint->SetStationId(iStActive);
+          fpMCData->AddPoint(*oPoint);
         }
       }  // loop over tracks: end
     }    // loop over geometry stations: end
@@ -648,34 +548,20 @@ void MCModule::ReadMCPoints()
   int nPointsEstimated = 5 * fpMCData->GetNofTracks() * fpParameters->GetNstationsActive();
   fpMCData->ReserveNofPoints(nPointsEstimated);
 
-  int nPointsMvd  = 0;
-  int nPointsSts  = 0;
-  int nPointsMuch = 0;
-  int nPointsTrd  = 0;
-  int nPointsTof  = 0;
-  for (const auto& key : fFileEventIDs) {
-    int iFile  = key.first;
-    int iEvent = key.second;
-
-    if (fbUseMvd) { nPointsMvd += fpMvdPoints->Size(iFile, iEvent); }
-    if (fbUseSts) { nPointsSts += fpStsPoints->Size(iFile, iEvent); }
-    if (fbUseMuch) { nPointsMuch += fpMuchPoints->Size(iFile, iEvent); }
-    if (fbUseTrd) { nPointsTrd += fpTrdPoints->Size(iFile, iEvent); }
-    if (fbUseTof) { nPointsTof += fpTofPoints->Size(iFile, iEvent); }
+  CbmCaDetIdArr_t<int> vNofPointsDet = {0};
+  for (const auto& [iFile, iEvent] : fFileEventIDs) {
+    for (int iD = 0; iD < static_cast<int>(vNofPointsDet.size()); ++iD) {
+      if (fvbUseDet[iD]) { vNofPointsDet[iD] = fvpBrPoints[iD]->Size(iFile, iEvent); }
+      fpMCData->SetNofPointsOrig(static_cast<L1DetectorID>(iD), vNofPointsDet[iD]);
+    }
   }
 
-  fpMCData->SetNofPointsOrig(L1DetectorID::kMvd, nPointsMvd);
-  fpMCData->SetNofPointsOrig(L1DetectorID::kSts, nPointsSts);
-  fpMCData->SetNofPointsOrig(L1DetectorID::kMuch, nPointsMuch);
-  fpMCData->SetNofPointsOrig(L1DetectorID::kTrd, nPointsTrd);
-  fpMCData->SetNofPointsOrig(L1DetectorID::kTof, nPointsTof);
-
   // ----- Read MC points in MVD, STS, MuCh, TRD and TOF
-  if (fbUseMvd) { this->ReadMCPointsForDetector<L1DetectorID::kMvd>(fpMvdPoints); }
-  if (fbUseSts) { this->ReadMCPointsForDetector<L1DetectorID::kSts>(fpStsPoints); }
-  if (fbUseMuch) { this->ReadMCPointsForDetector<L1DetectorID::kMuch>(fpMuchPoints); }
-  if (fbUseTrd) { this->ReadMCPointsForDetector<L1DetectorID::kTrd>(fpTrdPoints); }
-  if (fbUseTof) { this->ReadMCPointsForDetector<L1DetectorID::kTof>(fpTofPoints); }
+  if (fvbUseDet[L1DetectorID::kMvd]) { this->ReadMCPointsForDetector<L1DetectorID::kMvd>(); }
+  if (fvbUseDet[L1DetectorID::kSts]) { this->ReadMCPointsForDetector<L1DetectorID::kSts>(); }
+  if (fvbUseDet[L1DetectorID::kMuch]) { this->ReadMCPointsForDetector<L1DetectorID::kMuch>(); }
+  if (fvbUseDet[L1DetectorID::kTrd]) { this->ReadMCPointsForDetector<L1DetectorID::kTrd>(); }
+  if (fvbUseDet[L1DetectorID::kTof]) { this->ReadMCPointsForDetector<L1DetectorID::kTof>(); }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

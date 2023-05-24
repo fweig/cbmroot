@@ -101,27 +101,23 @@ void CbmL1::TrackMatch()
     map<int, int>& hitmap = prtra->hitMap;  // how many hits from each mcTrack belong to current recoTrack
     map<int, int> hitmapChain;
     for (vector<int>::iterator ih = (prtra->Hits).begin(); ih != (prtra->Hits).end(); ++ih) {
+      int iMC = fvHitDebugInfo[*ih].GetMCPointIndex();
 
-      const int nMCPoints = fvHitDebugInfo[*ih].mcPointIds.size();
-      for (int iP = 0; iP < nMCPoints; iP++) {
-        int iMC = fvHitDebugInfo[*ih].mcPointIds[iP];
-
-        //     cout<<iMC<<" iMC"<<endl;
-        int ID      = -1;
-        int chainID = -1;
-        if (iMC >= 0) {
-          ID      = fvMCPoints[iMC].ID;
-          chainID = fvMCTracks[ID].chainID;
-        }
-        if (hitmap.find(ID) == hitmap.end()) hitmap[ID] = 1;
-        else {
-          hitmap[ID] += 1;
-        }
-        if (hitmapChain.find(chainID) == hitmapChain.end()) hitmapChain[chainID] = 1;
-        else {
-          hitmapChain[chainID] += 1;
-        }
-      }  // for iPoint
+      //     cout<<iMC<<" iMC"<<endl;
+      int ID      = -1;
+      int chainID = -1;
+      if (iMC >= 0) {
+        ID      = fvMCPoints[iMC].ID;
+        chainID = fvMCTracks[ID].chainID;
+      }
+      if (hitmap.find(ID) == hitmap.end()) hitmap[ID] = 1;
+      else {
+        hitmap[ID] += 1;
+      }
+      if (hitmapChain.find(chainID) == hitmapChain.end()) hitmapChain[chainID] = 1;
+      else {
+        hitmapChain[chainID] += 1;
+      }
     }    // for iHit
 
     // RTrack <-> MCTrack identification

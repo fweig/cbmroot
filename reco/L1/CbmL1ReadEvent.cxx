@@ -1145,9 +1145,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
   fvExternalHits.reserve(nHits);
   fvHitDebugInfo.reserve(nHits);
   fvHitPointIndexes.reserve(nHits);
-
-  fpIODataManager->ResetInputData();
-  fpIODataManager->ReserveNhits(nHits);
+  fpIODataManager->ResetInputData(nHits);
   fpIODataManager->SetNhitKeys(NStrips);
 
   // ----- Fill
@@ -1461,13 +1459,8 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int i
 void CbmL1::HitMatch()
 {
   // Clear contents
-  for (auto& hit : fvHitDebugInfo) {
-    hit.mcPointIds.clear();
-  }
-
-  for (auto& point : fvMCPoints) {
-    point.hitIds.clear();
-  }
+  std::for_each(fvHitDebugInfo.begin(), fvHitDebugInfo.end(), [&](auto& hit) { hit.SetMCPointIndex(-1); });
+  std::for_each(fvMCPoints.begin(), fvMCPoints.end(), [&](auto& point) { point.hitIds.clear(); });
 
   // Fill new contents
   const int NHits = fvHitDebugInfo.size();
@@ -1475,7 +1468,7 @@ void CbmL1::HitMatch()
     CbmL1HitDebugInfo& hit = fvHitDebugInfo[iH];
     int iP                 = fvHitPointIndexes[iH];
     if (iP >= 0) {
-      hit.mcPointIds.push_back_no_warning(iP);
+      hit.SetMCPointIndex(iP);
       fvMCPoints[iP].hitIds.push_back_no_warning(iH);
     }
   }

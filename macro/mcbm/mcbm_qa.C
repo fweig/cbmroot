@@ -244,7 +244,7 @@ void mcbm_qa(Int_t nEvents = 0, TString dataset = "data/mcbm_beam_2020_03_test",
   pCaOutputQa->SetMcbmTrackingMode();
   pCaOutputQa->ReadParameters(caParFile.Data());
   pCaOutputQa->SetUseSts(bUseSts);
-  //pCaOutputQa->SetUseMuch(bUseMuch);
+  pCaOutputQa->SetUseMuch(bUseMuch);
   pCaOutputQa->SetUseTrd(bUseTrd);
   pCaOutputQa->SetUseTof(bUseTof);
   run->AddTask(pCaOutputQa);

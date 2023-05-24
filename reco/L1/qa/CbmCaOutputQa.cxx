@@ -29,6 +29,11 @@ using cbm::ca::OutputQa;
 //
 OutputQa::OutputQa(int verbose, bool isMCUsed) : CbmQaTask("CbmCaOutputQa", "caout", verbose, isMCUsed)
 {
+  // Create MC module
+
+  // Create TS reader
+  fpTSReader = std::make_unique<TimeSliceReader>();
+
   // Turn on default track classes
   AddTrackType(ETrackType::kAll);
   AddTrackType(ETrackType::kGhost);
@@ -451,7 +456,7 @@ InitStatus OutputQa::InitDataBranches()
   if (!fpDataManager.get()) { fpDataManager = std::make_shared<L1IODataManager>(); }
 
   // Initialize time slice reader instance
-  if (!fpTSReader.get()) { fpTSReader = std::make_unique<TimeSliceReader>(fTrackingMode); }
+  fpTSReader->SetTrackingMode(fTrackingMode);
   fpTSReader->SetDetector(L1DetectorID::kMvd, fbUseMvd);
   fpTSReader->SetDetector(L1DetectorID::kSts, fbUseSts);
   fpTSReader->SetDetector(L1DetectorID::kMuch, fbUseMuch);
@@ -462,12 +467,11 @@ InitStatus OutputQa::InitDataBranches()
   fpTSReader->RegisterTracksContainer(fvRecoTracks);
   fpTSReader->RegisterQaHitContainer(fvHits);
   fpTSReader->RegisterHitIndexContainer(fvHitIds);
-
   if (!fpTSReader->InitRun()) { return kFATAL; }
 
   // Initialize MC module
   if (IsMCUsed()) {
-    if (!fpMCModule.get()) { fpMCModule = std::make_unique<MCModule>(fVerbose, fPerformanceMode); }
+    fpMCModule = std::make_shared<MCModule>(fVerbose, fPerformanceMode);
     fpMCModule->SetDetector(L1DetectorID::kMvd, fbUseMvd);
     fpMCModule->SetDetector(L1DetectorID::kSts, fbUseSts);
     fpMCModule->SetDetector(L1DetectorID::kMuch, fbUseMuch);
@@ -480,9 +484,9 @@ InitStatus OutputQa::InitDataBranches()
     fpMCModule->RegisterQaHitContainer(fvHits);
     fpMCModule->RegisterParameters(fpParameters);
     fpMCModule->RegisterFirstHitIndexes(fpTSReader->GetHitFirstIndexDet());
-
     if (!fpMCModule->InitRun()) { return kFATAL; }
   }
+
   return kSUCCESS;
 }
 
@@ -730,38 +734,20 @@ InitStatus OutputQa::InitTimeSlice()
   int nHits       = 0;
   int nRecoTracks = 0;
 
-  // Read MC tracks and points
-  if (IsMCUsed()) {
-    fpMCModule->InitEvent(nullptr);
-    nMCPoints = fMCData.GetNofPoints();
-    nMCTracks = fMCData.GetNofTracks();
-  }
 
   // Read reconstructed input
   fpTSReader->InitTimeSlice();
   nHits       = fvHits.size();
   nRecoTracks = fvRecoTracks.size();
 
-  static bool bDo = true;
-  if (bDo) {
-    for (int iP = 0; iP < nMCPoints; ++iP) {
-      const auto& point = fMCData.GetPoint(iP);
-      LOG(info) << iP << ' ' << (int) point.GetDetectorId() << ' ' << point.GetStationId();
-    }
-
-    for (int iH = 0; iH < nHits; ++iH) {
-      const auto& hit = fvHits[iH];
-      LOG(info) << iH << ' ' << (int) hit.GetDetectorType() << ' ' << hit.GetStationId();
-    }
-    bDo = false;
-  }
-
-  for (const auto& hit : fvHits) {
-    assert(hit.GetMCPointIndexes().size() < 2);
-  }
-
   // Match tracks and points
-  if (IsMCUsed()) { fpMCModule->MatchRecoAndMC(); }
+  // Read MC tracks and points
+  if (IsMCUsed()) {
+    fpMCModule->InitEvent(nullptr);
+    nMCPoints = fMCData.GetNofPoints();
+    nMCTracks = fMCData.GetNofTracks();
+    fpMCModule->MatchRecoAndMC();
+  }
 
   LOG_IF(info, fVerbose > 1) << fName << ": Data sample consists of " << nHits << " hits, " << nRecoTracks
                              << " reco tracks, " << nMCTracks << " MC tracks, " << nMCPoints << " MC points";
