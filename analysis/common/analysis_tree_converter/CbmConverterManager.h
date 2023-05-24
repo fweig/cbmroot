@@ -35,6 +35,7 @@ public:
 
   void SetSystem(const std::string& system) { system_ = system; }
   void SetBeamMomentum(float beam_mom) { beam_mom_ = beam_mom; }
+  void SetTimeSliceLength(float ts_length) { ts_length_ = ts_length; }
 
   void SetOutputName(std::string file, std::string tree = "rTree")
   {
@@ -56,6 +57,7 @@ private:
 
   std::string system_;
   float beam_mom_ {0.};
+  float ts_length_ {0.};
 
   std::vector<CbmConverterTask*> tasks_ {};
 

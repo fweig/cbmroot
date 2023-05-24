@@ -81,6 +81,7 @@ void CbmConverterManager::FillDataHeader()
   std::cout << "ReadDataHeader" << std::endl;
   data_header->SetSystem(system_);
   data_header->SetBeamMomentum(beam_mom_);
+  data_header->SetTimeSliceLength(ts_length_);
 
   auto& psd_mod_pos              = data_header->AddDetector();
   const int psd_node_id          = 6;

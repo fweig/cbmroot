@@ -28,6 +28,7 @@ void CbmRecEventHeaderConverter::Init()
   cbm_prim_vertex_ = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
   cbm_sts_tracks_  = (TClonesArray*) ioman->GetObject("StsTrack");
   cbm_psd_hits_    = (TClonesArray*) ioman->GetObject("PsdHit");
+  fTimeSlice       = static_cast<CbmTimeSlice*>(ioman->GetObject("TimeSlice."));
 
   //  ***** RecEventHeader *******
   AnalysisTree::BranchConfig RecEventHeaderBranch("RecEventHeader", AnalysisTree::DetType::kEventHeader);
@@ -39,6 +40,7 @@ void CbmRecEventHeaderConverter::Init()
   RecEventHeaderBranch.AddField<float>("end_time", "End time of the event, ns");
   RecEventHeaderBranch.AddField<float>("match_weight", "");
   RecEventHeaderBranch.AddField<float>("T0", "Reconstructed T0, ns");
+  RecEventHeaderBranch.AddField<float>("tStartTS", "TS start time, ns");
 
   ivtx_chi2_     = RecEventHeaderBranch.GetFieldId("vtx_chi2");
   iEpsd_         = RecEventHeaderBranch.GetFieldId("Epsd");
@@ -48,6 +50,7 @@ void CbmRecEventHeaderConverter::Init()
   iend_time_     = RecEventHeaderBranch.GetFieldId("end_time");
   imatch_weight_ = RecEventHeaderBranch.GetFieldId("match_weight");
   iT0_           = RecEventHeaderBranch.GetFieldId("T0");
+  iTStartTS_     = RecEventHeaderBranch.GetFieldId("tStartTS");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(rec_event_header_, RecEventHeaderBranch);
@@ -68,12 +71,15 @@ void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
   rec_event_header_->SetField(GetPsdEnergy(event), iEpsd_);
 
   int evt_id;
-  float match_weight, start_time, end_time, T0;
+  float match_weight, start_time, end_time, T0, tStartTS;
   if (event) {
     evt_id     = event->GetUniqueID();
     start_time = event->GetStartTime();
     end_time   = event->GetEndTime();
     T0         = event->GetTzero();
+
+    tStartTS = fTimeSlice->GetStartTime();
+
     if (event->GetMatch()) match_weight = float(event->GetMatch()->GetMatchedLink().GetWeight());
     else
       match_weight = 0.;
@@ -83,12 +89,14 @@ void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
     start_time   = cbm_header_->GetT();
     end_time     = cbm_header_->GetT();
     T0           = -999999.;
+    tStartTS     = -1.;
     match_weight = 1.;
   }
   rec_event_header_->SetField(evt_id, ievt_id_);
   rec_event_header_->SetField(start_time, istart_time_);
   rec_event_header_->SetField(end_time, iend_time_);
   rec_event_header_->SetField(T0, iT0_);
+  rec_event_header_->SetField(tStartTS, iTStartTS_);
   rec_event_header_->SetField(match_weight, imatch_weight_);
 }
 

@@ -8,6 +8,7 @@
 #include "CbmConverterTask.h"
 #include "CbmDefs.h"
 #include "CbmEvent.h"
+#include "CbmTimeSlice.h"
 
 #include "AnalysisTree/EventHeader.hpp"
 
@@ -33,6 +34,7 @@ private:
   TClonesArray* cbm_sts_tracks_ {nullptr};   ///< non-owning pointer
   FairMCEventHeader* cbm_header_ {nullptr};  ///< non-owning pointer
   CbmVertex* cbm_prim_vertex_ {nullptr};     ///< non-owning pointer
+  CbmTimeSlice* fTimeSlice {nullptr};
 
   int ivtx_chi2_ {AnalysisTree::UndefValueInt};
   int iEpsd_ {AnalysisTree::UndefValueInt};
@@ -42,6 +44,7 @@ private:
   int iend_time_ {AnalysisTree::UndefValueInt};
   int imatch_weight_ {AnalysisTree::UndefValueInt};
   int iT0_ {AnalysisTree::UndefValueInt};
+  int iTStartTS_ {AnalysisTree::UndefValueInt};
 
   ClassDef(CbmRecEventHeaderConverter, 1)
 };

@@ -35,11 +35,16 @@ for step in ${steps}; do
       rawFile=$(getJsonVal "['AT']['rawFile']")
       recFile=$(getJsonVal "['AT']['recFile']")
       unigenFile=$(getJsonVal "['AT']['unigenFile']")
+      eventMode=$(getJsonVal "['digitization']['eventMode']")
+      tslength=-1;
+      if [ ${eventMode} == false ]; then
+      	tslength=$(getJsonVal "['digitization']['timeSliceLength']")
+      fi
       echo "  "
       echo "Run AT converter: ${macro}(\"${traFile}\",\"${rawFile}\",\"${recFile}\",\
-	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\")" 
+	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\",\"${tslength}\")" 
       root -b -l -q "${macro}(\"${traFile}\",\"${rawFile}\",\"${recFile}\",\
-	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\")" &> ${log}
+	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\",\"${tslength}\")" &> ${log}
     else 
       if [ ${step} == digitization ]; then
         input=$(getJsonVal "['transport']['output']['path']")
@@ -62,7 +67,7 @@ for step in ${steps}; do
     rm -v .rootrc
     if [ ${step} == reconstruction ]; then
 	if [ "${isL1EffQA}" == true ]; then
-    	  rm -v *{moni,CA}* all_*.par 
+    	  rm -v *{core,moni,CA}* all_*.par 
 	else
 	  rm -v *{core,moni,CA,L1,Edep}* all_*.par
     	fi

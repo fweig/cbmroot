@@ -28,11 +28,12 @@ bool CheckOutFileName(TString fileName, Bool_t overwrite)
 
 void run_analysis_tree_maker_json_config(TString traPath = "test", TString rawPath = "", TString recPath = "",
                                          TString unigenFile = "", TString outPath = "", bool overwrite = true,
-                                         std::string config = "", int nEvents = 0)
+                                         std::string config = "", std::string tslength = "", int nEvents = 0)
 {
   const std::string system = "Au+Au";  // TODO can we read it automatically?
   const float beam_mom     = 12.;
   const bool is_event_base = false;
+  const float ts_length    = std::stof(tslength);
 
   // --- Logger settings ----------------------------------------------------
   const TString logLevel     = "INFO";
@@ -137,6 +138,9 @@ void run_analysis_tree_maker_json_config(TString traPath = "test", TString rawPa
   auto* man = new CbmConverterManager();
   man->SetSystem(system);
   man->SetBeamMomentum(beam_mom);
+  std::cout << "Event mode : " << is_event_base << std::endl;
+  std::cout << "TimeSliceLength = " << ts_length << std::endl;
+  man->SetTimeSliceLength(ts_length);
 
   man->SetOutputName(outFile.Data(), "rTree");
 

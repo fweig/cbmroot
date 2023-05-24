@@ -10,8 +10,8 @@
     "time": "3:00:00",
     "excludeNodes": "",
     "logDir": "/lustre/cbm/users/${USER}/mc/out/log",
-    "cbmRoot": "/lustre/cbm/users/fkornas/soft/cbmroot/MR_master22_fr_v18.6.7_fs_apr21p2/bin/CbmRootConfig.sh",
-    "jobScript": "${PWD}/run_sim_reco.sh",
+    "cbmRoot": "/cvmfs/cbm.gsi.de/debian10/cbmroot/feb23_fr_v18.6.7_fs_apr21p2/bin/CbmRootConfig.sh",
+    "jobScript": "${PWD}/run_sim_reco_json.sh",
     "transport": {
       "run": true,
       "plutoShift": 0,
