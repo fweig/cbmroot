@@ -730,10 +730,8 @@ void MCModule::ReadMCTracks()
       // in the data base, its mass is calculated as A times proton mass.
       aTrk.SetMass(pExtMCTrk->GetMass());
 
-      // The charge in CbmMCTrack is similarly to mass defined from ROOT PDG data base. The value of charge there is
-      // given in the units of 1/3e (absolute value of d-quark charge). In ::ca::tools::MCTrack we recalculate this
-      // value to the units of e.
-      aTrk.SetCharge(pExtMCTrk->GetCharge() / 3.);
+      // The charge in CbmMCTrack is given in the units of e
+      aTrk.SetCharge(pExtMCTrk->GetCharge());
 
       // Set index of mother track. We assume, that mother track was recorded into the internal array before
       int extMotherId = pExtMCTrk->GetMotherId();

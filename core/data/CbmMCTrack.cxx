@@ -154,7 +154,10 @@ double CbmMCTrack::GetCharge() const
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(fPdgCode);
 
     // Particle found in TDatabasePDG
-    if (particle) return particle->Charge();
+    if (particle) {
+      double electron_charge = abs(TDatabasePDG::Instance()->GetParticle(11)->Charge());
+      return particle->Charge() / electron_charge;
+    }
 
     // Ions may not be in the TDatabasePDG, but their charge number is encoded
     // in the PDG code like 10LZZZAAAI, where L is strangeness, Z is charge,

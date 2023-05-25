@@ -1272,7 +1272,7 @@ void CbmL1::Fill_vMCTracks()
       //}
       // TODO: Add light nuclei (d, t, He3, He4): they are common in tracking but not accounted in TDatabasePDG (S.Zharko)
 
-      q    = MCTrack->GetCharge() / 3.;
+      q    = MCTrack->GetCharge();
       mass = MCTrack->GetMass();
 
       Int_t iTrack = fvMCTracks.size();  //or iMCTrack?
