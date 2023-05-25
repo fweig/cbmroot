@@ -12,6 +12,7 @@ set(DEVICE_SRCS
 set(SRCS
   ${DEVICE_SRCS}
   base/Options.cxx
+  base/Types.cxx
   base/util/TimingsFormat.cxx
   data/sts/LandauTable.cxx
   evbuild/EventBuilder.cxx
@@ -98,6 +99,7 @@ install(
     base/Prelude.h
     base/RecoParams.h
     base/SubChain.h
+    base/Types.h
     ca/simd/CaSimd.h
     ca/simd/CaSimdVc.h
     ca/simd/CaSimdPseudo.h

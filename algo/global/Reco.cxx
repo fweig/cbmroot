@@ -14,9 +14,20 @@ using namespace cbm::algo;
 Reco::Reco() {}
 Reco::~Reco() {}
 
+void Reco::Validate(const Options& opts)
+{
+  if (!fs::exists(opts.ParamsDir())) {
+    throw std::runtime_error("ParamsDir does not exist: " + opts.ParamsDir().string());
+  }
+
+  if (opts.HasDetector(Detector::TOF)) { throw std::runtime_error("TOF not implemented yet"); }
+}
+
 void Reco::Init(const Options& opts)
 {
-  if (fInitialized) { throw std::runtime_error("Chain already initialized"); }
+  if (fInitialized) throw std::runtime_error("Chain already initialized");
+
+  Validate(opts);
 
   fContext.opts = opts;
   SetContext(&fContext);

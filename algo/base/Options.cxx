@@ -6,8 +6,22 @@
 #include <boost/program_options.hpp>
 
 #include <iostream>
+#include <iterator>
 
 using namespace cbm::algo;
+namespace po = boost::program_options;
+
+
+namespace std
+{
+  template<class T>
+  std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
+  {
+    copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
+    return os;
+  }
+}  // namespace std
+
 
 void validate(boost::any& v, const std::vector<std::string>& values, severity_level*, int)
 {
@@ -17,22 +31,19 @@ void validate(boost::any& v, const std::vector<std::string>& values, severity_le
     {"info", severity_level::info},   {"warning", severity_level::warning}, {"error", severity_level::error},
     {"fatal", severity_level::fatal}};
 
-  namespace po = boost::program_options;
-
   po::validators::check_first_occurrence(v);
 
   const std::string& s = po::validators::get_single_string(values);
 
   auto it = levels.find(s);
 
-  if (it == levels.end()) { throw po::validation_error(po::validation_error::invalid_option_value); }
+  if (it == levels.end()) throw po::validation_error(po::validation_error::invalid_option_value);
 
   v = it->second;
 }
 
 Options::Options(int argc, char** argv)
 {
-  namespace po = boost::program_options;
 
   po::options_description required("Required options");
   // clang-format off
@@ -51,9 +62,15 @@ Options::Options(int argc, char** argv)
       "select device (cpu, cuda0, cuda1, hip0, ...)")
     ("log-level,l", po::value(&fLogLevel)->default_value(info)->value_name("<level>"),
       "set log level (debug, info, warning, error, fatal)")
+    ("output,o", po::value<std::vector<RecoData>>(&fOutputTypes)->multitoken()->default_value({RecoData::Hit})->value_name("<types>"),
+      "comma seperated list of reconstruction output types (hit, digi, ...)")
+    ("steps", po::value<std::vector<Step>>(&fRecoSteps)->multitoken()->default_value({Step::LocalReco})->value_name("<steps>"),
+      "comma seperated list of reconstruction steps (upack, digitrigger, localreco, ...)")
+    ("systems,s", po::value(&fDetectors)->multitoken()->default_value({Detector::STS})->value_name("<detectors>"),
+      "comma seperated list of detectors to process (sts, mvd, ...)")
     ("num-ts,n", po::value<int>(&fNumTimeslices)->default_value(-1)->value_name("<num>"),
       "Stop after <num> timeslices (-1 = all)")
-    ("skip-ts,s", po::value<int>(&fSkipTimeslices)->default_value(0)->value_name("<num>"),
+    ("skip-ts", po::value<int>(&fSkipTimeslices)->default_value(0)->value_name("<num>"),
       "Skip first <num> timeslices")
     ("times,t", po::bool_switch(&fCollectKernelTimes)->default_value(false),
       "print kernel times")("help,h", "produce help message")

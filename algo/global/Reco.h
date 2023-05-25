@@ -43,8 +43,7 @@ namespace cbm::algo
     sts::UnpackChain fUnpack;
     sts::HitfinderChain fStsHitFinder;
 
-    // Util functions
-    void AddTiming(xpu::timings& timings);
+    void Validate(const Options& opts);
   };
 }  // namespace cbm::algo
 
