@@ -9,8 +9,7 @@
 namespace cbm::algo
 {
 
-  enum class Detector
-  {
+  enum class Detector {
     STS,
     TOF,
   };
@@ -24,8 +23,7 @@ namespace cbm::algo
     {"TOF", Detector::TOF},
   };
 
-  enum class Step
-  {
+  enum class Step {
     Unpack,
     DigiTrigger,
     LocalReco,
@@ -41,16 +39,14 @@ namespace cbm::algo
     {"Localreco", Step::LocalReco},
   };
 
-  enum class RecoData
-  {
+  enum class RecoData {
     Digi,
     Cluster,
     Hit,
   };
 
   template<>
-  struct EnumIsSerializable<RecoData> : std::true_type {
-  };
+  struct EnumIsSerializable<RecoData> : std::true_type {};
 
   template<>
   const EnumDict_t<RecoData> EnumDict<RecoData> = {
