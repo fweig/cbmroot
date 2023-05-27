@@ -139,6 +139,13 @@ void CbmL1::CheckDetectorPresence()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void CbmL1::DisableTrackingStation(L1DetectorID detID, int iSt)
+{
+  if (L1DetectorID::kEND != detID) { fvmDisabledStationIDs[detID].insert(iSt); }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 InitStatus CbmL1::ReInit()
 {
   SetParContainers();
@@ -481,6 +488,9 @@ InitStatus CbmL1::Init()
         stationInfo.SetFrontBackStripsGeometry((fscal) mvdInterface->GetStripsStereoAngleFront(iSt),
                                                (fscal) mvdInterface->GetStripsStereoAngleBack(iSt));
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        if (fvmDisabledStationIDs[L1DetectorID::kMvd].find(iSt) != fvmDisabledStationIDs[L1DetectorID::kMvd].cend()) {
+          stationInfo.SetTrackingStatus(false);
+        }
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
       }
@@ -507,6 +517,9 @@ InitStatus CbmL1::Init()
         stationInfo.SetFrontBackStripsGeometry((fscal) stsInterface->GetStripsStereoAngleFront(iSt),
                                                (fscal) stsInterface->GetStripsStereoAngleBack(iSt));
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        if (fvmDisabledStationIDs[L1DetectorID::kSts].find(iSt) != fvmDisabledStationIDs[L1DetectorID::kSts].cend()) {
+          stationInfo.SetTrackingStatus(false);
+        }
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
       }
@@ -533,6 +546,9 @@ InitStatus CbmL1::Init()
         stationInfo.SetFrontBackStripsGeometry((fscal) muchInterface->GetStripsStereoAngleFront(iSt),
                                                (fscal) muchInterface->GetStripsStereoAngleBack(iSt));
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        if (fvmDisabledStationIDs[L1DetectorID::kMuch].find(iSt) != fvmDisabledStationIDs[L1DetectorID::kMuch].cend()) {
+          stationInfo.SetTrackingStatus(false);
+        }
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
       }
@@ -563,6 +579,9 @@ InitStatus CbmL1::Init()
         if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
           stationInfo.SetTrackingStatus(false);
         }
+        if (fvmDisabledStationIDs[L1DetectorID::kTrd].find(iSt) != fvmDisabledStationIDs[L1DetectorID::kTrd].cend()) {
+          stationInfo.SetTrackingStatus(false);
+        }
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
       }
@@ -590,6 +609,9 @@ InitStatus CbmL1::Init()
         fscal tofBackPhi  = tofInterface->GetStripsStereoAngleBack(iSt);
         stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofBackPhi);
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        if (fvmDisabledStationIDs[L1DetectorID::kTof].find(iSt) != fvmDisabledStationIDs[L1DetectorID::kTof].cend()) {
+          stationInfo.SetTrackingStatus(false);
+        }
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
       }

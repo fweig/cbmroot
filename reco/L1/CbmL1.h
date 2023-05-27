@@ -202,6 +202,12 @@ public:
   /// If a particular subsystem is absent, it is not used in tracking.
   void CheckDetectorPresence();
 
+  /// @brief  Disables tracking station for a given detector subsystem
+  /// @param  detID  Detector ID
+  /// @param  iSt    Index of station in tracking station interface
+  ///
+  /// Possible entries of Detector ID are listed in CbmL1DetectorID.h.
+  void DisableTrackingStation(L1DetectorID detID, int iSt);
 
   /// Sets material budget file name for MVD
   void SetMvdMaterialBudgetFileName(const TString& fileName)
@@ -615,6 +621,7 @@ private:
   std::unordered_map<CbmL1LinkKey, int> fmMCPointsLinksMap = {};  /// Internal MC point index vs. link
   std::unordered_map<CbmL1LinkKey, int> fmMCTracksLinksMap = {};  /// Internal MC track index vs. link
 
+  CbmCaDetIdArr_t<std::set<int>> fvmDisabledStationIDs;  /// Array of local indices of disabled tracking stations
 
   // *****************************
   // ** Tracking performance QA **

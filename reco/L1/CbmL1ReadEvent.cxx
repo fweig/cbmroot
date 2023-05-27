@@ -243,11 +243,7 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
   int iPoint           = -1;
   const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTrdHitMatches->At(iHit));
   if (hitMatch) {
-    int iMC = -1;
     if (hitMatch->GetNofLinks() > 0) {
-      iMC = hitMatch->GetLink(0).GetIndex();
-      assert(iMC >= 0 && iMC < fNpointsTrd);
-
       int iMc = hitMatch->GetLink(0).GetIndex();
       if (iMc < 0) return iPoint;
       int iIndex = iMc + fNpointsMvdAll + fNpointsStsAll + fNpointsMuchAll;
@@ -944,8 +940,8 @@ void CbmL1::ReadEvent(CbmEvent* event)
       th.Det      = 3;
 
       int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetPlaneId(), L1DetectorID::kTrd);
-      assert(stIdx != -1);
-      //if (stIdx == -1) continue;
+      //assert(stIdx != -1);
+      if (stIdx == -1) continue;  // Station was disabled and thus should not be proceede
 
       th.iStation = stIdx;
 

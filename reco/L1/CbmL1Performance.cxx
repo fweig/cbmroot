@@ -578,6 +578,10 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFa
   static TH1F* h_reco_phi;
   static TH1F* h_notfound_phi;
 
+  static TH2F* h2_fst_hit_yz;  // occupancy of track first hit in y-z plane
+  static TH2F* h2_lst_hit_yz;  // occupancy of track last hit in y-z plane
+  static TH2F* h2_all_hit_yz;  // occupancy of track all hits in y-z plane
+
   static bool first_call = 1;
 
   if (first_call) {
@@ -585,6 +589,12 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFa
 
     TDirectory* curdir = gDirectory;
     gDirectory         = fHistoDir;
+
+    h2_fst_hit_yz =
+      new TH2F("h2_fst_hit_yz", "Track first hit occupancy in y-z plane;z [cm];y [cm]", 80, 0, 0, 80, 0, 0);
+    h2_lst_hit_yz =
+      new TH2F("h2_lst_hit_yz", "Track last hit occupancy in y-z plane;z[ cm];y [cm]", 80, 0, 0, 80, 0, 0);
+    h2_all_hit_yz = new TH2F("h2_all_hit_yz", "Track hit occupancy in y-z plane;z[ cm];y [cm]", 80, 0, 0, 80, 0, 0);
 
     p_eff_all_vs_mom = new TProfile("p_eff_all_vs_mom", "AllSet Efficiency vs Momentum", 100, 0.0, 5.0, 0.0, 100.0);
     p_eff_prim_vs_mom =
@@ -842,7 +852,23 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFa
       h_reco_nhits->Fill((prtra->Hits).size());
       CbmL1HitDebugInfo& mh = fvHitDebugInfo[prtra->Hits[0]];
       h_reco_station->Fill(mh.iStation);
+
+      int iFstHit  = prtra->GetFirstHitIndex();
+      auto& fstHit = fvHitDebugInfo[iFstHit];
+      h2_fst_hit_yz->Fill(fpAlgo->GetParameters()->GetStation(fstHit.iStation).fZ[0], fstHit.GetY());
+
+      int iLstHit  = prtra->GetLastHitIndex();
+      auto& lstHit = fvHitDebugInfo[iLstHit];
+      h2_lst_hit_yz->Fill(fpAlgo->GetParameters()->GetStation(lstHit.iStation).fZ[0], lstHit.GetY());
+
+      for (int iH : prtra->Hits) {
+        const auto& hit = fvHitDebugInfo[iH];
+        int y           = hit.GetY();
+        int z           = fpAlgo->GetParameters()->GetStation(hit.iStation).fZ[0];
+        h2_all_hit_yz->Fill(z, y);
+      }
     }
+
 
     h_reco_purity->Fill(100 * prtra->GetMaxPurity());
 

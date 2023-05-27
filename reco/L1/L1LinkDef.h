@@ -35,6 +35,7 @@
 #pragma link C++ class CbmCaInputQaTrd + ;
 #pragma link C++ class CbmCaInputQaTof + ;
 #pragma link C++ enum cbm::ca::ETrackType;
+#pragma link C++ enum L1DetectorID;
 #pragma link C++ class cbm::ca::OutputQa + ;
 #pragma link C++ class ca::tools::WindowFinder + ;
 
