@@ -74,6 +74,7 @@ target_link_libraries(Algo
   PUBLIC    OnlineData
             ROOT::GenVector
             GSL
+            fmt::fmt
             Boost::program_options
             Boost::filesystem
             xpu

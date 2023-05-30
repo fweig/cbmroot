@@ -171,6 +171,12 @@ if(SSE_FOUND)
   list(APPEND packages SSE)
 endif()
 
+#Searching for format package
+find_package(fmt CONFIG REQUIRED)
+if(fmt_FOUND)
+  list(APPEND packages fmt)
+endif()
+
 
 #Searching for FairMQ
 find_package(FairMQ CONFIG REQUIRED)
