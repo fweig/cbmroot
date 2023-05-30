@@ -12,9 +12,9 @@
 #include <yaml-cpp/yaml.h>
 
 #include "Prelude.h"
-#include "StsReadoutConfig.h"
 #include "SubChain.h"
 #include "UnpackSts.h"
+#include "sts/ReadoutSetup.h"
 
 class CbmStsDigi;
 namespace fles
@@ -28,12 +28,12 @@ namespace cbm::algo::sts
   class UnpackChain : public SubChain {
 
   public:
-    void Init(StsReadoutConfig config);
+    void Init(sts::ReadoutMapping config);
     std::vector<CbmStsDigi> Run(const fles::Timeslice& ts);
 
   private:
     std::unordered_map<u16, UnpackSts> fAlgoSts;
-    std::optional<StsReadoutConfig> fConfig;
+    std::optional<sts::ReadoutMapping> fConfig;
   };
 
 }  // namespace cbm::algo::sts

@@ -24,6 +24,8 @@ namespace cbm::algo
    ** component. This is to be translated into the module address and the ASIC number within
    ** the module.
    ** The mapping of the two address spaces is hard-coded in this class.
+   **
+   ** NOTE: This class is deprecated. It's replaced by ReadoutMapping in algo/data/sts. The new class no longer hardcodes the mapping. It can be read from a configuration file instead.
    **/
 
   class StsReadoutConfig {

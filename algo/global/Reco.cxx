@@ -43,10 +43,11 @@ void Reco::Init(const Options& opts)
   fContext.recoParams     = config::Read<RecoParams>(yaml);
 
   // STS Unpacker
-  // yaml = YAML::LoadFile(opts.ParamsDir() / "StsReadout.yaml");
-  // sts::ReadoutPars readoutConfig = config::Read<sts::ReadoutPars>(yaml);
-  StsReadoutConfig readoutConfig;
-  fUnpack.Init(readoutConfig);
+  fs::path stsUnpackParamsPath    = opts.ParamsDir() / "StsReadout.yaml";
+  yaml                            = YAML::LoadFile(stsUnpackParamsPath.string());
+  sts::ReadoutSetup readoutConfig = config::Read<sts::ReadoutSetup>(yaml);
+  sts::ReadoutMapping mapping(readoutConfig);
+  fUnpack.Init(mapping);
 
   // STS Hitfinder
   fs::path stsHitfinderParamsPath    = opts.ParamsDir() / "StsHitfinder.yaml";

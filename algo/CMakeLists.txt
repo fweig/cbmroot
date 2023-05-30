@@ -15,6 +15,7 @@ set(SRCS
   base/Types.cxx
   base/util/TimingsFormat.cxx
   data/sts/LandauTable.cxx
+  data/sts/ReadoutSetup.cxx
   evbuild/EventBuilder.cxx
   trigger/TimeClusterTrigger.cxx
   evselector/DigiEventSelector.cxx
@@ -34,6 +35,7 @@ set(SRCS
   detectors/trd2d/Trd2dReadoutConfig.cxx
   detectors/trd2d/UnpackTrd2d.cxx
   global/Reco.cxx
+  global/RecoIO.cxx
 )
 
 set(BUILD_INFO_CXX ${CMAKE_CURRENT_BINARY_DIR}/base/BuildInfo.cxx)
@@ -105,6 +107,8 @@ install(
     ca/simd/CaSimdPseudo.h
     detectors/sts/StsHitfinder.h
     detectors/sts/StsHitfinderChain.h
+    global/Reco.h
+    global/RecoIO.h
   DESTINATION
     include/
 )

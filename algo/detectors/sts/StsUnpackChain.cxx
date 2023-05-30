@@ -13,7 +13,7 @@
 
 using namespace cbm::algo;
 
-void sts::UnpackChain::Init(StsReadoutConfig config)
+void sts::UnpackChain::Init(sts::ReadoutMapping config)
 {
   fConfig = config;
 
@@ -33,8 +33,8 @@ void sts::UnpackChain::Init(StsReadoutConfig config)
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackStsElinkPar elinkPar;
       auto mapEntry        = fConfig->Map(equip, elink);
-      elinkPar.fAddress    = mapEntry.first;   // Module address for this elink
-      elinkPar.fAsicNr     = mapEntry.second;  // ASIC number within module
+      elinkPar.fAddress    = mapEntry.moduleAddress;  // Module address for this elink
+      elinkPar.fAsicNr     = mapEntry.asicNumber;     // ASIC number within module
       elinkPar.fTimeOffset = 0.;
       elinkPar.fAdcOffset  = 1.;
       elinkPar.fAdcGain    = 1.;

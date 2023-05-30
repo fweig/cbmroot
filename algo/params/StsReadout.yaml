@@ -1,0 +1,67 @@
+---
+numAsicsPerFeb: 8
+modules:
+  - {address: 0x10008002, type: 0}
+  - {address: 0x10018002, type: 0}
+  - {address: 0x10008402, type: 1}
+  - {address: 0x10018402, type: 1}
+  - {address: 0x10107c02, type: 1}
+  - {address: 0x10008412, type: 0}
+  - {address: 0x10018412, type: 0}
+  - {address: 0x101ffc02, type: 0}
+  - {address: 0x10008812, type: 1}
+  - {address: 0x10018812, type: 1}
+  - {address: 0x10028812, type: 1}
+  - {address: 0x10008012, type: 1}
+  - {address: 0x10018012, type: 1}
+components:
+  - {equipmentId: 0x1003, feb2module: [[-1, 1, 1, 0, 0]], feb2moduleSide: [[-1, 1, 0, 1, 0]], febIsPulser: [[n, n, n, n, n]]}
+  - {equipmentId: 0x1002, feb2module: [[4, 3, 3, 2, 2]], feb2moduleSide: [[1, 1, 0, 1, 0]], febIsPulser: [[y, n, n, n, n]]}
+  - {equipmentId: 0x1006, feb2module: [[7, 6, 6, 5, 5]], feb2moduleSide: [[1, 1, 0, 1, 0]], febIsPulser: [[y, n, n, n, n]]}
+  - {equipmentId: 0x1005, feb2module: [[10, 9, 9, 8, 8]], feb2moduleSide: [[0, 1, 0, 1, 0]], febIsPulser: [[n, n, n, n, n]]}
+  - {equipmentId: 0x1004, feb2module: [[12, 12, 11, 11, 10]], feb2moduleSide: [[1, 0, 1, 0, 1]], febIsPulser: [[n, n, n, n, n]]}
+elinks:
+  - {toFeb: 4, toAsicFebA: 0x21, toAsicFebB: 0x27}
+  - {toFeb: 4, toAsicFebA: 0x23, toAsicFebB: 0x25}
+  - {toFeb: 4, toAsicFebA: 0x25, toAsicFebB: 0x23}
+  - {toFeb: 4, toAsicFebA: 0x20, toAsicFebB: 0x26}
+  - {toFeb: 4, toAsicFebA: 0x22, toAsicFebB: 0x24}
+  - {toFeb: 3, toAsicFebA: 0x18, toAsicFebB: 0x1e}
+  - {toFeb: 3, toAsicFebA: 0x1a, toAsicFebB: 0x1c}
+  - {toFeb: 3, toAsicFebA: 0x1c, toAsicFebB: 0x1a}
+  - {toFeb: 4, toAsicFebA: 0x24, toAsicFebB: 0x22}
+  - {toFeb: 4, toAsicFebA: 0x27, toAsicFebB: 0x21}
+  - {toFeb: -1, toAsicFebA: 0xffff, toAsicFebB: 0xffff}
+  - {toFeb: -1, toAsicFebA: 0xffff, toAsicFebB: 0xffff}
+  - {toFeb: 4, toAsicFebA: 0x26, toAsicFebB: 0x20}
+  - {toFeb: 3, toAsicFebA: 0x1e, toAsicFebB: 0x18}
+  - {toFeb: 2, toAsicFebA: 0x10, toAsicFebB: 0x16}
+  - {toFeb: 2, toAsicFebA: 0x12, toAsicFebB: 0x14}
+  - {toFeb: 3, toAsicFebA: 0x19, toAsicFebB: 0x1f}
+  - {toFeb: 3, toAsicFebA: 0x1b, toAsicFebB: 0x1d}
+  - {toFeb: 3, toAsicFebA: 0x1f, toAsicFebB: 0x19}
+  - {toFeb: 1, toAsicFebA: 0xe, toAsicFebB: 0x8}
+  - {toFeb: 2, toAsicFebA: 0x11, toAsicFebB: 0x17}
+  - {toFeb: 2, toAsicFebA: 0x13, toAsicFebB: 0x15}
+  - {toFeb: 1, toAsicFebA: 0xc, toAsicFebB: 0xa}
+  - {toFeb: 2, toAsicFebA: 0x15, toAsicFebB: 0x13}
+  - {toFeb: 2, toAsicFebA: 0x17, toAsicFebB: 0x11}
+  - {toFeb: 2, toAsicFebA: 0x16, toAsicFebB: 0x10}
+  - {toFeb: 3, toAsicFebA: 0x1d, toAsicFebB: 0x1b}
+  - {toFeb: 2, toAsicFebA: 0x14, toAsicFebB: 0x12}
+  - {toFeb: 1, toAsicFebA: 0x9, toAsicFebB: 0xf}
+  - {toFeb: 1, toAsicFebA: 0xd, toAsicFebB: 0xb}
+  - {toFeb: 1, toAsicFebA: 0xf, toAsicFebB: 0x9}
+  - {toFeb: 1, toAsicFebA: 0x8, toAsicFebB: 0xe}
+  - {toFeb: 1, toAsicFebA: 0xa, toAsicFebB: 0xc}
+  - {toFeb: 0, toAsicFebA: 0x2, toAsicFebB: 0x4}
+  - {toFeb: 0, toAsicFebA: 0x4, toAsicFebB: 0x2}
+  - {toFeb: 0, toAsicFebA: 0x6, toAsicFebB: 0x0}
+  - {toFeb: 1, toAsicFebA: 0xb, toAsicFebB: 0xd}
+  - {toFeb: 0, toAsicFebA: 0x5, toAsicFebB: 0x3}
+  - {toFeb: 0, toAsicFebA: 0x0, toAsicFebB: 0x6}
+  - {toFeb: 0, toAsicFebA: 0x3, toAsicFebB: 0x5}
+  - {toFeb: 0, toAsicFebA: 0x7, toAsicFebB: 0x1}
+  - {toFeb: 0, toAsicFebA: 0x1, toAsicFebB: 0x7}
+...
+
