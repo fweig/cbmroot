@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <sstream>
 #include <vector>
 
 #include "CriGet4Mess001.h"
@@ -62,6 +63,13 @@ namespace cbm::algo
       uint32_t numErrors = fNumNonHitOrTsbMessage + fNumErrElinkOutOfRange + fNumErrInvalidFirstMessage
                            + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
       return (numErrors > 0 ? true : false);
+    }
+    std::string print()
+    {
+      std::stringstream ss;
+      ss << "errors " << fNumNonHitOrTsbMessage << " | " << fNumErrElinkOutOfRange << " | "
+         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
+      return ss.str();
     }
   };
 

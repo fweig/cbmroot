@@ -66,8 +66,14 @@ namespace cbm::algo
                            + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
       return (numErrors > 0 ? true : false);
     }
+    std::string print()
+    {
+      std::stringstream ss;
+      ss << "errors " << fNumNonHitOrTsbMessage << " | " << fNumErrElinkOutOfRange << " | "
+         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
+      return ss.str();
+    }
   };
-
 
   /** @class UnpackSts
    ** @author Pierre-Alain Loizeau <p.-a.loizeau@gsi.de>

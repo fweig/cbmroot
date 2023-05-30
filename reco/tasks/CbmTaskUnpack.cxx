@@ -76,9 +76,7 @@ uint64_t CbmTaskUnpack::MsLoop(const fles::Timeslice* timeslice, UnpackAlgo& alg
     *numBytesInComp += msDescriptor.size;
     auto result = algo(msContent, msDescriptor, timeslice->start_time());
     LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis " << result.first.size()
-                << ", errors " << result.second.fNumNonHitOrTsbMessage << " | " << result.second.fNumErrElinkOutOfRange
-                << " | " << result.second.fNumErrInvalidFirstMessage << " | " << result.second.fNumErrInvalidMsSize
-                << " | " << result.second.fNumErrTimestampOverflow << " | ";
+                << ", " << result.second.print();
     *numDigisInComp += result.first.size();
 #pragma omp critical(insert_digis)
     digis->insert(digis->end(), result.first.begin(), result.first.end());
