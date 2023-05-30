@@ -8,6 +8,7 @@
 
 #include <xpu/host.h>
 
+#include "BuildInfo.h"
 #include "Options.h"
 #include "Reco.h"
 
@@ -30,7 +31,8 @@ int main(int argc, char** argv)
   xpu::initialize(settings);
   xpu::preload<GPUReco>();
 
-  // LOG(info) << "CORE buildType=" << BuildInfo::BUILD_TYPE << " gpuDebug=" << BuildInfo::GPU_DEBUG << " commit=" << BuildInfo::GIT_HASH;
+  L_(info) << "CBMRECO buildType=" << BuildInfo::BUILD_TYPE << " gpuDebug=" << BuildInfo::GPU_DEBUG
+           << " commit=" << BuildInfo::GIT_HASH;
   std::stringstream ss;
   for (int i = 0; i < argc; i++) {
     ss << argv[i] << " ";
