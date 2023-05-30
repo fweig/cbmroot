@@ -91,6 +91,8 @@ void Reco::Run(const fles::Timeslice& ts)
 
 void Reco::Finalize()
 {
+  fStsHitFinder.Finalize();
+
   // Pop timer that was started in Init()
   xpu::timings t = xpu::pop_timer();
   if (Opts().CollectKernelTimes()) {

@@ -15,6 +15,14 @@ void sts::HitfinderChain::SetParameters(const sts::HitfinderPars& parameters)
   AllocateStatic();
 }
 
+void sts::HitfinderChain::Finalize()
+{
+  // Explicitly free buffers in constant memory.
+  // This avoids an issue in xpu with teardown order of static variables when using CPU.
+  fHitfinder = {};
+  xpu::set<TheHitfinder>(fHitfinder);
+}
+
 void sts::HitfinderChain::operator()(gsl::span<const CbmStsDigi> digis)
 {
   EnsureParameters();

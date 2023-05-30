@@ -43,6 +43,11 @@ namespace cbm::algo::sts
     void SetParameters(const sts::HitfinderPars& parameters);
     const sts::HitfinderPars& GetParameters() const { return *fPars; }
 
+    /**
+     * Teardown chain.
+     */
+    void Finalize();
+
     void operator()(gsl::span<const CbmStsDigi>);
 
   private:
