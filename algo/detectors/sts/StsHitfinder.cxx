@@ -193,8 +193,13 @@ XPU_D void sts::Hitfinder::FindClustersParallel(FindClusters::context& ctx) cons
     if (myDigi.GetChannel() >= otherDigi.GetChannel()) continue;
 
     if (float(myDigi.GetTimeU32()) + deltaT < float(otherDigi.GetTimeU32())) { break; }
+
+    // This check is not necessary? We already found the first possible digi via binary search...
     if (float(myDigi.GetTimeU32()) - deltaT > float(otherDigi.GetTimeU32())) { continue; }
 
+    // How to handle noise? Digis in same channel within a small time window of the previous digi are discarded by old cluster finder
+
+    // How to handle if multiple digis try to connect to the same digi?
     digiConnector[iLocal].SetNext(nextIter);
     digiConnector[nextIter].SetHasPrevious(true);
     break;
