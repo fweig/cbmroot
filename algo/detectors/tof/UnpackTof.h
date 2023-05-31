@@ -66,7 +66,8 @@ namespace cbm::algo
     {
       std::stringstream ss;
       ss << "errors " << fNumNonHitOrTsbMessage << " | " << fNumErrElinkOutOfRange << " | "
-         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
+         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidLastMessage << " | " << fNumErrInvalidMsSize << " | "
+         << fNumErrTimestampOverflow << " | " << fNumErrInvalidStartEpoch << " | ";
       return ss.str();
     }
   };

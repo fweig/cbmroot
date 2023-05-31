@@ -61,14 +61,16 @@ namespace cbm::algo
     bool HasErrors()
     {
       uint32_t numErrors = fNumNonHitOrTsbMessage + fNumErrElinkOutOfRange + fNumErrInvalidFirstMessage
-                           + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
+                           + fNumErrInvalidLastMessage + fNumErrInvalidMsSize + fNumErrTimestampOverflow
+                           + fNumErrInvalidStartEpoch;
       return (numErrors > 0 ? true : false);
     }
     std::string print()
     {
       std::stringstream ss;
       ss << "errors " << fNumNonHitOrTsbMessage << " | " << fNumErrElinkOutOfRange << " | "
-         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
+         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidLastMessage << " | " << fNumErrInvalidMsSize << " | "
+         << fNumErrTimestampOverflow << " | " << fNumErrInvalidStartEpoch << " | ";
       return ss.str();
     }
   };

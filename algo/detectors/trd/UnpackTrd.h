@@ -59,37 +59,37 @@ namespace cbm::algo
    ** @brief Monitoring data for TRD unpacking
    **/
   struct UnpackTrdMonitorData {
-    uint32_t fNumNonHitOrTsbMessage     = 0;
-    uint32_t fNumErrElinkOutOfRange     = 0;  ///< Elink not contained in parameters
-    uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not TS_MSB or second is not EPOCH
-    uint32_t fNumErrInvalidMsSize       = 0;  ///< Microslice size is not multiple of message size
-    uint32_t fNumErrTimestampOverflow   = 0;  ///< Overflow in 64 bit time stampa
-    size_t fNumNonMajorTsMsb            = 0;  ///< Counter for the ts_msb used to reconstruct the time
-    size_t fNumElinkMis                 = 0;  ///< Number of SOM to RDA/EOM mismatches
-    size_t fNumCorruptEom               = 0;  ///< Number of corrupted EOM frames
-    size_t fNumWildRda                  = 0;  ///< Number of rda frames outside of a SOM frame range
-    size_t fNumWildEom                  = 0;  ///< Number of eom frames outside of a SOM frame range
-    size_t fNumUnknownWords             = 0;  ///< Number of unknown words
-    size_t fNumMissingEom               = 0;  ///< Number of missing EOM frames to finish a SOM frame
-    size_t fNumWildNul                  = 0;  ///< Number of wild null words, should only appear at the end of a µSlice
-    size_t fNumCreatedRawMsgs           = 0;  ///< counter of created raw messages
-    size_t fNumEpochMsgs                = 0;  ///< counter of created raw messages
-    size_t fNumCrcValidFlags            = 0;  ///< counter for inf/error flags from the µSlices
-    size_t fNumOverflowFlimFlags        = 0;  ///< counter for inf/error flags from the µSlices
-    size_t fNumOverflowUserFlags        = 0;  ///< counter for inf/error flags from the µSlices
-    size_t fNumDataErrorFlags           = 0;  ///< counter for inf/error flags from the µSlices
-    size_t fNumCreatedInfoMsgs          = 0;  ///< counter of created info messages
+    size_t fNumNonMajorTsMsb     = 0;  ///< Counter for the ts_msb used to reconstruct the time
+    size_t fNumCreatedRawMsgs    = 0;  ///< counter of created raw messages
+    size_t fNumEpochMsgs         = 0;  ///< counter of created raw messages
+    size_t fNumCreatedInfoMsgs   = 0;  ///< counter of created info messages
+    size_t fNumElinkMis          = 0;  ///< Number of SOM to RDA/EOM mismatches
+    size_t fNumCorruptEom        = 0;  ///< Number of corrupted EOM frames
+    size_t fNumWildRda           = 0;  ///< Number of rda frames outside of a SOM frame range
+    size_t fNumWildEom           = 0;  ///< Number of eom frames outside of a SOM frame range
+    size_t fNumUnknownWords      = 0;  ///< Number of unknown words
+    size_t fNumMissingEom        = 0;  ///< Number of missing EOM frames to finish a SOM frame
+    size_t fNumWildNul           = 0;  ///< Number of wild null words, should only appear at the end of a µSlice
+    size_t fNumCrcValidFlags     = 0;  ///< counter for inf/error flags from the µSlices
+    size_t fNumOverflowFlimFlags = 0;  ///< counter for inf/error flags from the µSlices
+    size_t fNumOverflowUserFlags = 0;  ///< counter for inf/error flags from the µSlices
+    size_t fNumDataErrorFlags    = 0;  ///< counter for inf/error flags from the µSlices
+
     bool HasErrors()
     {
-      uint32_t numErrors = fNumNonHitOrTsbMessage + fNumErrElinkOutOfRange + fNumErrInvalidFirstMessage
-                           + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
+      uint32_t numErrors = fNumElinkMis + fNumCorruptEom + fNumWildRda + fNumWildEom + fNumUnknownWords + fNumMissingEom
+                           + fNumWildNul + fNumCrcValidFlags + fNumOverflowFlimFlags + fNumOverflowUserFlags
+                           + fNumDataErrorFlags;
       return (numErrors > 0 ? true : false);
     }
     std::string print()
     {
       std::stringstream ss;
-      ss << "errors " << fNumNonHitOrTsbMessage << " | " << fNumErrElinkOutOfRange << " | "
-         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
+      ss << " stats " << fNumNonMajorTsMsb << " | " << fNumCreatedRawMsgs << " | " << fNumEpochMsgs << " | "
+         << fNumCreatedInfoMsgs << " errors " << fNumElinkMis << " | " << fNumCorruptEom << " | " << fNumWildRda
+         << " | " << fNumWildEom << " | " << fNumUnknownWords << " | " << fNumMissingEom << " | " << fNumWildNul
+         << " | " << fNumCrcValidFlags << " | " << fNumOverflowFlimFlags << " | " << fNumOverflowUserFlags << " | "
+         << fNumDataErrorFlags << " | ";
       return ss.str();
     }
   };
