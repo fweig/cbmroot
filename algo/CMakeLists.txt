@@ -56,6 +56,8 @@ add_custom_target(generateBuildInfo
     COMMENT "Generating build info"
 )
 
+find_package(OpenMP REQUIRED)
+
 add_library(Algo SHARED ${SRCS})
 
 target_include_directories(Algo
@@ -85,6 +87,7 @@ target_link_libraries(Algo
             external::yaml-cpp
             external::fles_logging
             external::fles_ipc
+            OpenMP::OpenMP_CXX
 )
 target_compile_definitions(Algo PUBLIC NO_ROOT)
 xpu_attach(Algo ${DEVICE_SRCS})
