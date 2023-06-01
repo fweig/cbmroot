@@ -64,7 +64,7 @@ Options::Options(int argc, char** argv)
       "set log level (debug, info, warning, error, fatal)")
     ("output,o", po::value<std::vector<RecoData>>(&fOutputTypes)->multitoken()->default_value({RecoData::Hit})->value_name("<types>"),
       "comma seperated list of reconstruction output types (hit, digi, ...)")
-    ("steps", po::value<std::vector<Step>>(&fRecoSteps)->multitoken()->default_value({Step::LocalReco})->value_name("<steps>"),
+    ("steps", po::value<std::vector<Step>>(&fRecoSteps)->multitoken()->default_value({Step::Unpack, Step::LocalReco})->value_name("<steps>"),
       "comma seperated list of reconstruction steps (upack, digitrigger, localreco, ...)")
     ("systems,s", po::value(&fDetectors)->multitoken()->default_value({Detector::STS})->value_name("<detectors>"),
       "comma seperated list of detectors to process (sts, mvd, ...)")

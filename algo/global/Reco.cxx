@@ -65,6 +65,8 @@ void Reco::Run(const fles::Timeslice& ts)
 {
   if (!fInitialized) { throw std::runtime_error("Chain not initialized"); }
 
+  if (!Opts().HasStep(Step::Unpack)) { throw std::runtime_error("Unpacking not enabled."); }
+
   for (uint64_t comp = 0; comp < ts.num_components(); comp++) {
     xpu::t_add_bytes(ts.size_component(comp));
   }
@@ -75,15 +77,18 @@ void Reco::Run(const fles::Timeslice& ts)
   xpu::set<cbm::algo::Params>(Params());
 
   std::vector<CbmStsDigi> digis;
-  switch (Params().sts.unpackMode) {
-    case RecoParams::UnpackMode::XPU:
-      // digis = fUnpackXpu.Exec(ts);
-      throw std::runtime_error("XPU unpacker currently not implemented");
-      break;
-    default:
-    case RecoParams::UnpackMode::CPU: digis = fUnpack.Run(ts); break;
+
+  if (Opts().HasStep(Step::Unpack)) {
+    switch (Params().sts.unpackMode) {
+      case RecoParams::UnpackMode::XPU:
+        // digis = fUnpackXpu.Exec(ts);
+        throw std::runtime_error("XPU unpacker currently not implemented");
+        break;
+      default:
+      case RecoParams::UnpackMode::CPU: digis = fUnpack.Run(ts); break;
+    }
   }
-  fStsHitFinder(digis);
+  if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);
 
   xpu::timings ts_times = xpu::pop_timer();
 
