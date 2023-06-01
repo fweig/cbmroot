@@ -36,6 +36,7 @@ set(SRCS
   detectors/trd2d/UnpackTrd2d.cxx
   global/Reco.cxx
   global/RecoIO.cxx
+  global/ParallelUnpackChain.cxx
 )
 
 set(BUILD_INFO_CXX ${CMAKE_CURRENT_BINARY_DIR}/base/BuildInfo.cxx)
@@ -92,6 +93,7 @@ install(TARGETS Algo DESTINATION lib)
 install(DIRECTORY base/compat TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY base/config TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY base/gpu TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY base/util TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY data/sts TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
 
 install(

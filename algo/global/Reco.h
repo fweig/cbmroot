@@ -6,6 +6,7 @@
 
 #include <xpu/host.h>
 
+#include "ParallelUnpackChain.h"
 #include "StsHitfinderChain.h"
 #include "StsUnpackChain.h"
 #include "SubChain.h"
@@ -41,6 +42,7 @@ namespace cbm::algo
 
     // STS
     sts::UnpackChain fUnpack;
+    ParallelUnpackChain fParallelUnpack;
     sts::HitfinderChain fStsHitFinder;
 
     void Validate(const Options& opts);
