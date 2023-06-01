@@ -32,6 +32,9 @@ namespace cbm::algo
     // --- Output data
     resultType result = {};
 
+    // Reset monitoring data
+    fMonitor = UnpackTrd2dMonitorData();
+
     // define time wrt start of time slice in TRD/FASP clks [80 MHz]. Contains:
     //  - relative offset of the MS wrt the TS
     //  - FASP epoch offset for current CROB
@@ -74,16 +77,17 @@ namespace cbm::algo
         lFaspOld = fasp_id;
       }
       if (data & 0x1) {
-        LOG(warn) << "UnpackTrd2d - Data corrupted : detect end bit set.";
+        fMonitor.fNumErrEndBitSet++;
         continue;
       }
       if (data & 0x2000) {
-        LOG(debug) << "UnpackTrd2d - Self-triggered data.";
+        fMonitor.fNumSelfTriggeredData++;
         data &= 0x1fff;
       }
       vMess.emplace_back(ch_id, kData, slice, data >> 1, crob_id, lFaspOld);
     }
-    result.first = FinalizeComponent();
+    result.first  = FinalizeComponent();  //TO DO: Original (non-algo) version calls this after MS loop!!
+    result.second = fMonitor;
 
     return result;
   }
@@ -181,7 +185,7 @@ namespace cbm::algo
       // clear digi buffer wrt the digi which was forwarded to higher structures
       fDigiBuffer[ipad].clear();
       if (nIncomplete > 2) {
-        LOG(warn) << "FinalizeComponent() skip " << nIncomplete << " incomplete digi at pad " << ipad << ".\n";
+        fMonitor.fNumIncompleteDigis++;  //TO DO: This must be moved if finalization is done after MS loop
       }
     }
     return outputDigis;

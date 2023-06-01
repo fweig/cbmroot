@@ -85,22 +85,20 @@ namespace cbm::algo
    ** @brief Monitoring data for TRD unpacking
    **/
   struct UnpackTrd2dMonitorData {
-    uint32_t fNumNonHitOrTsbMessage     = 0;
-    uint32_t fNumErrElinkOutOfRange     = 0;  ///< Elink not contained in parameters
-    uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not TS_MSB or second is not EPOCH
-    uint32_t fNumErrInvalidMsSize       = 0;  ///< Microslice size is not multiple of message size
-    uint32_t fNumErrTimestampOverflow   = 0;  ///< Overflow in 64 bit time stampa
+    uint32_t fNumSelfTriggeredData = 0;  ///< word fulfills data & 0x2000
+    uint32_t fNumIncompleteDigis   = 0;  ///< incomplete digis left in pads after finalization
+    uint32_t fNumErrEndBitSet      = 0;  ///< Corrupted data with end bit set
+
     bool HasErrors()
     {
-      uint32_t numErrors = fNumNonHitOrTsbMessage + fNumErrElinkOutOfRange + fNumErrInvalidFirstMessage
-                           + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
+      uint32_t numErrors = fNumErrEndBitSet;
       return (numErrors > 0 ? true : false);
     }
     std::string print()
     {
       std::stringstream ss;
-      ss << "errors " << fNumNonHitOrTsbMessage << " | " << fNumErrElinkOutOfRange << " | "
-         << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
+      ss << "stats " << fNumSelfTriggeredData << " | " << fNumIncompleteDigis << " | errors " << fNumErrEndBitSet
+         << " | ";
       return ss.str();
     }
   };
@@ -140,6 +138,8 @@ namespace cbm::algo
 
   private:                        // members
     UnpackTrd2dPar fParams = {};  ///< Parameter container
+
+    UnpackTrd2dMonitorData fMonitor;  ///< Container for monitoring data
 
     /**
      ** @brief Time offset for the system
