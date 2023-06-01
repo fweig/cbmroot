@@ -102,6 +102,7 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   cout << "//////////////////////////////" << endl;
 */
 
+  xpu::push_timer("Unpack TS");
   uint64_t rejectedComps = 0;
 
   for (uint64_t comp = 0; comp < timeslice.num_components(); comp++) {
@@ -165,6 +166,8 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   }  //# component
   // cout << "Timeslice brauchte: " << timeslicetimer.RealTime() * 1000 << "ms" << endl;
+  xpu::pop_timer();
+
   int sum = 0;
 #pragma omp parallel for schedule(dynamic) reduction(+ : sum)
   for (unsigned int i = 0; i < numMs; i++)
@@ -175,6 +178,8 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   fSumDigis += sum;
 
+
+  xpu::push_timer("Compact Digis");
   //fTimeslice.fData.fSts.fDigis.resize(sum);
   testVec.resize(sum);
 #pragma omp parallel for schedule(dynamic)
@@ -185,7 +190,7 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
     for (unsigned int x = 0; x < space[i].size(); x++)
       testVec.at(partial_sum + x) = space[i][x];
   }
-  // resizeTimer.Stop();
+  xpu::pop_timer();
 
   //fVecDigis += fTimeslice.fData.fSts.fDigis.size();
   //fVecDigis += testVec.size();
@@ -195,8 +200,11 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   // timer.Stop();
 
+  xpu::push_timer("Copy to output");
   std::vector<CbmStsDigi> digisOut;
+  digisOut.reserve(testVec.size());
   std::copy(testVec.begin(), testVec.end(), std::back_inserter(digisOut));
+  xpu::pop_timer();
 
 
   fVecDigis += digisOut.size();
