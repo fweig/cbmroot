@@ -4,11 +4,11 @@
 
 #include "UnpackTrd2d.h"
 
-#include <Logger.h>
-
 #include <algorithm>
 #include <cassert>
 #include <vector>
+
+#include "AlgoFairloggerCompat.h"
 
 using std::unique_ptr;
 

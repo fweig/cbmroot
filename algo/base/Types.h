@@ -4,22 +4,10 @@
 #ifndef CBM_BASE_TYPES_H
 #define CBM_BASE_TYPES_H
 
-#include <iostream>
-#include <optional>
-#include <string_view>
+#include "util/SerializableEnum.h"
 
 namespace cbm::algo
 {
-
-  template<typename T>
-  struct EnumIsSerializable : std::false_type {
-  };
-
-  template<typename T, typename = std::enable_if_t<EnumIsSerializable<T>::value>>
-  std::optional<T> FromString(std::string_view str);
-
-  template<typename T, typename = std::enable_if_t<EnumIsSerializable<T>::value>>
-  std::string_view ToString(T t);
 
   enum class Detector
   {
@@ -28,7 +16,12 @@ namespace cbm::algo
   };
 
   template<>
-  struct EnumIsSerializable<Detector> : std::true_type {
+  struct EnumIsSerializable<Detector> : std::true_type {};
+
+  template<>
+  const EnumDict_t<Detector> EnumDict<Detector> = {
+    {"STS", Detector::STS},
+    {"TOF", Detector::TOF},
   };
 
   enum class Step
@@ -39,9 +32,14 @@ namespace cbm::algo
   };
 
   template<>
-  struct EnumIsSerializable<Step> : std::true_type {
-  };
+  struct EnumIsSerializable<Step> : std::true_type {};
 
+  template<>
+  const EnumDict_t<Step> EnumDict<Step> = {
+    {"Unpack", Step::Unpack},
+    {"Digitrigger", Step::DigiTrigger},
+    {"Localreco", Step::LocalReco},
+  };
 
   enum class RecoData
   {
@@ -54,32 +52,14 @@ namespace cbm::algo
   struct EnumIsSerializable<RecoData> : std::true_type {
   };
 
+  template<>
+  const EnumDict_t<RecoData> EnumDict<RecoData> = {
+    {"Digi", RecoData::Digi},
+    {"Cluster", RecoData::Cluster},
+    {"Hit", RecoData::Hit},
+  };
 
 }  // namespace cbm::algo
 
-// Stream operators for enums
-// Must be placed in std namespace to be found by ADL e.g. for std::ostream_iterator
-namespace std
-{
-  template<typename T, typename = enable_if_t<cbm::algo::EnumIsSerializable<T>::value>>
-  std::ostream& operator<<(std::ostream& os, T t)
-  {
-    os << cbm::algo::ToString(t);
-    return os;
-  }
-
-  template<typename T, typename = enable_if_t<cbm::algo::EnumIsSerializable<T>::value>>
-  std::istream& operator>>(std::istream& is, T& t)
-  {
-    std::string str;
-    is >> str;
-    auto maybet = cbm::algo::FromString<T>(str);
-
-    if (!maybet) throw std::invalid_argument("Could not parse " + str);
-    t = *maybet;
-
-    return is;
-  }
-}  // namespace std
 
 #endif

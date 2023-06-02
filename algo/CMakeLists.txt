@@ -12,7 +12,6 @@ set(DEVICE_SRCS
 set(SRCS
   ${DEVICE_SRCS}
   base/Options.cxx
-  base/Types.cxx
   base/util/TimingsFormat.cxx
   data/sts/LandauTable.cxx
   data/sts/ReadoutSetup.cxx
