@@ -13,6 +13,7 @@
 #include "BaseTypes.h"
 #include "Prelude.h"
 #include "Property.h"
+#include "util/SerializableEnum.h"
 
 namespace cbm::algo::config
 {
@@ -28,10 +29,15 @@ namespace cbm::algo::config
   {
     using Type = std::remove_cv_t<std::remove_reference_t<T>>;
 
+    static_assert(!IsEnum<T> || EnumIsSerializable<Type>::value, "Enum must be serializable");
+
+
     // TODO: error handling
     if constexpr (IsBaseType<Type>) { return node.as<Type>(); }
     else if constexpr (IsEnum<Type>) {
-      return static_cast<Type>(node.as<std::underlying_type_t<Type>>());
+      std::optional<T> maybet = FromString<T>(node.as<std::string>());
+      if (!maybet) { throw std::runtime_error(fmt::format("Invalid enum value: {}", node.as<std::string>())); }
+      return *maybet;
     }
     else if constexpr (IsVector<Type>) {
       Type vector;
@@ -117,7 +123,12 @@ namespace cbm::algo::config
     template<typename T>
     void DoDump(const T& object, YAML::Emitter& ss, std::optional<YAML::EMITTER_MANIP> formatEntries = {})
     {
+      static_assert(!IsEnum<T> || EnumIsSerializable<T>::value, "Enum must be serializable");
+
       if constexpr (IsBaseType<T>) { ss << object; }
+      else if constexpr (IsEnum<T>) {
+        ss << ToString<T>(object);
+      }
       else if constexpr (IsVector<T> || IsArray<T>) {
         ss << YAML::BeginSeq;
         for (const auto& element : object) {

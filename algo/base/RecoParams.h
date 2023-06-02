@@ -8,6 +8,7 @@
 
 #include "Prelude.h"
 #include "config/Property.h"
+#include "util/SerializableEnum.h"
 
 namespace cbm::algo
 {
@@ -16,13 +17,11 @@ namespace cbm::algo
    * @brief RecoParams contains all parameters to configure reconstruction
    */
   struct RecoParams {
-    enum SortMode : u8
-    {
-      SortBlockSort        = 0,
-      SortCUBSegmentedSort = 1,
+    enum class SortMode : u8 {
+      BlockSort        = 0,
+      CUBSegmentedSort = 1,
     };
-    enum UnpackMode : u8
-    {
+    enum class UnpackMode : u8 {
       CPU,
       XPU,
     };
@@ -95,6 +94,25 @@ namespace cbm::algo
 
     static constexpr auto Properties = std::make_tuple(config::Property(&RecoParams::sts, "sts", "STS reco settings"));
   };
+
+  template<>
+  struct EnumIsSerializable<RecoParams::SortMode> : std::true_type {};
+
+  template<>
+  inline const EnumDict_t<RecoParams::SortMode>& EnumDict<RecoParams::SortMode> = {
+    {"BlockSort", RecoParams::SortMode::BlockSort},
+    {"CUBSegmentedSort", RecoParams::SortMode::CUBSegmentedSort},
+  };
+
+  template<>
+  struct EnumIsSerializable<RecoParams::UnpackMode> : std::true_type {};
+
+  template<>
+  inline const EnumDict_t<RecoParams::UnpackMode>& EnumDict<RecoParams::UnpackMode> = {
+    {"CPU", RecoParams::UnpackMode::CPU},
+    {"XPU", RecoParams::UnpackMode::XPU},
+  };
+
 
 };  // namespace cbm::algo
 

@@ -1,10 +1,8 @@
 ---
 sts:
-  # 0: block_sort, 1: cub
-  digiSortMode: 0
-  clusterSortMode: 0
-  # 0: cpu, 1: xpu
-  unpackMode: 0
+  digiSortMode: BlockSort
+  clusterSortMode: BlockSort
+  unpackMode: CPU
   findClustersMultiKernels: 1
   timeCutDigiAbs: -1
   timeCutDigiSig: 3
