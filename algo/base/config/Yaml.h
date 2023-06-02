@@ -69,6 +69,49 @@ namespace cbm::algo::config
   }
 
   template<typename T>
+  void Update(T& object, const YAML::Node& node)
+  {
+    using Type = std::remove_cv_t<std::remove_reference_t<T>>;
+
+    static_assert(!IsEnum<T> || EnumIsSerializable<Type>::value, "Enum must be serializable");
+
+    if constexpr (IsBaseType<Type>) {
+      if (!node.IsScalar()) throw std::runtime_error(fmt::format("Expected scalar, got {}", node.Type()));
+      object = node.as<Type>();
+    }
+    else if constexpr (IsEnum<Type>) {
+      std::optional<T> maybet = FromString<T>(node.as<std::string>());
+      if (!maybet) { throw std::runtime_error(fmt::format("Invalid enum value: {}", node.as<std::string>())); }
+      object = *maybet;
+    }
+    else if constexpr (IsVector<Type>) {
+      object.clear();
+      for (const auto& element : node) {
+        object.push_back(Read<typename Type::value_type>(element));
+      }
+    }
+    else if constexpr (IsArray<Type>) {
+      auto vector = Read<std::vector<typename Type::value_type>>(node);
+      if (vector.size() != object.size()) {
+        throw std::runtime_error(fmt::format("Array size mismatch: expected {}, got {}", object.size(), vector.size()));
+      }
+      std::copy(vector.begin(), vector.end(), object.begin());
+    }
+    else {
+      constexpr auto nProperties = std::tuple_size<decltype(Type::Properties)>::value;
+      ForEach(std::make_integer_sequence<std::size_t, nProperties> {}, [&](auto index) {
+        auto& property   = std::get<index>(Type::Properties);
+        using ValueType  = std::remove_cv_t<std::remove_reference_t<decltype(property.Get(object))>>;
+        ValueType& value = property.Get(object);
+
+        std::string key = std::string(property.Key());
+
+        if (node[key]) Update(value, node[key]);
+      });
+    }
+  }
+
+  template<typename T>
   std::string MakeDocString(int indent = 0)
   {
     using Type = std::remove_cv_t<std::remove_reference_t<T>>;
@@ -127,7 +170,7 @@ namespace cbm::algo::config
 
       if constexpr (IsBaseType<T>) { ss << object; }
       else if constexpr (IsEnum<T>) {
-        ss << ToString<T>(object);
+        ss << std::string(ToString<T>(object));
       }
       else if constexpr (IsVector<T> || IsArray<T>) {
         ss << YAML::BeginSeq;

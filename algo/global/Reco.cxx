@@ -3,6 +3,9 @@
    Authors: Felix Weiglhofer [committer] */
 #include "Reco.h"
 
+#include <sstream>
+#include <string>
+
 #include <xpu/host.h>
 
 #include "config/Yaml.h"
@@ -40,7 +43,15 @@ void Reco::Init(const Options& opts)
   // Reco Params
   fs::path recoParamsPath = opts.ParamsDir() / "RecoParams.yaml";
   YAML::Node yaml         = YAML::LoadFile(recoParamsPath.string());
+
   fContext.recoParams     = config::Read<RecoParams>(yaml);
+
+  for (auto x : Opts().ConfigKeys()) {
+    YAML::Node node = YAML::Load(x);
+    config::Update(fContext.recoParams, node);
+  }
+  L_(debug) << "RecoParams:\n" << config::Dump {}(fContext.recoParams);
+
 
   // STS Unpacker
   fs::path stsUnpackParamsPath    = opts.ParamsDir() / "StsReadout.yaml";

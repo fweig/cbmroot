@@ -44,6 +44,8 @@ namespace cbm::algo
       return std::find(fDetectors.begin(), fDetectors.end(), detector) != fDetectors.end();
     }
 
+    const std::vector<std::string>& ConfigKeys() const { return fConfigKeys; }
+
 
   private:
     std::string fParamsDir;  // TODO: can we make this a std::path?
@@ -56,6 +58,7 @@ namespace cbm::algo
     std::vector<Step> fRecoSteps;
     std::vector<RecoData> fOutputTypes;
     std::vector<Detector> fDetectors;
+    std::vector<std::string> fConfigKeys;
   };
 
 }  // namespace cbm::algo
