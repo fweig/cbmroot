@@ -72,8 +72,6 @@ Options::Options(int argc, char** argv)
       "Stop after <num> timeslices (-1 = all)")
     ("skip-ts", po::value<int>(&fSkipTimeslices)->default_value(0)->value_name("<num>"),
       "Skip first <num> timeslices")
-    ("parallel-unpack", po::bool_switch(&fParallelUnpacker)->default_value(false),
-      "Use parallel unpacker.")
     ("times,t", po::bool_switch(&fCollectKernelTimes)->default_value(false),
       "print kernel times")("help,h", "produce help message")
     ("keys,k", po::value(&fConfigKeys)->multitoken()->default_value({})->value_name("<keys>"),

@@ -24,6 +24,7 @@ namespace cbm::algo
     enum class UnpackMode : u8 {
       CPU,
       XPU,
+      MS,
     };
 
     struct STS {
@@ -111,8 +112,8 @@ namespace cbm::algo
   inline const EnumDict_t<RecoParams::UnpackMode>& EnumDict<RecoParams::UnpackMode> = {
     {"CPU", RecoParams::UnpackMode::CPU},
     {"XPU", RecoParams::UnpackMode::XPU},
+    {"MS", RecoParams::UnpackMode::MS},
   };
-
 
 };  // namespace cbm::algo
 

@@ -40,7 +40,6 @@ void Reco::Init(const Options& opts)
   xpu::device_prop props {xpu::device::active()};
   L_(info) << "Running CBM Reco on Device " << props.name();
 
-  if (opts.ParallelUnpacker()) L_(info) << "Using parallel unpacker";
 
   // Reco Params
   fs::path recoParamsPath = opts.ParamsDir() / "RecoParams.yaml";
@@ -70,6 +69,8 @@ void Reco::Init(const Options& opts)
   hitFinderConfig.landauTable        = sts::LandauTable::FromFile(opts.ParamsDir() / "LandauWidthTable.txt");
   fStsHitFinder.SetParameters(hitFinderConfig);
 
+  if (Params().sts.unpackMode == RecoParams::UnpackMode::MS) L_(info) << "Using parallel unpacker";
+
   fInitialized = true;
 
   xpu::push_timer("Reco");
@@ -93,17 +94,14 @@ void Reco::Run(const fles::Timeslice& ts)
   std::vector<CbmStsDigi> digis;
 
   if (Opts().HasStep(Step::Unpack)) {
-    // TODO: parallel unpacker should use UnpackMode enum instead
-    if (Opts().ParallelUnpacker()) digis = fParallelUnpack.Run(ts);
-    else {
-      switch (Params().sts.unpackMode) {
-        case RecoParams::UnpackMode::XPU:
-          // digis = fUnpackXpu.Exec(ts);
-          throw std::runtime_error("XPU unpacker currently not implemented");
-          break;
-        default:
-        case RecoParams::UnpackMode::CPU: digis = fUnpack.Run(ts); break;
-      }
+    switch (Params().sts.unpackMode) {
+      case RecoParams::UnpackMode::XPU:
+        // digis = fUnpackXpu.Exec(ts);
+        throw std::runtime_error("XPU unpacker currently not implemented");
+        break;
+      case RecoParams::UnpackMode::MS: digis = fParallelUnpack.Run(ts); break;
+      default:
+      case RecoParams::UnpackMode::CPU: digis = fUnpack.Run(ts); break;
     }
   }
   if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);

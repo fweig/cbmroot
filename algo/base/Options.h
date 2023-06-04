@@ -27,7 +27,6 @@ namespace cbm::algo
     severity_level LogLevel() const { return fLogLevel; }
     const std::string& Device() const { return fDevice; }
     bool CollectKernelTimes() const { return fCollectKernelTimes; }
-    bool ParallelUnpacker() const { return fParallelUnpacker; }
     int NumTimeslices() const { return fNumTimeslices; }
     int SkipTimeslices() const { return fSkipTimeslices; }
 
@@ -54,7 +53,6 @@ namespace cbm::algo
     severity_level fLogLevel;
     std::string fDevice;
     bool fCollectKernelTimes = false;
-    bool fParallelUnpacker   = false;
     int fNumTimeslices       = -1;
     int fSkipTimeslices      = 0;
     std::vector<Step> fRecoSteps;
