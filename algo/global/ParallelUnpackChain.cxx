@@ -19,6 +19,7 @@ using std::endl;
 void ParallelUnpackChain::Init(sts::ReadoutMapping config)
 {
   fConfig = config;
+  eqIdToIndex.clear();
 
   // Copied from CbmTaskUnpack in CBMRoot.
 
@@ -26,16 +27,28 @@ void ParallelUnpackChain::Init(sts::ReadoutMapping config)
   uint32_t numChansPerAsicSts   = 128;  // R/O channels per ASIC for STS
   uint32_t numAsicsPerModuleSts = 16;   // Number of ASICs per module for STS
 
-  // Create one algorithm per component for STS and configure it with parameters
   auto equipIdsSts = fConfig->GetEquipmentIds();
-  for (auto equip : equipIdsSts) {
-    std::unique_ptr<UnpackStsPar> par(new UnpackStsPar());
-    par->fNumChansPerAsic   = numChansPerAsicSts;
-    par->fNumAsicsPerModule = numAsicsPerModuleSts;
-    const size_t numElinks  = fConfig->GetNumElinks(equip);
+
+  size_t nComponents = equipIdsSts.size();
+  for (size_t i = 0; i < nComponents; i++) {
+    eqIdToIndex[equipIdsSts[i]] = i;
+  }
+  fStsUnpacker.fNumChansPerAsic.resize(nComponents);
+  fStsUnpacker.fNumAsicsPerModule.resize(nComponents);
+  fStsUnpacker.fElinkOffsetPerComponent.resize(nComponents + 1);
+
+  fStsUnpacker.fElinkOffsetPerComponent[0] = 0;
+
+  for (size_t i = 0; i < nComponents; i++) {
+    u16 eqId                                     = equipIdsSts[i];
+    const size_t numElinks                       = fConfig->GetNumElinks(eqId);
+    fStsUnpacker.fNumChansPerAsic[i]             = numChansPerAsicSts;
+    fStsUnpacker.fNumAsicsPerModule[i]           = numAsicsPerModuleSts;
+    fStsUnpacker.fElinkOffsetPerComponent[i + 1] = fStsUnpacker.fElinkOffsetPerComponent[i] + numElinks;
+
     for (size_t elink = 0; elink < numElinks; elink++) {
-      UnpackStsElinkPar elinkPar;
-      auto mapEntry        = fConfig->Map(equip, elink);
+      sts::UnpackElinkPar elinkPar;
+      auto mapEntry        = fConfig->Map(eqId, elink);
       elinkPar.fAddress    = mapEntry.moduleAddress;  // Module address for this elink
       elinkPar.fAsicNr     = mapEntry.asicNumber;     // ASIC number within module
       elinkPar.fTimeOffset = 0.;
@@ -43,11 +56,10 @@ void ParallelUnpackChain::Init(sts::ReadoutMapping config)
       elinkPar.fAdcGain    = 1.;
       // elinkPar.fIsPulser   = mapEntry.pulser;
       // TODO: Add parameters for time and ADC calibration
-      par->fElinkParams.push_back(elinkPar);
+      fStsUnpacker.fElinkParams.push_back(elinkPar);
     }
-    fAlgoSts[equip].SetParams(std::move(par));
-    L_(debug) << "--- Configured STS equipment " << equip << " with " << numElinks << " elinks";
-  }  //# equipments
+    L_(debug) << "--- Configured STS equipment " << eqId << " with " << numElinks << " elinks";
+  }
 }
 
 std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslice)
@@ -63,19 +75,31 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   size_t maxNumDigis        = 0;
   const size_t bytesPerDigi = 4;
 
+  // Felix: reset unpacker input
+  fStsUnpacker.fMsEquipmentId.clear();
+  fStsUnpacker.fMsDescriptors.clear();
+  fStsUnpacker.fMsContent.clear();
+
   // Count number of Timeslices and B Bytes per TImeslice to calculate Offsets for space vector
   // To parallelize over mslices the space vector needs to bhave size = nr_mslices
   // mmaxNum Digis per Timeslice is calculated by dividing bytes per mslice / bytes per digi
   // which is currently a value between 4 and 5 -- feb 2023.
+  // Felix: For new Unpacker: Set pointer for MS and set descriptors and equiptment id.
   for (uint64_t comp = 0; comp < timeslice.num_components(); comp++) {
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice.descriptor(comp, 0).sys_id);
     if (systemId == fles::SubsystemIdentifier::STS) {
       uint64_t numMsInComp = timeslice.num_microslices(comp);
       numMs += numMsInComp;
+      u16 componentId = eqIdToIndex.at(timeslice.descriptor(comp, 0).eq_id);  // Felix
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
         uint64_t msByteSize     = timeslice.descriptor(comp, mslice).size;
         uint64_t numDigisInComp = msByteSize / bytesPerDigi;
         if (numDigisInComp > maxNumDigis) { maxNumDigis = numDigisInComp; }
+        // Felix: Set input for unpacker for each MS.
+        fStsUnpacker.fMsEquipmentId.push_back(componentId);
+        fStsUnpacker.fMsDescriptors.push_back(timeslice.descriptor(comp, mslice));
+        fStsUnpacker.fMsContent.push_back(timeslice.content(comp, mslice));
+        // Felix End
       }
     }
   }
@@ -83,6 +107,9 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   std::cout << "numMs: " << numMs << std::endl;
   std::vector<std::vector<CbmStsDigi>> space(numMs);
 
+  // Felix: prepare output for unpacker
+  fStsUnpacker.fMsDigis.resize(numMs);
+  fStsUnpacker.fMsMonitor.resize(numMs);
 
   for (unsigned int i = 0; i < numMs; i++) {
     space[i].reserve(maxNumDigis);
@@ -102,9 +129,17 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   cout << "//////////////////////////////" << endl;
 */
 
-  xpu::push_timer("Unpack TS");
   uint64_t rejectedComps = 0;
 
+  // Felix: Unpacker call
+  xpu::push_timer("Unpack TS");
+#pragma omp parallel for schedule(dynamic)
+  for (size_t i = 0; i < numMs; i++) {
+    fStsUnpacker(i, timeslice.start_time());
+  }
+  xpu::pop_timer();
+
+#if 0
   for (uint64_t comp = 0; comp < timeslice.num_components(); comp++) {
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice.descriptor(comp, 0).sys_id);
     if (systemId == fles::SubsystemIdentifier::STS) {
@@ -166,12 +201,13 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   }  //# component
   // cout << "Timeslice brauchte: " << timeslicetimer.RealTime() * 1000 << "ms" << endl;
-  xpu::pop_timer();
+#endif
 
   int sum = 0;
 #pragma omp parallel for schedule(dynamic) reduction(+ : sum)
   for (unsigned int i = 0; i < numMs; i++)
-    sum += space[i].size();
+    // sum += space[i].size();
+    sum += fStsUnpacker.fMsDigis[i].size();
 
   cout << "Anzahl Digis: " << sum << endl;
   cout << "Anzahl Digis(NumDigis): " << numDigis << endl;
@@ -186,9 +222,9 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   for (unsigned int i = 0; i < numMs; i++) {
     unsigned int partial_sum = 0;
     for (unsigned int x = 0; x < i; x++)
-      partial_sum += space[x].size();
-    for (unsigned int x = 0; x < space[i].size(); x++)
-      testVec.at(partial_sum + x) = space[i][x];
+      partial_sum += fStsUnpacker.fMsDigis[x].size();
+    for (unsigned int x = 0; x < fStsUnpacker.fMsDigis[i].size(); x++)
+      testVec.at(partial_sum + x) = fStsUnpacker.fMsDigis[i][x];
   }
   xpu::pop_timer();
 

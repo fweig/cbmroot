@@ -19,6 +19,7 @@ set(SRCS
   evbuild/EventBuilder.cxx
   trigger/TimeClusterTrigger.cxx
   evselector/DigiEventSelector.cxx
+  detectors/sts/MsUnpacker.cxx
   detectors/sts/StsHitfinderChain.cxx
   detectors/sts/StsReadoutConfig.cxx
   detectors/sts/StsUnpackChain.cxx

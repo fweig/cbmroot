@@ -11,9 +11,9 @@
 #include <xpu/defines.h>
 #include <yaml-cpp/yaml.h>
 
+#include "MsUnpacker.h"  // STS
 #include "Prelude.h"
 #include "SubChain.h"
-#include "UnpackSts.h"
 #include "sts/ReadoutSetup.h"
 #include "util/NoInitAlloc.h"
 
@@ -33,8 +33,10 @@ namespace cbm::algo
     std::vector<CbmStsDigi> Run(const fles::Timeslice& ts);
 
   private:
-    std::unordered_map<u16, UnpackSts> fAlgoSts;
+    sts::MsUnpacker fStsUnpacker;
     std::optional<sts::ReadoutMapping> fConfig;
+    std::unordered_map<u16, u16> eqIdToIndex;  // Map equiptment id to linear index [0, nComponents)
+
 
     size_t fNumTs    = 0;
     size_t fNumMs    = 0;
