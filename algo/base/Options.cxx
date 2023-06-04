@@ -75,7 +75,7 @@ Options::Options(int argc, char** argv)
     ("times,t", po::bool_switch(&fCollectKernelTimes)->default_value(false),
       "print kernel times")("help,h", "produce help message")
     ("keys,k", po::value(&fConfigKeys)->multitoken()->default_value({})->value_name("<keys>"),
-      "list of config keys to override (key1:value1 key2:value2 ...)")
+      "list of config keys to override ({detector: {key: value}, ...})")
   ;
   // clang-format on
 
