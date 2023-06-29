@@ -14,97 +14,70 @@
 using std::unique_ptr;
 using std::vector;
 
-XPU_EXPORT(cbm::algo::sts::TheUnpacker);
-XPU_EXPORT(cbm::algo::sts::Unpack);
-
 namespace cbm::algo::sts
 {
-  XPU_D void Unpack::operator()(context & ctx, const uint64_t currentTsTime, u64 NElems) 
-  { 
-    ctx.cmem<TheUnpacker>()(ctx, currentTsTime, NElems);
-  }
-
 
   // ----   Algorithm execution   ---------------------------------------------
-  XPU_D void MsUnpacker::operator()(Unpack::context & ctx, const uint64_t currentTsTime, u64 NElems) const
+  void MsUnpacker::operator()(const u32 msIndex, const uint64_t tTimeslice)
   {
-    int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
-    if (id >= NElems) return;  // exit if out of bounds or too few messages
-    
-    UnpackMonitorData monitor;  //Monitor data, currently not stored. TO DO: Implement!
+    std::vector<CbmStsDigi> digisOut;
+    digisOut.reserve(1000);
+    UnpackMonitorData monitor;
 
-    // --- Get message count and offset for this MS
-    const auto& msDescr = fMsDescriptors[id];
-    //const u8* msContent = fMsContent[id];
-
-    const u32 numMessages = msDescr.size / sizeof(stsxyter::Message);
-    const u32 messOffset  = fMsOffset[id];
-
-    // --- Get starting position of this MS in message buffer
-    // stsxyter::Message* message = &content[messOffset];
-    // --- Interpret MS content as sequence of SMX messages
-    //auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
-    
-    // --- Get starting position of this MS in digi buffer
-    CbmStsDigi* digis = &fMsDigis[messOffset];
-    
-    // --- Get component index and unpack parameters of this MS
-    const uint32_t comp              = fMsEquipmentId[id];
-    const UnpackPar& unpackPar       = fParams[comp];
-    
-    // --- Get starting position of elink parameters of this MS
-    UnpackElinkPar* elinkPar = &fElinkParams[unpackPar.fElinkOffset];
+    const auto& msDescr = fMsDescriptors.at(msIndex);
+    const u8* msContent = fMsContent.at(msIndex);
 
     TimeSpec time;
+
     // --- Current Timeslice start time in epoch units. Note that it is always a multiple of epochs
     // --- and the epoch is a multiple of ns.
-    time.fCurrentTsTime            = currentTsTime;
+    const uint64_t epochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
+    time.fCurrentTsTime            = tTimeslice / epochLengthInNs;
 
-    auto const msTime              = msDescr.idx;
-    time.fCurrentCycle             = std::ldiv(msTime, fkCycleLength).quot;
+    // --- Current TS_MSB epoch cycle
+    auto const msTime  = msDescr.idx;  // Unix time of MS in ns
+    time.fCurrentCycle = std::ldiv(msTime, fkCycleLength).quot;
 
-    // --- Init counter for produced digis
-    uint64_t numDigis = 0;
-
-    if (numMessages < 2){
+    // --- Number of messages in microslice
+    auto msSize = msDescr.size;
+    if (msSize % sizeof(stsxyter::Message) != 0) {
       monitor.fNumErrInvalidMsSize++;
-      fMsDigiCount[id] = 0;
+      return;
+    }
+    const uint32_t numMessages = msSize / sizeof(stsxyter::Message);
+    if (numMessages < 2) {
+      monitor.fNumErrInvalidMsSize++;
       return;
     }
 
-    stsxyter::Message firstMessage = fMsContent[messOffset];
+    // --- Interpret MS content as sequence of SMX messages
+    auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
+
     // --- The first message in the MS is expected to be of type EPOCH and can be ignored.
-    if (firstMessage.GetMessType() != stsxyter::MessType::Epoch) {
+    if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
       monitor.fNumErrInvalidFirstMessage++;
-      fMsDigiCount[id] = 0;
       return;
     }
 
-    stsxyter::Message secondMessage = fMsContent[messOffset + 1];
     // --- The second message must be of type ts_msb.
-    if (secondMessage.GetMessType() != stsxyter::MessType::TsMsb) {
+    if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
       monitor.fNumErrInvalidFirstMessage++;
-      fMsDigiCount[id] = 0;
       return;
     }
-
-    ProcessTsmsbMessage(secondMessage, time);
+    ProcessTsmsbMessage(message[1], time);
 
     // --- Message loop
     for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
 
-      u32 messIndex = messOffset + messageNr;
-      stsxyter::Message message = fMsContent[messIndex];
       // --- Action depending on message type
-      switch (message.GetMessType()) {
+      switch (message[messageNr].GetMessType()) {
 
         case stsxyter::MessType::Hit: {
-          ProcessHitMessage(message, digis, numDigis, unpackPar, elinkPar, monitor,
-                                        time);
+          ProcessHitMessage(msIndex, time, message[messageNr], digisOut, monitor);
           break;
         }
         case stsxyter::MessType::TsMsb: {
-          ProcessTsmsbMessage(message, time);
+          ProcessTsmsbMessage(message[messageNr], time);
           break;
         }
         default: {
@@ -116,36 +89,39 @@ namespace cbm::algo::sts
 
     }  //# Messages
 
-    // --- Store number of digis in buffer
-    fMsDigiCount[id] = numDigis;
+    fMsDigis.at(msIndex)   = std::move(digisOut);
+    fMsMonitor.at(msIndex) = monitor;
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process hit message   --------------------------------------------
-  XPU_D inline void MsUnpacker::ProcessHitMessage(const stsxyter::Message& message, CbmStsDigi* digis, uint64_t& numDigis,
-                                        const UnpackPar& unpackPar, UnpackElinkPar* elinkParams,
-                                        UnpackMonitorData& monitor, TimeSpec& time) const
+  inline void MsUnpacker::ProcessHitMessage(const u32 msIndex, const TimeSpec& time, const stsxyter::Message& message,
+                                            vector<CbmStsDigi>& digiVec, UnpackMonitorData& monitor) const
   {
+    u16 eqId        = fMsEquipmentId.at(msIndex);
+    u32 elinkOffset = fElinkOffsetPerComponent.at(eqId);
+    u32 elinkNum    = fElinkOffsetPerComponent.at(eqId + 1) - elinkOffset;
+
     // --- Check eLink and get parameters
     uint16_t elink = message.GetLinkIndexHitBinning();
-    if (elink >= unpackPar.fNumElinks) {
+    if (elink >= elinkNum) {
       monitor.fNumErrElinkOutOfRange++;
       return;
     }
-    const UnpackElinkPar& elinkPar = elinkParams[elink];
+    const UnpackElinkPar& elinkPar = fElinkParams.at(elinkOffset + elink);
     uint32_t asicNr                = elinkPar.fAsicNr;
 
     // --- Hardware-to-software address
-    uint32_t numChansPerModule = unpackPar.fNumAsicsPerModule * unpackPar.fNumChansPerAsic;
+    uint32_t numChansPerModule = fNumAsicsPerModule[eqId] * fNumChansPerAsic[eqId];
     uint32_t address           = elinkPar.fAddress;
     uint32_t channel           = 0;
-    if (asicNr < unpackPar.fNumAsicsPerModule / 2) {  // front side (n side)
-      channel = message.GetHitChannel() + unpackPar.fNumChansPerAsic * asicNr;
+    if (asicNr < fNumAsicsPerModule[eqId] / 2) {  // front side (n side)
+      channel = message.GetHitChannel() + fNumChansPerAsic[eqId] * asicNr;
     }
     else {  // back side (p side)
       channel = numChansPerModule - message.GetHitChannel()
-                - unpackPar.fNumChansPerAsic * (asicNr - unpackPar.fNumAsicsPerModule / 2) - 1;
+                - fNumChansPerAsic[eqId] * (asicNr - fNumAsicsPerModule[eqId] / 2) - 1;
     }
 
     // --- Expand time stamp to time within timeslice (in clock cycle)
@@ -162,14 +138,13 @@ namespace cbm::algo::sts
     double charge = elinkPar.fAdcOffset + (message.GetHitAdc() - 1) * elinkPar.fAdcGain;
 
     // --- Create output digi
-    digis[numDigis] = CbmStsDigi(address, channel, messageTime, charge);
-    numDigis++;
+    digiVec.emplace_back(address, channel, messageTime, charge);
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process an epoch (TS_MSB) message   ------------------------------
-  XPU_D inline void MsUnpacker::ProcessTsmsbMessage(const stsxyter::Message& message, TimeSpec& time) const
+  inline void MsUnpacker::ProcessTsmsbMessage(const stsxyter::Message& message, TimeSpec& time) const
   {
     // The compression of time is based on the hierarchy epoch cycle - epoch - message time.
     // Cycles are counted from the start of Unix time and are multiples of an epoch (ts_msb).

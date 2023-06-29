@@ -10,8 +10,6 @@
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
 
-#include "gpu/DeviceImage.h"
-
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -47,8 +45,7 @@ namespace cbm::algo::sts
   struct UnpackPar {
     uint32_t fNumChansPerAsic                = 0;   ///< Number of channels per ASIC
     uint32_t fNumAsicsPerModule              = 0;   ///< Number of ASICS per module
-    uint32_t fNumElinks                      = 0;  ///< Number of elinks for this component   --EDIT
-    uint32_t fElinkOffset                    = 0;  ///< Elink index offset for this component --EDIT
+    std::vector<UnpackElinkPar> fElinkParams = {};  ///< Parameters for each eLink
   };
 
 
@@ -69,10 +66,6 @@ namespace cbm::algo::sts
                            + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
       return (numErrors > 0 ? true : false);
     }
-
-    /*
-    --EDIT 
-    -- No usage anyways?
     std::string print()
     {
       std::stringstream ss;
@@ -80,18 +73,6 @@ namespace cbm::algo::sts
          << fNumErrInvalidFirstMessage << " | " << fNumErrInvalidMsSize << " | " << fNumErrTimestampOverflow << " | ";
       return ss.str();
     }
-    */
-  };
-
-  class MsUnpacker;
-
-  struct TheUnpacker : xpu::constant<GPUReco, MsUnpacker> {};
-
-  struct Unpack : xpu::kernel<GPUReco> {
-    using block_size    = xpu::block_size<256>;
-    using constants     = xpu::cmem<TheUnpacker>;
-    using context       = xpu::kernel_context<xpu::no_smem, constants>;
-    XPU_D void operator()(context&, const uint64_t currentTsTime, u64 NElems);
   };
 
   /** @class UnpackSts
@@ -103,22 +84,25 @@ namespace cbm::algo::sts
   class MsUnpacker {
 
   public:
-    u64 fEpochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
+    // Parameters
+    std::vector<u32> fNumChansPerAsic;    ///< Number of channels per ASIC, [size = nComponents]
+    std::vector<u32> fNumAsicsPerModule;  ///< Number of ASICS per module, [size = nComponents]
 
-    xpu::buffer<UnpackElinkPar> fElinkParams;                 ///< Parameters for each eLink, [size = nElinksTotal]
-    xpu::buffer<UnpackPar> fParams;
+    /**
+     *  Offset of first eLink per component, last entry is total size of elinks [size = nComponents + 1]
+     */
+    std::vector<u32> fElinkOffsetPerComponent;
+    std::vector<UnpackElinkPar> fElinkParams;  ///< Parameters for each eLink, [size = nElinksTotal]
 
-    //Timeslice data / Input
-    xpu::buffer<u16> fMsEquipmentId;                          ///< Equipment ID / Component number [size = nMicroslices]
-    xpu::buffer<fles::MicrosliceDescriptor> fMsDescriptors;   ///< Microslice descriptors [size = nMicroslices]
-    xpu::buffer<stsxyter::Message> fMsContent;                ///< Microslice content [size = nMessages]
-    xpu::buffer<u64> fMsOffset;                               ///< Digi offset per MS for fMsDigis [size = nMicroslices]
+    // Timeslice data / Input
+    std::vector<u16> fMsEquipmentId;                         ///< Equipment ID / Component number [size = nMicroslices]
+    std::vector<fles::MicrosliceDescriptor> fMsDescriptors;  ///< Microslice descriptors [size = nMicroslices]
+    std::vector<const u8*> fMsContent;                       ///< Microslice content [size = nMicroslices]
 
-    //Output
-    xpu::buffer<u64> fMsDigiCount;                            ///< Digi count per MS [size = nMicroslices]
-    xpu::buffer<UnpackMonitorData> fMsMonitor;                ///< Monitoring data per microslice [size = nMicroslices]
-    xpu::buffer<CbmStsDigi> fMsDigis;                         ///< Digi data [size = nMessages]
-    
+    // Output
+    std::vector<std::vector<CbmStsDigi>> fMsDigis;  ///< Digi data per microslice [size = nMicroslices]
+    std::vector<UnpackMonitorData> fMsMonitor;      ///< Monitoring data per microslice [size = nMicroslices]
+
     /** @brief Default constructor **/
     MsUnpacker() = default;
 
@@ -130,7 +114,7 @@ namespace cbm::algo::sts
      ** @param  msIndex  Microslice index in timeslice
      ** @param  tTimeslice Unix start time of timeslice [ns]
      **/
-    XPU_D void operator()(Unpack::context& ctx, const uint64_t currentTsTime, u64 NElems) const;
+    void operator()(const u32 msIndex, const uint64_t tTimeslice);
 
   private:  // private datastructures
     /**
@@ -149,14 +133,13 @@ namespace cbm::algo::sts
      ** @param digiVec Vector to append the created digi to
      ** @param monitor Reference to monitor object
      **/
-    XPU_D void ProcessHitMessage(const stsxyter::Message& message, CbmStsDigi* digis, uint64_t& numDigis,
-                                        const UnpackPar& unpackPar, UnpackElinkPar* elinkParams,
-                                        UnpackMonitorData& monitor, TimeSpec& time) const;
+    void ProcessHitMessage(const u32 msIndex, const TimeSpec& time, const stsxyter::Message& message,
+                           std::vector<CbmStsDigi>& digiVec, UnpackMonitorData& monitor) const;
 
     /** @brief Process an epoch message (TS_MSB)
      ** @param message SMX message (32-bit word)
      **/
-    XPU_D void ProcessTsmsbMessage(const stsxyter::Message& message, TimeSpec& time) const;
+    void ProcessTsmsbMessage(const stsxyter::Message& message, TimeSpec& time) const;
 
 
   private:  // members
