@@ -6,6 +6,7 @@ set(DEVICE_SRCS
   base/gpu/DeviceImage.cxx
   base/gpu/Params.cxx
   detectors/sts/UnpackStsXpu.cxx
+  detectors/sts/MsUnpacker.cxx
   detectors/sts/StsHitfinder.cxx
 )
 
@@ -19,7 +20,6 @@ set(SRCS
   evbuild/EventBuilder.cxx
   trigger/TimeClusterTrigger.cxx
   evselector/DigiEventSelector.cxx
-  detectors/sts/MsUnpacker.cxx
   detectors/sts/StsHitfinderChain.cxx
   detectors/sts/StsReadoutConfig.cxx
   detectors/sts/StsUnpackChain.cxx

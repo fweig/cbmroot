@@ -71,7 +71,7 @@ namespace cbm::algo::sts
     }
 
     /*
-    --EDIT 
+    --EDIT
     -- No usage anyways?
     std::string print()
     {
@@ -103,8 +103,6 @@ namespace cbm::algo::sts
   class MsUnpacker {
 
   public:
-    u64 fEpochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
-
     xpu::buffer<UnpackElinkPar> fElinkParams;                 ///< Parameters for each eLink, [size = nElinksTotal]
     xpu::buffer<UnpackPar> fParams;
 
@@ -118,7 +116,7 @@ namespace cbm::algo::sts
     xpu::buffer<u64> fMsDigiCount;                            ///< Digi count per MS [size = nMicroslices]
     xpu::buffer<UnpackMonitorData> fMsMonitor;                ///< Monitoring data per microslice [size = nMicroslices]
     xpu::buffer<CbmStsDigi> fMsDigis;                         ///< Digi data [size = nMessages]
-    
+
     /** @brief Default constructor **/
     MsUnpacker() = default;
 
@@ -172,6 +170,8 @@ namespace cbm::algo::sts
 
     /** Epoch cycle length in ns **/
     static constexpr uint64_t fkCycleLength = (fkEpochsPerCycle * fkEpochLength * fkClockCycleNom) / fkClockCycleDen;
+
+    static constexpr u64 fEpochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
   };
 
 

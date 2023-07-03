@@ -174,17 +174,17 @@ namespace stsxyter
     uint32_t fuData;  // main and only storage field for the message
 
   public:
-    Message() : fuData(0) {}
+    XPU_H XPU_D Message() : fuData(0) {}
 
-    Message(const Message& src) : fuData(src.fuData) {}
+    XPU_H XPU_D Message(const Message& src) : fuData(src.fuData) {}
 
-    Message(uint32_t uDataIn) : fuData(uDataIn) {}
+    XPU_H XPU_D Message(uint32_t uDataIn) : fuData(uDataIn) {}
 
-    ~Message() {};
+    XPU_H XPU_D ~Message() {};
 
-    void assign(const Message& src) { fuData = src.fuData; }
+    XPU_H XPU_D void assign(const Message& src) { fuData = src.fuData; }
 
-    Message& operator=(const Message& src)
+    XPU_H XPU_D Message& operator=(const Message& src)
     {
       assign(src);
       return *this;

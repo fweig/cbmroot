@@ -19,8 +19,8 @@ XPU_EXPORT(cbm::algo::sts::Unpack);
 
 namespace cbm::algo::sts
 {
-  XPU_D void Unpack::operator()(context & ctx, const uint64_t currentTsTime, u64 NElems) 
-  { 
+  XPU_D void Unpack::operator()(context& ctx, const uint64_t currentTsTime, u64 NElems)
+  {
     ctx.cmem<TheUnpacker>()(ctx, currentTsTime, NElems);
   }
 
@@ -30,7 +30,7 @@ namespace cbm::algo::sts
   {
     int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
     if (id >= NElems) return;  // exit if out of bounds or too few messages
-    
+
     UnpackMonitorData monitor;  //Monitor data, currently not stored. TO DO: Implement!
 
     // --- Get message count and offset for this MS
@@ -44,14 +44,14 @@ namespace cbm::algo::sts
     // stsxyter::Message* message = &content[messOffset];
     // --- Interpret MS content as sequence of SMX messages
     //auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
-    
+
     // --- Get starting position of this MS in digi buffer
     CbmStsDigi* digis = &fMsDigis[messOffset];
-    
+
     // --- Get component index and unpack parameters of this MS
     const uint32_t comp              = fMsEquipmentId[id];
     const UnpackPar& unpackPar       = fParams[comp];
-    
+
     // --- Get starting position of elink parameters of this MS
     UnpackElinkPar* elinkPar = &fElinkParams[unpackPar.fElinkOffset];
 
@@ -61,7 +61,11 @@ namespace cbm::algo::sts
     time.fCurrentTsTime            = currentTsTime;
 
     auto const msTime              = msDescr.idx;
-    time.fCurrentCycle             = std::ldiv(msTime, fkCycleLength).quot;
+
+    // TODO: u64 casted to float, does this work? Maybe we have to use double instead...
+    i32 quo;
+    xpu::remquo(msTime, fkCycleLength, &quo);
+    time.fCurrentCycle = quo;
 
     // --- Init counter for produced digis
     uint64_t numDigis = 0;
