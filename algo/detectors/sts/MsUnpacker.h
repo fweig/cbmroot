@@ -116,9 +116,7 @@ namespace cbm::algo::sts
     xpu::buffer<u64> fMsDigiCount;                            ///< Digi count per MS [size = nMicroslices]
     xpu::buffer<UnpackMonitorData> fMsMonitor;                ///< Monitoring data per microslice [size = nMicroslices]
     xpu::buffer<CbmStsDigi> fMsDigis;                         ///< Digi data [size = nMessages]
-
-    u64 fEpochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
-
+    
     /** @brief Default constructor **/
     MsUnpacker() = default;
 
@@ -172,6 +170,8 @@ namespace cbm::algo::sts
 
     /** Epoch cycle length in ns **/
     static constexpr uint64_t fkCycleLength = (fkEpochsPerCycle * fkEpochLength * fkClockCycleNom) / fkClockCycleDen;
+
+    static constexpr u64 fEpochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
   };
 
 
