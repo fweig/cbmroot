@@ -33,30 +33,30 @@ void ParallelUnpackChain::Init(sts::ReadoutMapping config)
   for (size_t i = 0; i < nComponents; i++) {
     eqIdToIndex[equipIdsSts[i]] = i;
   }
-  fStsUnpacker.fNumChansPerAsic.resize(nComponents);
-  fStsUnpacker.fNumAsicsPerModule.resize(nComponents);
-  fStsUnpacker.fElinkOffsetPerComponent.resize(nComponents + 1);
+  //Initialize parameter buffers
+  const size_t numAllElinks                     = fConfig->GetNumElinks();
+  fStsUnpacker.fParams.reset(nComponents, xpu::buf_io);
+  fStsUnpacker.fElinkParams.reset(numAllElinks, xpu::buf_io);
 
-  fStsUnpacker.fElinkOffsetPerComponent[0] = 0;
-
-  for (size_t i = 0; i < nComponents; i++) {
-    u16 eqId                                     = equipIdsSts[i];
-    const size_t numElinks                       = fConfig->GetNumElinks(eqId);
-    fStsUnpacker.fNumChansPerAsic[i]             = numChansPerAsicSts;
-    fStsUnpacker.fNumAsicsPerModule[i]           = numAsicsPerModuleSts;
-    fStsUnpacker.fElinkOffsetPerComponent[i + 1] = fStsUnpacker.fElinkOffsetPerComponent[i] + numElinks;
+  for (size_t comp = 0; comp < nComponents; comp++) {
+    u16 eqId                                    = equipIdsSts[comp];
+    const size_t numElinks                      = fConfig->GetNumElinks(eqId);
+    // auto params                                 = fStsUnpacker.fParams.h();
+    xpu::h_view params {fStsUnpacker.fParams};
+    params[comp].fNumElinks                     = numElinks;
+    params[comp].fNumChansPerAsic               = numChansPerAsicSts;
+    params[comp].fNumAsicsPerModule             = numAsicsPerModuleSts;
+    params[comp].fElinkOffset                   = (comp == 0) ? 0 : params[comp - 1].fElinkOffset + params[comp - 1].fNumElinks;
 
     for (size_t elink = 0; elink < numElinks; elink++) {
-      sts::UnpackElinkPar elinkPar;
-      auto mapEntry        = fConfig->Map(eqId, elink);
-      elinkPar.fAddress    = mapEntry.moduleAddress;  // Module address for this elink
-      elinkPar.fAsicNr     = mapEntry.asicNumber;     // ASIC number within module
-      elinkPar.fTimeOffset = 0.;
-      elinkPar.fAdcOffset  = 1.;
-      elinkPar.fAdcGain    = 1.;
-      // elinkPar.fIsPulser   = mapEntry.pulser;
-      // TODO: Add parameters for time and ADC calibration
-      fStsUnpacker.fElinkParams.push_back(elinkPar);
+      xpu::h_view elinkTemp {fStsUnpacker.fElinkParams};
+      sts::UnpackElinkPar& elinkPar             = elinkTemp[params[comp].fElinkOffset + elink];
+      auto mapEntry                             = fConfig->Map(eqId, elink);
+      elinkPar.fAddress                         = mapEntry.moduleAddress;  // Module address for this elink
+      elinkPar.fAsicNr                          = mapEntry.asicNumber;     // ASIC number within module
+      elinkPar.fTimeOffset                      = 0.;
+      elinkPar.fAdcOffset                       = 1.;
+      elinkPar.fAdcGain                         = 1.;
     }
     L_(debug) << "--- Configured STS equipment " << eqId << " with " << numElinks << " elinks";
   }
@@ -69,181 +69,136 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   xpu::scoped_timer t_("Parallel Unpacker");
 
   size_t numMs              = 0;
-  size_t numBytes           = 0;
-  size_t numDigis           = 0;
-  uint64_t numCompUsed      = 0;
-  size_t maxNumDigis        = 0;
-  const size_t bytesPerDigi = 4;
+  const size_t bytesPerDigi = sizeof(CbmStsDigi);
+  u64 maxNumDigis           = 0;
+  u64 maxNumMessages        = 0;
 
-  // Felix: reset unpacker input
-  fStsUnpacker.fMsEquipmentId.clear();
-  fStsUnpacker.fMsDescriptors.clear();
-  fStsUnpacker.fMsContent.clear();
-
-  // Count number of Timeslices and B Bytes per TImeslice to calculate Offsets for space vector
-  // To parallelize over mslices the space vector needs to bhave size = nr_mslices
-  // mmaxNum Digis per Timeslice is calculated by dividing bytes per mslice / bytes per digi
-  // which is currently a value between 4 and 5 -- feb 2023.
-  // Felix: For new Unpacker: Set pointer for MS and set descriptors and equiptment id.
+  // Count number of timeslices and B bytes per timeslice to calculate offsets output buffer
+  // maxNum digis per timeslice is calculated by dividing bytes per mslice / size of CbmStsDigi  
   for (uint64_t comp = 0; comp < timeslice.num_components(); comp++) {
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice.descriptor(comp, 0).sys_id);
     if (systemId == fles::SubsystemIdentifier::STS) {
       uint64_t numMsInComp = timeslice.num_microslices(comp);
       numMs += numMsInComp;
-      u16 componentId = eqIdToIndex.at(timeslice.descriptor(comp, 0).eq_id);  // Felix
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
-        uint64_t msByteSize     = timeslice.descriptor(comp, mslice).size;
-        uint64_t numDigisInComp = msByteSize / bytesPerDigi;
-        if (numDigisInComp > maxNumDigis) { maxNumDigis = numDigisInComp; }
-        // Felix: Set input for unpacker for each MS.
-        fStsUnpacker.fMsEquipmentId.push_back(componentId);
-        fStsUnpacker.fMsDescriptors.push_back(timeslice.descriptor(comp, mslice));
-        fStsUnpacker.fMsContent.push_back(timeslice.content(comp, mslice));
-        // Felix End
+        uint64_t msByteSize   = timeslice.descriptor(comp, mslice).size;
+        uint64_t numDigisInMs = msByteSize / bytesPerDigi;
+        const u32 numMessages = msByteSize / sizeof(stsxyter::Message);
+        maxNumMessages += numMessages;
+        maxNumDigis += numDigisInMs;
       }
     }
   }
-  std::cout << "maxNumDigis: " << maxNumDigis << std::endl;
-  std::cout << "numMs: " << numMs << std::endl;
-  std::vector<std::vector<CbmStsDigi>> space(numMs);
+  std::cout << "MaxMessages: " << maxNumMessages << std::endl;
 
-  // Felix: prepare output for unpacker
-  fStsUnpacker.fMsDigis.resize(numMs);
-  fStsUnpacker.fMsMonitor.resize(numMs);
+  // Allocate Input buffers
+  fStsUnpacker.fMsEquipmentId.reset(numMs, xpu::buf_io);
+  fStsUnpacker.fMsDescriptors.reset(numMs, xpu::buf_io);
+  fStsUnpacker.fMsContent.reset(maxNumMessages, xpu::buf_io);
+  fStsUnpacker.fMsOffset.reset(numMs, xpu::buf_io);
 
-  for (unsigned int i = 0; i < numMs; i++) {
-    space[i].reserve(maxNumDigis);
-  }
+  // Initialize Output buffers
+  fStsUnpacker.fMsDigiCount.reset(numMs, xpu::buf_io);
+  fStsUnpacker.fMsDigis.reset(maxNumMessages, xpu::buf_io);
+  fStsUnpacker.fMsMonitor.reset(numMs, xpu::buf_io);
 
-  // ---  Component loop  l
-  /*
-  uint64_t numMicroslices = 0;
-  uint64_t numDigisBefore = 0;
-  cout << "///////////////////////////////" << endl;
-  for (uint64_t comp = 0; comp < timeslice.num_components(); comp++){
-        numMicroslices += timeslice.num_microslices(comp);
-        for (uint64_t mslice = 0; mslice < timeslice.num_microslices(comp); mslice++){
-                cout << FormatMsHeaderPrintout(timeslice.descriptor(comp, mslice)) << endl;
-        }
-  }
-  cout << "//////////////////////////////" << endl;
-*/
+  xpu::set<sts::TheUnpacker>(fStsUnpacker);
 
-  uint64_t rejectedComps = 0;
+  std::vector<stsxyter::Message> messages;  //storage of all messages
+  u64 messageOffset = 0;
+  // Counter for index to see how many comps were actually used
+  u16 usedComps = 0;
 
-  // Felix: Unpacker call
-  xpu::push_timer("Unpack TS");
-#pragma omp parallel for schedule(dynamic)
-  for (size_t i = 0; i < numMs; i++) {
-    fStsUnpacker(i, timeslice.start_time());
-  }
-  xpu::pop_timer();
-
-#if 0
+  // Felix: For new Unpacker: Set pointer for MS and set descriptors and equiptment id.
   for (uint64_t comp = 0; comp < timeslice.num_components(); comp++) {
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice.descriptor(comp, 0).sys_id);
     if (systemId == fles::SubsystemIdentifier::STS) {
-      const uint16_t equipmentId = timeslice.descriptor(comp, 0).eq_id;
-      const auto algoIt          = fAlgoSts.find(equipmentId);
-      assert(algoIt != fAlgoSts.end());
-
-      // The current algorithm works for the STS data format version 0x20 used in 2021.
-      // Other versions are not yet supported.
-      // In the future, different data formats will be supported by instantiating different
-      // algorithms depending on the version.
-      assert(timeslice.descriptor(comp, 0).sys_ver == 0x20);
-
-      // --- Component log
-      size_t numBytesInComp = 0;
-      size_t numDigisInComp = 0;
-
-      // --- Microslice loop
       uint64_t numMsInComp = timeslice.num_microslices(comp);
-
-#pragma omp parallel for schedule(dynamic) shared(timeslice, algoIt, numMsInComp)                                      \
-  reduction(+ : numBytesInComp, numDigisInComp)
+      u16 componentId = eqIdToIndex.at(timeslice.descriptor(comp, 0).eq_id);  // Felix
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
-        const auto msDescriptor = timeslice.descriptor(comp, mslice);
-        const auto msContent    = timeslice.content(comp, mslice);
-        numBytesInComp += msDescriptor.size;
-        cbm::algo::UnpackSts msUnpack = algoIt->second;  //Copy algorithm to ensure every thread has its own copy
-        auto result                   = msUnpack(msContent, msDescriptor, timeslice.start_time());
-        L_(trace) << "Parallel Unpacker"
-                  << ": Component " << comp << ", microslice " << mslice << ", digis " << result.first.size()
-                  << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
-                  << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage << " | "
-                  << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow << " | ";
+        u16 index = usedComps * numMsInComp + mslice;
+        
+        const auto msContent  = timeslice.content(comp, mslice);
+        const auto msDescr    = timeslice.descriptor(comp, mslice);
+        const u32 numMessages = msDescr.size / sizeof(stsxyter::Message);
+        const auto message    = reinterpret_cast<const stsxyter::Message*>(msContent);
+        messages.insert(messages.end(), message, message + numMessages);
 
-        numDigisInComp += result.first.size();
-        size_t index = (comp - rejectedComps) * numMsInComp + mslice;
-        space[index].insert(space[index].end(), result.first.begin(), result.first.end());
+        // Fill input buffer
+        fStsUnpacker.fMsEquipmentId[index]  = componentId;
+        fStsUnpacker.fMsDescriptors[index]  = msDescr;
 
+        // Offset for starting message (in MsContent) of each MS
+        fStsUnpacker.fMsOffset[index]     = messageOffset;
 
-        //#pragma omp critical(insert_sts_digis)
-        //fTimeslice.fData.fSts.fDigis.insert(fTimeslice.fData.fSts.fDigis.end(), result.first.begin(),result.first.end());
-      }  //# microslice
-
-      L_(debug) << "Parallel Unpacker"
-                << ": Component " << comp << ", microslices " << numMsInComp << " input size " << numBytesInComp
-                << "bytes "
-                << ", digis " << numDigisInComp;
-      // << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
-
-      numCompUsed++;
-      numBytes += numBytesInComp;
-      numDigis += numDigisInComp;
-      // std::cout << "Komponente brauchte: " << compTimer.RealTime() * 1000 << "ms" << std::endl;
-
-    }  //? system (only STS)
-    else {
-      rejectedComps++;
+        // Content contains all messages - multiple messages per MS. 
+        for (u32 i = 0; i < numMessages; i++){
+          u64 offset = messageOffset + i;
+          fStsUnpacker.fMsContent[offset] = messages[offset];
+        }
+        messageOffset += numMessages;            
+      }
+    usedComps++;
     }
+  }
 
-  }  //# component
-  // cout << "Timeslice brauchte: " << timeslicetimer.RealTime() * 1000 << "ms" << endl;
-#endif
-
-  int sum = 0;
-#pragma omp parallel for schedule(dynamic) reduction(+ : sum)
-  for (unsigned int i = 0; i < numMs; i++)
-    // sum += space[i].size();
-    sum += fStsUnpacker.fMsDigis[i].size();
-
-  cout << "Anzahl Digis: " << sum << endl;
-  cout << "Anzahl Digis(NumDigis): " << numDigis << endl;
-
-  fSumDigis += sum;
+  std::cout << "maxNumDigis: " << maxNumDigis << std::endl;
+  std::cout << "numMs: " << numMs << std::endl;
+  std::cout << "maxNumMessages: " << maxNumMessages << std::endl;
 
 
-  xpu::push_timer("Compact Digis");
-  //fTimeslice.fData.fSts.fDigis.resize(sum);
-  testVec.resize(sum);
-#pragma omp parallel for schedule(dynamic)
-  for (unsigned int i = 0; i < numMs; i++) {
-    unsigned int partial_sum = 0;
-    for (unsigned int x = 0; x < i; x++)
-      partial_sum += fStsUnpacker.fMsDigis[x].size();
-    for (unsigned int x = 0; x < fStsUnpacker.fMsDigis[i].size(); x++)
-      testVec.at(partial_sum + x) = fStsUnpacker.fMsDigis[i][x];
+  // Felix: Unpacker call
+  xpu::push_timer("Unpack TS");
+
+  xpu::queue queue;
+
+  // Transferring buffer data from host to device
+  queue.copy(fStsUnpacker.fMsEquipmentId, xpu::h2d);
+  queue.copy(fStsUnpacker.fMsDescriptors, xpu::h2d);
+  queue.copy(fStsUnpacker.fMsContent, xpu::h2d);
+  queue.copy(fStsUnpacker.fMsOffset, xpu::h2d);
+
+  static constexpr uint64_t epochLength = stsxyter::kuHitNbTsBinsBinning;
+  static constexpr uint32_t clockCycleNom = stsxyter::kulClockCycleNom;
+  static constexpr uint32_t clockCycleDen = stsxyter::kulClockCycleDen;
+  static constexpr u64 epochLengthInNs = epochLength * clockCycleNom / clockCycleDen;
+
+  const u64 currentTsTime   = timeslice.start_time() / epochLengthInNs;
+
+  // Kernel call
+  queue.launch<sts::Unpack>(xpu::n_blocks(numMs), currentTsTime, numMs);
+  //xpu::k_add_bytes<Unpack>()
+
+  // Transfer output data from device to host
+  queue.copy(fStsUnpacker.fMsDigiCount, xpu::d2h);
+  queue.copy(fStsUnpacker.fMsDigis, xpu::d2h);
+  queue.copy(fStsUnpacker.fMsMonitor, xpu::d2h);
+
+  xpu::h_view outDigiCount {fStsUnpacker.fMsDigiCount};
+  xpu::h_view outDigis {fStsUnpacker.fMsDigis};
+
+  xpu::push_timer("Store digis");
+
+  std::vector<CbmStsDigi> result;
+
+  // copy data from buffers to output vector
+  // TODO: Put on GPU
+
+  for (u64 i = 0; i < numMs; i++){
+    u64 offset      = fStsUnpacker.fMsOffset[i];
+    u64 numOutDigis    = outDigiCount[i];
+
+    for (u64 j = 0; j < numOutDigis; j++){
+      result.push_back(outDigis[offset + j]);
+    } 
   }
   xpu::pop_timer();
-
-  //fVecDigis += fTimeslice.fData.fSts.fDigis.size();
-  //fVecDigis += testVec.size();
-
-  // cout << "Resize time: " << resizeTimer.RealTime() * 1000 << "ms" << endl;
-  // resizeTimeGesamt += resizeTimer.RealTime() * 1000;
-
-  // timer.Stop();
-
-  xpu::push_timer("Copy to output");
-  std::vector<CbmStsDigi> digisOut;
-  digisOut.reserve(testVec.size());
-  std::copy(testVec.begin(), testVec.end(), std::back_inserter(digisOut));
   xpu::pop_timer();
 
 
-  fVecDigis += digisOut.size();
-  L_(info) << "Timeslice contains " << digisOut.size() << " STS digis (discarded " << 0 << " pulser hits)";
-  return digisOut;
+  L_(info) << "Timeslice contains " << result.size() << " STS digis (discarded " << 0 << " pulser hits)";
+
+  fStsUnpacker = {};
+  xpu::set<sts::TheUnpacker>(fStsUnpacker);
+  return result;
 }
