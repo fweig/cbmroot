@@ -61,11 +61,7 @@ namespace cbm::algo::sts
     time.fCurrentTsTime            = currentTsTime;
 
     auto const msTime              = msDescr.idx;
-
-    // TODO: u64 casted to float, does this work? Maybe we have to use double instead...
-    i32 quo;
-    xpu::remquo(msTime, fkCycleLength, &quo);
-    time.fCurrentCycle = quo;
+    time.fCurrentCycle = msTime / fkCycleLength;
 
     // --- Init counter for produced digis
     uint64_t numDigis = 0;

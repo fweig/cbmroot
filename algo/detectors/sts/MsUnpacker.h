@@ -103,6 +103,12 @@ namespace cbm::algo::sts
   class MsUnpacker {
 
   public:
+    /** @brief Default constructor **/
+    MsUnpacker() = default;
+
+    /** @brief Destructor **/
+    ~MsUnpacker() = default;
+
     xpu::buffer<UnpackElinkPar> fElinkParams;                 ///< Parameters for each eLink, [size = nElinksTotal]
     xpu::buffer<UnpackPar> fParams;
 
@@ -117,12 +123,6 @@ namespace cbm::algo::sts
     xpu::buffer<UnpackMonitorData> fMsMonitor;                ///< Monitoring data per microslice [size = nMicroslices]
     xpu::buffer<CbmStsDigi> fMsDigis;                         ///< Digi data [size = nMessages]
     
-    /** @brief Default constructor **/
-    MsUnpacker() = default;
-
-    /** @brief Destructor **/
-    ~MsUnpacker() = default;
-
 
     /** @brief Algorithm execution
      ** @param  msIndex  Microslice index in timeslice

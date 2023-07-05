@@ -69,8 +69,6 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   xpu::scoped_timer t_("Parallel Unpacker");
 
   size_t numMs              = 0;
-  const size_t bytesPerDigi = sizeof(CbmStsDigi);
-  u64 maxNumDigis           = 0;
   u64 maxNumMessages        = 0;
 
   // Count number of timeslices and B bytes per timeslice to calculate offsets output buffer
@@ -82,14 +80,11 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
       numMs += numMsInComp;
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
         uint64_t msByteSize   = timeslice.descriptor(comp, mslice).size;
-        uint64_t numDigisInMs = msByteSize / bytesPerDigi;
         const u32 numMessages = msByteSize / sizeof(stsxyter::Message);
         maxNumMessages += numMessages;
-        maxNumDigis += numDigisInMs;
       }
     }
   }
-  std::cout << "MaxMessages: " << maxNumMessages << std::endl;
 
   // Allocate Input buffers
   fStsUnpacker.fMsEquipmentId.reset(numMs, xpu::buf_io);
@@ -102,6 +97,11 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   fStsUnpacker.fMsDigis.reset(maxNumMessages, xpu::buf_io);
   fStsUnpacker.fMsMonitor.reset(numMs, xpu::buf_io);
 
+  xpu::h_view fMsEquipmentId {fStsUnpacker.fMsEquipmentId};
+  xpu::h_view fMsDescriptors {fStsUnpacker.fMsDescriptors};
+  xpu::h_view fMsContent {fStsUnpacker.fMsContent};
+  xpu::h_view fMsOffset {fStsUnpacker.fMsOffset};
+  
   xpu::set<sts::TheUnpacker>(fStsUnpacker);
 
   std::vector<stsxyter::Message> messages;  //storage of all messages
@@ -125,26 +125,29 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
         messages.insert(messages.end(), message, message + numMessages);
 
         // Fill input buffer
-        fStsUnpacker.fMsEquipmentId[index]  = componentId;
-        fStsUnpacker.fMsDescriptors[index]  = msDescr;
+        fMsEquipmentId[index]  = componentId; // SIGSEV HERE <---------------
+        fMsDescriptors[index]  = msDescr;
 
         // Offset for starting message (in MsContent) of each MS
-        fStsUnpacker.fMsOffset[index]     = messageOffset;
+        fMsOffset[index]     = messageOffset;
 
         // Content contains all messages - multiple messages per MS. 
         for (u32 i = 0; i < numMessages; i++){
           u64 offset = messageOffset + i;
-          fStsUnpacker.fMsContent[offset] = messages[offset];
+          fMsContent[offset] = messages[offset];
         }
         messageOffset += numMessages;            
       }
     usedComps++;
     }
   }
+  
 
+  /*
   std::cout << "maxNumDigis: " << maxNumDigis << std::endl;
   std::cout << "numMs: " << numMs << std::endl;
   std::cout << "maxNumMessages: " << maxNumMessages << std::endl;
+  */
 
 
   // Felix: Unpacker call
@@ -158,35 +161,34 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   queue.copy(fStsUnpacker.fMsContent, xpu::h2d);
   queue.copy(fStsUnpacker.fMsOffset, xpu::h2d);
 
-  static constexpr uint64_t epochLength = stsxyter::kuHitNbTsBinsBinning;
-  static constexpr uint32_t clockCycleNom = stsxyter::kulClockCycleNom;
-  static constexpr uint32_t clockCycleDen = stsxyter::kulClockCycleDen;
-  static constexpr u64 epochLengthInNs = epochLength * clockCycleNom / clockCycleDen;
-
-  const u64 currentTsTime   = timeslice.start_time() / epochLengthInNs;
-
+  const u64 currentTsTime   = timeslice.start_time() / fEpochLengthInNs;
+  
+  queue.wait();
   // Kernel call
   queue.launch<sts::Unpack>(xpu::n_blocks(numMs), currentTsTime, numMs);
+  std::cout << "Kernel end." << std::endl;
   //xpu::k_add_bytes<Unpack>()
 
   // Transfer output data from device to host
   queue.copy(fStsUnpacker.fMsDigiCount, xpu::d2h);
   queue.copy(fStsUnpacker.fMsDigis, xpu::d2h);
   queue.copy(fStsUnpacker.fMsMonitor, xpu::d2h);
+  queue.wait();
 
   xpu::h_view outDigiCount {fStsUnpacker.fMsDigiCount};
   xpu::h_view outDigis {fStsUnpacker.fMsDigis};
-
+  
   xpu::push_timer("Store digis");
 
   std::vector<CbmStsDigi> result;
 
   // copy data from buffers to output vector
   // TODO: Put on GPU
+  std::cout << "OutDigis size: " << outDigis.size() << std::endl;
 
   for (u64 i = 0; i < numMs; i++){
-    u64 offset      = fStsUnpacker.fMsOffset[i];
-    u64 numOutDigis    = outDigiCount[i];
+    u64 offset         = fMsOffset[i];
+    u64 numOutDigis    = outDigiCount[i]; // <--- always 0?
 
     for (u64 j = 0; j < numOutDigis; j++){
       result.push_back(outDigis[offset + j]);
@@ -194,6 +196,7 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   }
   xpu::pop_timer();
   xpu::pop_timer();
+  std::cout << "Result size: " << result.size() << std::endl;
 
 
   L_(info) << "Timeslice contains " << result.size() << " STS digis (discarded " << 0 << " pulser hits)";

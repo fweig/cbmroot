@@ -47,6 +47,11 @@ namespace cbm::algo
     double fTime     = 0.;
     double fSortTime = 0.;
 
+    static constexpr u64 fEpochLength = stsxyter::kuHitNbTsBinsBinning;
+    static constexpr u32 fClockCycleNom = stsxyter::kulClockCycleNom;
+    static constexpr u32 fClockCycleDen = stsxyter::kulClockCycleDen;
+    static constexpr u64 fEpochLengthInNs = fEpochLength * fClockCycleNom / fClockCycleDen;
+
     std::vector<CbmStsDigi, NoInitAlloc<CbmStsDigi>> testVec;
     double resizeTimeGesamt = 0;
   };
