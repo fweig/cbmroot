@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <xpu/host.h>
 #include <xpu/defines.h>
 #include <yaml-cpp/yaml.h>
 
@@ -25,12 +26,12 @@ namespace fles
 
 namespace cbm::algo
 {
-
   class ParallelUnpackChain : public SubChain {
 
   public:
     void Init(sts::ReadoutMapping config);
     std::vector<CbmStsDigi> Run(const fles::Timeslice& ts);
+    
 
   private:
     sts::MsUnpacker fStsUnpacker;
@@ -52,8 +53,10 @@ namespace cbm::algo
     static constexpr u32 fClockCycleDen = stsxyter::kulClockCycleDen;
     static constexpr u64 fEpochLengthInNs = fEpochLength * fClockCycleNom / fClockCycleDen;
 
-    std::vector<CbmStsDigi, NoInitAlloc<CbmStsDigi>> testVec;
-    double resizeTimeGesamt = 0;
+    std::vector<sts::UnpackPar> fUnpackPar;
+    std::vector<sts::UnpackElinkPar> fUnpackElinkPar;
+    size_t fnComponents;
+    size_t fnumAllElinks;
   };
 
 }  // namespace cbm::algo

@@ -174,7 +174,7 @@ namespace stsxyter
     uint32_t fuData;  // main and only storage field for the message
 
   public:
-    XPU_H XPU_D Message() : fuData(0) {}
+    XPU_H XPU_D Message() = default;
 
     XPU_H XPU_D Message(const Message& src) : fuData(src.fuData) {}
 

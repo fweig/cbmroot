@@ -23,6 +23,14 @@
 
 namespace cbm::algo::sts
 {
+  enum GpuConstants
+  {
+#if XPU_IS_CUDA
+    kBlockSize         = 512,
+#else  // HIP, values ignored on CPU
+    kBlockSize         = 256,
+#endif
+  };
 
 
   /** @struct UnpackStsElinkPar
@@ -88,10 +96,10 @@ namespace cbm::algo::sts
   struct TheUnpacker : xpu::constant<GPUReco, MsUnpacker> {};
 
   struct Unpack : xpu::kernel<GPUReco> {
-    using block_size    = xpu::block_size<256>;
+    using block_size    = xpu::block_size<kBlockSize>;
     using constants     = xpu::cmem<TheUnpacker>;
     using context       = xpu::kernel_context<xpu::no_smem, constants>;
-    XPU_D void operator()(context&, const uint64_t currentTsTime, u64 NElems);
+    XPU_D void operator()(context&, const uint64_t currentTsTime);
   };
 
   /** @class UnpackSts
@@ -128,7 +136,7 @@ namespace cbm::algo::sts
      ** @param  msIndex  Microslice index in timeslice
      ** @param  tTimeslice Unix start time of timeslice [ns]
      **/
-    XPU_D void operator()(Unpack::context& ctx, const uint64_t currentTsTime, u64 NElems) const;
+    XPU_D void operator()(Unpack::context& ctx, const uint64_t currentTsTime) const;
 
   private:  // private datastructures
     /**

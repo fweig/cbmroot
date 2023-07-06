@@ -104,8 +104,9 @@ void Reco::Run(const fles::Timeslice& ts)
       case RecoParams::UnpackMode::CPU: digis = fUnpack.Run(ts); break;
     }
   }
-  if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);
-
+  
+  //if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);
+  
   xpu::timings ts_times = xpu::pop_timer();
 
   PrintTimings(ts_times);

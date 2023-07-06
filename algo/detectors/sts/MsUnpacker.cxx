@@ -19,17 +19,18 @@ XPU_EXPORT(cbm::algo::sts::Unpack);
 
 namespace cbm::algo::sts
 {
-  XPU_D void Unpack::operator()(context& ctx, const uint64_t currentTsTime, u64 NElems)
+  XPU_D void Unpack::operator()(context& ctx, const uint64_t currentTsTime)
   {
-    ctx.cmem<TheUnpacker>()(ctx, currentTsTime, NElems);
+    ctx.cmem<TheUnpacker>()(ctx, currentTsTime);
   }
 
 
   // ----   Algorithm execution   ---------------------------------------------
-  XPU_D void MsUnpacker::operator()(Unpack::context & ctx, const uint64_t currentTsTime, u64 NElems) const
+  XPU_D void MsUnpacker::operator()(Unpack::context & ctx, const uint64_t currentTsTime) const
   {
-    int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
-    if (id >= NElems) return;  // exit if out of bounds or too few messages
+    //int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
+    int id = ctx.block_idx_x();
+    if (ctx.thread_idx_x() > 0) return;  // exit if out of bounds or too few messages
 
     UnpackMonitorData monitor;  //Monitor data, currently not stored. TO DO: Implement!
 

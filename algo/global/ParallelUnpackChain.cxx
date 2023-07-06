@@ -28,16 +28,17 @@ void ParallelUnpackChain::Init(sts::ReadoutMapping config)
   uint32_t numAsicsPerModuleSts = 16;   // Number of ASICs per module for STS
 
   auto equipIdsSts = fConfig->GetEquipmentIds();
-
+  /*
   size_t nComponents = equipIdsSts.size();
   for (size_t i = 0; i < nComponents; i++) {
     eqIdToIndex[equipIdsSts[i]] = i;
   }
   //Initialize parameter buffers
   const size_t numAllElinks                     = fConfig->GetNumElinks();
+  
+  
   fStsUnpacker.fParams.reset(nComponents, xpu::buf_io);
   fStsUnpacker.fElinkParams.reset(numAllElinks, xpu::buf_io);
-
   for (size_t comp = 0; comp < nComponents; comp++) {
     u16 eqId                                    = equipIdsSts[comp];
     const size_t numElinks                      = fConfig->GetNumElinks(eqId);
@@ -51,6 +52,36 @@ void ParallelUnpackChain::Init(sts::ReadoutMapping config)
     for (size_t elink = 0; elink < numElinks; elink++) {
       xpu::h_view elinkTemp {fStsUnpacker.fElinkParams};
       sts::UnpackElinkPar& elinkPar             = elinkTemp[params[comp].fElinkOffset + elink];
+      auto mapEntry                             = fConfig->Map(eqId, elink);
+      elinkPar.fAddress                         = mapEntry.moduleAddress;  // Module address for this elink
+      elinkPar.fAsicNr                          = mapEntry.asicNumber;     // ASIC number within module
+      elinkPar.fTimeOffset                      = 0.;
+      elinkPar.fAdcOffset                       = 1.;
+      elinkPar.fAdcGain                         = 1.;
+    }
+    L_(debug) << "--- Configured STS equipment " << eqId << " with " << numElinks << " elinks";
+  }*/
+  fnComponents = equipIdsSts.size();
+  for (size_t i = 0; i < fnComponents; i++) {
+    eqIdToIndex[equipIdsSts[i]] = i;
+  }
+
+  fnumAllElinks = fConfig->GetNumElinks();
+
+  fUnpackPar.resize(fnComponents);
+  fUnpackElinkPar.resize(fnumAllElinks);
+  
+  for (size_t comp = 0; comp < fnComponents; comp++) {
+    u16 eqId                                    = equipIdsSts[comp];
+    const size_t numElinks                      = fConfig->GetNumElinks(eqId);
+    // auto params                                 = fStsUnpacker.fParams.h();
+    fUnpackPar[comp].fNumElinks                     = numElinks;
+    fUnpackPar[comp].fNumChansPerAsic               = numChansPerAsicSts;
+    fUnpackPar[comp].fNumAsicsPerModule             = numAsicsPerModuleSts;
+    fUnpackPar[comp].fElinkOffset                   = (comp == 0) ? 0 : fUnpackPar[comp - 1].fElinkOffset + fUnpackPar[comp - 1].fNumElinks;
+
+    for (size_t elink = 0; elink < numElinks; elink++) {
+      sts::UnpackElinkPar& elinkPar             = fUnpackElinkPar[fUnpackPar[comp].fElinkOffset + elink];
       auto mapEntry                             = fConfig->Map(eqId, elink);
       elinkPar.fAddress                         = mapEntry.moduleAddress;  // Module address for this elink
       elinkPar.fAsicNr                          = mapEntry.asicNumber;     // ASIC number within module
@@ -91,6 +122,10 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   fStsUnpacker.fMsDescriptors.reset(numMs, xpu::buf_io);
   fStsUnpacker.fMsContent.reset(maxNumMessages, xpu::buf_io);
   fStsUnpacker.fMsOffset.reset(numMs, xpu::buf_io);
+
+  //Test: Params
+  fStsUnpacker.fParams.reset(fnComponents, xpu::buf_io);
+  fStsUnpacker.fElinkParams.reset(fnumAllElinks, xpu::buf_io);
 
   // Initialize Output buffers
   fStsUnpacker.fMsDigiCount.reset(numMs, xpu::buf_io);
@@ -141,7 +176,15 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
     usedComps++;
     }
   }
-  
+
+  xpu::h_view params {fStsUnpacker.fParams};
+  xpu::h_view elinkParams {fStsUnpacker.fElinkParams};
+  for (u32 i = 0; i < fUnpackPar.size(); i++){
+    params[i] = fUnpackPar[i];
+  }
+  for (u32 i = 0; i < fUnpackElinkPar.size(); i++){
+    elinkParams[i] = fUnpackElinkPar[i];
+  }
 
   /*
   std::cout << "maxNumDigis: " << maxNumDigis << std::endl;
@@ -155,18 +198,20 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   xpu::queue queue;
 
+
   // Transferring buffer data from host to device
   queue.copy(fStsUnpacker.fMsEquipmentId, xpu::h2d);
   queue.copy(fStsUnpacker.fMsDescriptors, xpu::h2d);
   queue.copy(fStsUnpacker.fMsContent, xpu::h2d);
   queue.copy(fStsUnpacker.fMsOffset, xpu::h2d);
+  queue.copy(fStsUnpacker.fElinkParams, xpu::h2d);
+  queue.copy(fStsUnpacker.fParams, xpu::h2d);
 
   const u64 currentTsTime   = timeslice.start_time() / fEpochLengthInNs;
-  
-  queue.wait();
+
   // Kernel call
-  queue.launch<sts::Unpack>(xpu::n_blocks(numMs), currentTsTime, numMs);
-  std::cout << "Kernel end." << std::endl;
+  queue.launch<sts::Unpack>(xpu::n_blocks(numMs), currentTsTime);
+  
   //xpu::k_add_bytes<Unpack>()
 
   // Transfer output data from device to host
@@ -184,7 +229,7 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   // copy data from buffers to output vector
   // TODO: Put on GPU
-  std::cout << "OutDigis size: " << outDigis.size() << std::endl;
+
 
   for (u64 i = 0; i < numMs; i++){
     u64 offset         = fMsOffset[i];
@@ -196,7 +241,7 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   }
   xpu::pop_timer();
   xpu::pop_timer();
-  std::cout << "Result size: " << result.size() << std::endl;
+
 
 
   L_(info) << "Timeslice contains " << result.size() << " STS digis (discarded " << 0 << " pulser hits)";
