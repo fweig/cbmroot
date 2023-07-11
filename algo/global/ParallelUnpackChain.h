@@ -57,6 +57,8 @@ namespace cbm::algo
     std::vector<sts::UnpackElinkPar> fUnpackElinkPar;
     size_t fnComponents;
     size_t fnumAllElinks;
+
+    static const auto fMsgSize = sizeof(stsxyter::Message);
   };
 
 }  // namespace cbm::algo
