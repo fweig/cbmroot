@@ -1,0 +1,21 @@
+module "CbmTofReco" {
+  requires cplusplus
+  module "CbmTofBuildDigiEvents.h" { header "CbmTofBuildDigiEvents.h" export * }
+  module "CbmTofHitMaker.h" { header "CbmTofHitMaker.h" export * }
+  module "CbmTofCosmicClusterizer.h" { header "CbmTofCosmicClusterizer.h" export * }
+  module "CbmTofEventClusterizer.h" { header "CbmTofEventClusterizer.h" export * }
+  module "CbmTofFindTracks.h" { header "CbmTofFindTracks.h" export * }
+  module "CbmTofExtendTracks.h" { header "CbmTofExtendTracks.h" export * }
+  module "CbmTofSimpClusterizer.h" { header "CbmTofSimpClusterizer.h" export * }
+  module "CbmTofTrackFinderNN.h" { header "CbmTofTrackFinderNN.h" export * }
+  module "CbmTofTestBeamClusterizer.h" { header "CbmTofTestBeamClusterizer.h" export * }
+  module "CbmTofTrackletTools.h" { header "CbmTofTrackletTools.h" export * }
+  module "CbmTofCalibrator.h" { header "CbmTofCalibrator.h" export * }
+  module "LKFMinuit.h" { header "LKFMinuit.h" export * }
+  module "CbmTofUnpackAlgo.h" { header "CbmTofUnpackAlgo.h" export * }
+  module "CbmTofUnpackConfig.h" { header "CbmTofUnpackConfig.h" export * }
+  module "CbmTofUnpackMonitor.h" { header "CbmTofUnpackMonitor.h" export * }
+  link "libCbmTofReco.so"
+  export *
+}
+

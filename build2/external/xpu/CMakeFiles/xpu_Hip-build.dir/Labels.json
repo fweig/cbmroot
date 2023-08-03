@@ -1,0 +1,40 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/CMakeFiles/xpu_Hip-build"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/CMakeFiles/xpu_Hip-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-configure.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-export-include-dirs.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-patch.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-update.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-download.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-mkdir.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"xpu_Hip"
+		],
+		"name" : "xpu_Hip-build"
+	}
+}

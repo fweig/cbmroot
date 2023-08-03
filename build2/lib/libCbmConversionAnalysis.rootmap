@@ -1,0 +1,22 @@
+[ libCbmConversionAnalysis.so ]
+# List of selected classes
+class CbmAnaConversion
+class CbmAnaConversionKF
+class CbmAnaConversionPhotons
+class CbmAnaConversionPhotons2
+class CbmAnaConversionReco
+class CbmAnaConversionRecoFull
+class CbmAnaConversionRich
+class CbmAnaConversionTest
+class CbmAnaConversionTest2
+class CbmAnaConversionTomography
+header CbmAnaConversion.h
+header CbmAnaConversionKF.h
+header CbmAnaConversionPhotons.h
+header CbmAnaConversionPhotons2.h
+header CbmAnaConversionReco.h
+header CbmAnaConversionRecoFull.h
+header CbmAnaConversionRich.h
+header CbmAnaConversionTest.h
+header CbmAnaConversionTest2.h
+header CbmAnaConversionTomography.h

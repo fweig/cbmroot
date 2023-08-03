@@ -1,0 +1,17 @@
+[ libNicaCbmCuts.so ]
+# List of selected classes
+class CbmBasicFemtoPairCut
+class CbmBasicTrackCuts
+class CbmDeltaPhiDeltaThetaCut
+class CbmDeltaPhiDeltaThetaStarCut
+class CbmNHitsCut
+class CbmStsExitSepCut
+class CbmTofCut
+class CbmTofM2PolyCut
+header CbmBasicFemtoPairCut.h
+header CbmBasicTrackCuts.h
+header CbmDeltaPhiDeltaThetaCut.h
+header CbmNHitsCut.h
+header CbmStsExitSepCut.h
+header CbmTofCut.h
+header CbmTofM2PolyCut.h

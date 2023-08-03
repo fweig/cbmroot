@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "../../../lib/libCbmRecoSts.pdb"
+  "../../../lib/libCbmRecoSts.so"
+  "CMakeFiles/CbmRecoSts.dir/CbmRecoSts.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmRecoSts.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmRecoStsPixel.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmRecoStsPixel.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoAnaCluster.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoAnaCluster.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoFindClusters.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoFindClusters.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoFindHits.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoFindHits.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoFindHitsOrtho.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsAlgoFindHitsOrtho.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsFindTracks.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsFindTracks.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsFindTracksEvents.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsFindTracksEvents.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsRecoModule.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsRecoModule.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsTrackFinderIdeal.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/CbmStsTrackFinderIdeal.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/qa/CbmStsFindTracksQa.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/qa/CbmStsFindTracksQa.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackAlgo.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackAlgo.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackAlgoBase.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackAlgoBase.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackAlgoLegacy.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackAlgoLegacy.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackConfig.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackConfig.cxx.o.d"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackMonitor.cxx.o"
+  "CMakeFiles/CbmRecoSts.dir/unpack/CbmStsUnpackMonitor.cxx.o.d"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/CbmRecoSts.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

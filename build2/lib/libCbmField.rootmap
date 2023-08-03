@@ -1,0 +1,26 @@
+[ libCbmField.so ]
+# List of selected classes
+class CbmBsField
+class CbmFieldConst
+class CbmFieldContFact
+class CbmFieldCreator
+class CbmFieldMap
+class CbmFieldMapCreator
+class CbmFieldMapData
+class CbmFieldMapDistorted
+class CbmFieldMapSym1
+class CbmFieldMapSym2
+class CbmFieldMapSym3
+class CbmFieldPar
+header CbmBsField.h
+header CbmFieldConst.h
+header CbmFieldContFact.h
+header CbmFieldCreator.h
+header CbmFieldMap.h
+header CbmFieldMapCreator.h
+header CbmFieldMapData.h
+header CbmFieldMapDistorted.h
+header CbmFieldMapSym1.h
+header CbmFieldMapSym2.h
+header CbmFieldMapSym3.h
+header CbmFieldPar.h

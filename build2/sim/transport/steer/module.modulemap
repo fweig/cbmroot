@@ -1,0 +1,12 @@
+module "CbmSimSteer" {
+  requires cplusplus
+  module "CbmSetup.h" { header "CbmSetup.h" export * }
+  module "CbmTransport.h" { header "CbmTransport.h" export * }
+  module "CbmVMCSettings.h" { header "CbmVMCSettings.h" export * }
+  module "CbmGeant3Settings.h" { header "CbmGeant3Settings.h" export * }
+  module "CbmGeant4Settings.h" { header "CbmGeant4Settings.h" export * }
+  module "CbmTransportConfig.h" { header "CbmTransportConfig.h" export * }
+  link "libCbmSimSteer.so"
+  export *
+}
+

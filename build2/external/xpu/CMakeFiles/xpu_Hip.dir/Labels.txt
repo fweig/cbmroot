@@ -1,0 +1,14 @@
+# Target labels
+ xpu_Hip
+# Source files and their labels
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/CMakeFiles/xpu_Hip
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/CMakeFiles/xpu_Hip.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/CMakeFiles/xpu_Hip-complete.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-build.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-configure.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-download.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-export-include-dirs.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-install.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-mkdir.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-patch.rule
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-stamp/xpu_Hip-update.rule

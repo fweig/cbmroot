@@ -1,0 +1,22 @@
+module "CbmRecoSts" {
+  requires cplusplus
+  module "CbmRecoSts.h" { header "CbmRecoSts.h" export * }
+  module "CbmStsAlgoAnaCluster.h" { header "CbmStsAlgoAnaCluster.h" export * }
+  module "CbmStsAlgoFindClusters.h" { header "CbmStsAlgoFindClusters.h" export * }
+  module "CbmStsAlgoFindHits.h" { header "CbmStsAlgoFindHits.h" export * }
+  module "CbmStsAlgoFindHitsOrtho.h" { header "CbmStsAlgoFindHitsOrtho.h" export * }
+  module "CbmStsFindTracks.h" { header "CbmStsFindTracks.h" export * }
+  module "CbmStsFindTracksEvents.h" { header "CbmStsFindTracksEvents.h" export * }
+  module "CbmStsRecoModule.h" { header "CbmStsRecoModule.h" export * }
+  module "CbmRecoStsPixel.h" { header "CbmRecoStsPixel.h" export * }
+  module "CbmStsTrackFinderIdeal.h" { header "CbmStsTrackFinderIdeal.h" export * }
+  module "CbmStsUnpackAlgo.h" { header "CbmStsUnpackAlgo.h" export * }
+  module "CbmStsUnpackAlgoBase.h" { header "CbmStsUnpackAlgoBase.h" export * }
+  module "CbmStsUnpackAlgoLegacy.h" { header "CbmStsUnpackAlgoLegacy.h" export * }
+  module "CbmStsUnpackConfig.h" { header "CbmStsUnpackConfig.h" export * }
+  module "CbmStsUnpackMonitor.h" { header "CbmStsUnpackMonitor.h" export * }
+  module "CbmStsFindTracksQa.h" { header "CbmStsFindTracksQa.h" export * }
+  link "libCbmRecoSts.so"
+  export *
+}
+

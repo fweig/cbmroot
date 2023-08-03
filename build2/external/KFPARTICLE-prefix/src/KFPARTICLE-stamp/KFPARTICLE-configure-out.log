@@ -1,0 +1,82 @@
+-- The C compiler identification is GNU 11.3.0
+-- The CXX compiler identification is GNU 11.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detected Compiler: GCC 11
+-- Performing Test Vc_HAVE_SSE_SINCOS
+-- Performing Test Vc_HAVE_SSE_SINCOS - Success
+-- Performing Test Vc_HAVE_AVX_SINCOS
+-- Performing Test Vc_HAVE_AVX_SINCOS - Success
+-- Performing Test check_cxx_compiler_flag__Wabi
+-- Performing Test check_cxx_compiler_flag__Wabi - Success
+-- Performing Test check_cxx_compiler_flag__fabi_version_0
+-- Performing Test check_cxx_compiler_flag__fabi_version_0 - Success
+-- Performing Test check_cxx_compiler_flag__fabi_compat_version_0
+-- Performing Test check_cxx_compiler_flag__fabi_compat_version_0 - Success
+-- Performing Test check_cxx_compiler_flag__ffp_contract_fast
+-- Performing Test check_cxx_compiler_flag__ffp_contract_fast - Success
+-- target changed from "" to "auto"
+-- Detected CPU: skylake-avx512
+-- Performing Test check_cxx_compiler_flag__march_skylake_avx512
+-- Performing Test check_cxx_compiler_flag__march_skylake_avx512 - Success
+-- Performing Test check_cxx_compiler_flag__msse2
+-- Performing Test check_cxx_compiler_flag__msse2 - Success
+-- Performing Test check_cxx_compiler_flag__msse3
+-- Performing Test check_cxx_compiler_flag__msse3 - Success
+-- Looking for C++ include pmmintrin.h
+-- Looking for C++ include pmmintrin.h - found
+-- Performing Test check_cxx_compiler_flag__mssse3
+-- Performing Test check_cxx_compiler_flag__mssse3 - Success
+-- Looking for C++ include tmmintrin.h
+-- Looking for C++ include tmmintrin.h - found
+-- Performing Test check_cxx_compiler_flag__msse4_1
+-- Performing Test check_cxx_compiler_flag__msse4_1 - Success
+-- Looking for C++ include smmintrin.h
+-- Looking for C++ include smmintrin.h - found
+-- Performing Test check_cxx_compiler_flag__msse4_2
+-- Performing Test check_cxx_compiler_flag__msse4_2 - Success
+-- Performing Test check_cxx_compiler_flag__mavx
+-- Performing Test check_cxx_compiler_flag__mavx - Success
+-- Looking for C++ include immintrin.h
+-- Looking for C++ include immintrin.h - found
+-- Performing Test check_cxx_compiler_flag__mfma
+-- Performing Test check_cxx_compiler_flag__mfma - Success
+-- Performing Test check_cxx_compiler_flag__mbmi2
+-- Performing Test check_cxx_compiler_flag__mbmi2 - Success
+-- Performing Test check_cxx_compiler_flag__mavx2
+-- Performing Test check_cxx_compiler_flag__mavx2 - Success
+-- Performing Test check_cxx_compiler_flag__mavx512f
+-- Performing Test check_cxx_compiler_flag__mavx512f - Success
+-- Performing Test check_cxx_compiler_flag__mavx512vl
+-- Performing Test check_cxx_compiler_flag__mavx512vl - Success
+-- Performing Test check_cxx_compiler_flag__mavx512cd
+-- Performing Test check_cxx_compiler_flag__mavx512cd - Success
+-- Performing Test check_cxx_compiler_flag__mavx512dq
+-- Performing Test check_cxx_compiler_flag__mavx512dq - Success
+-- Performing Test check_cxx_compiler_flag__mavx512bw
+-- Performing Test check_cxx_compiler_flag__mavx512bw - Success
+-- Performing Test check_cxx_compiler_flag__mno_sse4a
+-- Performing Test check_cxx_compiler_flag__mno_sse4a - Success
+-- Performing Test check_cxx_compiler_flag__mno_xop
+-- Performing Test check_cxx_compiler_flag__mno_xop - Success
+-- Performing Test check_cxx_compiler_flag__mno_fma4
+-- Performing Test check_cxx_compiler_flag__mno_fma4 - Success
+-- Performing Test check_cxx_compiler_flag__mno_avx512pf
+-- Performing Test check_cxx_compiler_flag__mno_avx512pf - Success
+-- Performing Test check_cxx_compiler_flag__mno_avx512er
+-- Performing Test check_cxx_compiler_flag__mno_avx512er - Success
+-- Performing Test check_cxx_compiler_flag__mno_avx512ifma
+-- Performing Test check_cxx_compiler_flag__mno_avx512ifma - Success
+-- Performing Test check_cxx_compiler_flag__mno_avx512vbmi
+-- Performing Test check_cxx_compiler_flag__mno_avx512vbmi - Success
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-build

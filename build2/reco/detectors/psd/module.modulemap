@@ -1,0 +1,10 @@
+module "CbmPsdReco" {
+  requires cplusplus
+  module "CbmPsdHitProducer.h" { header "CbmPsdHitProducer.h" export * }
+  module "CbmPsdMCbmHitProducer.h" { header "CbmPsdMCbmHitProducer.h" export * }
+  module "CbmPsdUnpackAlgo.h" { header "CbmPsdUnpackAlgo.h" export * }
+  module "CbmPsdUnpackConfig.h" { header "CbmPsdUnpackConfig.h" export * }
+  link "libCbmPsdReco.so"
+  export *
+}
+

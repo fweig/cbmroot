@@ -1,0 +1,43 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/algo/Algo_Cuda/src/Algo_Cuda-build
+[35m[1mConsolidate compiler generated dependencies of target Algo_Cuda[0m
+[ 50%] [32mBuilding CUDA object CMakeFiles/Algo_Cuda.dir/home/heinemann/gpuunpacker/cbmroot/build2/algo/Algo_Unity.cpp.o[0m
+/home/cbmdata/_deps/fairsoft_apr22/install/lib/CLHEP-2.4.5.1/../../include/fmt/core.h(313): warning #1675-D: unrecognized GCC pragma
+  #pragma GCC optimize("Og")
+              ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/heinemann/gpuunpacker/cbmroot/core/data/raw/StsXyterMessage.h(177): warning #20012-D: __host__ annotation is ignored on a function("Message") that is explicitly defaulted on its first declaration
+      __attribute__((host)) __attribute__((device)) Message() = default;
+                     ^
+
+/home/heinemann/gpuunpacker/cbmroot/core/data/raw/StsXyterMessage.h(177): warning #20012-D: __device__ annotation is ignored on a function("Message") that is explicitly defaulted on its first declaration
+      __attribute__((host)) __attribute__((device)) Message() = default;
+                                           ^
+
+/home/cbmdata/_deps/fairsoft_apr22/install/lib/CLHEP-2.4.5.1/../../include/fmt/core.h(313): warning #1675-D: unrecognized GCC pragma
+  #pragma GCC optimize("Og")
+              ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/heinemann/gpuunpacker/cbmroot/core/data/raw/StsXyterMessage.h(177): warning #20012-D: __host__ annotation is ignored on a function("Message") that is explicitly defaulted on its first declaration
+      __attribute__((host)) __attribute__((device)) Message() = default;
+                     ^
+
+/home/heinemann/gpuunpacker/cbmroot/core/data/raw/StsXyterMessage.h(177): warning #20012-D: __device__ annotation is ignored on a function("Message") that is explicitly defaulted on its first declaration
+      __attribute__((host)) __attribute__((device)) Message() = default;
+                                           ^
+
+/home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/device.h(540): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+      __attribute__((shared)) shared_memory smem;
+                                            ^
+          detected during:
+            instantiation of "void xpu::detail::kernel_entry_bounded<F,MaxThreadsPerBlock,Args...>(Args...) [with F=cbm::algo::sts::Unpack, MaxThreadsPerBlock=64, Args=<uint64_t>]" at line 582
+            instantiation of "int xpu::detail::action_runner<xpu::detail::kernel_tag, K, void (K::*)(xpu::kernel_context<K::shared_memory, K::constants> &, Args...)>::call(xpu::detail::kernel_launch_info, Args...) [with K=cbm::algo::sts::Unpack, Args=<uint64_t>]" at line 266 of /home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/dynamic_loader.h
+            instantiation of "xpu::detail::register_action<A, D>::register_action() [with A=cbm::algo::sts::Unpack, D=xpu::cuda]" at line 18 of /home/heinemann/gpuunpacker/cbmroot/algo/detectors/sts/MsUnpacker.cxx
+
+[100%] [32m[1mLinking CUDA shared module /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAlgo_Cuda.so[0m
+[100%] Built target Algo_Cuda

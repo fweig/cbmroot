@@ -1,0 +1,23 @@
+{ decls }
+namespace AnalysisTree {  }
+
+[ libAnalysisTreeInfra.so ]
+# List of selected classes
+class AnalysisTree::AnalysisEntry
+class AnalysisTree::AnalysisTask
+class AnalysisTree::Chain
+class AnalysisTree::Cuts
+class AnalysisTree::Field
+class AnalysisTree::SimpleCut
+class AnalysisTree::Task
+class AnalysisTree::TaskManager
+class AnalysisTree::Variable
+header AnalysisEntry.hpp
+header AnalysisTask.hpp
+header Chain.hpp
+header Cuts.hpp
+header Field.hpp
+header SimpleCut.hpp
+header Task.hpp
+header TaskManager.hpp
+header Variable.hpp

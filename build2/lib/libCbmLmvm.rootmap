@@ -1,0 +1,12 @@
+[ libCbmLmvm.so ]
+# List of selected classes
+class LmvmDraw
+class LmvmDrawAll
+class LmvmHist
+class LmvmTask
+class LmvmUtils
+header LmvmDraw.h
+header LmvmDrawAll.h
+header LmvmHist.h
+header LmvmTask.h
+header LmvmUtils.h

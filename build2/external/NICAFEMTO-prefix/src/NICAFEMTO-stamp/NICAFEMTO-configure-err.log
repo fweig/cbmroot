@@ -1,0 +1,124 @@
+[0m-- Looking for Boost ...[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[33mCMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:1369 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:1492 (_Boost_COMPONENT_DEPENDENCIES)
+  /usr/share/cmake-3.22/Modules/FindBoost.cmake:2102 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:123 (find_package)
+
+[0m
+[0m-- Looking for GSL ...[0m
+[0m--- Found a Linux system[0m
+[0m--- Found GNU compiler collection[0m
+[0mWARNING,XXX /home/cbmdata/_deps/fairroot_v18.6.9/install/include;/home/cbmdata/_deps/fairsoft_apr22/install/include/vmc;/home/cbmdata/_deps/fairsoft_apr22/install/include/root;/home/cbmdata/_deps/fairsoft_apr22/install/include[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/dataformat[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/cuts[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/nicagenerators[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/base[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/femto[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/flow[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/spectra[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/fluctuations[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/v0s[0m
+[0mCURRENT_SOURCE_DIR: /home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/analysis/qa[0m

@@ -1,0 +1,3 @@
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-build/CMakeFiles/xpu_Hip.dir
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-build/CMakeFiles/edit_cache.dir
+/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-build/CMakeFiles/rebuild_cache.dir

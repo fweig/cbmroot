@@ -1,0 +1,11 @@
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTreeQA/AnalysisTreeQATargets.cmake
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTreeQA/AnalysisTreeQATargets-fullwarnings.cmake
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTreeQA/AnalysisTreeQAConfig.cmake
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTreeQA/AnalysisTreeQAConfigVersion.cmake
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeQA.so
+/home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTreeQA/EntryConfig.hpp
+/home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTreeQA/Task.hpp
+/home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTreeQA/BasicQA.hpp
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeQA_rdict.pcm
+/home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeQA.rootmap
+/home/heinemann/gpuunpacker/cbmroot/build2/bin/example

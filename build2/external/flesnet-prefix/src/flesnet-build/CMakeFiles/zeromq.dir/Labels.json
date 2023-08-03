@@ -1,0 +1,40 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/CMakeFiles/zeromq"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/CMakeFiles/zeromq.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/CMakeFiles/zeromq-complete.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-stamp/zeromq-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-stamp/zeromq-configure.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-stamp/zeromq-download.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-stamp/zeromq-install.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-stamp/zeromq-mkdir.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-stamp/zeromq-patch.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"zeromq"
+		],
+		"name" : "zeromq"
+	}
+}

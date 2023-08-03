@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -g -O2 -Wshadow -Wall -Wextra -Wunused-variable -shared -Wl,-soname,libLittrackparallel.so -o ../../../lib/libLittrackparallel.so CMakeFiles/Littrackparallel.dir/LitTrackFinderNN.cxx.o  /home/cbmdata/_deps/fairsoft_apr22/install/lib/libVc.a 

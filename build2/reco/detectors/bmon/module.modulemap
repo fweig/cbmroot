@@ -1,0 +1,8 @@
+module "CbmBmonReco" {
+  requires cplusplus
+  module "CbmBmonUnpackAlgo.h" { header "CbmBmonUnpackAlgo.h" export * }
+  module "CbmBmonUnpackConfig.h" { header "CbmBmonUnpackConfig.h" export * }
+  link "libCbmBmonReco.so"
+  export *
+}
+

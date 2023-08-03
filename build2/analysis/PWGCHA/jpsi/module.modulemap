@@ -1,0 +1,12 @@
+module "CbmJPsiAnalysis" {
+  requires cplusplus
+  module "CbmAnaJpsiTask.h" { header "CbmAnaJpsiTask.h" export * }
+  module "CbmAnaJpsiReport.h" { header "CbmAnaJpsiReport.h" export * }
+  module "CbmAnaJpsiHist.h" { header "CbmAnaJpsiHist.h" export * }
+  module "CbmAnaJpsiCandidate.h" { header "CbmAnaJpsiCandidate.h" export * }
+  module "CbmAnaJpsiSuperEvent.h" { header "CbmAnaJpsiSuperEvent.h" export * }
+  module "CbmAnaJpsiSuperEventReport.h" { header "CbmAnaJpsiSuperEventReport.h" export * }
+  link "libCbmJPsiAnalysis.so"
+  export *
+}
+

@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/ANALYSISTREEQA"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/ANALYSISTREEQA.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/ANALYSISTREEQA-complete.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-configure.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-download.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-install.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-mkdir.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-patch.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREEQA-prefix/src/ANALYSISTREEQA-stamp/ANALYSISTREEQA-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"ANALYSISTREEQA"
+		],
+		"name" : "ANALYSISTREEQA"
+	}
+}

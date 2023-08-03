@@ -1,0 +1,46 @@
+{ decls }
+namespace std {  }
+namespace cbm { namespace mcbm {  } }
+
+[ libCbmBase.so ]
+# List of selected classes
+class CbmDaq
+class CbmDigiManager
+class CbmDigitizeBase
+class CbmHistManager
+class CbmHtmlReportElement
+class CbmLatexReportElement
+class CbmMCDataArray
+class CbmMCDataManager
+class CbmMCDataObject
+class CbmMatchRecoToMC
+class CbmMediaList
+class CbmRadDamage
+class CbmReport
+class CbmReportElement
+class CbmSimulationReport
+class CbmStudyReport
+class CbmTextReportElement
+class cbm::mcbm::ToForceLibLoad
+class pair<TString,TString>
+header CbmDaq.h
+header CbmDigiManager.h
+header CbmDigitizeBase.h
+header CbmHistManager.h
+header CbmHtmlReportElement.h
+header CbmLatexReportElement.h
+header CbmMCDataArray.h
+header CbmMCDataManager.h
+header CbmMCDataObject.h
+header CbmMatchRecoToMC.h
+header CbmMediaList.h
+header CbmRadDamage.h
+header CbmReport.h
+header CbmReportElement.h
+header CbmSimulationReport.h
+header CbmStudyReport.h
+header CbmTextReportElement.h
+header CbmMcbmUtils.h
+# List of selected namespaces
+namespace cbm
+namespace cbm::mcbm

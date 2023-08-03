@@ -1,0 +1,12 @@
+{ decls }
+namespace AnalysisTree { namespace QA {  } }
+
+[ libAnalysisTreeQA.so ]
+# List of selected classes
+class AnalysisTree::QA::Axis
+class AnalysisTree::QA::EntryConfig
+class AnalysisTree::QA::Task
+header EntryConfig.hpp
+header Task.hpp
+# List of selected namespaces
+namespace AnalysisTree::QA

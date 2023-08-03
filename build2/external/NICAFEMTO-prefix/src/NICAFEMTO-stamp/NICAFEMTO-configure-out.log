@@ -1,0 +1,34 @@
+-- The C compiler identification is GNU 11.3.0
+-- The CXX compiler identification is GNU 11.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The Fortran compiler identification is GNU 11.3.0
+-- Detecting Fortran compiler ABI info
+-- Detecting Fortran compiler ABI info - done
+-- Check for working Fortran compiler: /usr/bin/gfortran - skipped
+-- NOT Found FAIRBASE
+-- Setting FairRoot environment:
+--   FairRoot prefix            : /home/cbmdata/_deps/fairroot_v18.6.9/install/
+--   FairRoot Library directory : /home/cbmdata/_deps/fairroot_v18.6.9/install/lib
+--   FairRoot Include path      : /home/cbmdata/_deps/fairroot_v18.6.9/install/include
+--   FairRoot Cmake Modules     : /home/cbmdata/_deps/fairroot_v18.6.9/install/share/fairbase/cmake
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found Boost: /home/cbmdata/_deps/fairsoft_apr22/install/include (found suitable version "1.78.0", minimum required is "1.48") found components: program_options thread system timer serialization regex log log_setup filesystem chrono atomic date_time 
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+-- Found GSL: /usr/include (found version "2.7.1") 
+-- fairsoft-config found
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/external/NICAFEMTO-prefix/src/NICAFEMTO-build

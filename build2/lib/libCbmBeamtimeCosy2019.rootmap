@@ -1,0 +1,16 @@
+[ libCbmBeamtimeCosy2019.so ]
+# List of selected classes
+class CbmCosy2019ContFact
+class CbmCosy2019HodoPar
+class CbmCosy2019MonitorAlgoHodo
+class CbmCosy2019MonitorTaskHodo
+class CbmCosy2019UnpackerAlgoHodo
+class CbmCosy2019UnpackerTaskHodo
+class CbmStsCoincHodo
+header CbmCosy2019ContFact.h
+header CbmCosy2019HodoPar.h
+header CbmCosy2019MonitorAlgoHodo.h
+header CbmCosy2019MonitorTaskHodo.h
+header CbmCosy2019UnpackerAlgoHodo.h
+header CbmCosy2019UnpackerTaskHodo.h
+header CbmStsCoincHodo.h

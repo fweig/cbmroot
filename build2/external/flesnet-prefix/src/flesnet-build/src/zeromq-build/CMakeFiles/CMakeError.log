@@ -1,0 +1,418 @@
+Determining if the strlcpy exist failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_53289/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_53289.dir/build.make CMakeFiles/cmTC_53289.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_53289.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare  -o CMakeFiles/cmTC_53289.dir/CheckSymbolExists.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘strlcpy’ was not declared in this scope; did you mean ‘strncpy’?
+    8 |   return ((int*)(&strlcpy))[argc];
+      |                   ^~~~~~~
+      |                   strncpy
+At global scope:
+cc1plus: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+gmake[8]: *** [CMakeFiles/cmTC_53289.dir/build.make:78: CMakeFiles/cmTC_53289.dir/CheckSymbolExists.cxx.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_53289/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+File /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <string.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef strlcpy
+  return ((int*)(&strlcpy))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the kqueue exist failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f4505/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_f4505.dir/build.make CMakeFiles/cmTC_f4505.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f4505.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare  -o CMakeFiles/cmTC_f4505.dir/CheckSymbolExists.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:2:10: fatal error: sys/event.h: No such file or directory
+    2 | #include <sys/event.h>
+      |          ^~~~~~~~~~~~~
+compilation terminated.
+gmake[8]: *** [CMakeFiles/cmTC_f4505.dir/build.make:78: CMakeFiles/cmTC_f4505.dir/CheckSymbolExists.cxx.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_f4505/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+File /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <sys/event.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef kqueue
+  return ((int*)(&kqueue))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if files windows.h exist failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ac856/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_ac856.dir/build.make CMakeFiles/cmTC_ac856.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ac856.dir/ZMQ_HAVE_WINDOWS.c.o
+/usr/bin/cc   -std=gnu11 -Wno-tautological-constant-compare  -o CMakeFiles/cmTC_ac856.dir/ZMQ_HAVE_WINDOWS.c.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CheckIncludeFiles/ZMQ_HAVE_WINDOWS.c
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CheckIncludeFiles/ZMQ_HAVE_WINDOWS.c:2:10: fatal error: windows.h: No such file or directory
+    2 | #include <windows.h>
+      |          ^~~~~~~~~~~
+compilation terminated.
+gmake[8]: *** [CMakeFiles/cmTC_ac856.dir/build.make:78: CMakeFiles/cmTC_ac856.dir/ZMQ_HAVE_WINDOWS.c.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_ac856/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+Source:
+/* */
+#include <windows.h>
+
+
+int main(void){return 0;}
+
+Determining if the LOCAL_PEERCRED exist failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_817d3/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_817d3.dir/build.make CMakeFiles/cmTC_817d3.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_817d3.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare  -o CMakeFiles/cmTC_817d3.dir/CheckSymbolExists.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘LOCAL_PEERCRED’ was not declared in this scope; did you mean ‘SO_PEERCRED’?
+    8 |   return ((int*)(&LOCAL_PEERCRED))[argc];
+      |                   ^~~~~~~~~~~~~~
+      |                   SO_PEERCRED
+At global scope:
+cc1plus: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+gmake[8]: *** [CMakeFiles/cmTC_817d3.dir/build.make:78: CMakeFiles/cmTC_817d3.dir/CheckSymbolExists.cxx.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_817d3/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+File /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <sys/socket.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef LOCAL_PEERCRED
+  return ((int*)(&LOCAL_PEERCRED))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the gethrtime exist failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b374c/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_b374c.dir/build.make CMakeFiles/cmTC_b374c.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_b374c.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare  -o CMakeFiles/cmTC_b374c.dir/CheckSymbolExists.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘gethrtime’ was not declared in this scope; did you mean ‘getitimer’?
+    8 |   return ((int*)(&gethrtime))[argc];
+      |                   ^~~~~~~~~
+      |                   getitimer
+At global scope:
+cc1plus: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+gmake[8]: *** [CMakeFiles/cmTC_b374c.dir/build.make:78: CMakeFiles/cmTC_b374c.dir/CheckSymbolExists.cxx.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_b374c/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+File /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <sys/time.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef gethrtime
+  return ((int*)(&gethrtime))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Performing C++ SOURCE FILE Test HAVE_FLAG_-Wall failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_137c9/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_137c9.dir/build.make CMakeFiles/cmTC_137c9.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_137c9.dir/src.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare    -DHAVE_FLAG_-Wall -Wall -o CMakeFiles/cmTC_137c9.dir/src.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.cxx
+<command-line>: warning: ISO C++11 requires whitespace after the macro name
+cc1plus: note: unrecognized command-line option '-Wno-tautological-constant-compare' may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_137c9
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_137c9.dir/link.txt --verbose=1
+/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare  -rdynamic CMakeFiles/cmTC_137c9.dir/src.cxx.o -o cmTC_137c9 
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test HAVE_FLAG_-Wextra failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7624d/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_7624d.dir/build.make CMakeFiles/cmTC_7624d.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_7624d.dir/src.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare    -DHAVE_FLAG_-Wextra -Wextra -o CMakeFiles/cmTC_7624d.dir/src.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.cxx
+<command-line>: warning: ISO C++11 requires whitespace after the macro name
+cc1plus: note: unrecognized command-line option '-Wno-tautological-constant-compare' may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_7624d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7624d.dir/link.txt --verbose=1
+/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare  -rdynamic CMakeFiles/cmTC_7624d.dir/src.cxx.o -o cmTC_7624d 
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test HAVE_FLAG_-Wno-long-long failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f73fc/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_f73fc.dir/build.make CMakeFiles/cmTC_f73fc.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f73fc.dir/src.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare    -DHAVE_FLAG_-Wno-long-long -Wno-long-long -o CMakeFiles/cmTC_f73fc.dir/src.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.cxx
+<command-line>: warning: ISO C++11 requires whitespace after the macro name
+cc1plus: note: unrecognized command-line option '-Wno-tautological-constant-compare' may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_f73fc
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f73fc.dir/link.txt --verbose=1
+/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare  -rdynamic CMakeFiles/cmTC_f73fc.dir/src.cxx.o -o cmTC_f73fc 
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test HAVE_FLAG_-Wno-uninitialized failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9f246/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_9f246.dir/build.make CMakeFiles/cmTC_9f246.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_9f246.dir/src.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare    -DHAVE_FLAG_-Wno-uninitialized -Wno-uninitialized -o CMakeFiles/cmTC_9f246.dir/src.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.cxx
+<command-line>: warning: ISO C++11 requires whitespace after the macro name
+cc1plus: note: unrecognized command-line option '-Wno-tautological-constant-compare' may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_9f246
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9f246.dir/link.txt --verbose=1
+/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare  -rdynamic CMakeFiles/cmTC_9f246.dir/src.cxx.o -o cmTC_9f246 
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test HAVE_FLAG_-pedantic failed with the following output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9b1f5/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_9b1f5.dir/build.make CMakeFiles/cmTC_9b1f5.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_9b1f5.dir/src.cxx.o
+/usr/bin/c++   -std=gnu++11 -Wno-tautological-constant-compare    -DHAVE_FLAG_-pedantic -pedantic -o CMakeFiles/cmTC_9b1f5.dir/src.cxx.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.cxx
+<command-line>: warning: ISO C++11 requires whitespace after the macro name
+cc1plus: note: unrecognized command-line option '-Wno-tautological-constant-compare' may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_9b1f5
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9b1f5.dir/link.txt --verbose=1
+/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare  -rdynamic CMakeFiles/cmTC_9b1f5.dir/src.cxx.o -o cmTC_9b1f5 
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C SOURCE FILE Test ZMQ_HAVE_TCP_KEEPALIVE failed with the following compile output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_722e1/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_722e1.dir/build.make CMakeFiles/cmTC_722e1.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_722e1.dir/src.c.o
+/usr/bin/cc -DZMQ_HAVE_TCP_KEEPALIVE  -std=gnu11 -Wno-tautological-constant-compare  -o CMakeFiles/cmTC_722e1.dir/src.c.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: In function ‘main’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:13:42: error: ‘TCP_KEEPALIVE’ undeclared (first use in this function); did you mean ‘SO_KEEPALIVE’?
+   13 |        ((rc = setsockopt(s, IPPROTO_TCP, TCP_KEEPALIVE,(char*) &opt, sizeof(int))) == -1)
+      |                                          ^~~~~~~~~~~~~
+      |                                          SO_KEEPALIVE
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:13:42: note: each undeclared identifier is reported only once for each function it appears in
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+gmake[8]: *** [CMakeFiles/cmTC_722e1.dir/build.make:78: CMakeFiles/cmTC_722e1.dir/src.c.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_722e1/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
+int main(int argc, char *argv [])
+{
+    int s, rc, opt = 1;
+    return(
+       ((s = socket(PF_INET, SOCK_STREAM, 0)) == -1) ||
+       ((rc = setsockopt(s, SOL_SOCKET, SO_KEEPALIVE,(char*) &opt, sizeof(int))) == -1) ||
+       ((rc = setsockopt(s, IPPROTO_TCP, TCP_KEEPALIVE,(char*) &opt, sizeof(int))) == -1)
+    );
+}
+
+Performing C SOURCE FILE Test ZMQ_HAVE_PTHREAD_SETNAME_1 failed with the following compile output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_dde40/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_dde40.dir/build.make CMakeFiles/cmTC_dde40.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_dde40.dir/src.c.o
+/usr/bin/cc -DZMQ_HAVE_PTHREAD_SETNAME_1  -std=gnu11 -Wno-tautological-constant-compare -D_GNU_SOURCE -Werror -pthread -o CMakeFiles/cmTC_dde40.dir/src.c.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: In function ‘main’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:6:25: error: passing argument 1 of ‘pthread_setname_np’ makes integer from pointer without a cast [-Werror=int-conversion]
+    6 |     pthread_setname_np ("foo");
+      |                         ^~~~~
+      |                         |
+      |                         char *
+In file included from /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:2:
+/usr/include/pthread.h:463:42: note: expected ‘pthread_t’ {aka ‘long unsigned int’} but argument is of type ‘char *’
+  463 | extern int pthread_setname_np (pthread_t __target_thread, const char *__name)
+      |                                ~~~~~~~~~~^~~~~~~~~~~~~~~
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:6:5: error: too few arguments to function ‘pthread_setname_np’
+    6 |     pthread_setname_np ("foo");
+      |     ^~~~~~~~~~~~~~~~~~
+In file included from /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:2:
+/usr/include/pthread.h:463:12: note: declared here
+  463 | extern int pthread_setname_np (pthread_t __target_thread, const char *__name)
+      |            ^~~~~~~~~~~~~~~~~~
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+cc1: all warnings being treated as errors
+gmake[8]: *** [CMakeFiles/cmTC_dde40.dir/build.make:78: CMakeFiles/cmTC_dde40.dir/src.c.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_dde40/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#include <pthread.h>
+
+int main(int argc, char *argv [])
+{
+    pthread_setname_np ("foo");
+    return 0;
+}
+
+Performing C SOURCE FILE Test ZMQ_HAVE_PTHREAD_SETNAME_3 failed with the following compile output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ca0d2/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_ca0d2.dir/build.make CMakeFiles/cmTC_ca0d2.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ca0d2.dir/src.c.o
+/usr/bin/cc -DZMQ_HAVE_PTHREAD_SETNAME_3  -std=gnu11 -Wno-tautological-constant-compare -D_GNU_SOURCE -Werror -pthread -o CMakeFiles/cmTC_ca0d2.dir/src.c.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: In function ‘main’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:6:5: error: too many arguments to function ‘pthread_setname_np’
+    6 |     pthread_setname_np (pthread_self(), "foo", (void *)0);
+      |     ^~~~~~~~~~~~~~~~~~
+In file included from /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:2:
+/usr/include/pthread.h:463:12: note: declared here
+  463 | extern int pthread_setname_np (pthread_t __target_thread, const char *__name)
+      |            ^~~~~~~~~~~~~~~~~~
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+gmake[8]: *** [CMakeFiles/cmTC_ca0d2.dir/build.make:78: CMakeFiles/cmTC_ca0d2.dir/src.c.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_ca0d2/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#include <pthread.h>
+
+int main(int argc, char *argv [])
+{
+    pthread_setname_np (pthread_self(), "foo", (void *)0);
+    return 0;
+}
+
+Performing C SOURCE FILE Test ZMQ_HAVE_PTHREAD_SET_NAME failed with the following compile output:
+Change Dir: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_35ee8/fast && gmake[7]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+/usr/bin/gmake  -f CMakeFiles/cmTC_35ee8.dir/build.make CMakeFiles/cmTC_35ee8.dir/build
+gmake[8]: Entering directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_35ee8.dir/src.c.o
+/usr/bin/cc -DZMQ_HAVE_PTHREAD_SET_NAME  -std=gnu11 -Wno-tautological-constant-compare -D_GNU_SOURCE -Werror -pthread -o CMakeFiles/cmTC_35ee8.dir/src.c.o -c /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: In function ‘main’:
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c:6:5: error: implicit declaration of function ‘pthread_set_name_np’; did you mean ‘pthread_setname_np’? [-Werror=implicit-function-declaration]
+    6 |     pthread_set_name_np (pthread_self(), "foo");
+      |     ^~~~~~~~~~~~~~~~~~~
+      |     pthread_setname_np
+/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp/src.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-tautological-constant-compare’ may have been intended to silence earlier diagnostics
+cc1: all warnings being treated as errors
+gmake[8]: *** [CMakeFiles/cmTC_35ee8.dir/build.make:78: CMakeFiles/cmTC_35ee8.dir/src.c.o] Error 1
+gmake[8]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+gmake[7]: *** [Makefile:127: cmTC_35ee8/fast] Error 2
+gmake[7]: Leaving directory '/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/CMakeFiles/CMakeTmp'
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#include <pthread.h>
+
+int main(int argc, char *argv [])
+{
+    pthread_set_name_np (pthread_self(), "foo");
+    return 0;
+}
+

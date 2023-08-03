@@ -1,0 +1,310 @@
+#
+#               -- Configuration for QA tasks --         
+#
+# Configuration file defines histogram properties for different QA 
+# tasks in Full-CBM setup.
+#
+# Properties of histograms:
+#
+# TH1:
+#   title   - title of histogram
+#   nbinsx  - number of bins in the X axis
+#   minx    - lower bound of the X axis
+#   maxx    - upper bound of the X axis
+#
+# TH2:
+#   title   - title of histogram
+#   nbinsx  - number of bins in the X axis
+#   minx    - lower bound of the X axis
+#   maxx    - upper bound of the X axis
+#   nbinsy  - number of bins in the Y axis
+#   miny    - lower bound of the Y axis
+#   maxy    - upper bound of the Y axis
+#
+# TH3:
+#   title   - title of histogram
+#   nbinsx  - number of bins in the X axis
+#   minx    - lower bound of the X axis
+#   maxx    - upper bound of the X axis
+#   nbinsy  - number of bins in the Y axis
+#   miny    - lower bound of the Y axis
+#   maxy    - upper bound of the Y axis
+#   nbinsz  - number of bins in the Z axis
+#   minz    - lower bound of the Z axis
+#   maxz    - upper bound of the Z axis
+#
+# TProfile:
+#   title   - title of the profile
+#   nbinsx  - number of bins in the X axis
+#   minx    - lower bound of the X axis
+#   maxx    - upper bound of the X axis
+#   miny    - lower bound of the Y axis (optional)
+#   maxy    - upper bound of the Y axis (optional)
+#   opt     - option (optional)
+#
+# TProfile2D:
+#   title   - title of the profile
+#   nbinsx  - number of bins in the X axis
+#   minx    - lower bound of the X axis
+#   maxx    - upper bound of the X axis
+#   nbinsy  - number of bins in the Y axis
+#   miny    - lower bound of the Y axis
+#   maxy    - upper bound of the Y axis
+#   minz    - lower bound of the Z axis (optional)
+#   maxz    - upper bound of the Z axis (optional)
+#   opt     - option (optional)
+
+qa:
+  CbmCaOutputQa:
+    histograms:
+      #
+      # Reconstructed tracks distributions
+      #
+      reco_p:
+        title:  "Momentum of reconstructed track;(p/q)_{reco} [GeV/ec]"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+      reco_pt:
+        title:  "Transverse momentum of reconstructed track;(p_{T}/q)_{reco} [GeV/ec]"
+        nbinsx: 100
+        minx:   0.
+        maxx:   10.
+      reco_phi:
+        title:  "Azimuthal angle of reconstructed track;#phi_{reco} [rad]"
+        nbinsx: 68
+        minx:   -3.2
+        maxx:   +3.2
+      reco_tx:
+        title:  "Slope along x-axis of reconstructed tracks;t_{x}"
+        nbinsx: 50
+        minx:   -2.
+        maxx:   +2.
+      reco_ty:
+        title:  "Slope along y-axis of reconstructed tracks;t_{y}" 
+        nbinsx: 50
+        minx:   -2.
+        maxx:   +2.
+      reco_fhitR:
+        title:  "Distance of the first hit from z-axis of reconstructed track;R [cm]" 
+        nbinsx: 50
+        minx:   0.
+        maxx:   150.
+      reco_nhits: 
+        title:  "Number of hits in a reconstructed track;N_{hits}"
+        nbinsx: 10
+        minx:   -0.5
+        maxx:   9.5
+      reco_fsta:
+        title:  "First station of reconstructed track;ID_{f.st.}"
+        nbinsx: 15
+        minx:   -0.5
+        maxx:   14.5
+      reco_purity: 
+        title:  "Purity of reconstructed track;purity [%]"
+        nbinsx: 15
+        minx:   -0.5
+        maxx:   14.5
+      reco_chi2_ndf:
+        title:  "Fit #chi^{2}/NDF of reconstructed track;(#chi^{2}/NDF)_{reco}"
+        nbinsx: 50
+        minx:   -0.5
+        maxx:   99.5
+      reco_prob:
+        title:  "Fit #chi^{2}/NDF of the rest tracks;(#chi^{2}/NDF)_{reco}"
+        nbinsx: 101
+        minx:   0.
+        maxx:   1.01
+      rest_chi2_ndf:
+        title:  "Fit probability of reconstructed track;Prob_{reco}"
+        nbinsx: 50
+        minx:   -0.5
+        maxx:   99.5
+      rest_prob:
+        title:  "Fit probability of the rest tracks;Prob_{reco}"
+        nbinsx: 101
+        minx:   0.
+        maxx:   1.01
+      #
+      # Ghost tracks distributions
+      #
+      ghost_p:
+        title: "Momentum of ghost track;(p/q)_{reco} [GeV/ec]"
+        nbinsx: 150
+        minx:   0.  # Gev/ec
+        maxx:   15. # Gev/ec
+      ghost_pt:
+        title:  "Transverse momentum of ghost track;(p_{T}/q)_{reco} [GeV/ec]"
+        nbinsx: 100
+        minx:   0.
+        maxx:   10.
+      ghost_phi:
+        title:  "Azimuthal angle of ghost track;#phi_{reco} [rad]"
+        nbinsx: 68
+        minx:   -3.2
+        maxx:   +3.2
+      ghost_tx:
+        title:  "Slope along x-axis of ghost tracks;t_{x}"
+        nbinsx: 50
+        minx:   -2.
+        maxx:   +2.
+      ghost_ty:
+        title:  "Slope along y-axis of ghost tracks;t_{y}" 
+        nbinsx: 50
+        minx:   -2.
+        maxx:   +2.
+      ghost_fhitR:
+        title:  "Distance of the first hit from z-axis of ghost track;R [cm]" 
+        nbinsx: 50
+        minx:   0.
+        maxx:   150.
+      ghost_nhits: 
+        title:  "Number of hits in a ghost track;N_{hits}"
+        nbinsx: 10
+        minx:   -0.5
+        maxx:   9.5
+      ghost_fsta:
+        title:  "First station of ghost track;ID_{f.st.}"
+        nbinsx: 15
+        minx:   -0.5
+        maxx:   14.5
+      ghost_purity: 
+        title:  "Purity of ghost track;purity [%]"
+        nbinsx: 15
+        minx:   -0.5
+        maxx:   14.5
+      ghost_chi2_ndf:
+        title:  "Fit #chi^{2}/NDF of ghost track;(#chi^{2}/NDF)_{reco}"
+        nbinsx: 50
+        minx:   -0.5
+        maxx:   99.5
+      ghost_prob:
+        title:  "Fit #chi^{2}/NDF of the ghost track;(#chi^{2}/NDF)_{reco}"
+        nbinsx: 101
+        minx:   0.
+        maxx:   1.01
+      ghost_nhits_vs_p:
+        title:  "Number of hits vs. momentum for ghost track;(p/q)_{reco} [GeV/ec];N_{hits}"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+        nbinsy: 10
+        miny:   -0.5
+        maxy:   9.5
+      ghost_fsta_vs_p:
+        title:  "First station vs. momentum for ghost track;(p/q)_{reco} [GeV/ec];ID_{f.st.}"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+        nbinsy: 15
+        miny:   -0.5
+        maxy:   14.5
+      ghost_lsta_vs_fsta:
+        title:  "Last station vs. first station for ghost track;ID_{first st.};ID_{last st.}"
+        nbinsx: 15
+        minx:   -0.5
+        maxx:   14.5
+        nbinsy: 15
+        miny:   -0.5
+        maxy:   14.5
+      #
+      #  -- Reconstructed tracks vs. MC quantities
+      # 
+      reco_pMC:
+        title:  "MC momentum of reconstructed tracks;p_{MC} [GeV/c]"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+      reco_yMC:
+        title:  "MC momentum of reconstructed tracks;p_{MC} [GeV/c]"
+        nbinsy: 40
+        miny:   -4.
+        maxy:   +4.   
+      reco_pMC_vs_yMC:
+        title:  "MC momentum vs. MC rapidity of reconstructed tracks;p_{MC} [GeV/c]"
+        nbinsx: 150
+        minx:   0.
+        maxx:   15.
+        nbinsy: 40
+        miny:   -4.
+        maxy:   +4.   
+
+      #
+      #  -- Track residuals and pulls --
+      #
+      # Residuals and pulls at first station
+      #
+      fst_res_x:
+        titie:  "Residual of x in first track point;(x_{reco} - x_{MC})[cm]"
+        nbinsx: 160
+        minx:   -4.
+        maxx:   +4.
+      fst_res_y:
+        titie:  "Residual of y in first track point;(y_{reco} - y_{MC})[cm]"
+        nbinsx: 180
+        minx:   -45.
+        maxx:   +45.
+      fst_res_tx:
+        titie:  "Residual of t_{x} in first track point;(t^{reco}_{x} - t^{MC}_{x})"
+        nbinsx: 80
+        minx:   -4.
+        maxx:   +4.
+      fst_res_ty:
+        titie:  "Residual of t_{y} in first track point;(t^{reco}_{y} - t^{MC}_{y})"
+        nbinsx: 80
+        minx:   -4.
+        maxx:   +4.
+      fst_res_qp:
+        titie:  "Residual of q/p in first track point;((q/p)_{reco} - (q/p)_{MC}) [GeV/ec]"
+        nbinsx: 150
+        minx:   -15.
+        maxx:   +15.
+      fst_res_time:
+        titie:  "Residual of time in first track point;((t)_{reco} - (t)_{MC}) [ns]"
+        nbinsx: 100
+        minx:   -10.
+        maxx:   +10.
+      fst_res_v:
+        titie:  "Residual of velocity in first track point;(v_{reco} - v_{MC}) [c]"
+        nbinsx: 100
+        minx:   -10.
+        maxx:   +10.
+      fst_pull_x:
+        titie:  "Pull of x in first track point;(x_{reco} - x_{MC}) / #sigma_{x}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      fst_pull_y:
+        titie:  "Pull of y in first track point;(y_{reco} - y_{MC}) / #sigma_{y}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      fst_pull_tx:
+        titie:  "Pull of t_{x} in first track point;(t^{reco}_{x} - t^{MC}_{x}) / #sigma_{t_{x}}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      fst_pull_ty:
+        titie:  "Pull of t_{y} in first track point;(t^{reco}_{y} - t^{MC}_{y}) / #sigma_{t_{y}}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      fst_pull_qp:
+        titie:  "Pull of q/p in first track point;((q/p)_{reco} - (q/p)_{MC}) / #sigma_{q/p}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      fst_pull_time:
+        titie:  "Pull of time in first track point;((t)_{reco} - (t)_{MC}) / #sigma_{t}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      fst_pull_v:
+        titie:  "Pull of velocity in first track point;(v_{reco} - v_{MC}) / #sigma_{v}"
+        nbinsx: 120
+        minx:   -6.
+        maxx:   +6.
+      
+
+      
+

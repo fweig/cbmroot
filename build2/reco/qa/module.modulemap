@@ -1,0 +1,8 @@
+module "CbmRecoQa" {
+  requires cplusplus
+  module "CbmRecoQa.h" { header "CbmRecoQa.h" export * }
+  module "CbmTrackingTrdQa.h" { header "CbmTrackingTrdQa.h" export * }
+  link "libCbmRecoQa.so"
+  export *
+}
+

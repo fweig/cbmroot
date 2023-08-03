@@ -1,0 +1,12 @@
+[0m-- Found AnalysisTree...[0m
+[0mAnalysisTree_INCLUDE_DIR = /home/heinemann/gpuunpacker/cbmroot/build2/include[0m
+[0mAnalysisTree_LIBRARY_DIR = /home/heinemann/gpuunpacker/cbmroot/build2/lib[0m
+[0m-- Found AnalysisTree...[0m
+[0mAnalysisTree_INCLUDE_DIR = /home/heinemann/gpuunpacker/cbmroot/build2/include[0m
+[0mAnalysisTree_LIBRARY_DIR = /home/heinemann/gpuunpacker/cbmroot/build2/lib[0m
+[33mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_C_COMPILER
+
+[0m

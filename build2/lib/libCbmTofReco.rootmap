@@ -1,0 +1,32 @@
+[ libCbmTofReco.so ]
+# List of selected classes
+class CbmTofBuildDigiEvents
+class CbmTofCalibrator
+class CbmTofCosmicClusterizer
+class CbmTofEventClusterizer
+class CbmTofExtendTracks
+class CbmTofFindTracks
+class CbmTofHitMaker
+class CbmTofSimpClusterizer
+class CbmTofTestBeamClusterizer
+class CbmTofTrackFinderNN
+class CbmTofTrackletTools
+class CbmTofUnpackAlgo
+class CbmTofUnpackConfig
+class CbmTofUnpackMonitor
+class LKFMinuit
+header CbmTofBuildDigiEvents.h
+header CbmTofCalibrator.h
+header CbmTofCosmicClusterizer.h
+header CbmTofEventClusterizer.h
+header CbmTofExtendTracks.h
+header CbmTofFindTracks.h
+header CbmTofHitMaker.h
+header CbmTofSimpClusterizer.h
+header CbmTofTestBeamClusterizer.h
+header CbmTofTrackFinderNN.h
+header CbmTofTrackletTools.h
+header CbmTofUnpackAlgo.h
+header CbmTofUnpackConfig.h
+header CbmTofUnpackMonitor.h
+header LKFMinuit.h

@@ -1,0 +1,13 @@
+module "CbmBeamtimeCosy2019" {
+  requires cplusplus
+  module "CbmCosy2019HodoPar.h" { header "CbmCosy2019HodoPar.h" export * }
+  module "CbmCosy2019ContFact.h" { header "CbmCosy2019ContFact.h" export * }
+  module "CbmCosy2019UnpackerAlgoHodo.h" { header "CbmCosy2019UnpackerAlgoHodo.h" export * }
+  module "CbmCosy2019UnpackerTaskHodo.h" { header "CbmCosy2019UnpackerTaskHodo.h" export * }
+  module "CbmStsCoincHodo.h" { header "CbmStsCoincHodo.h" export * }
+  module "CbmCosy2019MonitorAlgoHodo.h" { header "CbmCosy2019MonitorAlgoHodo.h" export * }
+  module "CbmCosy2019MonitorTaskHodo.h" { header "CbmCosy2019MonitorTaskHodo.h" export * }
+  link "libCbmBeamtimeCosy2019.so"
+  export *
+}
+

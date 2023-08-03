@@ -1,0 +1,1 @@
+cmd='/usr/bin/cmake;-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/home/heinemann/gpuunpacker/cbmroot/build2/lib;-DCMAKE_CXX_COMPILER=/opt/rocm-5.4.3/llvm/bin/clang++;-DCMAKE_C_COMPILER=/opt/rocm-5.4.3/llvm/bin/clang;-DCMAKE_CXX_STANDARD=17;-GUnix Makefiles;<SOURCE_DIR><SOURCE_SUBDIR>'

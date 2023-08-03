@@ -1,0 +1,12 @@
+[ 12%] [32mBuilding CXX object googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o[0m
+[ 25%] [32m[1mLinking CXX static library ../lib/libgtest.a[0m
+[ 25%] Built target gtest
+[ 37%] [32mBuilding CXX object googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o[0m
+[ 50%] [32m[1mLinking CXX static library ../lib/libgmock.a[0m
+[ 50%] Built target gmock
+[ 62%] [32mBuilding CXX object googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o[0m
+[ 75%] [32m[1mLinking CXX static library ../lib/libgtest_main.a[0m
+[ 75%] Built target gtest_main
+[ 87%] [32mBuilding CXX object googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o[0m
+[100%] [32m[1mLinking CXX static library ../lib/libgmock_main.a[0m
+[100%] Built target gmock_main

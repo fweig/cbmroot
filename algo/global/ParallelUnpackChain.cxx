@@ -213,11 +213,6 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   // End of buffer preparations
   xpu::pop_timer(); 
-  /*
-  std::cout << "maxNumDigis: " << maxNumDigis << std::endl;
-  std::cout << "numMs: " << numMs << std::endl;
-  std::cout << "maxNumMessages: " << maxNumMessages << std::endl;
-  */
 
   xpu::queue queue;
 
@@ -242,37 +237,26 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   queue.wait();
 
 
-  xpu::push_timer("Store digis");
+/*
 
   xpu::h_view outDigiCount {fStsUnpacker.fMsDigiCount};
   xpu::h_view outDigis {fStsUnpacker.fMsDigis};
 
   std::vector<CbmStsDigi> result;
-  /*
-  result.reserve(maxNumMessages * sizeof(CbmStsDigi));
-
-  // copy data from buffers to output vector
-  // TODO: Put on GPU ---> Parallelize!
-
-  // fMsDigis has size maxNumMessages, but holds less digis. Therefore a 1to1 copy is not possible.
-  for (u32 i = 0; i < numMs; i++){
-    u64 offset         = fMsOffset[i];
-    u64 numOutDigis    = outDigiCount[i]; 
-
-    for (u64 j = 0; j < numOutDigis; j++){
-      result.push_back(outDigis[offset + j]);
-    } 
-  }
-  */
+  
   u32 numOutDigis = 0;
   for (u32 i = 0; i < outDigiCount.size(); i++){
       numOutDigis += outDigiCount[i];
   }
+  xpu::push_timer("Resize");
   result.resize(numOutDigis);
+  xpu::pop_timer();
+
+  xpu::push_timer("Store digis");
 
 #pragma omp parallel for schedule (dynamic)
   for (u32 i = 0; i < numMs; i++){
-    u64 offset         = fMsOffset[i];
+    u64 offset              = fMsOffset[i];
     u64 numOutDigisLocal    = outDigiCount[i]; 
     u64 numPreviousDigis = 0;
 
@@ -288,8 +272,39 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   xpu::pop_timer();
 
+*/
+  xpu::push_timer("Count OutDigis");
 
+  // count output digis
+  xpu::h_view outDigiCount {fStsUnpacker.fMsDigiCount};
+  u32 numOutDigis = 0;
+  for (u32 i = 0; i < outDigiCount.size(); i++){
+      numOutDigis += outDigiCount[i];
+  }
+  xpu::pop_timer();
 
+  xpu::push_timer("OutBuffer Prep");
+  fStsUnpacker.fMsOutBuffer.reset(numOutDigis, xpu::buf_io);
+  xpu::set<sts::TheUnpacker>(fStsUnpacker);
+  xpu::pop_timer();
+
+  xpu::push_timer("CopyOut Kernel");
+  queue.launch<sts::CopyOut>(xpu::n_blocks(numMs));
+  queue.copy(fStsUnpacker.fMsOutBuffer, xpu::d2h);
+  xpu::h_view outBuffer {fStsUnpacker.fMsOutBuffer};
+  xpu::pop_timer();
+
+  xpu::push_timer("Resize");
+  std::vector<CbmStsDigi> result;
+  result.resize(numOutDigis);
+  xpu::pop_timer();
+
+  xpu::push_timer("Parallel Copy");
+#pragma omp parallel for schedule (static)
+  for (u64 i = 0; i < numOutDigis; i++){
+    result[i] = outBuffer[i]; 
+  }
+  xpu::pop_timer();
 
   L_(info) << "Timeslice contains " << result.size() << " STS digis (discarded " << 0 << " pulser hits)";
 

@@ -1,0 +1,6 @@
+[ libCbmRecoQa.so ]
+# List of selected classes
+class CbmRecoQa
+class CbmTrackingTrdQa
+header CbmRecoQa.h
+header CbmTrackingTrdQa.h

@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare -O3 -DNDEBUG -rdynamic CMakeFiles/remote_thr.dir/perf/remote_thr.cpp.o -o bin/remote_thr  -Wl,-rpath,/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/lib: lib/libzmq.so.5.2.4 -lrt 

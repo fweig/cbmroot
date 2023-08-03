@@ -1,0 +1,25 @@
+[  4%] [34m[1mGenerating G__KFParticle.cxx, libKFParticle_rdict.pcm, libKFParticle.rootmap[0m
+[  9%] [34m[1mGenerating G__KFParticle_mod.cxx[0m
+[35m[1mScanning dependencies of target KFParticle[0m
+[ 13%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticleTopoReconstructor.cxx.o[0m
+[ 18%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFVertex.cxx.o[0m
+[ 22%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFPTrack.cxx.o[0m
+[ 27%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFPTrackVector.cxx.o[0m
+[ 31%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFPVertex.cxx.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticlePVReconstructor.cxx.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticleDatabase.cxx.o[0m
+[ 45%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticleBase.cxx.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticleBaseSIMD.cxx.o[0m
+[ 54%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticle.cxx.o[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticleSIMD.cxx.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFParticleFinder.cxx.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticle/KFPEmcCluster.cxx.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticlePerformance/KFMCVertex.cxx.o[0m
+[ 77%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticlePerformance/KFParticlePerformanceBase.cxx.o[0m
+[ 81%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticlePerformance/KFTopoPerformance.cxx.o[0m
+[ 86%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticlePerformance/KFMCParticle.cxx.o[0m
+[ 90%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/KFParticleTest/KFParticleTest.cxx.o[0m
+[ 95%] [32mBuilding CXX object CMakeFiles/KFParticle.dir/G__KFParticle_mod.cxx.o[0m
+[100%] [32m[1mLinking CXX shared library libKFParticle.so[0m
+/usr/bin/c++ -fPIC   -std=c++17 -pipe -fsigned-char -pthread -O2 -g -DNDEBUG -shared -Wl,-soname,libKFParticle.so -o libKFParticle.so CMakeFiles/KFParticle.dir/KFParticle/KFParticleTopoReconstructor.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFVertex.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFPTrack.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFPTrackVector.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFPVertex.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticlePVReconstructor.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticleDatabase.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticleBase.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticleBaseSIMD.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticle.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticleSIMD.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFParticleFinder.cxx.o CMakeFiles/KFParticle.dir/KFParticle/KFPEmcCluster.cxx.o CMakeFiles/KFParticle.dir/KFParticlePerformance/KFMCVertex.cxx.o CMakeFiles/KFParticle.dir/KFParticlePerformance/KFParticlePerformanceBase.cxx.o CMakeFiles/KFParticle.dir/KFParticlePerformance/KFTopoPerformance.cxx.o CMakeFiles/KFParticle.dir/KFParticlePerformance/KFMCParticle.cxx.o CMakeFiles/KFParticle.dir/KFParticleTest/KFParticleTest.cxx.o CMakeFiles/KFParticle.dir/G__KFParticle_mod.cxx.o   -L/home/cbmdata/_deps/fairsoft_apr22/install/lib  -Wl,-rpath,/home/cbmdata/_deps/fairsoft_apr22/install/lib: /home/cbmdata/_deps/fairsoft_apr22/install/lib/libCore.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libImt.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libRIO.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libNet.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libHist.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libGraf.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libGraf3d.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libGpad.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libROOTDataFrame.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libTree.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libTreePlayer.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libRint.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libPostscript.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libMatrix.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libPhysics.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libMathCore.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libThread.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libMultiProc.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libROOTVecOps.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libEG.so /home/cbmdata/_deps/fairsoft_apr22/install/lib/libVc.a 
+[100%] Built target KFParticle

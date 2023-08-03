@@ -1,0 +1,4 @@
+[ libCbmStsAna.so ]
+# List of selected classes
+class CbmStsWkn
+header CbmStsWkn.h

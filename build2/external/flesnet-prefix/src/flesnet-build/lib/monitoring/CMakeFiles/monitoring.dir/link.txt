@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmonitoring.a CMakeFiles/monitoring.dir/Monitor.cpp.o CMakeFiles/monitoring.dir/MonitorSink.cpp.o CMakeFiles/monitoring.dir/MonitorSinkFile.cpp.o CMakeFiles/monitoring.dir/MonitorSinkInflux1.cpp.o CMakeFiles/monitoring.dir/MonitorSinkInflux2.cpp.o CMakeFiles/monitoring.dir/System.cpp.o
+/usr/bin/ranlib libmonitoring.a

@@ -1,0 +1,35 @@
+module "CbmPapa" {
+  requires cplusplus
+  module "AnalysisCuts.h" { header "AnalysisCuts.h" export * }
+  module "AnalysisFilter.h" { header "AnalysisFilter.h" export * }
+  module "PairAnalysisTrack.h" { header "PairAnalysisTrack.h" export * }
+  module "PairAnalysisEvent.h" { header "PairAnalysisEvent.h" export * }
+  module "PairAnalysisPair.h" { header "PairAnalysisPair.h" export * }
+  module "PairAnalysisPairKF.h" { header "PairAnalysisPairKF.h" export * }
+  module "PairAnalysisPairLV.h" { header "PairAnalysisPairLV.h" export * }
+  module "PairAnalysisHelper.h" { header "PairAnalysisHelper.h" export * }
+  module "PairAnalysisStyler.h" { header "PairAnalysisStyler.h" export * }
+  module "PairAnalysisCutQa.h" { header "PairAnalysisCutQa.h" export * }
+  module "PairAnalysisVarCuts.h" { header "PairAnalysisVarCuts.h" export * }
+  module "PairAnalysisObjectCuts.h" { header "PairAnalysisObjectCuts.h" export * }
+  module "PairAnalysisPairLegCuts.h" { header "PairAnalysisPairLegCuts.h" export * }
+  module "PairAnalysisCutCombi.h" { header "PairAnalysisCutCombi.h" export * }
+  module "PairAnalysisCutGroup.h" { header "PairAnalysisCutGroup.h" export * }
+  module "PairAnalysisVarManager.h" { header "PairAnalysisVarManager.h" export * }
+  module "PairAnalysisMetaData.h" { header "PairAnalysisMetaData.h" export * }
+  module "AnalysisTaskMultiPairAnalysis.h" { header "AnalysisTaskMultiPairAnalysis.h" export * }
+  module "PairAnalysis.h" { header "PairAnalysis.h" export * }
+  module "PairAnalysisHF.h" { header "PairAnalysisHF.h" export * }
+  module "PairAnalysisHistos.h" { header "PairAnalysisHistos.h" export * }
+  module "PairAnalysisMC.h" { header "PairAnalysisMC.h" export * }
+  module "PairAnalysisSignalMC.h" { header "PairAnalysisSignalMC.h" export * }
+  module "PairAnalysisTrackRotator.h" { header "PairAnalysisTrackRotator.h" export * }
+  module "PairAnalysisMixedEvent.h" { header "PairAnalysisMixedEvent.h" export * }
+  module "PairAnalysisMixingHandler.h" { header "PairAnalysisMixingHandler.h" export * }
+  module "PairAnalysisFunction.h" { header "PairAnalysisFunction.h" export * }
+  module "PairAnalysisSignalExt.h" { header "PairAnalysisSignalExt.h" export * }
+  module "PairAnalysisSpectrum.h" { header "PairAnalysisSpectrum.h" export * }
+  link "libCbmPapa.so"
+  export *
+}
+

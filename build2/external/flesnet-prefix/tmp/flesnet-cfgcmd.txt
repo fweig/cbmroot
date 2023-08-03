@@ -1,0 +1,1 @@
+cmd='/usr/bin/cmake;-E;env;SIMPATH=/home/cbmdata/_deps/fairsoft_apr22/install/;/usr/bin/cmake;-G;Unix Makefiles;-DINCLUDE_ZMQ:BOOL=TRUE;-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON;-DOPENSSL_ROOT_DIR:FILEPATH=;/home/heinemann/gpuunpacker/cbmroot/external/flesnet'

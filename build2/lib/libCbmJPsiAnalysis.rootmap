@@ -1,0 +1,12 @@
+[ libCbmJPsiAnalysis.so ]
+# List of selected classes
+class CbmAnaJpsiCandidate
+class CbmAnaJpsiReport
+class CbmAnaJpsiSuperEvent
+class CbmAnaJpsiSuperEventReport
+class CbmAnaJpsiTask
+header CbmAnaJpsiCandidate.h
+header CbmAnaJpsiReport.h
+header CbmAnaJpsiSuperEvent.h
+header CbmAnaJpsiSuperEventReport.h
+header CbmAnaJpsiTask.h

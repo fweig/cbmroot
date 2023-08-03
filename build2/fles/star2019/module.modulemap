@@ -1,0 +1,15 @@
+module "CbmFlibStar2019" {
+  requires cplusplus
+  module "CbmStar2019TofPar.h" { header "CbmStar2019TofPar.h" export * }
+  module "CbmStar2019ContFact.h" { header "CbmStar2019ContFact.h" export * }
+  module "CbmStar2019MonitorAlgo.h" { header "CbmStar2019MonitorAlgo.h" export * }
+  module "CbmStar2019MonitorTask.h" { header "CbmStar2019MonitorTask.h" export * }
+  module "CbmStar2019MonitorPulserAlgo.h" { header "CbmStar2019MonitorPulserAlgo.h" export * }
+  module "CbmStar2019MonitorPulserTask.h" { header "CbmStar2019MonitorPulserTask.h" export * }
+  module "CbmTofStarData2019.h" { header "CbmTofStarData2019.h" export * }
+  module "CbmStar2019EventBuilderEtofAlgo.h" { header "CbmStar2019EventBuilderEtofAlgo.h" export * }
+  module "CbmStar2019EventBuilderEtof.h" { header "CbmStar2019EventBuilderEtof.h" export * }
+  link "libCbmFlibStar2019.so"
+  export *
+}
+

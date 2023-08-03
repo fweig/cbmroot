@@ -1,0 +1,28 @@
+module "CbmBase" {
+  requires cplusplus
+  module "CbmDigiManager.h" { header "CbmDigiManager.h" export * }
+  module "CbmDigitizeBase.h" { header "CbmDigitizeBase.h" export * }
+  module "CbmDaq.h" { header "CbmDaq.h" export * }
+  module "CbmMCDataArray.h" { header "CbmMCDataArray.h" export * }
+  module "CbmMCDataManager.h" { header "CbmMCDataManager.h" export * }
+  module "CbmMCDataObject.h" { header "CbmMCDataObject.h" export * }
+  module "CbmRadDamage.h" { header "CbmRadDamage.h" export * }
+  module "CbmHistManager.h" { header "CbmHistManager.h" export * }
+  module "CbmMatchRecoToMC.h" { header "CbmMatchRecoToMC.h" export * }
+  module "CbmTrackingDetectorInterfaceBase.h" { header "CbmTrackingDetectorInterfaceBase.h" export * }
+  module "CbmDrawHist.h" { header "CbmDrawHist.h" export * }
+  module "CbmReport.h" { header "CbmReport.h" export * }
+  module "CbmStudyReport.h" { header "CbmStudyReport.h" export * }
+  module "CbmSimulationReport.h" { header "CbmSimulationReport.h" export * }
+  module "CbmTextReportElement.h" { header "CbmTextReportElement.h" export * }
+  module "CbmHtmlReportElement.h" { header "CbmHtmlReportElement.h" export * }
+  module "CbmLatexReportElement.h" { header "CbmLatexReportElement.h" export * }
+  module "CbmUtils.h" { header "CbmUtils.h" export * }
+  module "CbmGeometryUtils.h" { header "CbmGeometryUtils.h" export * }
+  module "CbmMcbmUtils.h" { header "CbmMcbmUtils.h" export * }
+  module "CbmMediaList.h" { header "CbmMediaList.h" export * }
+  module "CbmFileUtils.h" { header "CbmFileUtils.h" export * }
+  link "libCbmBase.so"
+  export *
+}
+

@@ -1,0 +1,6 @@
+[ libCbmBmonReco.so ]
+# List of selected classes
+class CbmBmonUnpackAlgo
+class CbmBmonUnpackConfig
+header CbmBmonUnpackAlgo.h
+header CbmBmonUnpackConfig.h

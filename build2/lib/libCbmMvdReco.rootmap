@@ -1,0 +1,10 @@
+[ libCbmMvdReco.so ]
+# List of selected classes
+class CbmMvdClusterfinder
+class CbmMvdHitfinder
+class CbmMvdSensorClusterfinderTask
+class CbmMvdSensorHitfinderTask
+header CbmMvdClusterfinder.h
+header CbmMvdHitfinder.h
+header CbmMvdSensorClusterfinderTask.h
+header CbmMvdSensorHitfinderTask.h

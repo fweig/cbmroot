@@ -1,0 +1,11 @@
+module "CbmMvdAna" {
+  requires cplusplus
+  module "CbmMvdReadoutSimple.h" { header "CbmMvdReadoutSimple.h" export * }
+  module "CbmMvdReadoutCluster.h" { header "CbmMvdReadoutCluster.h" export * }
+  module "CbmMvdReadout.h" { header "CbmMvdReadout.h" export * }
+  module "CbmMvdSensorReadoutTask.h" { header "CbmMvdSensorReadoutTask.h" export * }
+  module "CbmMvdQa.h" { header "CbmMvdQa.h" export * }
+  link "libCbmMvdAna.so"
+  export *
+}
+

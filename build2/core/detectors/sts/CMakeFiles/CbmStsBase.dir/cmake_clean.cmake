@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "../../../lib/libCbmStsBase.pdb"
+  "../../../lib/libCbmStsBase.so"
+  "CMakeFiles/CbmStsBase.dir/CbmMcbm2018StsPar.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmMcbm2018StsPar.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsContFact.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsContFact.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsElement.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsElement.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsModule.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsModule.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParAsic.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParAsic.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParModule.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParModule.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSensor.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSensor.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSensorCond.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSensorCond.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSetModule.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSetModule.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSetSensor.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSetSensor.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSetSensorCond.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSetSensorCond.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSim.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsParSim.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsPhysics.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsPhysics.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsSensor.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsSensor.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsSetup.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsSetup.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsStation.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsStation.cxx.o.d"
+  "CMakeFiles/CbmStsBase.dir/CbmStsTrackingInterface.cxx.o"
+  "CMakeFiles/CbmStsBase.dir/CbmStsTrackingInterface.cxx.o.d"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/CbmStsBase.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

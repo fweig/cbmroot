@@ -1,0 +1,7 @@
+module "CbmPsdAna" {
+  requires cplusplus
+  module "CbmPsdMCbmQaReal.h" { header "CbmPsdMCbmQaReal.h" export * }
+  link "libCbmPsdAna.so"
+  export *
+}
+

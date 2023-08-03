@@ -1,0 +1,10 @@
+[ libLxTrack.so ]
+# List of selected classes
+class LxCalcStats
+class LxGenNoiseElectrons
+class LxTBFinder
+class LxTBTrdFinder
+header CalcStats.h
+header GenNoiseElectrons.h
+header LxTBTask.h
+header LxTBTrdTask.h

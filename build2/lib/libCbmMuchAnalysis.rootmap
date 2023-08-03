@@ -1,0 +1,6 @@
+[ libCbmMuchAnalysis.so ]
+# List of selected classes
+class CbmAnaDimuonAnalysis
+class CbmAnaMuonCandidate
+header CbmAnaDimuonAnalysis.h
+header CbmAnaMuonCandidate.h

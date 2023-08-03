@@ -1,0 +1,9 @@
+module "NicaCbmHelper" {
+  requires cplusplus
+  module "CbmDetectorID.h" { header "CbmDetectorID.h" export * }
+  module "NicaCbmFirstTask.h" { header "NicaCbmFirstTask.h" export * }
+  module "CbmHelix.h" { header "CbmHelix.h" export * }
+  link "libNicaCbmHelper.so"
+  export *
+}
+

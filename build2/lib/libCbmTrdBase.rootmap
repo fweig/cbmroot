@@ -1,0 +1,63 @@
+{ decls }
+namespace std {  }
+
+[ libCbmTrdBase.so ]
+# List of selected classes
+class CbmMcbm2020TrdTshiftPar
+class CbmTrdContFact
+class CbmTrdFASP
+class CbmTrdGas
+class CbmTrdGeoHandler
+class CbmTrdHardwareSetupR
+class CbmTrdModuleAbstract
+class CbmTrdParAsic
+class CbmTrdParFasp
+class CbmTrdParFaspChannel
+class CbmTrdParManager
+class CbmTrdParMod
+class CbmTrdParModDigi
+class CbmTrdParModGain
+class CbmTrdParModGas
+class CbmTrdParModGeo
+class CbmTrdParSet
+class CbmTrdParSetAsic
+class CbmTrdParSetDigi
+class CbmTrdParSetGain
+class CbmTrdParSetGas
+class CbmTrdParSetGeo
+class CbmTrdParSpadic
+class CbmTrdRadiator
+class CbmTrdSpadic
+class CbmTrdTrackingInterface
+class CbmTrdUtils
+class CbmTrddEdxUtils
+class map<int,array<int,16> >
+class map<int,array<int,16ul> >
+class map<int,std::array<int,16> >
+header CbmMcbm2020TrdTshiftPar.h
+header CbmTrdContFact.h
+header CbmTrdFASP.h
+header CbmTrdGas.h
+header CbmTrdGeoHandler.h
+header CbmTrdHardwareSetupR.h
+header CbmTrdModuleAbstract.h
+header CbmTrdParAsic.h
+header CbmTrdParFasp.h
+header CbmTrdParManager.h
+header CbmTrdParMod.h
+header CbmTrdParModDigi.h
+header CbmTrdParModGain.h
+header CbmTrdParModGas.h
+header CbmTrdParModGeo.h
+header CbmTrdParSet.h
+header CbmTrdParSetAsic.h
+header CbmTrdParSetDigi.h
+header CbmTrdParSetGain.h
+header CbmTrdParSetGas.h
+header CbmTrdParSetGeo.h
+header CbmTrdParSpadic.h
+header CbmTrdRadiator.h
+header CbmTrdSpadic.h
+header CbmTrdTrackingInterface.h
+header CbmTrdUtils.h
+header CbmTrddEdxUtils.h

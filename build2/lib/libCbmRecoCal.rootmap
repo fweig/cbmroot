@@ -1,0 +1,19 @@
+{ decls }
+class CbmStsDigi;
+template <typename TDigi> class CbmOffsetDigiTime;
+class CbmTofDigi;
+class CbmMuchBeamTimeDigi;
+
+[ libCbmRecoCal.so ]
+# List of selected classes
+class CbmOffsetDigiTime
+class CbmOffsetDigiTime
+class CbmOffsetDigiTime
+class CbmOffsetDigiTime<CbmMuchBeamTimeDigi>
+class CbmOffsetDigiTime<CbmStsDigi>
+class CbmOffsetDigiTime<CbmTofDigi>
+class CbmOffsetDigiTimeMuch
+class CbmOffsetDigiTimeSts
+class CbmOffsetDigiTimeTester
+class CbmOffsetDigiTimeTof
+header CbmOffsetDigiTimeTester.h

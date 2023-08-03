@@ -1,0 +1,10 @@
+[ libKFParticleInterface.so ]
+# List of selected classes
+class CbmKFParticleFinder
+class CbmKFParticleFinderPID
+class CbmKFParticleFinderQa
+class CbmKFParticleInterface
+header CbmKFParticleFinder.h
+header CbmKFParticleFinderPID.h
+header CbmKFParticleFinderQa.h
+header CbmKFParticleInterface.h

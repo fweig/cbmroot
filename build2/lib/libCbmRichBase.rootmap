@@ -1,0 +1,10 @@
+[ libCbmRichBase.so ]
+# List of selected classes
+class CbmMcbm2018RichPar
+class CbmRichContFact
+class CbmRichEventDisplay
+class CbmRichPmt
+header CbmMcbm2018RichPar.h
+header CbmRichContFact.h
+header CbmRichEventDisplay.h
+header CbmRichPmt.h

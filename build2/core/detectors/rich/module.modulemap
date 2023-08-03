@@ -1,0 +1,10 @@
+module "CbmRichBase" {
+  requires cplusplus
+  module "CbmRichPmt.h" { header "CbmRichPmt.h" export * }
+  module "CbmRichEventDisplay.h" { header "CbmRichEventDisplay.h" export * }
+  module "CbmRichContFact.h" { header "CbmRichContFact.h" export * }
+  module "CbmMcbm2018RichPar.h" { header "CbmMcbm2018RichPar.h" export * }
+  link "libCbmRichBase.so"
+  export *
+}
+

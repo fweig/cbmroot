@@ -1,0 +1,9 @@
+module "CbmPsdSim" {
+  requires cplusplus
+  module "CbmPsdMC.h" { header "CbmPsdMC.h" export * }
+  module "CbmPsdIdealDigitizer.h" { header "CbmPsdIdealDigitizer.h" export * }
+  module "CbmPsdSimpleDigitizer.h" { header "CbmPsdSimpleDigitizer.h" export * }
+  link "libCbmPsdSim.so"
+  export *
+}
+

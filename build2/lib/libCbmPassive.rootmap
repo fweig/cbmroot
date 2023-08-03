@@ -1,0 +1,18 @@
+[ libCbmPassive.so ]
+# List of selected classes
+class CbmCave
+class CbmGeoCave
+class CbmGeoPassivePar
+class CbmGeoPlatform
+class CbmMagnet
+class CbmPassiveContFact
+class CbmPipe
+class CbmPlatform
+header CbmCave.h
+header CbmGeoCave.h
+header CbmGeoPassivePar.h
+header CbmGeoPlatform.h
+header CbmMagnet.h
+header CbmPassiveContFact.h
+header CbmPipe.h
+header CbmPlatform.h

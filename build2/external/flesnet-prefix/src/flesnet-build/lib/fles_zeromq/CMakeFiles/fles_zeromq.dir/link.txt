@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfles_zeromq.a CMakeFiles/fles_zeromq.dir/ComponentSenderZeromq.cpp.o CMakeFiles/fles_zeromq.dir/TimesliceBuilderZeromq.cpp.o
+/usr/bin/ranlib libfles_zeromq.a

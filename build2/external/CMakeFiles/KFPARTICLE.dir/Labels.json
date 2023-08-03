@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/KFPARTICLE"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/KFPARTICLE.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/KFPARTICLE-complete.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-configure.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-download.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-install.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-mkdir.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-patch.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/KFPARTICLE-prefix/src/KFPARTICLE-stamp/KFPARTICLE-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"KFPARTICLE"
+		],
+		"name" : "KFPARTICLE"
+	}
+}

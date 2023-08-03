@@ -1,0 +1,11 @@
+{ decls }
+namespace PsdSignalFitting {  }
+
+[ libCbmPsdBase.so ]
+# List of selected classes
+class CbmMcbm2018PsdPar
+class CbmPsdContFact
+class PsdSignalFitting::PronyFitter
+header CbmMcbm2018PsdPar.h
+header CbmPsdContFact.h
+header PronyFitter.h

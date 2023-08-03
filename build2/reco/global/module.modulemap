@@ -1,0 +1,15 @@
+module "CbmGlobal" {
+  requires cplusplus
+  module "CbmFindGlobalTracks.h" { header "CbmFindGlobalTracks.h" export * }
+  module "CbmFindPrimaryVertex.h" { header "CbmFindPrimaryVertex.h" export * }
+  module "CbmFindPrimaryVertexEvents.h" { header "CbmFindPrimaryVertexEvents.h" export * }
+  module "CbmFitGlobalTracks.h" { header "CbmFitGlobalTracks.h" export * }
+  module "CbmFitGlobalTracksQa.h" { header "CbmFitGlobalTracksQa.h" export * }
+  module "CbmGlobalTrackFitterIdeal.h" { header "CbmGlobalTrackFitterIdeal.h" export * }
+  module "CbmPVFinderIdeal.h" { header "CbmPVFinderIdeal.h" export * }
+  module "CbmTrackMergerIdeal.h" { header "CbmTrackMergerIdeal.h" export * }
+  module "CbmRecoTzero.h" { header "CbmRecoTzero.h" export * }
+  link "libCbmGlobal.so"
+  export *
+}
+

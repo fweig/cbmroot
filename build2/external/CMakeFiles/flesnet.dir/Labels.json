@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/flesnet"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/flesnet.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/flesnet-complete.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-configure.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-download.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-install.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-mkdir.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-patch.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-stamp/flesnet-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"flesnet"
+		],
+		"name" : "flesnet"
+	}
+}

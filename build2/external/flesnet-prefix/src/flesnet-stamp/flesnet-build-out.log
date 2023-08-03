@@ -1,0 +1,307 @@
+[  0%] [32mBuilding CXX object lib/logging/CMakeFiles/logging.dir/log.cpp.o[0m
+[100%] [32m[1mLinking CXX static library liblogging.a[0m
+[100%] Built target logging
+[ 12%] [32mBuilding CXX object _deps/fmtlib-build/CMakeFiles/fmt.dir/src/format.cc.o[0m
+[ 12%] [32mBuilding CXX object _deps/fmtlib-build/CMakeFiles/fmt.dir/src/os.cc.o[0m
+[ 25%] [32m[1mLinking CXX static library libfmt.a[0m
+[ 25%] Built target fmt
+[ 37%] [32mBuilding CXX object lib/monitoring/CMakeFiles/monitoring.dir/Monitor.cpp.o[0m
+[ 50%] [32mBuilding CXX object lib/monitoring/CMakeFiles/monitoring.dir/MonitorSink.cpp.o[0m
+[ 62%] [32mBuilding CXX object lib/monitoring/CMakeFiles/monitoring.dir/MonitorSinkFile.cpp.o[0m
+[ 75%] [32mBuilding CXX object lib/monitoring/CMakeFiles/monitoring.dir/MonitorSinkInflux1.cpp.o[0m
+[ 87%] [32mBuilding CXX object lib/monitoring/CMakeFiles/monitoring.dir/MonitorSinkInflux2.cpp.o[0m
+[ 87%] [32mBuilding CXX object lib/monitoring/CMakeFiles/monitoring.dir/System.cpp.o[0m
+[100%] [32m[1mLinking CXX static library libmonitoring.a[0m
+[100%] Built target monitoring
+[35m[1mConsolidate compiler generated dependencies of target logging[0m
+[  3%] Built target logging
+[  7%] [34m[1mCreating directories for 'zeromq'[0m
+[ 11%] [34m[1mPerforming download step (git clone) for 'zeromq'[0m
+[ 14%] [34m[1mPerforming patch step for 'zeromq'[0m
+patching file CMakeLists.txt
+[ 18%] [34m[1mPerforming configure step for 'zeromq'[0m
+loading initial cache file /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/tmp/zeromq-cache-RelWithDebInfo.cmake
+-- The C compiler identification is GNU 11.3.0
+-- The CXX compiler identification is GNU 11.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Detected ZMQ Version - 4.3.4
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+-- Performing Test COMPILER_SUPPORTS_CXX11
+-- Performing Test COMPILER_SUPPORTS_CXX11 - Success
+-- Performing Test COMPILER_SUPPORTS_C11
+-- Performing Test COMPILER_SUPPORTS_C11 - Success
+-- Performing Test CXX_HAS_TAUT_WARNING
+-- Performing Test CXX_HAS_TAUT_WARNING - Success
+-- Performing Test CC_HAS_TAUT_WARNING
+-- Performing Test CC_HAS_TAUT_WARNING - Success
+-- Build and install draft classes and methods
+-- Using radix tree implementation to manage subscriptions
+-- Enable WebSocket transport
+-- Could NOT find GnuTLS (missing: GNUTLS_LIBRARY GNUTLS_INCLUDE_DIR) (Required is at least version "3.6.7")
+-- Using builtin sha1
+-- Looking for strlcpy
+-- Looking for strlcpy - not found
+-- Using tweetnacl for CURVE security
+-- Looking for kqueue
+-- Looking for kqueue - not found
+-- Looking for epoll_create
+-- Looking for epoll_create - found
+-- Looking for epoll_create1
+-- Looking for epoll_create1 - found
+-- Using polling method in I/O threads: epoll
+-- Using polling method in zmq_poll(er)_* API: poll
+-- Using 64 bytes alignment for lock-free data structures
+-- Looking for include file windows.h
+-- Looking for include file windows.h - not found
+-- Looking for include file condition_variable
+-- Looking for include file condition_variable - found
+-- Using condition_variable_t implementation: stl11
+-- Looking for include file ifaddrs.h
+-- Looking for include file ifaddrs.h - found
+-- Looking for include file sys/uio.h
+-- Looking for include file sys/uio.h - found
+-- Looking for include file sys/eventfd.h
+-- Looking for include file sys/eventfd.h - found
+-- Checking whether EFD_CLOEXEC is supported
+-- Performing Test ZMQ_HAVE_EVENTFD_CLOEXEC
+-- Performing Test ZMQ_HAVE_EVENTFD_CLOEXEC - Success
+-- Looking for if_nametoindex
+-- Looking for if_nametoindex - found
+-- Looking for SO_PEERCRED
+-- Looking for SO_PEERCRED - found
+-- Looking for LOCAL_PEERCRED
+-- Looking for LOCAL_PEERCRED - not found
+-- Looking for clock_gettime
+-- Looking for clock_gettime - found
+-- Looking for fork
+-- Looking for fork - found
+-- Looking for gethrtime
+-- Looking for gethrtime - not found
+-- Looking for mkdtemp
+-- Looking for mkdtemp - found
+-- Looking for accept4
+-- Looking for accept4 - found
+-- Looking for strnlen
+-- Looking for strnlen - found
+-- Performing Test HAVE_FLAG_-Wall
+-- Performing Test HAVE_FLAG_-Wall - Failed
+-- Performing Test HAVE_FLAG_-Wextra
+-- Performing Test HAVE_FLAG_-Wextra - Failed
+-- Performing Test HAVE_FLAG_-Wno-long-long
+-- Performing Test HAVE_FLAG_-Wno-long-long - Failed
+-- Performing Test HAVE_FLAG_-Wno-uninitialized
+-- Performing Test HAVE_FLAG_-Wno-uninitialized - Failed
+-- Performing Test HAVE_FLAG_-pedantic
+-- Performing Test HAVE_FLAG_-pedantic - Failed
+-- Checking whether noexcept is supported
+-- Performing Test ZMQ_HAVE_NOEXCEPT
+-- Performing Test ZMQ_HAVE_NOEXCEPT - Success
+-- Checking whether SOCK_CLOEXEC is supported
+-- Performing Test ZMQ_HAVE_SOCK_CLOEXEC
+-- Performing Test ZMQ_HAVE_SOCK_CLOEXEC - Success
+-- Checking whether O_CLOEXEC is supported
+-- Performing Test ZMQ_HAVE_O_CLOEXEC
+-- Performing Test ZMQ_HAVE_O_CLOEXEC - Success
+-- Checking whether SO_BINDTODEVICE is supported
+-- Performing Test ZMQ_HAVE_SO_BINDTODEVICE
+-- Performing Test ZMQ_HAVE_SO_BINDTODEVICE - Success
+-- Checking whether SO_KEEPALIVE is supported
+-- Performing Test ZMQ_HAVE_SO_KEEPALIVE
+-- Performing Test ZMQ_HAVE_SO_KEEPALIVE - Success
+-- Checking whether SO_PRIORITY is supported
+-- Performing Test ZMQ_HAVE_SO_PRIORITY
+-- Performing Test ZMQ_HAVE_SO_PRIORITY - Success
+-- Checking whether TCP_KEEPCNT is supported
+-- Performing Test ZMQ_HAVE_TCP_KEEPCNT
+-- Performing Test ZMQ_HAVE_TCP_KEEPCNT - Success
+-- Checking whether TCP_KEEPIDLE is supported
+-- Performing Test ZMQ_HAVE_TCP_KEEPIDLE
+-- Performing Test ZMQ_HAVE_TCP_KEEPIDLE - Success
+-- Checking whether TCP_KEEPINTVL is supported
+-- Performing Test ZMQ_HAVE_TCP_KEEPINTVL
+-- Performing Test ZMQ_HAVE_TCP_KEEPINTVL - Success
+-- Checking whether TCP_KEEPALIVE is supported
+-- Performing Test ZMQ_HAVE_TCP_KEEPALIVE
+-- Performing Test ZMQ_HAVE_TCP_KEEPALIVE - Failed
+-- Checking whether TIPC is supported
+-- Performing Test ZMQ_HAVE_TIPC
+-- Performing Test ZMQ_HAVE_TIPC - Success
+-- Checking pthread_setname signature
+-- Performing Test ZMQ_HAVE_PTHREAD_SETNAME_1
+-- Performing Test ZMQ_HAVE_PTHREAD_SETNAME_1 - Failed
+-- Performing Test ZMQ_HAVE_PTHREAD_SETNAME_2
+-- Performing Test ZMQ_HAVE_PTHREAD_SETNAME_2 - Success
+-- Performing Test ZMQ_HAVE_PTHREAD_SETNAME_3
+-- Performing Test ZMQ_HAVE_PTHREAD_SETNAME_3 - Failed
+-- Performing Test ZMQ_HAVE_PTHREAD_SET_NAME
+-- Performing Test ZMQ_HAVE_PTHREAD_SET_NAME - Failed
+-- Checking pthread_setaffinity signature
+-- Performing Test ZMQ_HAVE_PTHREAD_SET_AFFINITY
+-- Performing Test ZMQ_HAVE_PTHREAD_SET_AFFINITY - Success
+-- Checking whether getrandom is supported
+-- Performing Test ZMQ_HAVE_GETRANDOM
+-- Performing Test ZMQ_HAVE_GETRANDOM - Success
+-- Could NOT find AsciiDoc (missing: ASCIIDOC_EXECUTABLE) 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build
+[ 22%] [34m[1mPerforming build step for 'zeromq'[0m
+[  0%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ws_address.cpp.o[0m
+[  0%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ws_connecter.cpp.o[0m
+[  3%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ws_decoder.cpp.o[0m
+[  3%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ws_encoder.cpp.o[0m
+[  3%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ws_engine.cpp.o[0m
+[  3%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ws_listener.cpp.o[0m
+[  7%] [32mBuilding C object CMakeFiles/objects.dir/external/sha1/sha1.c.o[0m
+[  7%] [32mBuilding C object CMakeFiles/objects.dir/src/tweetnacl.c.o[0m
+[  7%] [32mBuilding CXX object CMakeFiles/objects.dir/src/precompiled.cpp.o[0m
+[  7%] [32mBuilding CXX object CMakeFiles/objects.dir/src/address.cpp.o[0m
+[ 10%] [32mBuilding CXX object CMakeFiles/objects.dir/src/channel.cpp.o[0m
+[ 10%] [32mBuilding CXX object CMakeFiles/objects.dir/src/client.cpp.o[0m
+[ 10%] [32mBuilding CXX object CMakeFiles/objects.dir/src/clock.cpp.o[0m
+[ 10%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ctx.cpp.o[0m
+[ 14%] [32mBuilding CXX object CMakeFiles/objects.dir/src/curve_mechanism_base.cpp.o[0m
+[ 14%] [32mBuilding CXX object CMakeFiles/objects.dir/src/curve_client.cpp.o[0m
+[ 14%] [32mBuilding CXX object CMakeFiles/objects.dir/src/curve_server.cpp.o[0m
+[ 14%] [32mBuilding CXX object CMakeFiles/objects.dir/src/dealer.cpp.o[0m
+[ 17%] [32mBuilding CXX object CMakeFiles/objects.dir/src/devpoll.cpp.o[0m
+[ 17%] [32mBuilding CXX object CMakeFiles/objects.dir/src/dgram.cpp.o[0m
+[ 17%] [32mBuilding CXX object CMakeFiles/objects.dir/src/dist.cpp.o[0m
+[ 17%] [32mBuilding CXX object CMakeFiles/objects.dir/src/endpoint.cpp.o[0m
+[ 21%] [32mBuilding CXX object CMakeFiles/objects.dir/src/epoll.cpp.o[0m
+[ 21%] [32mBuilding CXX object CMakeFiles/objects.dir/src/err.cpp.o[0m
+[ 21%] [32mBuilding CXX object CMakeFiles/objects.dir/src/fq.cpp.o[0m
+[ 21%] [32mBuilding CXX object CMakeFiles/objects.dir/src/io_object.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/objects.dir/src/io_thread.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ip.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ipc_address.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ipc_connecter.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ipc_listener.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/objects.dir/src/kqueue.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/objects.dir/src/lb.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/objects.dir/src/mailbox.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/objects.dir/src/mailbox_safe.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/objects.dir/src/mechanism.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/objects.dir/src/mechanism_base.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/objects.dir/src/metadata.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/objects.dir/src/msg.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/objects.dir/src/mtrie.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/objects.dir/src/norm_engine.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/objects.dir/src/object.cpp.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/objects.dir/src/options.cpp.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/objects.dir/src/own.cpp.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/objects.dir/src/null_mechanism.cpp.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pair.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/objects.dir/src/peer.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pgm_receiver.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pgm_sender.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pgm_socket.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pipe.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/objects.dir/src/plain_client.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/objects.dir/src/plain_server.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/objects.dir/src/poll.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/objects.dir/src/poller_base.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/objects.dir/src/polling_util.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pollset.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/objects.dir/src/proxy.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pub.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/objects.dir/src/pull.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/objects.dir/src/push.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/objects.dir/src/random.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/objects.dir/src/raw_encoder.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/objects.dir/src/raw_decoder.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/objects.dir/src/raw_engine.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/objects.dir/src/reaper.cpp.o[0m
+[ 60%] [32mBuilding CXX object CMakeFiles/objects.dir/src/rep.cpp.o[0m
+[ 60%] [32mBuilding CXX object CMakeFiles/objects.dir/src/req.cpp.o[0m
+[ 60%] [32mBuilding CXX object CMakeFiles/objects.dir/src/router.cpp.o[0m
+[ 60%] [32mBuilding CXX object CMakeFiles/objects.dir/src/select.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/objects.dir/src/server.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/objects.dir/src/session_base.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/objects.dir/src/signaler.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/objects.dir/src/socket_base.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/objects.dir/src/socks.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/objects.dir/src/socks_connecter.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/objects.dir/src/stream.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/objects.dir/src/stream_engine_base.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/objects.dir/src/sub.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tcp.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tcp_address.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tcp_connecter.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tcp_listener.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/objects.dir/src/thread.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/objects.dir/src/trie.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/objects.dir/src/radix_tree.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/objects.dir/src/v1_decoder.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/objects.dir/src/v1_encoder.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/objects.dir/src/v2_decoder.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/objects.dir/src/v2_encoder.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/objects.dir/src/v3_1_encoder.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/objects.dir/src/xpub.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/objects.dir/src/xsub.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/objects.dir/src/zmq.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/objects.dir/src/zmq_utils.cpp.o[0m
+[ 85%] [32mBuilding CXX object CMakeFiles/objects.dir/src/decoder_allocators.cpp.o[0m
+[ 85%] [32mBuilding CXX object CMakeFiles/objects.dir/src/socket_poller.cpp.o[0m
+[ 85%] [32mBuilding CXX object CMakeFiles/objects.dir/src/timers.cpp.o[0m
+[ 85%] [32mBuilding CXX object CMakeFiles/objects.dir/src/radio.cpp.o[0m
+[ 89%] [32mBuilding CXX object CMakeFiles/objects.dir/src/dish.cpp.o[0m
+[ 89%] [32mBuilding CXX object CMakeFiles/objects.dir/src/udp_engine.cpp.o[0m
+[ 89%] [32mBuilding CXX object CMakeFiles/objects.dir/src/udp_address.cpp.o[0m
+[ 89%] [32mBuilding CXX object CMakeFiles/objects.dir/src/scatter.cpp.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/objects.dir/src/gather.cpp.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/objects.dir/src/ip_resolver.cpp.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/objects.dir/src/zap_client.cpp.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/objects.dir/src/zmtp_engine.cpp.o[0m
+[ 96%] [32mBuilding CXX object CMakeFiles/objects.dir/src/stream_connecter_base.cpp.o[0m
+[ 96%] [32mBuilding CXX object CMakeFiles/objects.dir/src/stream_listener_base.cpp.o[0m
+[ 96%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tipc_address.cpp.o[0m
+[ 96%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tipc_connecter.cpp.o[0m
+[100%] [32mBuilding CXX object CMakeFiles/objects.dir/src/tipc_listener.cpp.o[0m
+[100%] Built target objects
+[100%] [32m[1mLinking CXX static library lib/libzmq.a[0m
+[100%] Built target libzmq-static
+[ 25%] [34m[1mNo install step for 'zeromq'[0m
+[ 29%] [34m[1mCompleted 'zeromq'[0m
+[ 29%] Built target zeromq
+[ 33%] [34m[1mCreating directories for 'cppzmq'[0m
+[ 37%] [34m[1mPerforming download step (git clone) for 'cppzmq'[0m
+[ 40%] [34m[1mNo patch step for 'cppzmq'[0m
+[ 44%] [34m[1mNo configure step for 'cppzmq'[0m
+[ 48%] [34m[1mNo build step for 'cppzmq'[0m
+[ 51%] [34m[1mNo install step for 'cppzmq'[0m
+[ 51%] [34m[1mCompleted 'cppzmq'[0m
+[ 51%] Built target cppzmq
+[ 51%] [32mBuilding CXX object lib/shm_ipc/CMakeFiles/shm_ipc.dir/ItemDistributor.cpp.o[0m
+[ 55%] [32m[1mLinking CXX static library libshm_ipc.a[0m
+[ 55%] Built target shm_ipc
+[ 55%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/Microslice.cpp.o[0m
+[ 59%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/MicrosliceView.cpp.o[0m
+[ 62%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/StorableMicroslice.cpp.o[0m
+[ 66%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/StorableTimeslice.cpp.o[0m
+[ 70%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/System.cpp.o[0m
+[ 74%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/Timeslice.cpp.o[0m
+[ 77%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimesliceAutoSource.cpp.o[0m
+[ 77%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimesliceMultiInputArchive.cpp.o[0m
+[ 81%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimesliceMultiSubscriber.cpp.o[0m
+[ 85%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimeslicePublisher.cpp.o[0m
+[ 88%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimesliceReceiver.cpp.o[0m
+[ 92%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimesliceSubscriber.cpp.o[0m
+[ 96%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/TimesliceView.cpp.o[0m
+[100%] [32mBuilding CXX object lib/fles_ipc/CMakeFiles/fles_ipc.dir/Utility.cpp.o[0m
+[100%] [32m[1mLinking CXX static library libfles_ipc.a[0m
+[100%] Built target fles_ipc

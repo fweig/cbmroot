@@ -16,6 +16,7 @@ using std::vector;
 
 XPU_EXPORT(cbm::algo::sts::TheUnpacker);
 XPU_EXPORT(cbm::algo::sts::Unpack);
+XPU_EXPORT(cbm::algo::sts::CopyOut);
 
 namespace cbm::algo::sts
 {
@@ -24,52 +25,43 @@ namespace cbm::algo::sts
     ctx.cmem<TheUnpacker>()(ctx, currentTsTime);
   }
 
+  XPU_D void CopyOut::operator()(context& ctx)
+  {
+    ctx.cmem<TheUnpacker>().CopyOut(ctx);
+  }
+
 
   // ----   Algorithm execution   ---------------------------------------------
   XPU_D void MsUnpacker::operator()(Unpack::context & ctx, const uint64_t currentTsTime) const
   {
     //int id = ctx.block_idx_x() * ctx.block_dim_x() + ctx.thread_idx_x();
-    int id = ctx.block_idx_x();
-    if (ctx.thread_idx_x() > 0) return;  // exit if out of bounds or too few messages
+    int blockId  = ctx.block_idx_x();
+    int threadId = ctx.thread_idx_x();
+    int blockDim = ctx.block_dim_x();
 
     UnpackMonitorData monitor;  //Monitor data, currently not stored. TO DO: Implement!
 
     // --- Get message count and offset for this MS
-    const auto& msDescr = fMsDescriptors[id];
-    //const u8* msContent = fMsContent[id];
+    const auto& msDescr = fMsDescriptors[blockId];
 
     const u32 numMessages = msDescr.size / sizeof(stsxyter::Message);
-    const u32 messOffset  = fMsOffset[id];
-
-    // --- Get starting position of this MS in message buffer
-    // stsxyter::Message* message = &content[messOffset];
-    // --- Interpret MS content as sequence of SMX messages
-    //auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
-
-    // --- Get starting position of this MS in digi buffer
-    CbmStsDigi* digis = &fMsDigis[messOffset];
+    const u32 messOffset  = fMsOffset[blockId];
 
     // --- Get component index and unpack parameters of this MS
-    const uint32_t comp              = fMsEquipmentId[id];
+    const uint32_t comp              = fMsEquipmentId[blockId];
     const UnpackPar& unpackPar       = fParams[comp];
 
     // --- Get starting position of elink parameters of this MS
     UnpackElinkPar* elinkPar = &fElinkParams[unpackPar.fElinkOffset];
 
-    TimeSpec time;
     // --- Current Timeslice start time in epoch units. Note that it is always a multiple of epochs
     // --- and the epoch is a multiple of ns.
-    time.fCurrentTsTime            = currentTsTime;
-
     auto const msTime              = msDescr.idx;
-    time.fCurrentCycle = msTime / fkCycleLength;
-
-    // --- Init counter for produced digis
-    uint64_t numDigis = 0;
+    u64 currentCycle = msTime / fkCycleLength;
 
     if (numMessages < 2){
       monitor.fNumErrInvalidMsSize++;
-      fMsDigiCount[id] = 0;
+      fMsDigiCount[blockId] = 0;
       return;
     }
 
@@ -77,7 +69,7 @@ namespace cbm::algo::sts
     // --- The first message in the MS is expected to be of type EPOCH and can be ignored.
     if (firstMessage.GetMessType() != stsxyter::MessType::Epoch) {
       monitor.fNumErrInvalidFirstMessage++;
-      fMsDigiCount[id] = 0;
+      fMsDigiCount[blockId] = 0;
       return;
     }
 
@@ -85,48 +77,113 @@ namespace cbm::algo::sts
     // --- The second message must be of type ts_msb.
     if (secondMessage.GetMessType() != stsxyter::MessType::TsMsb) {
       monitor.fNumErrInvalidFirstMessage++;
-      fMsDigiCount[id] = 0;
+      fMsDigiCount[blockId] = 0;
       return;
     }
 
-    ProcessTsmsbMessage(secondMessage, time);
+    // Initialize smem
+    if (threadId == 0){
+      ctx.smem().bcastBlockDigiOffset = 0;  // = numDigis
+      ctx.smem().bcastBaselineEpoch = secondMessage.GetTsMsbValBinning();
+      ctx.smem().bcastNCycles = 0;
+    }
+    xpu::barrier(ctx.pos());
 
-    // --- Message loop
-    for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
+    // find the next multiple of blockdim for numMessages, for better loop performance
+    int tmp = numMessages % blockDim;
+    int numMessagesBlockDim = numMessages;
+    if (tmp) {
+      numMessagesBlockDim += blockDim - tmp;
+    }
 
-      u32 messIndex = messOffset + messageNr;
-      stsxyter::Message message = fMsContent[messIndex];
-      // --- Action depending on message type
-      switch (message.GetMessType()) {
+    for (uint32_t messageNr = 2 + threadId; messageNr < numMessagesBlockDim; messageNr += blockDim) {
+      stsxyter::Message currentMsg;
+      currentMsg.reset();
+      if (messageNr < numMessages){
+        u64 messIndex = messOffset + messageNr;
+        currentMsg = fMsContent[messIndex];
+      }
+      int isTsMsbMsg = currentMsg.GetMessType() == stsxyter::MessType::TsMsb;
+      int isHitMsg = currentMsg.GetMessType() == stsxyter::MessType::Hit;
+      
+      // Find index in shared memory to write tsmsb_msg
+      int tsMsbIdx;
+      Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(isTsMsbMsg, tsMsbIdx);
+      tsMsbIdx--;
 
-        case stsxyter::MessType::Hit: {
-          ProcessHitMessage(message, digis, numDigis, unpackPar, elinkPar, monitor,
-                                        time);
-          break;
+      // Write tsmsb_msg to shared memory
+      if (isTsMsbMsg) {ctx.smem().tsMsbMsg[tsMsbIdx] = currentMsg;}
+      xpu::barrier(ctx.pos());
+      
+      // Find epoch cycle wraps
+      int cycleWrap = 0;
+      if (isTsMsbMsg) {    
+        auto msgEpoch = currentMsg.GetTsMsbValBinning();    
+        // first message needs to be compared to baseline
+        // all other messages are compared to the one coming before
+        if (tsMsbIdx == 0){(msgEpoch < ctx.smem().bcastBaselineEpoch) ? cycleWrap++ : cycleWrap;}
+        else{(msgEpoch < ctx.smem().tsMsbMsg[tsMsbIdx - 1].GetTsMsbValBinning()) ? cycleWrap++ : cycleWrap;}
+      }
+      xpu::barrier(ctx.pos());
+
+      // synchronize all previous cycleWraps
+      int nCycleWraps;
+      Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(cycleWrap, nCycleWraps);
+      xpu::barrier(ctx.pos());
+      // unpack Digis
+      CbmStsDigi digi;
+      if (isHitMsg){
+        u64 epoch;
+        // if tsMsbIdx == -1 then no TsMsb Message was read by preceeding threads in this cycle
+        if (tsMsbIdx == -1){
+          epoch = ctx.smem().bcastBaselineEpoch;
         }
-        case stsxyter::MessType::TsMsb: {
-          ProcessTsmsbMessage(message, time);
-          break;
+        else{
+          stsxyter::Message lastTsMsbMsg = ctx.smem().tsMsbMsg[tsMsbIdx];
+          epoch = lastTsMsbMsg.GetTsMsbValBinning();
         }
-        default: {
-          monitor.fNumNonHitOrTsbMessage++;
-          break;
-        }
+        
+        // --- Calculate epoch time in clocks cycles relative to timeslice start time
+        u64 currentEpochTime = ((currentCycle + nCycleWraps + ctx.smem().bcastNCycles) * fkEpochsPerCycle + epoch - currentTsTime) * fkEpochLength;
+        ProcessHitMessage(currentMsg, &digi, unpackPar, elinkPar, monitor, currentEpochTime);
+      }
+      xpu::barrier(ctx.pos());
 
-      }  //? Message type
+      //calculate digi index by counting nr of previous digis in this iteration
+      int digiIndex;
+      Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(isHitMsg, digiIndex);
+      digiIndex--;
+      xpu::barrier(ctx.pos());
+
+      // write digi to global memory
+      if(isHitMsg){
+        fMsDigis[messOffset + digiIndex + ctx.smem().bcastBlockDigiOffset] = digi;
+      }
+      xpu::barrier(ctx.pos());
+
+      // broadcast globally needed values
+      if (ctx.thread_idx_x() == (blockDim - 1)) { 
+        ctx.smem().bcastBlockDigiOffset += digiIndex + 1; 
+        ctx.smem().bcastNCycles += nCycleWraps;
+        if(tsMsbIdx >= 0){
+          ctx.smem().bcastBaselineEpoch = ctx.smem().tsMsbMsg[tsMsbIdx].GetTsMsbValBinning();
+        }
+      }      
+      xpu::barrier(ctx.pos());
 
     }  //# Messages
-
     // --- Store number of digis in buffer
-    fMsDigiCount[id] = numDigis;
+    if (ctx.thread_idx_x() == 0){
+      fMsDigiCount[blockId] = ctx.smem().bcastBlockDigiOffset;
+    }
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process hit message   --------------------------------------------
-  XPU_D inline void MsUnpacker::ProcessHitMessage(const stsxyter::Message& message, CbmStsDigi* digis, uint64_t& numDigis,
+  XPU_D inline void MsUnpacker::ProcessHitMessage(const stsxyter::Message& message, CbmStsDigi* digi,
                                         const UnpackPar& unpackPar, UnpackElinkPar* elinkParams,
-                                        UnpackMonitorData& monitor, TimeSpec& time) const
+                                        UnpackMonitorData& monitor, u64 currentEpochTime) const
   {
     // --- Check eLink and get parameters
     uint16_t elink = message.GetLinkIndexHitBinning();
@@ -150,7 +207,7 @@ namespace cbm::algo::sts
     }
 
     // --- Expand time stamp to time within timeslice (in clock cycle)
-    uint64_t messageTime = message.GetHitTimeBinning() + time.fCurrentEpochTime;
+    uint64_t messageTime = message.GetHitTimeBinning() + currentEpochTime;
 
     // --- Convert time stamp from clock cycles to ns. Round to nearest full ns.
     messageTime = (messageTime * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
@@ -163,35 +220,31 @@ namespace cbm::algo::sts
     double charge = elinkPar.fAdcOffset + (message.GetHitAdc() - 1) * elinkPar.fAdcGain;
 
     // --- Create output digi
-    digis[numDigis] = CbmStsDigi(address, channel, messageTime, charge);
-    numDigis++;
+    *digi = CbmStsDigi(address, channel, messageTime, charge);
   }
   // --------------------------------------------------------------------------
 
-
-  // -----   Process an epoch (TS_MSB) message   ------------------------------
-  XPU_D inline void MsUnpacker::ProcessTsmsbMessage(const stsxyter::Message& message, TimeSpec& time) const
+  XPU_D void MsUnpacker::CopyOut(CopyOut::context & ctx) const
   {
-    // The compression of time is based on the hierarchy epoch cycle - epoch - message time.
-    // Cycles are counted from the start of Unix time and are multiples of an epoch (ts_msb).
-    // The epoch number is counted within each cycle. The time in the hit message is expressed
-    // in units of the readout clock cycle relative to the current epoch.
-    // The ts_msb message indicates the start of a new epoch. Its basic information is the epoch
-    // number within the current cycle. A cycle wrap resets the epoch number to zero, so it is
-    // indicated by the epoch number being smaller than the previous one (epoch messages are
-    // seemingly not consecutively in the data stream, but only if there are hit messages in between).
-    auto epoch = message.GetTsMsbValBinning();
+    u32 blockId = ctx.block_idx_x();
+    u32 threadId = ctx.thread_idx_x();
+    u32 blockDim = ctx.block_dim_x();
 
-    // --- Cycle wrap
-    if (epoch < time.fCurrentEpoch) time.fCurrentCycle++;
-
-    // --- Update current epoch counter
-    time.fCurrentEpoch = epoch;
-
-    // --- Calculate epoch time in clocks cycles relative to timeslice start time
-    time.fCurrentEpochTime = (time.fCurrentCycle * fkEpochsPerCycle + epoch - time.fCurrentTsTime) * fkEpochLength;
+    // count digis written by blocks with lower IDs to get starting index
+    u64 startDigi = 0;
+    for (u64 i = 0; i < blockId; i++){
+      startDigi += fMsDigiCount[i];
+    }
+    
+    // starting parameters are the same for all threads in one block
+    u64 numDigis = fMsDigiCount[blockId];
+    u64 offset = fMsOffset[blockId];
+    
+    // each thread copys the data corresponding to their threadnumber + blockDim
+    for (u64 i = threadId; i < numDigis; i+=blockDim){
+      fMsOutBuffer[startDigi + i] = fMsDigis[offset + i];
+    }
   }
-  // --------------------------------------------------------------------------
 
 
 }  // namespace cbm::algo::sts

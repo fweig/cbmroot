@@ -1,0 +1,39 @@
+[ libCbmStsBase.so ]
+# List of selected classes
+class CbmMcbm2018StsPar
+class CbmStsContFact
+class CbmStsElement
+class CbmStsModule
+class CbmStsParAsic
+class CbmStsParModule
+class CbmStsParSensor
+class CbmStsParSensorCond
+class CbmStsParSetModule
+class CbmStsParSetSensor
+class CbmStsParSetSensorCond
+class CbmStsParSim
+class CbmStsPhysics
+class CbmStsSensor
+class CbmStsSetup
+class CbmStsStation
+class CbmStsTrackingInterface
+header CbmMcbm2018StsPar.h
+header CbmStsContFact.h
+header CbmStsElement.h
+header CbmStsModule.h
+header CbmStsParAsic.h
+header CbmStsParModule.h
+header CbmStsParSensor.h
+header CbmStsParSensorCond.h
+header CbmStsParSetModule.h
+header CbmStsParSetSensor.h
+header CbmStsParSetSensorCond.h
+header CbmStsParSim.h
+header CbmStsPhysics.h
+header CbmStsSensor.h
+header CbmStsSetup.h
+header CbmStsStation.h
+header CbmStsTrackingInterface.h
+# List of selected enums and outer classes
+enum CbmStsELoss
+enum CbmStsSensorClass

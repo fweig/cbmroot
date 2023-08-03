@@ -1,0 +1,41 @@
+module "CbmTrdReco" {
+  requires cplusplus
+  module "CbmTrdTrackFinderIdeal.h" { header "CbmTrdTrackFinderIdeal.h" export * }
+  module "CbmTrdTrackFitterIdeal.h" { header "CbmTrdTrackFitterIdeal.h" export * }
+  module "CbmTrdClusterFinder.h" { header "CbmTrdClusterFinder.h" export * }
+  module "CbmTrdHitProducer.h" { header "CbmTrdHitProducer.h" export * }
+  module "CbmTrdModuleRec.h" { header "CbmTrdModuleRec.h" export * }
+  module "CbmTrdModuleRecR.h" { header "CbmTrdModuleRecR.h" export * }
+  module "CbmTrdModuleRec2D.h" { header "CbmTrdModuleRec2D.h" export * }
+  module "CbmTrdDigiRec.h" { header "CbmTrdDigiRec.h" export * }
+  module "CbmTrdUnpackConfig.h" { header "CbmTrdUnpackConfig.h" export * }
+  module "CbmTrdUnpackAlgoBaseR.h" { header "CbmTrdUnpackAlgoBaseR.h" export * }
+  module "CbmTrdUnpackAlgoR.h" { header "CbmTrdUnpackAlgoR.h" export * }
+  module "CbmTrdUnpackAlgoLegacy2020R.h" { header "CbmTrdUnpackAlgoLegacy2020R.h" export * }
+  module "CbmTrdUnpackMonitor.h" { header "CbmTrdUnpackMonitor.h" export * }
+  module "CbmTrdUnpackFaspAlgo.h" { header "CbmTrdUnpackFaspAlgo.h" export * }
+  module "CbmTrdUnpackFaspConfig.h" { header "CbmTrdUnpackFaspConfig.h" export * }
+  module "CbmTrdUnpackFaspMonitor.h" { header "CbmTrdUnpackFaspMonitor.h" export * }
+  module "CbmTrdClusterizerFastQa.h" { header "CbmTrdClusterizerFastQa.h" export * }
+  module "CbmTrdHitDensityQa.h" { header "CbmTrdHitDensityQa.h" export * }
+  module "CbmTrdHitProducerClusterQa.h" { header "CbmTrdHitProducerClusterQa.h" export * }
+  module "CbmTrdHitProducerQa.h" { header "CbmTrdHitProducerQa.h" export * }
+  module "CbmTrdOccupancyQa.h" { header "CbmTrdOccupancyQa.h" export * }
+  module "CbmTrdQa.h" { header "CbmTrdQa.h" export * }
+  module "CbmTrdRecoQa.h" { header "CbmTrdRecoQa.h" export * }
+  module "CbmTrdTracksPidQa.h" { header "CbmTrdTracksPidQa.h" export * }
+  module "CbmTrdCalibTracker.h" { header "CbmTrdCalibTracker.h" export * }
+  module "CbmTrdHitMC.h" { header "CbmTrdHitMC.h" export * }
+  module "CbmTrdElectronsTrainAnn.h" { header "CbmTrdElectronsTrainAnn.h" export * }
+  module "CbmTrdSetTracksPidWkn.h" { header "CbmTrdSetTracksPidWkn.h" export * }
+  module "CbmTrdSetTracksPidModWkn.h" { header "CbmTrdSetTracksPidModWkn.h" export * }
+  module "CbmTrdSetTracksPidLike.h" { header "CbmTrdSetTracksPidLike.h" export * }
+  module "CbmTrdSetTracksPidANN.h" { header "CbmTrdSetTracksPidANN.h" export * }
+  module "CbmTrdRawToDigiBaseR.h" { header "CbmTrdRawToDigiBaseR.h" export * }
+  module "CbmTrdRawToDigiMaxAdcR.h" { header "CbmTrdRawToDigiMaxAdcR.h" export * }
+  module "CbmTrdRawToDigiFitR.h" { header "CbmTrdRawToDigiFitR.h" export * }
+  module "CbmTrdRawToDigiLookUpCorrR.h" { header "CbmTrdRawToDigiLookUpCorrR.h" export * }
+  link "libCbmTrdReco.so"
+  export *
+}
+

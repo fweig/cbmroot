@@ -1,0 +1,45 @@
+-- The C compiler identification is GNU 11.3.0
+-- The CXX compiler identification is GNU 11.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Submodule update
+-- Downloading and building static ZeroMQ library.
+-- Could NOT find GnuTLS (missing: GNUTLS_LIBRARY GNUTLS_INCLUDE_DIR) 
+-- Downloading CppZmq header-only library.
+-- Module support is disabled.
+-- Version: 8.1.1
+-- Build type: RelWithDebInfo
+-- CXX_STANDARD: 11
+-- Performing Test has_std_11_flag
+-- Performing Test has_std_11_flag - Success
+-- Performing Test has_std_0x_flag
+-- Performing Test has_std_0x_flag - Success
+-- Performing Test SUPPORTS_USER_DEFINED_LITERALS
+-- Performing Test SUPPORTS_USER_DEFINED_LITERALS - Success
+-- Performing Test FMT_HAS_VARIANT
+-- Performing Test FMT_HAS_VARIANT - Success
+-- Required features: cxx_variadic_templates
+-- Looking for strtod_l
+-- Looking for strtod_l - not found
+-- Found Boost: /home/cbmdata/_deps/fairsoft_apr22/install/lib/cmake/Boost-1.78.0/BoostConfig.cmake (found suitable version "1.78.0", minimum required is "1.65.0") found components: filesystem log program_options serialization system thread unit_test_framework regex iostreams 
+-- Found Threads: TRUE  
+-- Could NOT find LIBFABRIC (missing: LIBFABRIC_LIBRARY LIBFABRIC_INCLUDE_DIR) 
+-- Could NOT find RDMA (missing: RDMA_LIBRARIES RDMA_INCLUDE_DIR) 
+-- Could NOT find PDA (missing: PDA_LIBRARY PDA_INCLUDE_DIR) (Required is exact version "11.5.7")
+-- Found NUMA: /usr/lib/x86_64-linux-gnu/libnuma.so  
+-- Found Doxygen: /usr/bin/doxygen (found version "1.9.1") found components: doxygen dot 
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+-- Libraries not found: rdma. Building without RDMA transport.
+-- Library not found: libfabric. Building without.
+-- Library not found: libpda. Building without CRI interface.
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build

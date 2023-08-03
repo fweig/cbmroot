@@ -1,0 +1,9 @@
+{ decls }
+class CbmBmonDigi;
+template <typename Digi> class CbmDigitize;
+
+[ libCbmBmonSim.so ]
+# List of selected classes
+class CbmBmonDigitize
+class CbmDigitize<CbmBmonDigi>
+header CbmBmonDigitize.h

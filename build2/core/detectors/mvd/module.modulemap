@@ -1,0 +1,21 @@
+module "CbmMvdBase" {
+  requires cplusplus
+  module "CbmMvdSensorPlugin.h" { header "CbmMvdSensorPlugin.h" export * }
+  module "CbmMvdSensorTask.h" { header "CbmMvdSensorTask.h" export * }
+  module "CbmMvdSensorBuffer.h" { header "CbmMvdSensorBuffer.h" export * }
+  module "CbmMvdSensorFrameBuffer.h" { header "CbmMvdSensorFrameBuffer.h" export * }
+  module "CbmMvdMimosa26AHR.h" { header "CbmMvdMimosa26AHR.h" export * }
+  module "CbmMvdMimosa34.h" { header "CbmMvdMimosa34.h" export * }
+  module "CbmMvdMimosis.h" { header "CbmMvdMimosis.h" export * }
+  module "CbmMvdSensorDataSheet.h" { header "CbmMvdSensorDataSheet.h" export * }
+  module "CbmMvdGeoHandler.h" { header "CbmMvdGeoHandler.h" export * }
+  module "CbmMvdHelper.h" { header "CbmMvdHelper.h" export * }
+  module "CbmMvdStationPar.h" { header "CbmMvdStationPar.h" export * }
+  module "CbmMvdDetector.h" { header "CbmMvdDetector.h" export * }
+  module "CbmMvdSensor.h" { header "CbmMvdSensor.h" export * }
+  module "CbmMvdPileupManager.h" { header "CbmMvdPileupManager.h" export * }
+  module "CbmMvdTrackingInterface.h" { header "CbmMvdTrackingInterface.h" export * }
+  link "libCbmMvdBase.so"
+  export *
+}
+

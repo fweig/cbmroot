@@ -1,0 +1,12 @@
+module "CbmClustering" {
+  requires cplusplus
+  module "CbmClusteringGeometry.h" { header "CbmClusteringGeometry.h" export * }
+  module "CbmMuchClustering.h" { header "CbmMuchClustering.h" export * }
+  module "CbmClusteringA1.h" { header "CbmClusteringA1.h" export * }
+  module "CbmClusteringSL.h" { header "CbmClusteringSL.h" export * }
+  module "CbmClusteringWard.h" { header "CbmClusteringWard.h" export * }
+  module "CbmMuchTest.h" { header "CbmMuchTest.h" export * }
+  link "libCbmClustering.so"
+  export *
+}
+

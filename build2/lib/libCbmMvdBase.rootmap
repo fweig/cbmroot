@@ -1,0 +1,30 @@
+[ libCbmMvdBase.so ]
+# List of selected classes
+class CbmMvdDetector
+class CbmMvdGeoHandler
+class CbmMvdMimosa26AHR
+class CbmMvdMimosa34
+class CbmMvdMimosis
+class CbmMvdPileupManager
+class CbmMvdSensor
+class CbmMvdSensorBuffer
+class CbmMvdSensorDataSheet
+class CbmMvdSensorFrameBuffer
+class CbmMvdSensorPlugin
+class CbmMvdSensorTask
+class CbmMvdStationPar
+class CbmMvdTrackingInterface
+header CbmMvdDetector.h
+header CbmMvdGeoHandler.h
+header CbmMvdMimosa26AHR.h
+header CbmMvdMimosa34.h
+header CbmMvdMimosis.h
+header CbmMvdPileupManager.h
+header CbmMvdSensor.h
+header CbmMvdSensorBuffer.h
+header CbmMvdSensorDataSheet.h
+header CbmMvdSensorFrameBuffer.h
+header CbmMvdSensorPlugin.h
+header CbmMvdSensorTask.h
+header CbmMvdStationPar.h
+header CbmMvdTrackingInterface.h

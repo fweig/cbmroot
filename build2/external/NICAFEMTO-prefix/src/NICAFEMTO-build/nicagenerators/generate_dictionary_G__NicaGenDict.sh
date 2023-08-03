@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# This macro is used to generate the ROOT dictionaries
+# To use the ctest launchers one needs some environment variables which
+# are only present when running CMake. To have the same environment at
+# the time the dictionary is build this script is used which is build
+# at the time cmake runs.
+
+# Setup the needed environment
+export LD_LIBRARY_PATH=/home/cbmdata/_deps/fairsoft_apr22/install/lib::/usr/local/cuda/lib64::/home/heinemann/gpuunpacker/cbmroot/build/lib:/home/cbmdata/_deps/fairsoft_apr22/install/lib:/home/cbmdata/_deps/fairroot_v18.6.9/install/lib:/home/heinemann/gpuunpacker/cbmroot/build/lib:/home/cbmdata/_deps/fairsoft_apr22/install/lib:/home/cbmdata/_deps/fairroot_v18.6.9/install/lib
+export DYLD_LIBRARY_PATH=/home/cbmdata/_deps/fairsoft_apr22/install/lib::/usr/local/cuda/lib64::/home/heinemann/gpuunpacker/cbmroot/build/lib:/home/cbmdata/_deps/fairsoft_apr22/install/lib:/home/cbmdata/_deps/fairroot_v18.6.9/install/lib:/home/heinemann/gpuunpacker/cbmroot/build/lib:/home/cbmdata/_deps/fairsoft_apr22/install/lib:/home/cbmdata/_deps/fairroot_v18.6.9/install/lib
+export ROOTSYS=
+
+/home/cbmdata/_deps/fairsoft_apr22/install/bin/rootcling -f /home/heinemann/gpuunpacker/cbmroot/build2/external/NICAFEMTO-prefix/src/NICAFEMTO-build/nicagenerators/G__NicaGenDict.cxx -rmf /home/heinemann/gpuunpacker/cbmroot/build2/external/NICAFEMTO-prefix/src/NICAFEMTO-build/lib/libNicaGen.rootmap -rml NicaGen.so  -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/dataformat -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/dataformat/detector -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/dataformat/compound -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/dataformat/hiddeninfo -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/nicagenerators -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/nicagenerators/readers -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features/hist -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features/io -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features/io/html -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features/std -I/home/heinemann/gpuunpacker/cbmroot/external/NicaFemto/features/minimizer -I/home/cbmdata/_deps/fairsoft_apr22/install/include/root -I/home/cbmdata/_deps/fairroot_v18.6.9/install/include -I/home/cbmdata/_deps/fairsoft_apr22/install/include/vmc -I/home/cbmdata/_deps/fairsoft_apr22/install/include/root -I/home/cbmdata/_deps/fairsoft_apr22/install/include NicaGeneratorReadAscii.h NicaGeneratorReadCF.h NicaGeneratorReadTxt.h NicaGeneratorReadUrQMD.h NicaGeneratorReadTree.h NicaGeneratorReadTherminator2.h NicaGeneratorParametersArray.h NicaGeneratorRead.h NicaGeneratorWrite.h NicaRunSim.h NicaGenLinkDef.h

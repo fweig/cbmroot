@@ -1,0 +1,8 @@
+module "CbmGlobalTracking" {
+  requires cplusplus
+  module "CbmGlobalTrackingTask.h" { header "CbmGlobalTrackingTask.h" export * }
+  module "CbmGlobalTrackingQa.h" { header "CbmGlobalTrackingQa.h" export * }
+  link "libCbmGlobalTracking.so"
+  export *
+}
+

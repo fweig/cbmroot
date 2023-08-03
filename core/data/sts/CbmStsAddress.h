@@ -185,8 +185,10 @@ namespace CbmStsAddress
   XPU_D inline int32_t UnpackDigiAddress(int32_t digiAddress)
   {
     using namespace Detail;
+    return 0;
+    
     return digiAddress << kShift[1][kStsUnit] | ToIntegralType(ECbmModuleId::kSts) << kShift[1][kStsSystem]
-           | 1u << kVersionShift;
+           | 1u << kVersionShift; 
   }
 
   /** @brief Strip address to contain only unit, (half)ladder and module.
@@ -203,7 +205,7 @@ namespace CbmStsAddress
     int32_t ret = (address & kDMask) >> kShift[1][kStsUnit];
 
     // Check that no bits were set, that are stripped by this function.
-    assert(address == UnpackDigiAddress(ret));
+    assert(address == UnpackDigiAddress(ret)); 
 
     return ret;
   }

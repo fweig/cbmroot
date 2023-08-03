@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/yaml-cpp"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/yaml-cpp.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/CMakeFiles/yaml-cpp-complete.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-build.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-configure.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-download.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-install.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-mkdir.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-patch.rule"
+		},
+		{
+			"file" : "/home/heinemann/gpuunpacker/cbmroot/build2/external/yaml-cpp-prefix/src/yaml-cpp-stamp/yaml-cpp-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"yaml-cpp"
+		],
+		"name" : "yaml-cpp"
+	}
+}

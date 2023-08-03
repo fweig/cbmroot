@@ -1,0 +1,20 @@
+[ libCbmMuchReco.so ]
+# List of selected classes
+class CbmMuchFindHitsGem
+class CbmMuchFindTracks
+class CbmMuchHitFinderQa
+class CbmMuchHitProducerIdeal
+class CbmMuchMatchTracks
+class CbmMuchTrackFinderIdeal
+class CbmMuchUnpackAlgo
+class CbmMuchUnpackConfig
+class CbmMuchUnpackMonitor
+header CbmMuchFindHitsGem.h
+header CbmMuchFindTracks.h
+header CbmMuchHitFinderQa.h
+header CbmMuchHitProducerIdeal.h
+header CbmMuchMatchTracks.h
+header CbmMuchTrackFinderIdeal.h
+header CbmMuchUnpackAlgo.h
+header CbmMuchUnpackConfig.h
+header CbmMuchUnpackMonitor.h

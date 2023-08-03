@@ -1,0 +1,33 @@
+{ decls }
+class CbmStsDigi;
+template <typename Digi> class CbmDigitize;
+
+[ libCbmStsSim.so ]
+# List of selected classes
+class CbmDigitize<CbmStsDigi>
+class CbmStsDigitize
+class CbmStsDigitizePixel
+class CbmStsDigitizeQa
+class CbmStsDigitizeQaReport
+class CbmStsMC
+class CbmStsSensorPoint
+class CbmStsSignal
+class CbmStsSimModule
+class CbmStsSimSensor
+class CbmStsSimSensorDssd
+class CbmStsSimSensorDssdOrtho
+class CbmStsSimSensorDssdStereo
+class CbmStsSimSensorFactory
+header CbmStsDigitize.h
+header CbmStsDigitizePixel.h
+header CbmStsDigitizeQa.h
+header CbmStsDigitizeQaReport.h
+header CbmStsMC.h
+header CbmStsSensorPoint.h
+header CbmStsSignal.h
+header CbmStsSimModule.h
+header CbmStsSimSensor.h
+header CbmStsSimSensorDssd.h
+header CbmStsSimSensorDssdOrtho.h
+header CbmStsSimSensorDssdStereo.h
+header CbmStsSimSensorFactory.h

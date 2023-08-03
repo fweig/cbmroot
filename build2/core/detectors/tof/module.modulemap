@@ -1,0 +1,15 @@
+module "CbmTofBase" {
+  requires cplusplus
+  module "CbmTofCell.h" { header "CbmTofCell.h" export * }
+  module "CbmTofContFact.h" { header "CbmTofContFact.h" export * }
+  module "CbmTofCreateDigiPar.h" { header "CbmTofCreateDigiPar.h" export * }
+  module "CbmTofDigiBdfPar.h" { header "CbmTofDigiBdfPar.h" export * }
+  module "CbmTofDigiPar.h" { header "CbmTofDigiPar.h" export * }
+  module "CbmMcbm2018TofPar.h" { header "CbmMcbm2018TofPar.h" export * }
+  module "CbmTofGeoHandler.h" { header "CbmTofGeoHandler.h" export * }
+  module "CbmTofTrackingInterface.h" { header "CbmTofTrackingInterface.h" export * }
+  module "TTrbHeader.h" { header "TTrbHeader.h" export * }
+  link "libCbmTofBase.so"
+  export *
+}
+

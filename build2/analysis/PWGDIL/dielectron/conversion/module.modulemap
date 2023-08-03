@@ -1,0 +1,16 @@
+module "CbmConversionAnalysis" {
+  requires cplusplus
+  module "CbmAnaConversion.h" { header "CbmAnaConversion.h" export * }
+  module "CbmAnaConversionKF.h" { header "CbmAnaConversionKF.h" export * }
+  module "CbmAnaConversionTomography.h" { header "CbmAnaConversionTomography.h" export * }
+  module "CbmAnaConversionRich.h" { header "CbmAnaConversionRich.h" export * }
+  module "CbmAnaConversionReco.h" { header "CbmAnaConversionReco.h" export * }
+  module "CbmAnaConversionPhotons.h" { header "CbmAnaConversionPhotons.h" export * }
+  module "CbmAnaConversionPhotons2.h" { header "CbmAnaConversionPhotons2.h" export * }
+  module "CbmAnaConversionRecoFull.h" { header "CbmAnaConversionRecoFull.h" export * }
+  module "CbmAnaConversionTest.h" { header "CbmAnaConversionTest.h" export * }
+  module "CbmAnaConversionTest2.h" { header "CbmAnaConversionTest2.h" export * }
+  link "libCbmConversionAnalysis.so"
+  export *
+}
+

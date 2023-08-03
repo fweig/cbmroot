@@ -1,0 +1,8 @@
+module "CbmRecoSteer" {
+  requires cplusplus
+  module "CbmRecoUnpack.h" { header "CbmRecoUnpack.h" export * }
+  module "CbmSourceTsArchive.h" { header "CbmSourceTsArchive.h" export * }
+  link "libCbmRecoSteer.so"
+  export *
+}
+

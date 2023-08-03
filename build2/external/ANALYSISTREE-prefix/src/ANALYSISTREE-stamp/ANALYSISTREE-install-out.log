@@ -1,0 +1,78 @@
+[  0%] Built target AnalysisTreeBaseCopyHeaders
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/BranchConfig.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Configuration.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Container.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/DataHeader.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/EventHeader.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/G__AnalysisTreeBase.cxx.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Hit.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/IndexedObject.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Matching.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Module.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Particle.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+Dependencies file "core/CMakeFiles/AnalysisTreeBase.dir/Track.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/core/CMakeFiles/AnalysisTreeBase.dir/compiler_depend.internal".
+[35m[1mConsolidate compiler generated dependencies of target AnalysisTreeBase[0m
+[ 46%] Built target AnalysisTreeBase
+[ 46%] Built target AnalysisTreeInfraCopyHeaders
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/AnalysisEntry.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/AnalysisTask.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/Branch.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/BranchChannel.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/Chain.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/ChainDrawHelper.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/Cuts.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/Field.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/G__AnalysisTreeInfra.cxx.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/PlainTreeFiller.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/SimpleCut.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/Task.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/TaskManager.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+Dependencies file "infra/CMakeFiles/AnalysisTreeInfra.dir/Variable.cpp.o.d" is newer than depends file "/home/heinemann/gpuunpacker/cbmroot/build2/external/ANALYSISTREE-prefix/src/ANALYSISTREE-build/infra/CMakeFiles/AnalysisTreeInfra.dir/compiler_depend.internal".
+[35m[1mConsolidate compiler generated dependencies of target AnalysisTreeInfra[0m
+[100%] Built target AnalysisTreeInfra
+[36mInstall the project...[0m
+-- Install configuration: "FullWarnings"
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTree/AnalysisTreeTargets.cmake
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTree/AnalysisTreeTargets-fullwarnings.cmake
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTree/AnalysisTreeConfig.cmake
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/cmake/AnalysisTree/AnalysisTreeConfigVersion.cmake
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/AnalysisTreeVersion.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/bin/AnalysisTreeConfig.sh
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeBase.so
+-- Set runtime path of "/home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeBase.so" to ""
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/IndexedObject.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Track.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Hit.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/EventHeader.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Module.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Configuration.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/BranchConfig.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Container.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/DataHeader.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Matching.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Particle.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Constants.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Detector.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeBase_rdict.pcm
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeBase.rootmap
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeInfra.so
+-- Set runtime path of "/home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeInfra.so" to ""
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/SimpleCut.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Cuts.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Field.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Variable.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Task.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/AnalysisTask.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/TaskManager.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/PlainTreeFiller.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Chain.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/ChainDrawHelper.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Branch.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/BranchChannel.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/AnalysisEntry.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/VariantMagic.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/ToyMC.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/Utils.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/include/AnalysisTree/BranchHashHelper.hpp
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeInfra_rdict.pcm
+-- Installing: /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAnalysisTreeInfra.rootmap

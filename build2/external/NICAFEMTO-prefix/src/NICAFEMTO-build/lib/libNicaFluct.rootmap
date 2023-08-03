@@ -1,0 +1,8 @@
+[ NicaFluct.so ]
+# List of selected classes
+class NicaChargedFluctuationsAna
+class NicaFluctuation1D
+class NicaFluctuationsAna
+header NicaChargedFluctuationsAna.h
+header NicaFluctuation1D.h
+header NicaFluctuationsAna.h

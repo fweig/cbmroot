@@ -1,0 +1,21 @@
+[ libCbmTofBase.so ]
+# List of selected classes
+class CbmMcbm2018BmonPar
+class CbmMcbm2018TofPar
+class CbmTofCell
+class CbmTofContFact
+class CbmTofCreateDigiPar
+class CbmTofDigiBdfPar
+class CbmTofDigiPar
+class CbmTofGeoHandler
+class CbmTofTrackingInterface
+class TTrbHeader
+header CbmMcbm2018TofPar.h
+header CbmTofCell.h
+header CbmTofContFact.h
+header CbmTofCreateDigiPar.h
+header CbmTofDigiBdfPar.h
+header CbmTofDigiPar.h
+header CbmTofGeoHandler.h
+header CbmTofTrackingInterface.h
+header TTrbHeader.h

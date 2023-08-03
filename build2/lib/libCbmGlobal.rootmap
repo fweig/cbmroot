@@ -1,0 +1,20 @@
+[ libCbmGlobal.so ]
+# List of selected classes
+class CbmFindGlobalTracks
+class CbmFindPrimaryVertex
+class CbmFindPrimaryVertexEvents
+class CbmFitGlobalTracks
+class CbmFitGlobalTracksQa
+class CbmGlobalTrackFitterIdeal
+class CbmPVFinderIdeal
+class CbmRecoTzero
+class CbmTrackMergerIdeal
+header CbmFindGlobalTracks.h
+header CbmFindPrimaryVertex.h
+header CbmFindPrimaryVertexEvents.h
+header CbmFitGlobalTracks.h
+header CbmFitGlobalTracksQa.h
+header CbmGlobalTrackFitterIdeal.h
+header CbmPVFinderIdeal.h
+header CbmRecoTzero.h
+header CbmTrackMergerIdeal.h

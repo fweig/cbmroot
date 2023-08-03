@@ -1,0 +1,11 @@
+module "LxTrack" {
+  requires cplusplus
+  module "LxTBTask.h" { header "LxTBTask.h" export * }
+  module "LxTBTieTracks.h" { header "LxTBTieTracks.h" export * }
+  module "LxTBTrdTask.h" { header "LxTBTrdTask.h" export * }
+  module "GenNoiseElectrons.h" { header "GenNoiseElectrons.h" export * }
+  module "CalcStats.h" { header "CalcStats.h" export * }
+  link "libLxTrack.so"
+  export *
+}
+

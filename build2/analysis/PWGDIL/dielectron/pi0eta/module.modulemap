@@ -1,0 +1,27 @@
+module "CbmConversion2Analysis" {
+  requires cplusplus
+  module "CbmKresConversionMain.h" { header "CbmKresConversionMain.h" export * }
+  module "CbmKresConversionManual.h" { header "CbmKresConversionManual.h" export * }
+  module "CbmKresConversionReconstruction.h" { header "CbmKresConversionReconstruction.h" export * }
+  module "CbmKresConversionKF.h" { header "CbmKresConversionKF.h" export * }
+  module "CbmKresConversionGeneral.h" { header "CbmKresConversionGeneral.h" export * }
+  module "CbmKresConversionBG.h" { header "CbmKresConversionBG.h" export * }
+  module "CbmKresConversionManualmbias1.h" { header "CbmKresConversionManualmbias1.h" export * }
+  module "CbmKresConversionManualmbias2.h" { header "CbmKresConversionManualmbias2.h" export * }
+  module "CbmKresConversionManualmbias3.h" { header "CbmKresConversionManualmbias3.h" export * }
+  module "CbmKresConversionManualmbias4.h" { header "CbmKresConversionManualmbias4.h" export * }
+  module "CbmKresTrainAnn.h" { header "CbmKresTrainAnn.h" export * }
+  module "CbmKresSelectAnn.h" { header "CbmKresSelectAnn.h" export * }
+  module "CbmKresTemperature.h" { header "CbmKresTemperature.h" export * }
+  module "CbmKresTrainAnnDirectPhotons.h" { header "CbmKresTrainAnnDirectPhotons.h" export * }
+  module "CbmKresConversionPhotons.h" { header "CbmKresConversionPhotons.h" export * }
+  module "CbmKresSelectAnnPhotons.h" { header "CbmKresSelectAnnPhotons.h" export * }
+  module "CbmKresGammaCorrection.h" { header "CbmKresGammaCorrection.h" export * }
+  module "CbmKresConversionCorrectedPhotons.h" { header "CbmKresConversionCorrectedPhotons.h" export * }
+  module "CbmKresEta.h" { header "CbmKresEta.h" export * }
+  module "CbmKresEtaMCAnalysis.h" { header "CbmKresEtaMCAnalysis.h" export * }
+  module "CbmKresSelectGoodEvents.h" { header "CbmKresSelectGoodEvents.h" export * }
+  link "libCbmConversion2Analysis.so"
+  export *
+}
+

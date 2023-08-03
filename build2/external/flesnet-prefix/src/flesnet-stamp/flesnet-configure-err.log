@@ -1,0 +1,4 @@
+[33mCMake Warning at CMakeLists.txt:23 (message):
+  SIMPATH set, using Fairroot external packages in build.
+
+[0m

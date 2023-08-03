@@ -1,0 +1,7 @@
+module "CbmRecoCal" {
+  requires cplusplus
+  module "CbmOffsetDigiTimeTester.h" { header "CbmOffsetDigiTimeTester.h" export * }
+  link "libCbmRecoCal.so"
+  export *
+}
+

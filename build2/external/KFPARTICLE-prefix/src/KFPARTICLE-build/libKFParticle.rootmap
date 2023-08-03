@@ -1,0 +1,14 @@
+[ libKFParticle.so ]
+# List of selected classes
+class KFMCParticle
+class KFPartEfficiencies
+class KFParticle
+class KFParticleBase
+class KFParticleTest
+class KFVertex
+header KFMCParticle.h
+header KFPartEfficiencies.h
+header KFParticle.h
+header KFParticleBase.h
+header KFParticleTest/KFParticleTest.h
+header KFVertex.h

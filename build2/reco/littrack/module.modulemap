@@ -1,0 +1,74 @@
+module "Littrack" {
+  requires cplusplus
+  module "CbmLitDetectorSetup.h" { header "CbmLitDetectorSetup.h" export * }
+  module "CbmLitGlobalElectronId.h" { header "CbmLitGlobalElectronId.h" export * }
+  module "CbmLitFindMvdTracks.h" { header "CbmLitFindMvdTracks.h" export * }
+  module "CbmLitFitTracksParallel.h" { header "CbmLitFitTracksParallel.h" export * }
+  module "CbmLitFitTracks.h" { header "CbmLitFitTracks.h" export * }
+  module "CbmLitPolarizedGenerator.h" { header "CbmLitPolarizedGenerator.h" export * }
+  module "CbmLitHitData.h" { header "CbmLitHitData.h" export * }
+  module "CbmLitTrackFinderBranch.h" { header "CbmLitTrackFinderBranch.h" export * }
+  module "CbmLitTrackFinderNN.h" { header "CbmLitTrackFinderNN.h" export * }
+  module "CbmLitNearestHitTofMerger.h" { header "CbmLitNearestHitTofMerger.h" export * }
+  module "CbmLitAllHitsTofMerger.h" { header "CbmLitAllHitsTofMerger.h" export * }
+  module "CbmLitTrackFitterImp.h" { header "CbmLitTrackFitterImp.h" export * }
+  module "CbmLitKalmanFilter.h" { header "CbmLitKalmanFilter.h" export * }
+  module "CbmLitKalmanSmoother.h" { header "CbmLitKalmanSmoother.h" export * }
+  module "CbmLitTrackFitterIter.h" { header "CbmLitTrackFitterIter.h" export * }
+  module "CbmLitTGeoTrackPropagator.h" { header "CbmLitTGeoTrackPropagator.h" export * }
+  module "CbmLitRK4TrackExtrapolator.h" { header "CbmLitRK4TrackExtrapolator.h" export * }
+  module "CbmLitLineTrackExtrapolator.h" { header "CbmLitLineTrackExtrapolator.h" export * }
+  module "CbmLitTGeoNavigator.h" { header "CbmLitTGeoNavigator.h" export * }
+  module "CbmLitCleverTrackExtrapolator.h" { header "CbmLitCleverTrackExtrapolator.h" export * }
+  module "CbmLitQualitySort.h" { header "CbmLitQualitySort.h" export * }
+  module "CbmLitTrackSelectionCuts.h" { header "CbmLitTrackSelectionCuts.h" export * }
+  module "CbmLitTrackSelectionEmpty.h" { header "CbmLitTrackSelectionEmpty.h" export * }
+  module "CbmLitTrackSelectionMuch.h" { header "CbmLitTrackSelectionMuch.h" export * }
+  module "CbmLitTrackSelectionSharedHits.h" { header "CbmLitTrackSelectionSharedHits.h" export * }
+  module "CbmLitTrackSelectionTrd.h" { header "CbmLitTrackSelectionTrd.h" export * }
+  module "CbmLitMath.h" { header "CbmLitMath.h" export * }
+  module "CbmLitMatrixMath.h" { header "CbmLitMatrixMath.h" export * }
+  module "CbmLitMaterialEffectsImp.h" { header "CbmLitMaterialEffectsImp.h" export * }
+  module "CbmLitFieldGridCreator.h" { header "CbmLitFieldGridCreator.h" export * }
+  module "CbmLitFieldFitter.h" { header "CbmLitFieldFitter.h" export * }
+  module "CbmLitToolFactory.h" { header "CbmLitToolFactory.h" export * }
+  module "CbmLitTrackingGeometryConstructor.h" { header "CbmLitTrackingGeometryConstructor.h" export * }
+  module "CbmLitFindGlobalTracks.h" { header "CbmLitFindGlobalTracks.h" export * }
+  module "CbmLitFindGlobalTracksIdeal.h" { header "CbmLitFindGlobalTracksIdeal.h" export * }
+  module "CbmLitFindGlobalTracksParallel.h" { header "CbmLitFindGlobalTracksParallel.h" export * }
+  module "CbmLitConverterParallel.h" { header "CbmLitConverterParallel.h" export * }
+  link "libLittrack.so"
+  export *
+}
+
+module "LittrackQA" {
+  requires cplusplus
+  module "CbmLitResultChecker.h" { header "CbmLitResultChecker.h" export * }
+  module "CbmLitCheckEnergyLossMuons.h" { header "CbmLitCheckEnergyLossMuons.h" export * }
+  module "CbmLitCheckBrem.h" { header "CbmLitCheckBrem.h" export * }
+  module "CbmLitMCTrack.h" { header "CbmLitMCTrack.h" export * }
+  module "CbmLitMCTrackCreator.h" { header "CbmLitMCTrackCreator.h" export * }
+  module "CbmLitCreateStandaloneData.h" { header "CbmLitCreateStandaloneData.h" export * }
+  module "CbmLitTestMatrixMath.h" { header "CbmLitTestMatrixMath.h" export * }
+  module "CbmLitTrackingQa.h" { header "CbmLitTrackingQa.h" export * }
+  module "CbmLitTrackingQaStudyReport.h" { header "CbmLitTrackingQaStudyReport.h" export * }
+  module "CbmLitTrackingQaReport.h" { header "CbmLitTrackingQaReport.h" export * }
+  module "CbmLitClusteringQa.h" { header "CbmLitClusteringQa.h" export * }
+  module "CbmLitClusteringQaReport.h" { header "CbmLitClusteringQaReport.h" export * }
+  module "CbmLitClusteringQaStudyReport.h" { header "CbmLitClusteringQaStudyReport.h" export * }
+  module "CbmLitFitQa.h" { header "CbmLitFitQa.h" export * }
+  module "CbmLitFitQaReport.h" { header "CbmLitFitQaReport.h" export * }
+  module "CbmLitFitQaStudyReport.h" { header "CbmLitFitQaStudyReport.h" export * }
+  module "CbmLitFieldQa.h" { header "CbmLitFieldQa.h" export * }
+  module "CbmLitFieldQaReport.h" { header "CbmLitFieldQaReport.h" export * }
+  module "CbmLitFieldApproximationQa.h" { header "CbmLitFieldApproximationQa.h" export * }
+  module "CbmLitFieldApproximationQaReport.h" { header "CbmLitFieldApproximationQaReport.h" export * }
+  module "CbmLitRadLengthQa.h" { header "CbmLitRadLengthQa.h" export * }
+  module "CbmLitRadLengthQaReport.h" { header "CbmLitRadLengthQaReport.h" export * }
+  module "CbmLitRadLengthGenerator.h" { header "CbmLitRadLengthGenerator.h" export * }
+  module "CbmLitTofQa.h" { header "CbmLitTofQa.h" export * }
+  module "CbmLitTofQaReport.h" { header "CbmLitTofQaReport.h" export * }
+  link "libLittrackQA.so"
+  export *
+}
+

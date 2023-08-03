@@ -1,0 +1,1 @@
+cmd='/usr/bin/cmake;-G;Unix Makefiles;-DCMAKE_BUILD_TYPE=FullWarnings;-DCMAKE_C_COMPILER=/usr/bin/cc;-DCMAKE_C_FLAGS=;-DCMAKE_CXX_COMPILER=/usr/bin/c++;-DCMAKE_CXX_FLAGS=;-DCMAKE_INSTALL_PREFIX=/home/heinemann/gpuunpacker/cbmroot/build2;-DCMAKE_INSTALL_LIBDIR=lib;-GUnix Makefiles;<SOURCE_DIR><SOURCE_SUBDIR>'

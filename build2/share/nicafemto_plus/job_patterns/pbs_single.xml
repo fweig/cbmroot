@@ -1,0 +1,28 @@
+<nica-submitter>
+<!--nodes here are mandatory-->
+<settings>
+  <!--submit command-->
+  <submit>qsub ${NICA_JOB_FILE}</submit>
+  <!-- must be emtpy -->
+  <array></array>>
+  <!--job ids-->
+  <submit_start>1</submit_start>
+  <submit_end>1</submit_end>
+  <shell>#!/bin/bash</shell>
+</settings>
+<job_options>
+  <!--number of nodes, cores per node walltime-->
+  <command>#PBS -l nodes=1:ppn=1,walltime=30:00</command>
+  <!--output logs ${NICA_JOB_ID} will be replaced by id-->
+  <command>#PBS -o logs/${NICA_JOB_ID}_log</command>
+  <!--error logs-->
+  <command>#PBS -e /dev/null</command>
+</job_options>
+<job_commands>
+  <!--commands-->
+  <!-- ${NICA_JOB_ID} will be replaced by job ID--> 
+  <command>export JOB_ID_NICA=${NICA_JOB_ID}</command>
+  <command>export TEMP_VAR=`nica-jobs --export ${NICA_JOB_ID} 0 ${NICA_PWD} job_file.txt`</command>
+  <command>root -l -b -q "macro()"</command>
+</job_commands>
+</nica-submitter>

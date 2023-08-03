@@ -1,0 +1,10 @@
+-- hip::amdhip64 is SHARED_LIBRARY
+-- hip::amdhip64 is SHARED_LIBRARY
+-- hip::amdhip64 is SHARED_LIBRARY
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/algo/Algo_Hip/src/Algo_Hip-build
+[35m[1mConsolidate compiler generated dependencies of target Algo_Hip[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/Algo_Hip.dir/home/heinemann/gpuunpacker/cbmroot/build2/algo/Algo_Unity.cpp.o[0m
+[100%] [32m[1mLinking CXX shared module /home/heinemann/gpuunpacker/cbmroot/build2/lib/libAlgo_Hip.so[0m
+[100%] Built target Algo_Hip

@@ -1,0 +1,13 @@
+module "CbmDisplay" {
+  requires cplusplus
+  module "CbmTrdDigiDraw.h" { header "CbmTrdDigiDraw.h" export * }
+  module "CbmPixelHitSetDraw.h" { header "CbmPixelHitSetDraw.h" export * }
+  module "CbmEvDisTracks.h" { header "CbmEvDisTracks.h" export * }
+  module "CbmRecoTracks.h" { header "CbmRecoTracks.h" export * }
+  module "CbmPointSetArray.h" { header "CbmPointSetArray.h" export * }
+  module "CbmPointSetArrayDraw.h" { header "CbmPointSetArrayDraw.h" export * }
+  module "CbmPointSetArrayEditor.h" { header "CbmPointSetArrayEditor.h" export * }
+  link "libCbmDisplay.so"
+  export *
+}
+

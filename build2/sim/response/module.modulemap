@@ -1,0 +1,13 @@
+module "CbmSimResponse" {
+  requires cplusplus
+  module "CbmDigitization.h" { header "CbmDigitization.h" export * }
+  module "CbmDigitizationSource.h" { header "CbmDigitizationSource.h" export * }
+  module "CbmDigitizeInfo.h" { header "CbmDigitizeInfo.h" export * }
+  module "CbmMCInput.h" { header "CbmMCInput.h" export * }
+  module "CbmMCInputSet.h" { header "CbmMCInputSet.h" export * }
+  module "CbmRunAna.h" { header "CbmRunAna.h" export * }
+  module "CbmDigitizationConfig.h" { header "CbmDigitizationConfig.h" export * }
+  link "libCbmSimResponse.so"
+  export *
+}
+

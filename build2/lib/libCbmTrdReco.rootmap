@@ -1,0 +1,77 @@
+{ decls }
+namespace std {  }
+
+[ libCbmTrdReco.so ]
+# List of selected classes
+class CbmTrdCalibTracker
+class CbmTrdClusterFinder
+class CbmTrdClusterizerFastQa
+class CbmTrdDigiRec
+class CbmTrdElectronsTrainAnn
+class CbmTrdHitDensityQa
+class CbmTrdHitMC
+class CbmTrdHitProducer
+class CbmTrdHitProducerClusterQa
+class CbmTrdHitProducerQa
+class CbmTrdModuleRec
+class CbmTrdModuleRec2D
+class CbmTrdModuleRecR
+class CbmTrdOccupancyQa
+class CbmTrdQa
+class CbmTrdRawToDigiBaseR
+class CbmTrdRawToDigiFitR
+class CbmTrdRawToDigiLookUpCorrR
+class CbmTrdRawToDigiMaxAdcR
+class CbmTrdRecoQa
+class CbmTrdSetTracksPidANN
+class CbmTrdSetTracksPidLike
+class CbmTrdSetTracksPidModWkn
+class CbmTrdSetTracksPidWkn
+class CbmTrdTrackFinderIdeal
+class CbmTrdTrackFitterIdeal
+class CbmTrdTracksPidQa
+class CbmTrdUnpackAlgoBaseR
+class CbmTrdUnpackAlgoLegacy2020R
+class CbmTrdUnpackAlgoR
+class CbmTrdUnpackConfig
+class CbmTrdUnpackFaspAlgo
+class CbmTrdUnpackFaspConfig
+class CbmTrdUnpackFaspMonitor
+class CbmTrdUnpackMonitor
+class vector<pair<unsigned long,unsigned long> >
+class vector<std::pair<unsigned long,unsigned long> >
+header CbmTrdCalibTracker.h
+header CbmTrdClusterFinder.h
+header CbmTrdClusterizerFastQa.h
+header CbmTrdDigiRec.h
+header CbmTrdElectronsTrainAnn.h
+header CbmTrdHitDensityQa.h
+header CbmTrdHitMC.h
+header CbmTrdHitProducer.h
+header CbmTrdHitProducerClusterQa.h
+header CbmTrdHitProducerQa.h
+header CbmTrdModuleRec.h
+header CbmTrdModuleRec2D.h
+header CbmTrdModuleRecR.h
+header CbmTrdOccupancyQa.h
+header CbmTrdQa.h
+header CbmTrdRawToDigiBaseR.h
+header CbmTrdRawToDigiFitR.h
+header CbmTrdRawToDigiLookUpCorrR.h
+header CbmTrdRawToDigiMaxAdcR.h
+header CbmTrdRecoQa.h
+header CbmTrdSetTracksPidANN.h
+header CbmTrdSetTracksPidLike.h
+header CbmTrdSetTracksPidModWkn.h
+header CbmTrdSetTracksPidWkn.h
+header CbmTrdTrackFinderIdeal.h
+header CbmTrdTrackFitterIdeal.h
+header CbmTrdTracksPidQa.h
+header CbmTrdUnpackAlgoBaseR.h
+header CbmTrdUnpackAlgoLegacy2020R.h
+header CbmTrdUnpackAlgoR.h
+header CbmTrdUnpackConfig.h
+header CbmTrdUnpackFaspAlgo.h
+header CbmTrdUnpackFaspConfig.h
+header CbmTrdUnpackFaspMonitor.h
+header CbmTrdUnpackMonitor.h

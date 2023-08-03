@@ -1,0 +1,23 @@
+module "CbmStsBase" {
+  requires cplusplus
+  module "CbmStsContFact.h" { header "CbmStsContFact.h" export * }
+  module "CbmStsElement.h" { header "CbmStsElement.h" export * }
+  module "CbmStsModule.h" { header "CbmStsModule.h" export * }
+  module "CbmStsParAsic.h" { header "CbmStsParAsic.h" export * }
+  module "CbmStsParModule.h" { header "CbmStsParModule.h" export * }
+  module "CbmStsParSensor.h" { header "CbmStsParSensor.h" export * }
+  module "CbmStsParSensorCond.h" { header "CbmStsParSensorCond.h" export * }
+  module "CbmStsParSetModule.h" { header "CbmStsParSetModule.h" export * }
+  module "CbmStsParSetSensor.h" { header "CbmStsParSetSensor.h" export * }
+  module "CbmStsParSetSensorCond.h" { header "CbmStsParSetSensorCond.h" export * }
+  module "CbmStsParSim.h" { header "CbmStsParSim.h" export * }
+  module "CbmMcbm2018StsPar.h" { header "CbmMcbm2018StsPar.h" export * }
+  module "CbmStsPhysics.h" { header "CbmStsPhysics.h" export * }
+  module "CbmStsSensor.h" { header "CbmStsSensor.h" export * }
+  module "CbmStsSetup.h" { header "CbmStsSetup.h" export * }
+  module "CbmStsStation.h" { header "CbmStsStation.h" export * }
+  module "CbmStsTrackingInterface.h" { header "CbmStsTrackingInterface.h" export * }
+  link "libCbmStsBase.so"
+  export *
+}
+

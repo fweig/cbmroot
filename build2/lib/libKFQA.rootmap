@@ -1,0 +1,12 @@
+[ libKFQA.so ]
+# List of selected classes
+class CbmKFPartEfficiencies
+class CbmKFTrErrMCPoints
+class CbmKFTrackFitQa
+class CbmKFTrackQa
+class KFParticleMatch
+header CbmKFPartEfficiencies.h
+header CbmKFTrErrMCPoints.h
+header CbmKFTrackFitQa.h
+header CbmKFTrackQa.h
+header KFParticleMatch.h

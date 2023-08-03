@@ -1,0 +1,21 @@
+[ libCbmFlibStar2019.so ]
+# List of selected classes
+class CbmStar2019ContFact
+class CbmStar2019EventBuilderEtof
+class CbmStar2019EventBuilderEtofAlgo
+class CbmStar2019MonitorAlgo
+class CbmStar2019MonitorPulserAlgo
+class CbmStar2019MonitorPulserTask
+class CbmStar2019MonitorTask
+class CbmStar2019TofPar
+class CbmTofStarSubevent2019
+class CbmTofStarTrigger2019
+header CbmStar2019ContFact.h
+header CbmStar2019EventBuilderEtof.h
+header CbmStar2019EventBuilderEtofAlgo.h
+header CbmStar2019MonitorAlgo.h
+header CbmStar2019MonitorPulserAlgo.h
+header CbmStar2019MonitorPulserTask.h
+header CbmStar2019MonitorTask.h
+header CbmStar2019TofPar.h
+header CbmTofStarData2019.h

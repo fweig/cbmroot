@@ -1,0 +1,13 @@
+module "CbmMuchSim" {
+  requires cplusplus
+  module "CbmGeoMuch.h" { header "CbmGeoMuch.h" export * }
+  module "CbmMuch.h" { header "CbmMuch.h" export * }
+  module "CbmMuchDigitizeGem.h" { header "CbmMuchDigitizeGem.h" export * }
+  module "CbmMuchReadoutBuffer.h" { header "CbmMuchReadoutBuffer.h" export * }
+  module "CbmMuchSignal.h" { header "CbmMuchSignal.h" export * }
+  module "CbmMuchTransportQa.h" { header "CbmMuchTransportQa.h" export * }
+  module "CbmMuchDigitizerQa.h" { header "CbmMuchDigitizerQa.h" export * }
+  link "libCbmMuchSim.so"
+  export *
+}
+

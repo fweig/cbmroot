@@ -1,0 +1,21 @@
+{ decls }
+class CbmMuchDigi;
+template <typename Digi> class CbmDigitize;
+
+[ libCbmMuchSim.so ]
+# List of selected classes
+class CbmDigitize<CbmMuchDigi>
+class CbmGeoMuch
+class CbmMuch
+class CbmMuchDigitizeGem
+class CbmMuchDigitizerQa
+class CbmMuchReadoutBuffer
+class CbmMuchSignal
+class CbmMuchTransportQa
+header CbmGeoMuch.h
+header CbmMuch.h
+header CbmMuchDigitizeGem.h
+header CbmMuchDigitizerQa.h
+header CbmMuchReadoutBuffer.h
+header CbmMuchSignal.h
+header CbmMuchTransportQa.h

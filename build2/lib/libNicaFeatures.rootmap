@@ -1,0 +1,190 @@
+{ decls }
+namespace std {  }
+template <typename T> class NicaArray_1;
+template <typename T> class NicaArray_2;
+template <typename T> class NicaArray_3;
+template <typename T> class NicaArray_4;
+class TH1I;
+template <typename T> class NicaHistogramManager_1_1D;
+class TH1F;
+class TH1D;
+class TH2I;
+template <typename T> class NicaHistogramManager_1_2D;
+class TH2F;
+class TH2D;
+class TH3I;
+template <typename T> class NicaHistogramManager_1_3D;
+class TH3F;
+class TH3D;
+template <typename T> class NicaHistogramManager_2_1D;
+template <typename T> class NicaHistogramManager_2_2D;
+template <typename T> class NicaHistogramManager_2_3D;
+template <typename T> class NicaHistogramManager_3_1D;
+template <typename T> class NicaHistogramManager_3_2D;
+template <typename T> class NicaHistogramManager_3_3D;
+template <typename T> class NicaHistogramManager_4_1D;
+template <typename T> class NicaHistogramManager_4_2D;
+template <typename T> class NicaHistogramManager_4_3D;
+
+[ NicaFeatures.so ]
+# List of selected classes
+class NicaAnaFile
+class NicaArray_1<Bool_t>
+class NicaArray_1<Double_t>
+class NicaArray_1<Float_t>
+class NicaArray_1<Int_t>
+class NicaArray_1<Short_t>
+class NicaArray_1<bool>
+class NicaArray_1<double>
+class NicaArray_1<float>
+class NicaArray_1<int>
+class NicaArray_1<short>
+class NicaArray_2<Bool_t>
+class NicaArray_2<Double_t>
+class NicaArray_2<Float_t>
+class NicaArray_2<Int_t>
+class NicaArray_2<Short_t>
+class NicaArray_2<bool>
+class NicaArray_2<double>
+class NicaArray_2<float>
+class NicaArray_2<int>
+class NicaArray_2<short>
+class NicaArray_3<Bool_t>
+class NicaArray_3<Double_t>
+class NicaArray_3<Float_t>
+class NicaArray_3<Int_t>
+class NicaArray_3<Short_t>
+class NicaArray_3<bool>
+class NicaArray_3<double>
+class NicaArray_3<float>
+class NicaArray_3<int>
+class NicaArray_3<short>
+class NicaArray_4<Bool_t>
+class NicaArray_4<Double_t>
+class NicaArray_4<Float_t>
+class NicaArray_4<Int_t>
+class NicaArray_4<Short_t>
+class NicaArray_4<bool>
+class NicaArray_4<double>
+class NicaArray_4<float>
+class NicaArray_4<int>
+class NicaArray_4<short>
+class NicaChiSqMap2D
+class NicaConst
+class NicaCout
+class NicaDividedHisto1D
+class NicaDividedHisto2D
+class NicaDividedHisto3D
+class NicaFitParam
+class NicaHelix
+class NicaHelixBase
+class NicaHelixX
+class NicaHelixY
+class NicaHelixZ
+class NicaHistogramAxisConf
+class NicaHistogramManager_1_1D<TH1D>
+class NicaHistogramManager_1_1D<TH1F>
+class NicaHistogramManager_1_1D<TH1I>
+class NicaHistogramManager_1_2D<TH2D>
+class NicaHistogramManager_1_2D<TH2F>
+class NicaHistogramManager_1_2D<TH2I>
+class NicaHistogramManager_1_3D<TH3D>
+class NicaHistogramManager_1_3D<TH3F>
+class NicaHistogramManager_1_3D<TH3I>
+class NicaHistogramManager_2_1D<TH1D>
+class NicaHistogramManager_2_1D<TH1F>
+class NicaHistogramManager_2_1D<TH1I>
+class NicaHistogramManager_2_2D<TH2D>
+class NicaHistogramManager_2_2D<TH2F>
+class NicaHistogramManager_2_2D<TH2I>
+class NicaHistogramManager_2_3D<TH3D>
+class NicaHistogramManager_2_3D<TH3F>
+class NicaHistogramManager_2_3D<TH3I>
+class NicaHistogramManager_3_1D<TH1D>
+class NicaHistogramManager_3_1D<TH1F>
+class NicaHistogramManager_3_1D<TH1I>
+class NicaHistogramManager_3_2D<TH2D>
+class NicaHistogramManager_3_2D<TH2F>
+class NicaHistogramManager_3_2D<TH2I>
+class NicaHistogramManager_3_3D<TH3D>
+class NicaHistogramManager_3_3D<TH3F>
+class NicaHistogramManager_3_3D<TH3I>
+class NicaHistogramManager_4_1D<TH1D>
+class NicaHistogramManager_4_1D<TH1F>
+class NicaHistogramManager_4_1D<TH1I>
+class NicaHistogramManager_4_2D<TH2D>
+class NicaHistogramManager_4_2D<TH2F>
+class NicaHistogramManager_4_2D<TH2I>
+class NicaHistogramManager_4_3D<TH3D>
+class NicaHistogramManager_4_3D<TH3F>
+class NicaHistogramManager_4_3D<TH3I>
+class NicaHtmlCell
+class NicaHtmlCellCol
+class NicaHtmlCellRow
+class NicaHtmlCore
+class NicaHtmlDiv
+class NicaHtmlFile
+class NicaHtmlObject
+class NicaHtmlRow
+class NicaHtmlTable
+class NicaJobs
+class NicaLink
+class NicaMinimizer
+class NicaMultiGraph
+class NicaObjectMatrix_1
+class NicaObjectMatrix_2
+class NicaObjectMatrix_3
+class NicaObjectMatrix_4
+class NicaOptionArray
+class NicaOptionConverter
+class NicaPack
+class NicaPackage
+class NicaPackage2HTML
+class NicaPackageSql
+class NicaParameter
+class NicaParameterBool
+class NicaParameterDouble
+class NicaParameterFloat
+class NicaParameterInt
+class NicaParameterString
+class NicaParameterUInt
+class NicaParameterULong
+class NicaParameterULong64
+class NicaSpline1D
+class NicaSpline2D
+class NicaSpline3D
+class NicaXMLAttrib
+class NicaXMLFile
+class NicaXMLNode
+class vector<NicaFitParam>
+class vector<TString>
+header NicaAnaFile.h
+header NicaChiSqMap2D.h
+header NicaConst.h
+header NicaCout.h
+header NicaDividedHisto.h
+header NicaFitParam.h
+header NicaHelix.h
+header NicaHelixBase.h
+header NicaHistogramManager.h
+header NicaHtmlTable.h
+header NicaHtmlCore.h
+header NicaHtmlDiv.h
+header NicaHtmlFile.h
+header NicaHtmlObject.h
+header NicaJobs.h
+header NicaLink.h
+header NicaMinimizer.h
+header NicaMultiGraph.h
+header NicaObjectMatrix.h
+header NicaOptions.h
+header NicaPack.h
+header NicaPackage.h
+header NicaPackage2HTML.h
+header NicaPackageSql.h
+header NicaParameter.h
+header NicaSplines.h
+header NicaXMLNode.h
+# List of selected namespaces
+namespace NicaStd
+# List of selected typedefs and outer classes

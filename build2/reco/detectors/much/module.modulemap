@@ -1,0 +1,15 @@
+module "CbmMuchReco" {
+  requires cplusplus
+  module "CbmMuchFindHitsGem.h" { header "CbmMuchFindHitsGem.h" export * }
+  module "CbmMuchHitProducerIdeal.h" { header "CbmMuchHitProducerIdeal.h" export * }
+  module "CbmMuchFindTracks.h" { header "CbmMuchFindTracks.h" export * }
+  module "CbmMuchMatchTracks.h" { header "CbmMuchMatchTracks.h" export * }
+  module "CbmMuchTrackFinderIdeal.h" { header "CbmMuchTrackFinderIdeal.h" export * }
+  module "CbmMuchHitFinderQa.h" { header "CbmMuchHitFinderQa.h" export * }
+  module "CbmMuchUnpackAlgo.h" { header "CbmMuchUnpackAlgo.h" export * }
+  module "CbmMuchUnpackMonitor.h" { header "CbmMuchUnpackMonitor.h" export * }
+  module "CbmMuchUnpackConfig.h" { header "CbmMuchUnpackConfig.h" export * }
+  link "libCbmMuchReco.so"
+  export *
+}
+

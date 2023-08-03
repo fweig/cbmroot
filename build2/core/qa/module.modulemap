@@ -1,0 +1,21 @@
+module "CbmQaBase" {
+  requires cplusplus
+  module "CbmQaConstants.h" { header "CbmQaConstants.h" export * }
+  module "CbmQaCanvas.h" { header "CbmQaCanvas.h" export * }
+  module "CbmQaEff.h" { header "CbmQaEff.h" export * }
+  module "CbmQaPie.h" { header "CbmQaPie.h" export * }
+  module "CbmQaHist.h" { header "CbmQaHist.h" export * }
+  module "CbmQaTable.h" { header "CbmQaTable.h" export * }
+  module "CbmQaTask.h" { header "CbmQaTask.h" export * }
+  module "CbmQaIO.h" { header "CbmQaIO.h" export * }
+  module "CbmQaCheckerCore.h" { header "CbmQaCheckerCore.h" export * }
+  module "CbmQaCheckerFileHandler.h" { header "CbmQaCheckerFileHandler.h" export * }
+  module "CbmQaCheckerHist1DHandler.h" { header "CbmQaCheckerHist1DHandler.h" export * }
+  module "CbmQaCheckerHist2DHandler.h" { header "CbmQaCheckerHist2DHandler.h" export * }
+  module "CbmQaCheckerObjectHandler.h" { header "CbmQaCheckerObjectHandler.h" export * }
+  module "CbmQaCheckerProfile1DHandler.h" { header "CbmQaCheckerProfile1DHandler.h" export * }
+  module "CbmQaCheckerObjectDB.h" { header "CbmQaCheckerObjectDB.h" export * }
+  link "libCbmQaBase.so"
+  export *
+}
+

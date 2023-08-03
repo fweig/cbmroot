@@ -1,0 +1,13 @@
+{ decls }
+class CbmPsdDigi;
+template <typename Digi> class CbmDigitize;
+
+[ libCbmPsdSim.so ]
+# List of selected classes
+class CbmDigitize<CbmPsdDigi>
+class CbmPsdIdealDigitizer
+class CbmPsdMC
+class CbmPsdSimpleDigitizer
+header CbmPsdIdealDigitizer.h
+header CbmPsdMC.h
+header CbmPsdSimpleDigitizer.h

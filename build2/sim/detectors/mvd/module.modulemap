@@ -1,0 +1,10 @@
+module "CbmMvdSim" {
+  requires cplusplus
+  module "CbmMvdSensorDigitizerTask.h" { header "CbmMvdSensorDigitizerTask.h" export * }
+  module "CbmMvd.h" { header "CbmMvd.h" export * }
+  module "CbmMvdDigitizer.h" { header "CbmMvdDigitizer.h" export * }
+  module "CbmMvdPixelCharge.h" { header "CbmMvdPixelCharge.h" export * }
+  link "libCbmMvdSim.so"
+  export *
+}
+

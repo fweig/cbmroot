@@ -1,0 +1,9 @@
+module "CbmTofSim" {
+  requires cplusplus
+  module "CbmTof.h" { header "CbmTof.h" export * }
+  module "CbmTofMergeMcPoints.h" { header "CbmTofMergeMcPoints.h" export * }
+  module "CbmTofDigitize.h" { header "CbmTofDigitize.h" export * }
+  link "libCbmTofSim.so"
+  export *
+}
+
