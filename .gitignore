@@ -6,6 +6,7 @@
 /input
 /parameters
 /build
+/build2
 
 # Comment some single files
 Dart*.cfg
