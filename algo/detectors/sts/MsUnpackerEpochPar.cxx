@@ -84,36 +84,42 @@ namespace cbm::algo::sts
     // Initialize smem
     if (threadId == 0){
       ctx.smem().bcastBlockDigiOffset = 0;  // = numDigis
-      ctx.smem().bcastBaselineEpoch = secondMessage.GetTsMsbValBinning();
+      ctx.smem().tsMsbMsg[0] = secondMessage.GetTsMsbValBinning();
       ctx.smem().bcastNCycles = 0;
     }
     xpu::barrier(ctx.pos());
 
-    for (uint32_t messageNr = 2 + threadId; messageNr < numMessages; messageNr += blockDim) {
-      
-      u64 messIndex = messOffset + messageNr;
-      stsxyter::Message currentMsg = fMsContent[messIndex];
+    // find the next multiple of blockdim for numMessages, for better loop performance
+    int tmp = numMessages % blockDim;
+    int numMessagesBlockDim = numMessages;
+    if (tmp) {
+      numMessagesBlockDim += blockDim - tmp;
+    }
+
+    for (uint32_t messageNr = 2 + threadId; messageNr < numMessagesBlockDim + 2; messageNr += blockDim) {
+      stsxyter::Message currentMsg;
+      currentMsg.reset();
+      if (messageNr < numMessages){
+        u64 messIndex = messOffset + messageNr;
+        currentMsg = fMsContent[messIndex];
+      }
       int isTsMsbMsg = currentMsg.GetMessType() == stsxyter::MessType::TsMsb;
       int isHitMsg = currentMsg.GetMessType() == stsxyter::MessType::Hit;
       
-      xpu::barrier(ctx.pos());
       // Find index in shared memory to write tsmsb_msg
       int tsMsbIdx;
       Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(isTsMsbMsg, tsMsbIdx);
-      tsMsbIdx--;
 
-      // Write tsmsb_msg to shared memory
-      if (isTsMsbMsg) {ctx.smem().tsMsbMsg[tsMsbIdx] = currentMsg;}
-      xpu::barrier(ctx.pos());
-      
-      // Find epoch cycle wraps
       int cycleWrap = 0;
-      if (isTsMsbMsg) {    
-        auto msgEpoch = currentMsg.GetTsMsbValBinning();    
-        // first message needs to be compared to baseline
-        // all other messages are compared to the one coming before
-        if (tsMsbIdx == 0){(msgEpoch < ctx.smem().bcastBaselineEpoch) ? cycleWrap++ : cycleWrap;}
-        else{(msgEpoch < ctx.smem().tsMsbMsg[tsMsbIdx - 1].GetTsMsbValBinning()) ? cycleWrap++ : cycleWrap;}
+      u64 currentEpoch;
+      if (isTsMsbMsg) {
+        // Write tsmsb_msg to shared memory
+        currentEpoch = currentMsg.GetTsMsbValBinning();   
+        ctx.smem().tsMsbMsg[tsMsbIdx] = currentEpoch;
+      
+        // Find epoch cycle wraps   
+        // compare current epoch to epoch of last TSMSG
+        if (currentEpoch < ctx.smem().tsMsbMsg[tsMsbIdx - 1]){cycleWrap++;}
       }
       xpu::barrier(ctx.pos());
 
@@ -121,20 +127,14 @@ namespace cbm::algo::sts
       int nCycleWraps;
       Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(cycleWrap, nCycleWraps);
       xpu::barrier(ctx.pos());
+
       // unpack Digis
       CbmStsDigi digi;
       if (isHitMsg){
-        u64 epoch;
-        if (tsMsbIdx == -1){
-          epoch = ctx.smem().bcastBaselineEpoch;
-        }
-        else{
-          stsxyter::Message lastTsMsbMsg = ctx.smem().tsMsbMsg[tsMsbIdx];
-          epoch = lastTsMsbMsg.GetTsMsbValBinning();
-        }
+        currentEpoch = ctx.smem().tsMsbMsg[tsMsbIdx];
         
         // --- Calculate epoch time in clocks cycles relative to timeslice start time
-        u64 currentEpochTime = ((currentCycle + nCycleWraps + ctx.smem().bcastNCycles) * fkEpochsPerCycle + epoch - currentTsTime) * fkEpochLength;
+        u64 currentEpochTime = ((currentCycle + nCycleWraps + ctx.smem().bcastNCycles) * fkEpochsPerCycle + currentEpoch - currentTsTime) * fkEpochLength;
         ProcessHitMessage(currentMsg, &digi, unpackPar, elinkPar, monitor, currentEpochTime);
       }
       xpu::barrier(ctx.pos());
@@ -146,21 +146,24 @@ namespace cbm::algo::sts
       xpu::barrier(ctx.pos());
 
       // write digi to global memory
-      if(isHitMsg){fMsDigis[messOffset + digiIndex + ctx.smem().bcastBlockDigiOffset] = digi;}
+      if(isHitMsg){
+        fMsDigis[messOffset + digiIndex + ctx.smem().bcastBlockDigiOffset] = digi;
+      }
+      xpu::barrier(ctx.pos());
 
-      // broadcast last digi index
-      if (ctx.thread_idx_x() == (blockDim - 1)) { 
+      // broadcast globally needed values
+      if (threadId == (blockDim - 1)) { 
         ctx.smem().bcastBlockDigiOffset += digiIndex + 1; 
         ctx.smem().bcastNCycles += nCycleWraps;
-        if(tsMsbIdx >= 0){
-          ctx.smem().bcastBaselineEpoch = ctx.smem().tsMsbMsg[tsMsbIdx].GetTsMsbValBinning();
+        if(tsMsbIdx > 0){
+          ctx.smem().tsMsbMsg[0] = currentEpoch;
         }
       }      
       xpu::barrier(ctx.pos());
 
     }  //# Messages
     // --- Store number of digis in buffer
-    if (ctx.thread_idx_x() == 0){
+    if (threadId == 0){
       fMsDigiCount[blockId] = ctx.smem().bcastBlockDigiOffset;
     }
   }

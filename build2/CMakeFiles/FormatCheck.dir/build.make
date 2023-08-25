@@ -67,30 +67,48 @@ include CMakeFiles/FormatCheck.dir/compiler_depend.make
 include CMakeFiles/FormatCheck.dir/progress.make
 
 CMakeFiles/FormatCheck: algo/detectors/sts/MsUnpacker.cxx.cf_out
-CMakeFiles/FormatCheck: algo/detectors/sts/MsUnpacker.h.cf_out
-CMakeFiles/FormatCheck: algo/global/ParallelUnpackChain.cxx.cf_out
+CMakeFiles/FormatCheck: algo/detectors/sts/MsUnpackerEpochPar.cxx.cf_out
+CMakeFiles/FormatCheck: build2/algo/base/BuildInfo.cxx.cf_out
+CMakeFiles/FormatCheck: build2/reco/detectors/tof/G__CbmTofReco.cxx.cf_out
+CMakeFiles/FormatCheck: build2/reco/detectors/trd/G__CbmTrdReco.cxx.cf_out
+CMakeFiles/FormatCheck: build2/reco/tracking/lx/G__LxTrack.cxx.cf_out
 CMakeFiles/FormatCheck: core/data/sts/CbmStsAddress.h.cf_out
 
 algo/detectors/sts/MsUnpacker.cxx.cf_out:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating algo/detectors/sts/MsUnpacker.cxx.cf_out"
 	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh algo/detectors/sts/MsUnpacker.cxx /home/heinemann/gpuunpacker/cbmroot/build2/algo/detectors/sts/MsUnpacker.cxx.cf_out
 
-algo/detectors/sts/MsUnpacker.h.cf_out:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating algo/detectors/sts/MsUnpacker.h.cf_out"
-	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh algo/detectors/sts/MsUnpacker.h /home/heinemann/gpuunpacker/cbmroot/build2/algo/detectors/sts/MsUnpacker.h.cf_out
+algo/detectors/sts/MsUnpackerEpochPar.cxx.cf_out:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating algo/detectors/sts/MsUnpackerEpochPar.cxx.cf_out"
+	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh algo/detectors/sts/MsUnpackerEpochPar.cxx /home/heinemann/gpuunpacker/cbmroot/build2/algo/detectors/sts/MsUnpackerEpochPar.cxx.cf_out
 
-algo/global/ParallelUnpackChain.cxx.cf_out:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating algo/global/ParallelUnpackChain.cxx.cf_out"
-	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh algo/global/ParallelUnpackChain.cxx /home/heinemann/gpuunpacker/cbmroot/build2/algo/global/ParallelUnpackChain.cxx.cf_out
+build2/algo/base/BuildInfo.cxx.cf_out:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating build2/algo/base/BuildInfo.cxx.cf_out"
+	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh build2/algo/base/BuildInfo.cxx /home/heinemann/gpuunpacker/cbmroot/build2/build2/algo/base/BuildInfo.cxx.cf_out
+
+build2/reco/detectors/tof/G__CbmTofReco.cxx.cf_out:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating build2/reco/detectors/tof/G__CbmTofReco.cxx.cf_out"
+	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh build2/reco/detectors/tof/G__CbmTofReco.cxx /home/heinemann/gpuunpacker/cbmroot/build2/build2/reco/detectors/tof/G__CbmTofReco.cxx.cf_out
+
+build2/reco/detectors/trd/G__CbmTrdReco.cxx.cf_out:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Generating build2/reco/detectors/trd/G__CbmTrdReco.cxx.cf_out"
+	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh build2/reco/detectors/trd/G__CbmTrdReco.cxx /home/heinemann/gpuunpacker/cbmroot/build2/build2/reco/detectors/trd/G__CbmTrdReco.cxx.cf_out
+
+build2/reco/tracking/lx/G__LxTrack.cxx.cf_out:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Generating build2/reco/tracking/lx/G__LxTrack.cxx.cf_out"
+	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh build2/reco/tracking/lx/G__LxTrack.cxx /home/heinemann/gpuunpacker/cbmroot/build2/build2/reco/tracking/lx/G__LxTrack.cxx.cf_out
 
 core/data/sts/CbmStsAddress.h.cf_out:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating core/data/sts/CbmStsAddress.h.cf_out"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/heinemann/gpuunpacker/cbmroot/build2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Generating core/data/sts/CbmStsAddress.h.cf_out"
 	cd /home/heinemann/gpuunpacker/cbmroot && /home/heinemann/gpuunpacker/cbmroot/cmake/scripts/check-format-1.sh core/data/sts/CbmStsAddress.h /home/heinemann/gpuunpacker/cbmroot/build2/core/data/sts/CbmStsAddress.h.cf_out
 
 FormatCheck: CMakeFiles/FormatCheck
 FormatCheck: algo/detectors/sts/MsUnpacker.cxx.cf_out
-FormatCheck: algo/detectors/sts/MsUnpacker.h.cf_out
-FormatCheck: algo/global/ParallelUnpackChain.cxx.cf_out
+FormatCheck: algo/detectors/sts/MsUnpackerEpochPar.cxx.cf_out
+FormatCheck: build2/algo/base/BuildInfo.cxx.cf_out
+FormatCheck: build2/reco/detectors/tof/G__CbmTofReco.cxx.cf_out
+FormatCheck: build2/reco/detectors/trd/G__CbmTrdReco.cxx.cf_out
+FormatCheck: build2/reco/tracking/lx/G__LxTrack.cxx.cf_out
 FormatCheck: core/data/sts/CbmStsAddress.h.cf_out
 FormatCheck: CMakeFiles/FormatCheck.dir/build.make
 .PHONY : FormatCheck

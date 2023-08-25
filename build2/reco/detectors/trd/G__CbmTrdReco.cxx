@@ -6645,7 +6645,7 @@ namespace ROOT {
       list<CbmTrdCluster*> *ptr = nullptr;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(list<CbmTrdCluster*>));
       static ::ROOT::TGenericClassInfo 
-         instance("list<CbmTrdCluster*>", -2, "list", 556,
+         instance("list<CbmTrdCluster*>", -2, "list", 557,
                   typeid(list<CbmTrdCluster*>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &listlECbmTrdClustermUgR_Dictionary, isa_proxy, 0,
                   sizeof(list<CbmTrdCluster*>) );
@@ -6710,7 +6710,7 @@ namespace ROOT {
       deque<tuple<int,bool,const CbmTrdDigi*> > *ptr = nullptr;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(deque<tuple<int,bool,const CbmTrdDigi*> >));
       static ::ROOT::TGenericClassInfo 
-         instance("deque<tuple<int,bool,const CbmTrdDigi*> >", -2, "deque", 766,
+         instance("deque<tuple<int,bool,const CbmTrdDigi*> >", -2, "deque", 767,
                   typeid(deque<tuple<int,bool,const CbmTrdDigi*> >), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &dequelEtuplelEintcOboolcOconstsPCbmTrdDigimUgRsPgR_Dictionary, isa_proxy, 0,
                   sizeof(deque<tuple<int,bool,const CbmTrdDigi*> >) );
@@ -6775,7 +6775,7 @@ namespace ROOT {
       deque<pair<int,const CbmTrdDigi*> > *ptr = nullptr;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(deque<pair<int,const CbmTrdDigi*> >));
       static ::ROOT::TGenericClassInfo 
-         instance("deque<pair<int,const CbmTrdDigi*> >", -2, "deque", 766,
+         instance("deque<pair<int,const CbmTrdDigi*> >", -2, "deque", 767,
                   typeid(deque<pair<int,const CbmTrdDigi*> >), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &dequelEpairlEintcOconstsPCbmTrdDigimUgRsPgR_Dictionary, isa_proxy, 0,
                   sizeof(deque<pair<int,const CbmTrdDigi*> >) );
@@ -6840,7 +6840,7 @@ namespace ROOT {
       deque<deque<pair<int,const CbmTrdDigi*> > > *ptr = nullptr;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(deque<deque<pair<int,const CbmTrdDigi*> > >));
       static ::ROOT::TGenericClassInfo 
-         instance("deque<deque<pair<int,const CbmTrdDigi*> > >", -2, "deque", 766,
+         instance("deque<deque<pair<int,const CbmTrdDigi*> > >", -2, "deque", 767,
                   typeid(deque<deque<pair<int,const CbmTrdDigi*> > >), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &dequelEdequelEpairlEintcOconstsPCbmTrdDigimUgRsPgRsPgR_Dictionary, isa_proxy, 0,
                   sizeof(deque<deque<pair<int,const CbmTrdDigi*> > >) );

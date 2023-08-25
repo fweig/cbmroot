@@ -185,7 +185,6 @@ namespace CbmStsAddress
   XPU_D inline int32_t UnpackDigiAddress(int32_t digiAddress)
   {
     using namespace Detail;
-    return 0;
     
     return digiAddress << kShift[1][kStsUnit] | ToIntegralType(ECbmModuleId::kSts) << kShift[1][kStsSystem]
            | 1u << kVersionShift; 

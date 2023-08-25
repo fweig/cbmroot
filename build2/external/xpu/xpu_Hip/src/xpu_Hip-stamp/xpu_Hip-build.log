@@ -1,10 +1,1 @@
--- hip::amdhip64 is SHARED_LIBRARY
--- hip::amdhip64 is SHARED_LIBRARY
--- hip::amdhip64 is SHARED_LIBRARY
--- Configuring done
--- Generating done
--- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Hip/src/xpu_Hip-build
-[35m[1mConsolidate compiler generated dependencies of target xpu_Hip[0m
-[ 50%] [32mBuilding CXX object CMakeFiles/xpu_Hip.dir/home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/cuhip_driver.cpp.o[0m
-[100%] [32m[1mLinking CXX shared module /home/heinemann/gpuunpacker/cbmroot/build2/lib/libxpu_Hip.so[0m
 [100%] Built target xpu_Hip

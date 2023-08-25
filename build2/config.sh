@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export Linux_Flavour_="Ubuntu 22.04.2 LTS"
+export Linux_Flavour_="Ubuntu 22.04.3 LTS"
 export System_="x86_64"
 . /home/heinemann/gpuunpacker/cbmroot/build2/check_system.sh
 if [ $same_system -eq 1 ]; then
@@ -71,5 +71,5 @@ export G4ENSDFSTATEDATA=/home/cbmdata/_deps/fairsoft_apr22/install/share/Geant4-
                         export PATH=$PATH:"/home/cbmdata/_deps/fairsoft_apr22/install/bin"
 			;;
 	esac
- 	echo "Configured CBMROOT build 96cadf152fb5978efd9295734b58236d9cf6e8de (Tue Jul 11 09:35:10 2023 +0000)"
+ 	echo "Configured CBMROOT build b790b2823a3d6f26bb5c940932cff6933eed2248 (Thu Aug 3 15:40:45 2023 +0000)"
 fi

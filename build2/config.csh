@@ -1,6 +1,6 @@
 #!/bin/csh
 
-setenv Linux_Flavour_ "Ubuntu 22.04.2 LTS"
+setenv Linux_Flavour_ "Ubuntu 22.04.3 LTS"
 setenv System_ "x86_64"
 . /home/heinemann/gpuunpacker/cbmroot/build2/check_system.csh
 if ( "$same_system" == "1" ) then

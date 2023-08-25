@@ -103,8 +103,7 @@ namespace cbm::algo::sts
       scan_t::storage_t scan;
       u64 bcastBlockDigiOffset;
       u64 bcastNCycles;
-      u64 bcastBaselineEpoch;
-      stsxyter::Message tsMsbMsg [kBlockSize]; // note: potentially increase to 1024
+      u64 tsMsbMsg [kBlockSize + 1]; 
     };
     using block_size    = xpu::block_size<kBlockSize>;
     using constants     = xpu::cmem<TheUnpacker>;

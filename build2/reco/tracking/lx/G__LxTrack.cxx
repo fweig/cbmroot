@@ -1046,7 +1046,7 @@ namespace ROOT {
       list<LxTbBinnedFinder::Chain*> *ptr = nullptr;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(list<LxTbBinnedFinder::Chain*>));
       static ::ROOT::TGenericClassInfo 
-         instance("list<LxTbBinnedFinder::Chain*>", -2, "list", 556,
+         instance("list<LxTbBinnedFinder::Chain*>", -2, "list", 557,
                   typeid(list<LxTbBinnedFinder::Chain*>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &listlELxTbBinnedFindercLcLChainmUgR_Dictionary, isa_proxy, 0,
                   sizeof(list<LxTbBinnedFinder::Chain*>) );

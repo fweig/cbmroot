@@ -96,7 +96,7 @@ namespace cbm::algo::sts
       numMessagesBlockDim += blockDim - tmp;
     }
 
-    for (uint32_t messageNr = 2 + threadId; messageNr < numMessagesBlockDim; messageNr += blockDim) {
+    for (uint32_t messageNr = 2 + threadId; messageNr < numMessagesBlockDim + 2; messageNr += blockDim) {
       stsxyter::Message currentMsg;
       currentMsg.reset();
       if (messageNr < numMessages){
@@ -162,7 +162,7 @@ namespace cbm::algo::sts
       xpu::barrier(ctx.pos());
 
       // broadcast globally needed values
-      if (ctx.thread_idx_x() == (blockDim - 1)) { 
+      if (threadId == (blockDim - 1)) { 
         ctx.smem().bcastBlockDigiOffset += digiIndex + 1; 
         ctx.smem().bcastNCycles += nCycleWraps;
         if(tsMsbIdx >= 0){
@@ -173,7 +173,7 @@ namespace cbm::algo::sts
 
     }  //# Messages
     // --- Store number of digis in buffer
-    if (ctx.thread_idx_x() == 0){
+    if (threadId == 0){
       fMsDigiCount[blockId] = ctx.smem().bcastBlockDigiOffset;
     }
   }

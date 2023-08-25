@@ -1,7 +1,1 @@
--- Configuring done
--- Generating done
--- Build files have been written to: /home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Cuda/src/xpu_Cuda-build
-[35m[1mConsolidate compiler generated dependencies of target xpu_Cuda[0m
-[ 50%] [32mBuilding CUDA object CMakeFiles/xpu_Cuda.dir/home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/cuhip_driver.cpp.o[0m
-[100%] [32m[1mLinking CUDA shared module /home/heinemann/gpuunpacker/cbmroot/build2/lib/libxpu_Cuda.so[0m
 [100%] Built target xpu_Cuda

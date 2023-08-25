@@ -4191,7 +4191,7 @@ namespace ROOT {
       list<CbmTofHit*> *ptr = nullptr;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(list<CbmTofHit*>));
       static ::ROOT::TGenericClassInfo 
-         instance("list<CbmTofHit*>", -2, "list", 556,
+         instance("list<CbmTofHit*>", -2, "list", 557,
                   typeid(list<CbmTofHit*>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &listlECbmTofHitmUgR_Dictionary, isa_proxy, 0,
                   sizeof(list<CbmTofHit*>) );
