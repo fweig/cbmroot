@@ -1,8 +1,0 @@
-module "AnalysisTreeKfpfInterface" {
-  requires cplusplus
-  module "ATKFParticleFinder.h" { header "ATKFParticleFinder.h" export * }
-  module "CutsContainer.h" { header "CutsContainer.h" export * }
-  link "libAnalysisTreeKfpfInterface.so"
-  export *
-}
-

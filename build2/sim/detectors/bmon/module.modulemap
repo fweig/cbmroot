@@ -1,7 +1,0 @@
-module "CbmBmonSim" {
-  requires cplusplus
-  module "CbmBmonDigitize.h" { header "CbmBmonDigitize.h" export * }
-  link "libCbmBmonSim.so"
-  export *
-}
-

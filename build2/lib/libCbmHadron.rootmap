@@ -1,6 +1,0 @@
-[ libCbmHadron.so ]
-# List of selected classes
-class CbmHadron
-class CbmHadronAnalysis
-header CbmHadron.h
-header CbmHadronAnalysis.h

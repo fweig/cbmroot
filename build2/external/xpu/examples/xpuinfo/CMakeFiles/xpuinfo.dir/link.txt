@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -O2 -Wshadow -Wall -Wextra -Wunused-variable CMakeFiles/xpuinfo.dir/xpuinfo.cpp.o -o ../../../../bin/xpuinfo  -Wl,-rpath,/home/heinemann/gpuunpacker/cbmroot/build2/lib ../../../../lib/libxpu.so -ldl 

@@ -84,7 +84,7 @@ namespace cbm::algo::sts
     // Initialize smem
     if (threadId == 0){
       ctx.smem().bcastBlockDigiOffset = 0;  // = numDigis
-      ctx.smem().bcastBaselineEpoch = secondMessage.GetTsMsbValBinning();
+      ctx.smem().tsMsbMsg[0] = secondMessage.GetTsMsbValBinning();
       ctx.smem().bcastNCycles = 0;
     }
     xpu::barrier(ctx.pos());
@@ -109,20 +109,17 @@ namespace cbm::algo::sts
       // Find index in shared memory to write tsmsb_msg
       int tsMsbIdx;
       Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(isTsMsbMsg, tsMsbIdx);
-      tsMsbIdx--;
 
-      // Write tsmsb_msg to shared memory
-      if (isTsMsbMsg) {ctx.smem().tsMsbMsg[tsMsbIdx] = currentMsg;}
-      xpu::barrier(ctx.pos());
-      
-      // Find epoch cycle wraps
       int cycleWrap = 0;
-      if (isTsMsbMsg) {    
-        auto msgEpoch = currentMsg.GetTsMsbValBinning();    
-        // first message needs to be compared to baseline
-        // all other messages are compared to the one coming before
-        if (tsMsbIdx == 0){(msgEpoch < ctx.smem().bcastBaselineEpoch) ? cycleWrap++ : cycleWrap;}
-        else{(msgEpoch < ctx.smem().tsMsbMsg[tsMsbIdx - 1].GetTsMsbValBinning()) ? cycleWrap++ : cycleWrap;}
+      u64 currentEpoch;
+      if (isTsMsbMsg) {
+        // Write tsmsb_msg to shared memory
+        currentEpoch = currentMsg.GetTsMsbValBinning();   
+        ctx.smem().tsMsbMsg[tsMsbIdx] = currentEpoch;
+      
+        // Find epoch cycle wraps   
+        // compare current epoch to epoch of last TSMSG
+        if (currentEpoch < ctx.smem().tsMsbMsg[tsMsbIdx - 1]){cycleWrap++;}
       }
       xpu::barrier(ctx.pos());
 
@@ -130,21 +127,14 @@ namespace cbm::algo::sts
       int nCycleWraps;
       Unpack::scan_t(ctx.pos(), ctx.smem().scan).inclusive_sum(cycleWrap, nCycleWraps);
       xpu::barrier(ctx.pos());
+
       // unpack Digis
       CbmStsDigi digi;
       if (isHitMsg){
-        u64 epoch;
-        // if tsMsbIdx == -1 then no TsMsb Message was read by preceeding threads in this cycle
-        if (tsMsbIdx == -1){
-          epoch = ctx.smem().bcastBaselineEpoch;
-        }
-        else{
-          stsxyter::Message lastTsMsbMsg = ctx.smem().tsMsbMsg[tsMsbIdx];
-          epoch = lastTsMsbMsg.GetTsMsbValBinning();
-        }
+        currentEpoch = ctx.smem().tsMsbMsg[tsMsbIdx];
         
         // --- Calculate epoch time in clocks cycles relative to timeslice start time
-        u64 currentEpochTime = ((currentCycle + nCycleWraps + ctx.smem().bcastNCycles) * fkEpochsPerCycle + epoch - currentTsTime) * fkEpochLength;
+        u64 currentEpochTime = ((currentCycle + nCycleWraps + ctx.smem().bcastNCycles) * fkEpochsPerCycle + currentEpoch - currentTsTime) * fkEpochLength;
         ProcessHitMessage(currentMsg, &digi, unpackPar, elinkPar, monitor, currentEpochTime);
       }
       xpu::barrier(ctx.pos());
@@ -165,8 +155,8 @@ namespace cbm::algo::sts
       if (threadId == (blockDim - 1)) { 
         ctx.smem().bcastBlockDigiOffset += digiIndex + 1; 
         ctx.smem().bcastNCycles += nCycleWraps;
-        if(tsMsbIdx >= 0){
-          ctx.smem().bcastBaselineEpoch = ctx.smem().tsMsbMsg[tsMsbIdx].GetTsMsbValBinning();
+        if(tsMsbIdx > 0){
+          ctx.smem().tsMsbMsg[0] = ctx.smem().tsMsbMsg[tsMsbIdx];
         }
       }      
       xpu::barrier(ctx.pos());
@@ -245,6 +235,4 @@ namespace cbm::algo::sts
       fMsOutBuffer[startDigi + i] = fMsDigis[offset + i];
     }
   }
-
-
 }  // namespace cbm::algo::sts

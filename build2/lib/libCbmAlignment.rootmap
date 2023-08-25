@@ -1,4 +1,0 @@
-[ libCbmAlignment.so ]
-# List of selected classes
-class CbmBbaAlignmentTask
-header CbmBbaAlignmentTask.h

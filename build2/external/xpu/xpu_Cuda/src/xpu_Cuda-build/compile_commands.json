@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/heinemann/gpuunpacker/cbmroot/build2/external/xpu/xpu_Cuda/src/xpu_Cuda-build",
-  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DNDEBUG -Dxpu_Cuda_EXPORTS -I/home/cbmdata/_deps/fairsoft_apr22/install/lib/CLHEP-2.4.5.1/../../include -I/home/heinemann/gpuunpacker/cbmroot/external/xpu/src  --generate-code=arch=compute_75,code=[compute_75,sm_75] -Xcompiler=-fPIC -x cu -c /home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/cuhip_driver.cpp -o CMakeFiles/xpu_Cuda.dir/home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/cuhip_driver.cpp.o",
-  "file": "/home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/cuhip_driver.cpp"
-}
-]

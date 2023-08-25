@@ -1,4 +1,0 @@
-[ libCbmClustering.so ]
-# List of selected classes
-class CbmMuchClustering
-header CbmMuchClustering.h

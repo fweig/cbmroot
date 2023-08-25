@@ -1,6 +1,0 @@
-[ libAnalysisTreeKfpfInterface.so ]
-# List of selected classes
-class ATKFParticleFinder
-class CutsContainer
-header ATKFParticleFinder.h
-header CutsContainer.h

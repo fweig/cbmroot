@@ -1,7 +1,0 @@
-module "CbmStsAna" {
-  requires cplusplus
-  module "CbmStsWkn.h" { header "CbmStsWkn.h" export * }
-  link "libCbmStsAna.so"
-  export *
-}
-

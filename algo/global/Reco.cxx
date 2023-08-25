@@ -105,7 +105,7 @@ void Reco::Run(const fles::Timeslice& ts)
     }
   }
   
-  if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);
+  //if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);
   
   xpu::timings ts_times = xpu::pop_timer();
 

@@ -1,8 +1,0 @@
-module "CbmHadron" {
-  requires cplusplus
-  module "CbmHadron.h" { header "CbmHadron.h" export * }
-  module "CbmHadronAnalysis.h" { header "CbmHadronAnalysis.h" export * }
-  link "libCbmHadron.so"
-  export *
-}
-

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libflib_ipc.a CMakeFiles/flib_ipc.dir/shm_channel_client.cpp.o CMakeFiles/flib_ipc.dir/shm_device_client.cpp.o CMakeFiles/flib_ipc.dir/shm_channel_provider.cpp.o CMakeFiles/flib_ipc.dir/shm_device_provider.cpp.o
-/usr/bin/ranlib libflib_ipc.a

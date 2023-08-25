@@ -1,6 +1,0 @@
-[ libCbmRecoSteer.so ]
-# List of selected classes
-class CbmRecoUnpack
-class CbmSourceTsArchive
-header CbmRecoUnpack.h
-header CbmSourceTsArchive.h

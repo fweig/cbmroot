@@ -1,2 +1,0 @@
-/usr/bin/ar qc libshm_ipc.a CMakeFiles/shm_ipc.dir/ItemDistributor.cpp.o
-/usr/bin/ranlib libshm_ipc.a

@@ -1,4 +1,0 @@
-[ NicaSpectra.so ]
-# List of selected classes
-class NicaSpectraAna
-header NicaSpectraAna.h

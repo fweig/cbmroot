@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=gnu++11 -Wno-tautological-constant-compare -O3 -DNDEBUG -rdynamic CMakeFiles/inproc_thr.dir/perf/inproc_thr.cpp.o -o bin/inproc_thr  -Wl,-rpath,/home/heinemann/gpuunpacker/cbmroot/build2/external/flesnet-prefix/src/flesnet-build/src/zeromq-build/lib: lib/libzmq.so.5.2.4 -lrt 

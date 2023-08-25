@@ -1,1 +1,0 @@
-/usr/bin/g++ -fPIC -shared  -o /home/heinemann/gpuunpacker/cbmroot/build2/lib/libxpu_Cuda.so CMakeFiles/xpu_Cuda.dir/home/heinemann/gpuunpacker/cbmroot/external/xpu/src/xpu/detail/platform/hip_cuda/cuhip_driver.cpp.o  -lcudadevrt -lcudart_static -lrt -lpthread -ldl  -L"/usr/local/cuda/targets/x86_64-linux/lib/stubs" -L"/usr/local/cuda/targets/x86_64-linux/lib"

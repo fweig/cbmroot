@@ -1,9 +1,0 @@
-module "CbmPsdBase" {
-  requires cplusplus
-  module "PronyFitter.h" { header "PronyFitter.h" export * }
-  module "CbmPsdContFact.h" { header "CbmPsdContFact.h" export * }
-  module "CbmMcbm2018PsdPar.h" { header "CbmMcbm2018PsdPar.h" export * }
-  link "libCbmPsdBase.so"
-  export *
-}
-

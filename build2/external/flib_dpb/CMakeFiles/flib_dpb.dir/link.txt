@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -g -O2 -Wshadow -Wall -Wextra -Wunused-variable -shared -Wl,-soname,libflib_dpb.so -o ../../lib/libflib_dpb.so CMakeFiles/flib_dpb.dir/flib_dpb/MicrosliceContents.cpp.o 

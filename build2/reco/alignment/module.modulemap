@@ -1,7 +1,0 @@
-module "CbmAlignment" {
-  requires cplusplus
-  module "CbmBbaAlignmentTask.h" { header "CbmBbaAlignmentTask.h" export * }
-  link "libCbmAlignment.so"
-  export *
-}
-

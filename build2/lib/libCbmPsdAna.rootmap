@@ -1,4 +1,0 @@
-[ libCbmPsdAna.so ]
-# List of selected classes
-class CbmPsdMCbmQaReal
-header CbmPsdMCbmQaReal.h

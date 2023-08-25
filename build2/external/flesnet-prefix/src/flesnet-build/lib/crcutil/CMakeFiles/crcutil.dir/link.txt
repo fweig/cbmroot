@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcrcutil.a CMakeFiles/crcutil.dir/crc32c_sse4.cc.o CMakeFiles/crcutil.dir/interface.cc.o CMakeFiles/crcutil.dir/multiword_128_64_gcc_amd64_sse2.cc.o CMakeFiles/crcutil.dir/multiword_64_64_cl_i386_mmx.cc.o CMakeFiles/crcutil.dir/multiword_64_64_gcc_amd64_asm.cc.o CMakeFiles/crcutil.dir/multiword_64_64_gcc_i386_mmx.cc.o CMakeFiles/crcutil.dir/multiword_64_64_intrinsic_i386_mmx.cc.o
-/usr/bin/ranlib libcrcutil.a

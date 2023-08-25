@@ -1,9 +1,0 @@
-module "CbmRichSim" {
-  requires cplusplus
-  module "CbmRich.h" { header "CbmRich.h" export * }
-  module "CbmRichDigitizer.h" { header "CbmRichDigitizer.h" export * }
-  module "RichGeoCreator.h" { header "RichGeoCreator.h" export * }
-  link "libCbmRichSim.so"
-  export *
-}
-

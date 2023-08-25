@@ -1,8 +1,0 @@
-module "CbmMuchAnalysis" {
-  requires cplusplus
-  module "CbmAnaMuonCandidate.h" { header "CbmAnaMuonCandidate.h" export * }
-  module "CbmAnaDimuonAnalysis.h" { header "CbmAnaDimuonAnalysis.h" export * }
-  link "libCbmMuchAnalysis.so"
-  export *
-}
-

@@ -1,6 +1,0 @@
-[ libCbmGlobalTracking.so ]
-# List of selected classes
-class CbmGlobalTrackingQa
-class CbmGlobalTrackingTask
-header CbmGlobalTrackingQa.h
-header CbmGlobalTrackingTask.h
