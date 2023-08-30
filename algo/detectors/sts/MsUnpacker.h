@@ -90,9 +90,9 @@ namespace cbm::algo::sts
   enum GpuConstants
   {
     #if XPU_IS_CUDA
-        kBlockSize         = 32,
+        kBlockSize         = 512,
     #else  // HIP, values ignored on CPU
-        kBlockSize         = 64,
+        kBlockSize         = 512,
     #endif
   };
 
@@ -103,7 +103,7 @@ namespace cbm::algo::sts
       scan_t::storage_t scan;
       u64 bcastBlockDigiOffset;
       u64 bcastNCycles;
-      u64 tsMsbMsg [kBlockSize + 1]; 
+      u64 tsMsbMsg [kBlockSize + 1]; // size = nrThreads + baselineEpoch
     };
     using block_size    = xpu::block_size<kBlockSize>;
     using constants     = xpu::cmem<TheUnpacker>;

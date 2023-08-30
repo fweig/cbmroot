@@ -134,6 +134,7 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   fStsUnpacker.fMsDigis.reset(maxNumMessages, xpu::buf_io);
   fStsUnpacker.fMsMonitor.reset(numMs, xpu::buf_io);
 
+  // get host side views for data input
   xpu::h_view fMsEquipmentId {fStsUnpacker.fMsEquipmentId};
   xpu::h_view fMsDescriptors {fStsUnpacker.fMsDescriptors};
   xpu::h_view fMsContent {fStsUnpacker.fMsContent};
@@ -145,7 +146,6 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   u64 messageOffset = 0;
   // Counter for index to see how many comps were actually used
   u16 usedComps = 0;
-
 
   // sequential loop for the offsets
   for (uint64_t comp = 0; comp < timeslice.num_components(); comp++) {
@@ -199,10 +199,10 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
     }
   }
 
+  // Copy Unpack Parameters from vector to buffer -- may be done in init?
   xpu::h_view params {fStsUnpacker.fParams};
   xpu::h_view elinkParams {fStsUnpacker.fElinkParams};
-
-#pragma omp parallel for schedule (dynamic)  // TODO: find out if necessary
+#pragma omp parallel for schedule (dynamic)  
   for (u32 i = 0; i < fUnpackPar.size(); i++){
     params[i] = fUnpackPar[i];
   }
@@ -210,9 +210,8 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
   for (u32 i = 0; i < fUnpackElinkPar.size(); i++){
     elinkParams[i] = fUnpackElinkPar[i];
   }
-
-  // End of buffer preparations
   xpu::pop_timer(); 
+  // End of buffer preparations
 
   xpu::queue queue;
 
@@ -226,79 +225,45 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   const u64 currentTsTime   = timeslice.start_time() / fEpochLengthInNs;
 
-  // Kernel call
+  // Unpacker Kernel call
   queue.launch<sts::Unpack>(xpu::n_blocks(numMs), currentTsTime);
   xpu::k_add_bytes<sts::Unpack>(maxNumMessages * fMsgSize);
 
   // Transfer output data from device to host
   queue.copy(fStsUnpacker.fMsDigiCount, xpu::d2h);
-  queue.copy(fStsUnpacker.fMsDigis, xpu::d2h);
   queue.copy(fStsUnpacker.fMsMonitor, xpu::d2h);
   queue.wait();
 
-
-/*
-
-  xpu::h_view outDigiCount {fStsUnpacker.fMsDigiCount};
-  xpu::h_view outDigis {fStsUnpacker.fMsDigis};
-
-  std::vector<CbmStsDigi> result;
-  
-  u32 numOutDigis = 0;
-  for (u32 i = 0; i < outDigiCount.size(); i++){
-      numOutDigis += outDigiCount[i];
-  }
-  xpu::push_timer("Resize");
-  result.resize(numOutDigis);
-  xpu::pop_timer();
-
-  xpu::push_timer("Store digis");
-
-#pragma omp parallel for schedule (dynamic)
-  for (u32 i = 0; i < numMs; i++){
-    u64 offset              = fMsOffset[i];
-    u64 numOutDigisLocal    = outDigiCount[i]; 
-    u64 numPreviousDigis = 0;
-
-    for (u32 x = 0; x < i; x++){
-      numPreviousDigis += outDigiCount[x];
-    }
-
-    for (u64 j = 0; j < numOutDigisLocal; j++){
-      result[numPreviousDigis + j] = outDigis[offset + j];
-    } 
-  }
-
-
-  xpu::pop_timer();
-
-*/
-  xpu::push_timer("Count OutDigis");
-
   // count output digis
+  xpu::push_timer("Count OutDigis");
   xpu::h_view outDigiCount {fStsUnpacker.fMsDigiCount};
   u32 numOutDigis = 0;
   for (u32 i = 0; i < outDigiCount.size(); i++){
       numOutDigis += outDigiCount[i];
   }
   xpu::pop_timer();
-
+  
+  // resize the output buffer according to the number of digis
   xpu::push_timer("OutBuffer Prep");
   fStsUnpacker.fMsOutBuffer.reset(numOutDigis, xpu::buf_io);
   xpu::set<sts::TheUnpacker>(fStsUnpacker);
   xpu::pop_timer();
 
+  // execute Kernel for copying Digis from temp buffer to correctly sized buffer
   xpu::push_timer("CopyOut Kernel");
   queue.launch<sts::CopyOut>(xpu::n_blocks(numMs));
+  xpu::k_add_bytes<sts::CopyOut>(numOutDigis * sizeof(CbmStsDigi));
   queue.copy(fStsUnpacker.fMsOutBuffer, xpu::d2h);
   xpu::h_view outBuffer {fStsUnpacker.fMsOutBuffer};
   xpu::pop_timer();
 
+  // Resize the output vector for UnpackChain Return
   xpu::push_timer("Resize");
   std::vector<CbmStsDigi> result;
   result.resize(numOutDigis);
   xpu::pop_timer();
 
+  // Copy from output buffer to return vector -- delete when both unpacker and hitfinder run on GPU
   xpu::push_timer("Parallel Copy");
 #pragma omp parallel for schedule (static)
   for (u64 i = 0; i < numOutDigis; i++){
@@ -308,7 +273,8 @@ std::vector<CbmStsDigi> ParallelUnpackChain::Run(const fles::Timeslice& timeslic
 
   L_(info) << "Timeslice contains " << result.size() << " STS digis (discarded " << 0 << " pulser hits)";
 
-  fStsUnpacker = {};
+  // reset to prevent XPU bugs
+  fStsUnpacker = {};  
   xpu::set<sts::TheUnpacker>(fStsUnpacker);
   return result;
 }

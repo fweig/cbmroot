@@ -137,7 +137,7 @@ namespace cbm::algo::sts
         u64 currentEpochTime = ((currentCycle + nCycleWraps + ctx.smem().bcastNCycles) * fkEpochsPerCycle + currentEpoch - currentTsTime) * fkEpochLength;
         ProcessHitMessage(currentMsg, &digi, unpackPar, elinkPar, monitor, currentEpochTime);
       }
-      xpu::barrier(ctx.pos());
+      xpu::barrier(ctx.pos());    // probably not necessary
 
       //calculate digi index by counting nr of previous digis in this iteration
       int digiIndex;
@@ -146,10 +146,8 @@ namespace cbm::algo::sts
       xpu::barrier(ctx.pos());
 
       // write digi to global memory
-      if(isHitMsg){
-        fMsDigis[messOffset + digiIndex + ctx.smem().bcastBlockDigiOffset] = digi;
-      }
-      xpu::barrier(ctx.pos());
+      if(isHitMsg){fMsDigis[messOffset + digiIndex + ctx.smem().bcastBlockDigiOffset] = digi;}
+      xpu::barrier(ctx.pos());    // probably not necessary
 
       // broadcast globally needed values
       if (threadId == (blockDim - 1)) { 

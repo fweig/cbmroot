@@ -90,9 +90,9 @@ namespace cbm::algo::sts
   enum GpuConstants
   {
     #if XPU_IS_CUDA
-        kBlockSize         = 32,
+        kBlockSize         = 512,
     #else  // HIP, values ignored on CPU
-        kBlockSize         = 64,
+        kBlockSize         = 512,
     #endif
   };
 

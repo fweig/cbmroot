@@ -52,7 +52,7 @@ if(DOWNLOAD_EXTERNALS)
   if (NOT ${CBM_XPU_DEV})
     download_project_if_needed(PROJECT           xpu
                               GIT_REPOSITORY    "https://github.com/fweig/xpu.git"
-                              GIT_TAG           "593374ca55880e3d10e1688f9af3a778b409afd8" # v0.9.4
+                              GIT_TAG           "27f39d8599c0fa4ed35ab8b8e4ca5e0d7e27acce" # v0.9.4
                               SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
                               CONFIGURE_COMMAND ""
                               BUILD_COMMAND     ""
