@@ -62,6 +62,9 @@ void Reco::Init(const Options& opts)
   fUnpack.Init(mapping);
   fParallelUnpack.Init(mapping);
 
+  // STS Unpacker XPU
+  fUnpackXpu.Init(StsReadoutConfig{});
+
   // STS Hitfinder
   fs::path stsHitfinderParamsPath    = opts.ParamsDir() / "StsHitfinder.yaml";
   yaml                               = YAML::LoadFile(stsHitfinderParamsPath.string());
@@ -96,17 +99,17 @@ void Reco::Run(const fles::Timeslice& ts)
   if (Opts().HasStep(Step::Unpack)) {
     switch (Params().sts.unpackMode) {
       case RecoParams::UnpackMode::XPU:
-        // digis = fUnpackXpu.Exec(ts);
-        throw std::runtime_error("XPU unpacker currently not implemented");
+        digis = fUnpackXpu.Exec(ts);
+        // throw std::runtime_error("XPU unpacker currently not implemented");
         break;
       case RecoParams::UnpackMode::MS: digis = fParallelUnpack.Run(ts); break;
       default:
       case RecoParams::UnpackMode::CPU: digis = fUnpack.Run(ts); break;
     }
   }
-  
+
   //if (Opts().HasStep(Step::LocalReco)) fStsHitFinder(digis);
-  
+
   xpu::timings ts_times = xpu::pop_timer();
 
   PrintTimings(ts_times);

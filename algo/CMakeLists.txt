@@ -24,6 +24,7 @@ set(SRCS
   detectors/sts/StsReadoutConfig.cxx
   detectors/sts/StsUnpackChain.cxx
   detectors/sts/UnpackSts.cxx
+  detectors/sts/UnpackStsXpuChain.cxx
   detectors/much/MuchReadoutConfig.cxx
   detectors/much/UnpackMuch.cxx
   detectors/tof/HitFinderTof.cxx

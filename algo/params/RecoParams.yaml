@@ -2,7 +2,7 @@
 sts:
   digiSortMode: BlockSort
   clusterSortMode: BlockSort
-  unpackMode: MS
+  unpackMode: CPU
   findClustersMultiKernels: 1
   timeCutDigiAbs: -1
   timeCutDigiSig: 3

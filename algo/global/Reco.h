@@ -9,6 +9,7 @@
 #include "ParallelUnpackChain.h"
 #include "StsHitfinderChain.h"
 #include "StsUnpackChain.h"
+#include "UnpackStsXpuChain.h"
 #include "SubChain.h"
 
 namespace fles
@@ -42,6 +43,7 @@ namespace cbm::algo
 
     // STS
     sts::UnpackChain fUnpack;
+    UnpackStsXpuChain fUnpackXpu;
     ParallelUnpackChain fParallelUnpack;
     sts::HitfinderChain fStsHitFinder;
 
