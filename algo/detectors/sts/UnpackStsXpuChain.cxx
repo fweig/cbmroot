@@ -56,7 +56,9 @@ std::vector<CbmStsDigi> UnpackStsXpuChain::Exec(const fles::Timeslice& ts)
   timer.Start();
 
   //Run STS unpacker and store result
+  xpu::push_timer("Dominik Smiths XPU Unpacker");
   auto resultSts = fAlgoStsXpu(&ts, *fStsConfig);
+  xpu::pop_timer();
 
   // --- Sorting of output digis. Is required by both digi trigger and event builder.
 #ifdef WITH_EXECUTION
